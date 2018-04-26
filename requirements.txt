@@ -5,3 +5,4 @@ Flask-DebugToolbar
 sqlalchemy
 flask-jwt-extended
 wtforms
+flask_classy
