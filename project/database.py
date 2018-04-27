@@ -23,7 +23,7 @@ def init_db():
     from model.insurance import Insurance 
     from model.insurance_item_junction import insurance_item_junction
     from model.item import Item 
-    from model.manufacture import Manufacturer 
+    from model.manufacture import Manufacture 
     from model.manufacture_product_junction import manufacture_product_junction
     from model.offer import Offer
     from model.order import Order 
@@ -37,5 +37,5 @@ def init_db():
     Base.metadata.create_all(bind=engine)
 
 # print "initing..."
-# init_db()
+init_db()
 # print "done"
