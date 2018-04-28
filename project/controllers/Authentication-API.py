@@ -17,9 +17,9 @@ def shutdown_session(exception=None):
 # Routes
 
 class Authentication(FlaskView):
-    trailing_slash = False 
+    trailing_slash = False
     route_prefix = '/api/'
-    
+
     @route('/register/', methods=['POST'])
     def registration(self):
         if not request.is_json:
@@ -43,13 +43,13 @@ class Authentication(FlaskView):
         #     session.rollback()
         #     Logger.debug("registration: Could not add new user to database")
         #     Logger.error(e.message)
-        #     return jsonify(success=False), 400 
+        #     return jsonify(success=False), 400
 
     @route('/login/', methods=['POST'])
     def login(self):
         if not request.is_json:
             return jsonify({"msg": "Missing JSON in request"}), 400
-        
+
         # username = request.json.get('username', None)
         # password = request.json.get('password', None)
         # try:
@@ -66,9 +66,6 @@ class Authentication(FlaskView):
         #     Logger.error(e.message)
         #     print e.message
         #     return jsonify({"msg": "server error"}), 500
-            
+
 
 Authentication.register(app)
-
-
-

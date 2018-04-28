@@ -5,14 +5,16 @@ from flask_classy import FlaskView, route
 from flask import jsonify, request
 import datetime
 # from project.model.user import User
+from project.model.category import Category
 from project.logger import Logger
+from project.model.offer import Offer
 
 
 # Routes
 class ShopView(FlaskView):
-    trailing_slash = False 
+    trailing_slash = False
     route_prefix = '/api/'
-    
+
     @route("/category/<int:cid>/products", methods=['GET'])
     def products(self, cid):
         pass
@@ -40,12 +42,13 @@ class ShopView(FlaskView):
 
     @route("/search", methods=['GET'])
     def search(self):
-
         pass
+
     @route("/categories", methods=['GET'])
     def categories(self):
+        categories = Category.query.all()
+        return jsonify(categories=categories), 200
 
-        pass
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])
     def products_best_seller(self):
         pass
@@ -65,9 +68,6 @@ class ShopView(FlaskView):
 
         pass
 
-            
+
 
 ShopView.register(app)
-
-
-

@@ -1,11 +1,10 @@
 import datetime
 from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL, PickleType
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType 
+from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base
 from category_product_junction import category_product_junction
-from category import Category 
 from comment import Comment
 # from project.model.item import Item
 from manufacture_product_junction import manufacture_product_junction

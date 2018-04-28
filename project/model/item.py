@@ -1,12 +1,12 @@
 from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType 
+from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from project.database import Base 
+from project.database import Base
 import json
 from product import Product
-from offer import Offer 
-from store import Store 
+from offer import Offer
+from store import Store
 # from project.model.auction import Auction
 from insurance_item_junction import insurance_item_junction
 from insurance import Insurance
