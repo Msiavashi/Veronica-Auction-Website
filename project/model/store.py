@@ -12,7 +12,7 @@ class Store(Base):
     __tablename__ = 'store'
 
     id = Column(BigInteger, primary_key=True)
-    name = Column(String(length=25))
-    desciption = Column(String(length=255))
+    name = Column(String(length=25), nullable=True)
+    desciption = Column(String(length=255), nullable=True)
     items = relationship('Item') 
     address_id = Column(BigInteger, ForeignKey('address.id'))

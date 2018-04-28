@@ -6,8 +6,8 @@ from flask import jsonify, request
 import datetime
 # from project.model.user import User
 from project.logger import Logger
-
-
+from project.model.category import Category
+from project.model.customer import Customer
 # Routes
 class ShopView(FlaskView):
     trailing_slash = False 
@@ -44,8 +44,8 @@ class ShopView(FlaskView):
         pass
     @route("/categories", methods=['GET'])
     def categories(self):
-
-        pass
+        return Category.query.filter_by().first().id
+        
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])
     def products_best_seller(self):
         pass

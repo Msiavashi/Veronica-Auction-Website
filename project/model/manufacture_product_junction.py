@@ -5,6 +5,6 @@ from sqlalchemy.orm import relationship
 from project.database import Base
 
 manufacture_product_junction = Table('manufacture_product_junction', Base.metadata,
-    Column('manufacturer_id', ForeignKey('manufacture.id')),
+    Column('manufacture_id', ForeignKey('manufacture.id')),
     Column('product_id', ForeignKey('product.id'))
 )

@@ -14,11 +14,11 @@ from insurance import Insurance
 class Item(Base):
     __tablename__ = 'item'
     id = Column(BigInteger, primary_key=True)
-    price = Column(DECIMAL(precision=20, scale=4))
+    price = Column(DECIMAL(precision=20, scale=4), nullable=True)
     off = Column(DECIMAL(precision=20, scale=4))
     made_in = Column(String(length=25))
     auction_id = Column(BigInteger, ForeignKey('auction.id'))
     product_id = Column(BigInteger, ForeignKey('product.id'))
     offers = relationship('Offer')
-    store_id = relationship('Store')
+    store_id = Column(BigInteger, ForeignKey('store.id'))
     insurances = relationship('Insurance', secondary=insurance_item_junction, back_populates='items')
