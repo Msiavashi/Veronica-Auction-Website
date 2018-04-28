@@ -1,19 +1,16 @@
 import datetime
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
- 
+from project.database import Base, db, ma
+
 class Category(Base):
     __tablename__ = 'category'
-    id = Column(BigInteger, primary_key=True)
-    name = Column(String(length=100), nullable=False)
-    description = Column(String(length=30))
-    categories = relationship('Category', remote_side=[id])
-    category_id = Column(BigInteger, ForeignKey('category.id'))
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(length=100), nullable=False)
+    description = db.Column(db.String(length=30))
+    categories = db.relationship('Category', remote_side=[id])
+    category_id = db.Column(db.BigInteger, db.ForeignKey('category.id'))
+    products = db.relationship('Product', lazy='subquery')
 
-    products = relationship('Product')
-    
 
-    
+class CategorySchema(ma.ModelSchema):
+    class Meta:
+        model = Category 

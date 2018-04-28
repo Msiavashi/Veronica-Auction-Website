@@ -1,10 +1,9 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, Table
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
 from project.database import Base
+from project.database import db 
 
-manufacture_product_junction = Table('manufacture_product_junction', Base.metadata,
-    Column('manufacture_id', ForeignKey('manufacture.id')),
-    Column('product_id', ForeignKey('product.id'))
+manufacture_product_junction = db.Table('manufacture_product_junction',
+    db.Column('manufacture_id', db.ForeignKey('manufacture.id')),
+    db.Column('product_id', db.ForeignKey('product.id'))
 )
+
+

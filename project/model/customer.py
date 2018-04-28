@@ -1,35 +1,35 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP
-from sqlalchemy.orm import relationship, backref
 import datetime
-from project.database import Base
-from role import Role
-from comment import Comment
-from address import Address
-from payment import Payment
-from order import Order 
-from customer_plan_junction import customer_plan_junction
+from project.database import Base, db, ma
+# from project.model.role import Role
+# from project.model.comment import Comment
+# from project.model.address import Address
+# from project.model.payment import Payment
+# from project.model.order import Order 
+# from project.model.customer_plan_junction import customer_plan_junction
 # from project.model.plan import Plan
+from project.database import ma
 
 class Customer(Base):
     __tablename__ = 'customer'
-    id = Column(BigInteger, primary_key=True)
-    first_name = Column(String(length=50), nullable=False)
-    last_name = Column(String(length=50), nullable=False)
-    username = Column(String(length=30), nullable=False)
-    password = Column(String(length=30), nullable=False)
-    register_date = Column(TIMESTAMP, default=datetime.datetime.now)
-    phone_number = Column(String(length=25), nullable=False)
-    email = Column(String(length=100))
-    credit = Column(DECIMAL(precision=20, scale=4), default=0)
-    gift_credit = Column(DECIMAL(precision=20, scale=4), default=0)
-    organization_or_person = Column(String(length=20), nullable=False)
-    roles = relationship('Role')
-    comments = relationship('Comment')
-    address_id = Column(BigInteger, ForeignKey('address.id'))
-    payments = relationship('Payment')
-    orders = relationship('Order')
+    id = db.Column(db.BigInteger, primary_key=True)
+    first_name = db.Column(db.String(length=50), nullable=False)
+    last_name = db.Column(db.String(length=50), nullable=False)
+    username = db.Column(db.String(length=30), nullable=False)
+    password = db.Column(db.String(length=30), nullable=False)
+    register_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
+    phone_number = db.Column(db.String(length=25), nullable=False)
+    email = db.Column(db.String(length=100))
+    credit = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
+    gift_credit = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
+    organization_or_person = db.Column(db.String(length=20), nullable=False)
+    roles = db.relationship('Role')
+    comments = db.relationship('Comment')
+    address_id = db.Column(db.BigInteger, db.ForeignKey('address.id'))
+    payments = db.relationship('Payment')
+    orders = db.relationship('Order')
+    plans = db.relationship('Plan', secondary='customer_plan_junction', back_populates='customers', lazy='subquery')
 
-    plans = relationship('Plan', secondary=customer_plan_junction, back_populates='customers')
-
+class CustomerSchema(ma.ModelSchema):
+    class Meta:
+        model = Customer
     
