@@ -12,8 +12,8 @@ class Plan(Base):
     __tablename__ = 'plan'
 
     id = Column(BigInteger, primary_key=True)
-    name = Column(String(length=100))
-    price = Column(DECIMAL(precision=20, scale=4))
-    total_bids = Column(Integer)
+    name = Column(String(length=100), nullable=False)
+    price = Column(DECIMAL(precision=20, scale=4), nullable=True)
+    total_bids = Column(Integer, default=0)
     auctions = relationship('Auction')
-    customers = relationship('Plan', secondary=customer_plan_junction, back_populates='plans')
+    customers = relationship('Customer', secondary=customer_plan_junction, back_populates='plans')

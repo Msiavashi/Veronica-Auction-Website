@@ -10,7 +10,7 @@ from order import Order
 class Offer(Base):
     __tablename__ = 'offer'
     id = Column(BigInteger, primary_key=True)
-    offer_price = Column(DECIMAL(precision=20, scale=4))
+    offer_price = Column(DECIMAL(precision=20, scale=4), nullable=False)
     date = Column(TIMESTAMP, default=datetime.datetime.now)
     order_id = Column(BigInteger, ForeignKey('order.id'))
     item_id = Column(BigInteger, ForeignKey('item.id'))

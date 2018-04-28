@@ -9,5 +9,5 @@ from project.database import Base
 
 insurance_item_junction = Table('insurance_item_junction', Base.metadata,
     Column('insurance_id', ForeignKey('insurance.id')),
-    Column('item.id', ForeignKey('item.id'))
+    Column('item_id', ForeignKey('item.id'))
 )

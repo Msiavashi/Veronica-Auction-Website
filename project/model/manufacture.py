@@ -7,10 +7,10 @@ from project.database import Base
 from manufacture_product_junction import manufacture_product_junction
 # from project.model.product import Product
 
-class Manufacturer(Base):
+class Manufacture(Base):
     __tablename__ = 'manufacture'
     id = Column(BigInteger, primary_key=True)
-    name = Column(String(length=25))
-    review = Column(Text)
-    details =  Column(PickleType)
+    name = Column(String(length=25), nullable=False)
+    review = Column(Text, nullable=True)
+    details =  Column(PickleType, nullable=True)
     products = relationship('Product', secondary=manufacture_product_junction, back_populates='manufactures')

@@ -10,8 +10,9 @@ from project.database import Base
 class Comment(Base):
     __tablename__ = 'comment'
     id = Column(BigInteger, primary_key=True)
-    title = Column(String(length=255))
-    message = Column(String(length=2048))
-    stars = Column(Integer)
+    title = Column(String(length=255), nullable=False)
+    message = Column(String(length=2048), nullable=False)
+    stars = Column(Integer, default=0)
     customer_id = Column(BigInteger, ForeignKey('customer.id'))
     product_id = Column(BigInteger, ForeignKey('product.id'))
+    

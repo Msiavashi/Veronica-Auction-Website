@@ -4,24 +4,24 @@ from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base
-from category_product_junction import category_product_junction
+from category import Category 
 from comment import Comment
 # from project.model.item import Item
 from manufacture_product_junction import manufacture_product_junction
-from manufacture import Manufacturer
+from manufacture import Manufacture
 
 
 class Product(Base):
 
     __tablename__ = 'product'
     id = Column(BigInteger, primary_key=True)
-    name = Column(String(length=25))
-    total_available = Column(Integer)
+    name = Column(String(length=25), nullable=False)
+    total_available = Column(Integer, nullable=False)
     review = Column(Text)
-    stars = Column(Integer)
-    details =  Column(PickleType)
+    stars = Column(Integer, default=0)
+    details =  Column(PickleType, nullable=True)
     items = relationship('Item')
-    categories = relationship('Category', secondary=category_product_junction, back_populates='products')
+    category_id = Column(BigInteger, ForeignKey('category.id'))
     comments = relationship("Comment")
 
     manufactures = relationship('Manufacture', secondary=manufacture_product_junction, back_populates='products')

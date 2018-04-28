@@ -7,9 +7,14 @@ import datetime
 # from project.model.user import User
 from project.model.category import Category
 from project.logger import Logger
+<<<<<<< HEAD
 from project.model.offer import Offer
 
 
+=======
+from project.model.category import Category
+from project.model.customer import Customer
+>>>>>>> 9424eff871da694f9da3569b9c050262f4d3513b
 # Routes
 class ShopView(FlaskView):
     trailing_slash = False
@@ -46,9 +51,14 @@ class ShopView(FlaskView):
 
     @route("/categories", methods=['GET'])
     def categories(self):
+<<<<<<< HEAD
         categories = Category.query.all()
         return jsonify(categories=categories), 200
 
+=======
+        return Category.query.filter_by().first().id
+        
+>>>>>>> 9424eff871da694f9da3569b9c050262f4d3513b
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])
     def products_best_seller(self):
         pass
