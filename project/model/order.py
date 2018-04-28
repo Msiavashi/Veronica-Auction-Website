@@ -4,7 +4,7 @@ from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base
-#from project.model.offer import Offer 
+#from project.model.offer import Offer
 from shipment import Shipment
 
 class Order(Base):
@@ -13,7 +13,7 @@ class Order(Base):
 
     id = Column(BigInteger, primary_key=True)
     create_date = Column(TIMESTAMP, default=datetime.datetime.now)
-    modify_date = Column(TIMESTAMP, default=datetime.datetime.now)
-    custormer_id = Column(BigInteger, ForeignKey('customer.id'))
+    updated_at = Column(TIMESTAMP, default=datetime.datetime.now)
+    user_id = Column(BigInteger, ForeignKey('user.id'))
     offers = relationship('Offer')
     shipments = relationship('Shipment')

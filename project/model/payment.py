@@ -11,6 +11,4 @@ class Payment(Base):
     amount = Column(DECIMAL(precision=20, scale=4), nullable=False)
     payment_id = Column(String(length=25))
     date = Column(TIMESTAMP, default=datetime.datetime.now)
-    customer_id = Column(BigInteger, ForeignKey('customer.id'))
-
-    
+    user_id = Column(BigInteger, ForeignKey('user.id'))

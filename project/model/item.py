@@ -8,7 +8,7 @@ from product import Product
 from offer import Offer
 from store import Store
 # from project.model.auction import Auction
-from insurance_item_junction import insurance_item_junction
+from insurance_item_junction import Insurance_Item_Junction
 from insurance import Insurance
 
 class Item(Base):
@@ -21,4 +21,4 @@ class Item(Base):
     product_id = Column(BigInteger, ForeignKey('product.id'))
     offers = relationship('Offer')
     store_id = Column(BigInteger, ForeignKey('store.id'))
-    insurances = relationship('Insurance', secondary=insurance_item_junction, back_populates='items')
+    insurances = relationship('Insurance', secondary=Insurance_Item_Junction, back_populates='items')

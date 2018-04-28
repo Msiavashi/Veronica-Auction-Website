@@ -17,20 +17,16 @@ def init_db():
     from model.auction import Auction
     from model.address import Address
     from model.category import Category
-    from model.category_product_junction import category_product_junction
     from model.comment import Comment
-    from model.customer import Customer
-    from model.customer_plan_junction import customer_plan_junction
+    from model.user import User
+    from model.gift import Gift
+    from model.user_plan_junction import user_plan_junction
+    from model.user_gift_junction import user_gift_junction
     from model.insurance import Insurance
-    from model.insurance_item_junction import insurance_item_junction
-<<<<<<< HEAD
+    from model.insurance_item_junction import Insurance_Item_Junction
     from model.item import Item
-    from model.manufacture import Manufacturer
-=======
-    from model.item import Item 
-    from model.manufacture import Manufacture 
->>>>>>> 9424eff871da694f9da3569b9c050262f4d3513b
-    from model.manufacture_product_junction import manufacture_product_junction
+    from model.manufacture import Manufacture
+    from model.manufacture_product_junction import Manufacture_Product_Junction
     from model.offer import Offer
     from model.order import Order
     from model.payment import Payment
@@ -39,14 +35,10 @@ def init_db():
     from model.role import Role
     from model.shipment import Shipment
     from model.store import Store
+    from model.news import News
 
     Base.metadata.create_all(bind=engine)
 
-# print "initing..."
-<<<<<<< HEAD
-# init_db()
-# print "done"
-=======
+print "initing..."
 init_db()
-# print "done"
->>>>>>> 9424eff871da694f9da3569b9c050262f4d3513b
+print "done"

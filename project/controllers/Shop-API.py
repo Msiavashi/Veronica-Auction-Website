@@ -6,32 +6,37 @@ from flask import jsonify, request
 import datetime
 # from project.model.user import User
 from project.model.category import Category
+from project.model.product import Product
 from project.logger import Logger
-<<<<<<< HEAD
 from project.model.offer import Offer
+import json
 
-
-=======
-from project.model.category import Category
-from project.model.customer import Customer
->>>>>>> 9424eff871da694f9da3569b9c050262f4d3513b
 # Routes
 class ShopView(FlaskView):
     trailing_slash = False
     route_prefix = '/api/'
 
+    def index(self):
+        return "this is index of shop api"
+
+
     @route("/category/<int:cid>/products", methods=['GET'])
     def products(self, cid):
-        pass
+        products = Product.query.filter_by(category_id=cid).count()
+        return jsonify({"count":products}),200
 
     @route("/sildebar", methods=['GET'])
     def slidebar(self):
         pass
 
 
-    @route("/offs", methods=['GET'])
+    @route("/offers", methods=['GET'])
     def offs(self):
-        pass
+        offers = Offer.query.count()
+        if offers:
+            return jsonify(offers=offers) , 200
+        return jsonify({"mdg":"not any offer founded"}), 401
+
 
     @route("/advertisements", methods=['GET'])
     def advertisements(self):
@@ -51,14 +56,12 @@ class ShopView(FlaskView):
 
     @route("/categories", methods=['GET'])
     def categories(self):
-<<<<<<< HEAD
         categories = Category.query.all()
-        return jsonify(categories=categories), 200
+        if categories:
+            jsonStr = json.dumps([i.to_json for i in categories])
+            return jsonStr , 200
+        return jsonify({"msg":"not any categories founded"}), 401
 
-=======
-        return Category.query.filter_by().first().id
-        
->>>>>>> 9424eff871da694f9da3569b9c050262f4d3513b
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])
     def products_best_seller(self):
         pass

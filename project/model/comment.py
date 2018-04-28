@@ -13,6 +13,5 @@ class Comment(Base):
     title = Column(String(length=255), nullable=False)
     message = Column(String(length=2048), nullable=False)
     stars = Column(Integer, default=0)
-    customer_id = Column(BigInteger, ForeignKey('customer.id'))
+    user_id = Column(BigInteger, ForeignKey('user.id'))
     product_id = Column(BigInteger, ForeignKey('product.id'))
-    
