@@ -4,9 +4,8 @@ from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base
-from project.mixin import OutputMixin
 
-class Category(OutputMixin,Base):
+class Category(Base):
     RELATIONSHIPS_TO_DICT = True
     __tablename__ = 'category'
     id = Column(BigInteger, primary_key=True)

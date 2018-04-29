@@ -9,7 +9,8 @@ from project.model.category import Category
 from project.model.product import Product
 from project.logger import Logger
 from project.model.offer import Offer
-import json
+from project.model.news import News
+from project.model.schema_handler import *
 
 # Routes
 class ShopView(FlaskView):
@@ -22,8 +23,10 @@ class ShopView(FlaskView):
 
     @route("/category/<int:cid>/products", methods=['GET'])
     def products(self, cid):
-        products = Product.query.filter_by(category_id=cid).count()
-        return jsonify({"count":products}),200
+        products = Product.query.filter_by(category_id=cid).all()
+        if products:
+            return products_schema.jsonify(products),200
+        return jsonify({"msg":"not any categories founded"}), 401
 
     @route("/sildebar", methods=['GET'])
     def slidebar(self):
@@ -44,7 +47,8 @@ class ShopView(FlaskView):
 
     @route("/news", methods=['GET'])
     def news(self):
-        pass
+        news =  News.query.all()
+        return news_schema.jsonify(news),200
 
     @route("/user/<int:uid>/offers", methods=['GET'])
     def user_offers(self, uid):
@@ -58,8 +62,7 @@ class ShopView(FlaskView):
     def categories(self):
         categories = Category.query.all()
         if categories:
-            jsonStr = json.dumps([i.to_json for i in categories])
-            return jsonStr , 200
+            return categories_schema.jsonify(categories),200
         return jsonify({"msg":"not any categories founded"}), 401
 
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])

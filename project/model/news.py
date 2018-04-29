@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base
 
+
 class News(Base):
     __tablename__ = 'news'
     id = Column(BigInteger, primary_key=True)
@@ -12,3 +13,5 @@ class News(Base):
     description = Column(String(length=1000))
     images = Column(PickleType)
     created_at = Column(TIMESTAMP, default=datetime.datetime.now)
+
+    
