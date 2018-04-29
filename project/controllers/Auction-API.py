@@ -1,6 +1,6 @@
 
 from project import app
-from project.database import db_session
+from project.database import db
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_classy import FlaskView, route
 from flask import jsonify, request

@@ -1,19 +1,23 @@
 import datetime
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
+# from flask_marshmallow import fields
+from project.database import Base, db, ma
 # from project.model.offer import Offer 
-from shipment import Shipment 
+from project.model.shipment import Shipment 
 
 class Order(Base):
 
     __tablename__ = 'order'
  
-    id = Column(BigInteger, primary_key=True)
-    create_date = Column(TIMESTAMP, default=datetime.datetime.now)
-    modify_date = Column(TIMESTAMP, default=datetime.datetime.now)
-    custormer_id = Column(BigInteger, ForeignKey('customer.id'))
-    offers = relationship('Offer')
-    shipments = relationship('Shipment')
+    id = db.Column(db.BigInteger, primary_key=True)
+    create_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
+    modify_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
+    custormer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
+    offers = db.relationship('Offer')
+    shipments = db.relationship('Shipment')
+
+
+class OrderSchema(ma.ModelSchema):
+    # offers = fields.Nested('OfferSchema', many=True, exclude=('order_id'))
+    class Meta:
+        model = Order 
+        # fields = ('id', 'create_date', 'modify_date', 'customer_id', 'offers', 'shipments')

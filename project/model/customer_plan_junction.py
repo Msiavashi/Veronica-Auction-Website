@@ -1,10 +1,6 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, Table
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
+from project.database import Base, db
 
-customer_plan_junction = Table('customer_plan_junction', Base.metadata,
-    Column('customer_id', ForeignKey('customer.id')),
-    Column('plan_id', ForeignKey('plan.id'))
+customer_plan_junction = db.Table('customer_plan_junction', 
+    db.Column('customer_id', db.ForeignKey('customer.id')),
+    db.Column('plan_id', db.ForeignKey('plan.id'))
 )

@@ -1,27 +1,28 @@
 import datetime
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL, PickleType
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
-from category import Category 
-from comment import Comment
+from project.database import Base, db, ma
+# from project.model.category import Category 
+# from project.model.comment import Comment
 # from project.model.item import Item
-from manufacture_product_junction import manufacture_product_junction
-from manufacture import Manufacture
+# from project.model.manufacture_product_junction import manufacture_product_junction
+# from project.model.manufacture import Manufacture
 
 
 class Product(Base):
 
     __tablename__ = 'product'
-    id = Column(BigInteger, primary_key=True)
-    name = Column(String(length=25), nullable=False)
-    total_available = Column(Integer, nullable=False)
-    review = Column(Text)
-    stars = Column(Integer, default=0)
-    details =  Column(PickleType, nullable=True)
-    items = relationship('Item')
-    category_id = Column(BigInteger, ForeignKey('category.id'))
-    comments = relationship("Comment")
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(length=25), nullable=False)
+    total_available = db.Column(db.Integer, nullable=False)
+    review = db.Column(db.Text)
+    stars = db.Column(db.Integer, default=0)
+    details =  db.Column(db.PickleType, nullable=True)
+    items = db.relationship('Item')
+    category_id = db.Column(db.BigInteger, db.ForeignKey('category.id'))
+    comments = db.relationship("Comment")
+    # state = Column("String", )sadasd
+    manufactures = db.relationship('Manufacture', secondary='manufacture_product_junction', back_populates='products')
 
-    manufactures = relationship('Manufacture', secondary=manufacture_product_junction, back_populates='products')
+    
+class ProductSchema(ma.ModelSchema):
+    class Meta:
+        model = Product 
