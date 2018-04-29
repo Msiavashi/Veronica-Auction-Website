@@ -11,5 +11,4 @@ class Role(Base):
     id = Column(BigInteger, primary_key=True)
     name = Column(String(80), nullable=False)
     description = Column(String(512))
-    customer_id = Column(BigInteger, ForeignKey('customer.id'))
-
+    user_id = Column(BigInteger, ForeignKey('user.id'))

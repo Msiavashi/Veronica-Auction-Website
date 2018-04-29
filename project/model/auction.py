@@ -1,12 +1,12 @@
 import datetime
 from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType 
+from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from item import Item
 from project.database import Base
 from item import Item
-from plan import Plan 
+from plan import Plan
 
 class Auction(Base):
     __tablename__ = 'auction'
