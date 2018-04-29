@@ -1,45 +1,32 @@
 from project import app
-from project.database import db_session
+from project.database import db
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_classy import FlaskView, route
 from flask import jsonify, request
 import datetime
 # from project.model.user import User
-from project.model.category import Category
-from project.model.product import Product
 from project.logger import Logger
-from project.model.offer import Offer
-from project.model.news import News
-from project.model.schema_handler import *
+from project.model.category import Category
+from project.model.customer import Customer 
+# from project.model.customer import Customer, CustomerSchema
 
 # Routes
 class ShopView(FlaskView):
-    trailing_slash = False
+    trailing_slash = False 
     route_prefix = '/api/'
-
-    def index(self):
-        return "this is index of shop api"
-
-
+    
     @route("/category/<int:cid>/products", methods=['GET'])
     def products(self, cid):
-        products = Product.query.filter_by(category_id=cid).all()
-        if products:
-            return products_schema.jsonify(products),200
-        return jsonify({"msg":"not any categories founded"}), 401
+        pass
 
     @route("/sildebar", methods=['GET'])
     def slidebar(self):
         pass
 
 
-    @route("/offers", methods=['GET'])
+    @route("/offs", methods=['GET'])
     def offs(self):
-        offers = Offer.query.count()
-        if offers:
-            return jsonify(offers=offers) , 200
-        return jsonify({"mdg":"not any offer founded"}), 401
-
+        pass
 
     @route("/advertisements", methods=['GET'])
     def advertisements(self):
@@ -47,8 +34,7 @@ class ShopView(FlaskView):
 
     @route("/news", methods=['GET'])
     def news(self):
-        news =  News.query.all()
-        return news_schema.jsonify(news),200
+        pass
 
     @route("/user/<int:uid>/offers", methods=['GET'])
     def user_offers(self, uid):
@@ -56,15 +42,25 @@ class ShopView(FlaskView):
 
     @route("/search", methods=['GET'])
     def search(self):
-        pass
 
+        pass
     @route("/categories", methods=['GET'])
     def categories(self):
-        categories = Category.query.all()
-        if categories:
-            return categories_schema.jsonify(categories),200
-        return jsonify({"msg":"not any categories founded"}), 401
-
+        user = Customer()
+        user.first_name = "ahmad"
+        user.last_name = "siavashi"
+        user.username = "ahmads"
+        user.password = "123456"
+        user.email = "ahmads@gmail.com"
+        user.phone_number = "2146798465"
+        user.organization_or_person = "person"
+        db.session.add(user)
+        print (Customer.query.filter_by(username="ahmads").first().password)
+        return "salam"
+        # schema = CustomerSchema()
+        # data = schema.dump(Customer.query.filter_by(username="ms95").first()).data
+        # return data
+        
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])
     def products_best_seller(self):
         pass
@@ -84,6 +80,9 @@ class ShopView(FlaskView):
 
         pass
 
-
+            
 
 ShopView.register(app)
+
+
+

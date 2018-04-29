@@ -1,11 +1,9 @@
 
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, Table
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
+from project.database import Base, db
+# from project.model.insurance import Insurance
+# from project.model.item import Item 
 
-Insurance_Item_Junction = Table('insurance_item_junction', Base.metadata,
-    Column('insurance_id', ForeignKey('insurance.id')),
-    Column('item_id', ForeignKey('item.id'))
+insurance_item_junction = db.Table('insurance_item_junction',
+    db.Column('insurance_id', db.ForeignKey('insurance.id')),
+    db.Column('item_id', db.ForeignKey('item.id'))
 )

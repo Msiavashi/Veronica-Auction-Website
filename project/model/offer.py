@@ -1,16 +1,12 @@
 import datetime
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
-from order import Order 
+from project.database import Base, db
+from project.model.order import Order 
 # from project.model.item import Item 
 
 class Offer(Base):
     __tablename__ = 'offer'
-    id = Column(BigInteger, primary_key=True)
-    offer_price = Column(DECIMAL(precision=20, scale=4), nullable=False)
-    date = Column(TIMESTAMP, default=datetime.datetime.now)
-    order_id = Column(BigInteger, ForeignKey('order.id'))
-    item_id = Column(BigInteger, ForeignKey('item.id'))
+    id = db.Column(db.BigInteger, primary_key=True)
+    offer_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
+    order_id = db.Column(db.BigInteger, db.ForeignKey('order.id'))
+    item_id = db.Column(db.BigInteger, db.ForeignKey('item.id'))

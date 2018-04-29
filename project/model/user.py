@@ -10,6 +10,7 @@ from payment import Payment
 from order import Order
 from user_plan_junction import user_plan_junction
 from user_gift_junction import user_gift_junction
+from project import ma
 
 class User(Base):
     __tablename__ = 'user'
@@ -43,3 +44,4 @@ class User(Base):
     plans = relationship('Plan', secondary=user_plan_junction, back_populates='users')
     gifts = relationship('Gift',secondary=user_gift_junction, back_populates='users')
     #Auction
+
