@@ -1,6 +1,7 @@
 import datetime
 # from flask_marshmallow import fields
-from project.database import Base, db, ma
+from project.database import Base, db
+
 # from project.model.offer import Offer 
 from project.model.shipment import Shipment 
 
@@ -14,10 +15,3 @@ class Order(Base):
     custormer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
     offers = db.relationship('Offer')
     shipments = db.relationship('Shipment')
-
-
-class OrderSchema(ma.ModelSchema):
-    # offers = fields.Nested('OfferSchema', many=True, exclude=('order_id'))
-    class Meta:
-        model = Order 
-        # fields = ('id', 'create_date', 'modify_date', 'customer_id', 'offers', 'shipments')

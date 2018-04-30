@@ -1,5 +1,5 @@
 import datetime
-from project.database import Base,db, ma
+from project.database import Base, db
 # from project.model.item import Item
 # from project.model.plan import Plan 
 class Auction(Base):
@@ -13,8 +13,3 @@ class Auction(Base):
     minimum_price_increment = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     items = db.relationship('Item')
     plan_id = db.Column(db.BigInteger, db.ForeignKey('plan.id'))
-
-
-class AuctionSchema(ma.ModelSchema):
-    class Meta:
-        model = Auction 

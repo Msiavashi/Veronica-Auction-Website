@@ -4,7 +4,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_classy import FlaskView, route
 from flask import jsonify, request
 import datetime
-from project.model.customer import Customer
+from project.model.user import User
 from project.model.role import Role
 from project.logger import Logger
 
@@ -13,14 +13,14 @@ from project.logger import Logger
 # Routes
 
 class Authentication(FlaskView):
-    trailing_slash = False 
+    trailing_slash = False
     route_prefix = '/api/'
-    
+
     @route('/register/', methods=['POST'])
     def registration(self):
         if not request.is_json:
             return jsonify({"msg": "Missing JSON in request"}), 400
-        username = request.json.get('username', None)       #TODO: hash the password 
+        username = request.json.get('username', None)       #TODO: hash the password
         password = request.json.get('password')
         first_name = request.json.get('first_name')
         last_name = request.json.get('last_name')
@@ -39,13 +39,13 @@ class Authentication(FlaskView):
         #     session.rollback()
         #     Logger.debug("registration: Could not add new user to database")
         #     Logger.error(e.message)
-        #     return jsonify(success=False), 400 
+        #     return jsonify(success=False), 400
 
     @route('/login/', methods=['POST'])
     def login(self):
         if not request.is_json:
             return jsonify({"msg": "Missing JSON in request"}), 400
-        
+
         # username = request.json.get('username', None)
         # password = request.json.get('password', None)
         # try:
@@ -62,9 +62,6 @@ class Authentication(FlaskView):
         #     Logger.error(e.message)
         #     print e.message
         #     return jsonify({"msg": "server error"}), 500
-            
+
 
 Authentication.register(app)
-
-
-

@@ -1,5 +1,7 @@
 import datetime
-from project.database import db, ma
+
+from project.database import db
+
 from project.database import Base
 
 class Address(Base):
@@ -10,7 +12,3 @@ class Address(Base):
     phone_number = db.Column(db.String(length=25), nullable=False)
     address = db.Column(db.String(length=255), nullable=False)
     postal_code = db.Column(db.String(length=30), nullable=False)
-
-class AddressSchema(ma.ModelSchema):
-    class Meta:
-        model = 'Address'

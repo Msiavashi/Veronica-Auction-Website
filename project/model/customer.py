@@ -1,5 +1,7 @@
 import datetime
-from project.database import Base, db, ma
+
+from project.database import Base, db
+
 # from project.model.role import Role
 # from project.model.comment import Comment
 # from project.model.address import Address
@@ -28,8 +30,3 @@ class Customer(Base):
     payments = db.relationship('Payment')
     orders = db.relationship('Order')
     plans = db.relationship('Plan', secondary='customer_plan_junction', back_populates='customers', lazy='subquery')
-
-class CustomerSchema(ma.ModelSchema):
-    class Meta:
-        model = Customer
-    

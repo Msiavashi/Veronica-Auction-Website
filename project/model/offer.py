@@ -1,5 +1,7 @@
 import datetime
-from project.database import Base, db, ma
+
+from project.database import Base, db
+
 from project.model.order import Order 
 # from project.model.item import Item 
 
@@ -10,7 +12,3 @@ class Offer(Base):
     date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     order_id = db.Column(db.BigInteger, db.ForeignKey('order.id'))
     item_id = db.Column(db.BigInteger, db.ForeignKey('item.id'))
-
-class OfferSchema(ma.ModelSchema):
-    class Meta:
-        model = Offer 

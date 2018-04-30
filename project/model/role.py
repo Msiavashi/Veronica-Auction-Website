@@ -1,5 +1,5 @@
 import datetime
-from project.database import Base, db, ma
+from project.database import Base, db
 # from project.model.customer import Customer
 
 
@@ -9,8 +9,3 @@ class Role(Base):
     name = db.Column(db.String(80), nullable=False)
     description = db.Column(db.String(512))
     customer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
-
-
-class roleschema(ma.modelschema):
-    class Meta:
-        model = Role 

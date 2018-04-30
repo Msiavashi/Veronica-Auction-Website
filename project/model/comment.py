@@ -1,7 +1,7 @@
 
 import datetime
-from project.database import Base, db, ma
-# from project.model.product import Product
+
+from project.database import Base, db
 
 
 class Comment(Base):
@@ -13,7 +13,3 @@ class Comment(Base):
     customer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
     product_id = db.Column(db.BigInteger, db.ForeignKey('product.id'))
     
-
-class CommentSchema(ma.ModelSchema):
-    class Meta:
-        model = Comment 

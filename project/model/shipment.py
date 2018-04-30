@@ -1,5 +1,5 @@
 import datetime
-from project.database import Base, db, ma
+from project.database import Base, db
 # from project.model.order import Order 
 # from project.model.insurance import Insurance
 
@@ -17,7 +17,3 @@ class Shipment(Base):
     order_id = db.Column(db.BigInteger, db.ForeignKey('order.id'))
     insurance_id = db.Column(db.BigInteger, db.ForeignKey('insurance.id'))
 
-
-class ShipmentSchema(ma.ModelSchema):
-    class Meta:
-        model = Shipment 

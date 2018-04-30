@@ -1,5 +1,5 @@
 import datetime
-from project.database import Base, db, ma
+from project.database import Base, db
 # from project.model.address import Address
 # from project.model.item import Item 
 
@@ -12,9 +12,3 @@ class Store(Base):
     desciption = db.Column(db.String(length=255), nullable=True)
     items = db.relationship('Item') 
     address_id = db.Column(db.BigInteger, db.ForeignKey('address.id'))
-
-
-
-class StoreSchema(ma.ModelSchema):
-    class Meta:
-        model = Store 

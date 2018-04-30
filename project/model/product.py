@@ -1,5 +1,5 @@
 import datetime
-from project.database import Base, db, ma
+from project.database import Base, db
 # from project.model.category import Category 
 # from project.model.comment import Comment
 # from project.model.item import Item
@@ -21,8 +21,3 @@ class Product(Base):
     comments = db.relationship("Comment")
     # state = Column("String", )sadasd
     manufactures = db.relationship('Manufacture', secondary='manufacture_product_junction', back_populates='products')
-
-    
-class ProductSchema(ma.ModelSchema):
-    class Meta:
-        model = Product 
