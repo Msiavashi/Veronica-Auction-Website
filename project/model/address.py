@@ -1,5 +1,7 @@
 import datetime
+
 from project.database import db
+
 from project.database import Base
 
 class Address(Base):

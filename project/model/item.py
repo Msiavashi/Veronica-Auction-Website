@@ -3,6 +3,7 @@ from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base , db
+
 import json
 # from project.model.product import Product
 # from project.model.offer import Offer 
@@ -22,5 +23,3 @@ class Item(Base):
     offers = db.relationship('Offer')
     store_id = db.Column(db.BigInteger, db.ForeignKey('store.id'))
     insurances = db.relationship('Insurance', secondary='insurance_item_junction', back_populates='items')
-
-

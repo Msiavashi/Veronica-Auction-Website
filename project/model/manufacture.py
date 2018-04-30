@@ -1,5 +1,6 @@
 import datetime
 from project.database import Base, db
+
 # from project.model.manufacture_product_junction import manufacture_product_junction
 # from project.model.product import Product
 

@@ -1,5 +1,7 @@
 import datetime
+
 from project.database import Base, db
+
 
 class Category(Base):
     __tablename__ = 'category'
@@ -9,4 +11,3 @@ class Category(Base):
     categories = db.relationship('Category', remote_side=[id])
     category_id = db.Column(db.BigInteger, db.ForeignKey('category.id'))
     products = db.relationship('Product', lazy='subquery')
-

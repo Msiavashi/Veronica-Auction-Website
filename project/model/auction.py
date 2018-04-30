@@ -2,8 +2,6 @@ import datetime
 from project.database import Base, db
 # from project.model.item import Item
 # from project.model.plan import Plan 
-
-
 class Auction(Base):
     __tablename__ = 'auction'
     id = db.Column(db.BigInteger, primary_key=True)

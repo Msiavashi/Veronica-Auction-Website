@@ -21,5 +21,3 @@ class Product(Base):
     comments = db.relationship("Comment")
     # state = Column("String", )sadasd
     manufactures = db.relationship('Manufacture', secondary='manufacture_product_junction', back_populates='products')
-
-    

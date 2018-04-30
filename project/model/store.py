@@ -12,5 +12,3 @@ class Store(Base):
     desciption = db.Column(db.String(length=255), nullable=True)
     items = db.relationship('Item') 
     address_id = db.Column(db.BigInteger, db.ForeignKey('address.id'))
-
-

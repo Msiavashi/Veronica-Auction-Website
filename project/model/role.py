@@ -9,4 +9,3 @@ class Role(Base):
     name = db.Column(db.String(80), nullable=False)
     description = db.Column(db.String(512))
     customer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
-

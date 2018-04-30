@@ -1,5 +1,7 @@
 import datetime
+
 from project.database import Base, db
+
 # from project.model.role import Role
 # from project.model.comment import Comment
 # from project.model.address import Address
@@ -7,6 +9,7 @@ from project.database import Base, db
 # from project.model.order import Order 
 # from project.model.customer_plan_junction import customer_plan_junction
 # from project.model.plan import Plan
+from project.database import ma
 
 class Customer(Base):
     __tablename__ = 'customer'

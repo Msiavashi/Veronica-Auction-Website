@@ -1,3 +1,4 @@
+
 from project.database import Base, db
 from project.logger import Logger
 import datetime
@@ -9,5 +10,3 @@ class Payment(Base):
     payment_id = db.Column(db.String(length=25))
     date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     customer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
-
-    

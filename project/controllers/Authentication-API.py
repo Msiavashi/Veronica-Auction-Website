@@ -1,5 +1,5 @@
 from project import app
-from project.database import db_session
+from project.database import db
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_classy import FlaskView, route
 from flask import jsonify, request
@@ -9,10 +9,6 @@ from project.model.role import Role
 from project.logger import Logger
 
 
-# Configs
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    db_session.remove()
 
 # Routes
 

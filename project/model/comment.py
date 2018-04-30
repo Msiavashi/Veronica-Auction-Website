@@ -1,7 +1,7 @@
 
 import datetime
+
 from project.database import Base, db
-# from project.model.product import Product
 
 
 class Comment(Base):
