@@ -3,19 +3,25 @@ from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIM
 from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from item import Item
 from project.database import Base
 from item import Item
-from plan import Plan
+from user_auction import user_auctions
 
 class Auction(Base):
-    __tablename__ = 'auction'
+    __tablename__ = 'auctions'
     id = Column(BigInteger, primary_key=True)
-    name = Column(String(100), nullable=False)
+    name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
-    created_date = Column(TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    created_at = Column(TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = Column(TIMESTAMP, default=datetime.datetime.now, nullable=False)
     start_date = Column(TIMESTAMP, default=datetime.datetime.now, nullable=False)
     end_date = Column(TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    minimum_price_increment = Column(DECIMAL(precision=20, scale=4), nullable=False)
-    items = relationship('Item')
-    plan_id = Column(BigInteger, ForeignKey('plan.id'))
+    register_price = Column(DECIMAL(precision=20, scale=4), nullable=False)
+    minimum_price = Column(DECIMAL(precision=20, scale=4), nullable=False)
+    maximum_price = Column(DECIMAL(precision=20, scale=4), nullable=False)
+    max_members = Column(BigInteger,default=40)
+
+    item_id = Column(BigInteger, ForeignKey('items.id'))
+    item = relationship('Item')
+    users = relationship('User',secondary=user_auctions,back_populates='auctions')
+    events = relationship('AuctionEvent')

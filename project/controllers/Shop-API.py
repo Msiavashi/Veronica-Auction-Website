@@ -4,13 +4,6 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_classy import FlaskView, route
 from flask import jsonify, request
 import datetime
-# from project.model.user import User
-from project.model.category import Category
-from project.model.product import Product
-from project.logger import Logger
-from project.model.offer import Offer
-from project.model.news import News
-from project.model.schema_handler import *
 
 # Routes
 class ShopView(FlaskView):
@@ -23,10 +16,7 @@ class ShopView(FlaskView):
 
     @route("/category/<int:cid>/products", methods=['GET'])
     def products(self, cid):
-        products = Product.query.filter_by(category_id=cid).all()
-        if products:
-            return products_schema.jsonify(products),200
-        return jsonify({"msg":"not any categories founded"}), 401
+        pass
 
     @route("/sildebar", methods=['GET'])
     def slidebar(self):
@@ -35,10 +25,7 @@ class ShopView(FlaskView):
 
     @route("/offers", methods=['GET'])
     def offs(self):
-        offers = Offer.query.count()
-        if offers:
-            return jsonify(offers=offers) , 200
-        return jsonify({"mdg":"not any offer founded"}), 401
+        pass
 
 
     @route("/advertisements", methods=['GET'])
@@ -47,8 +34,7 @@ class ShopView(FlaskView):
 
     @route("/news", methods=['GET'])
     def news(self):
-        news =  News.query.all()
-        return news_schema.jsonify(news),200
+        pass
 
     @route("/user/<int:uid>/offers", methods=['GET'])
     def user_offers(self, uid):
@@ -60,10 +46,7 @@ class ShopView(FlaskView):
 
     @route("/categories", methods=['GET'])
     def categories(self):
-        categories = Category.query.all()
-        if categories:
-            return categories_schema.jsonify(categories),200
-        return jsonify({"msg":"not any categories founded"}), 401
+        pass
 
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])
     def products_best_seller(self):

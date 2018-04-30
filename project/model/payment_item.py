@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base
 
-user_plan_junction = Table('user_plan_junction', Base.metadata,
-    Column('user_id', ForeignKey('user.id')),
-    Column('plan_id', ForeignKey('plan.id'))
+payment_items = Table('payment_items', Base.metadata,
+    Column('payment_id', ForeignKey('payments.id')),
+    Column('item_id', ForeignKey('items.id'))
 )

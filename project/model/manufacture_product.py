@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base
 
-Manufacture_Product_Junction = Table('manufacture_product_junction', Base.metadata,
-    Column('manufacture_id', ForeignKey('manufacture.id')),
-    Column('product_id', ForeignKey('product.id'))
+manufacture_products = Table('manufacture_products', Base.metadata,
+    Column('manufacture_id', ForeignKey('manufactures.id')),
+    Column('product_id', ForeignKey('products.id'))
 )

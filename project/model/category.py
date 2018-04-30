@@ -5,12 +5,14 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from project.database import Base
 
+
 class Category(Base):
     RELATIONSHIPS_TO_DICT = True
-    __tablename__ = 'category'
+    __tablename__ = 'categories'
     id = Column(BigInteger, primary_key=True)
     name = Column(String(length=100), nullable=False)
-    description = Column(String(length=1000))
+    description = Column(String(length=255))
     categories = relationship('Category', remote_side=[id])
-    category_id = Column(BigInteger, ForeignKey('category.id'))
+    category_id = Column(BigInteger, ForeignKey('categories.id'))
+    category = relationship('Category')
     products = relationship('Product')
