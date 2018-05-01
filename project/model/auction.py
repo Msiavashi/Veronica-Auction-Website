@@ -1,15 +1,23 @@
+from project.database import db, Base
 import datetime
-from project.database import Base, db
-# from project.model.item import Item
-# from project.model.plan import Plan 
+from item import Item
+from user_auction import user_auctions
+
 class Auction(Base):
-    __tablename__ = 'auction'
+    __tablename__ = 'auctions'
     id = db.Column(db.BigInteger, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    created_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     start_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     end_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    minimum_price_increment = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
-    items = db.relationship('Item')
-    plan_id = db.Column(db.BigInteger, db.ForeignKey('plan.id'))
+    register_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    minimum_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    maximum_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    max_members = db.Column(db.BigInteger,default=40)
+
+    item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'))
+    item = db.relationship('Item')
+    users = db.relationship('User',secondary=user_auctions,back_populates='auctions')
+    events = db.relationship('AuctionEvent')

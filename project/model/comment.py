@@ -1,15 +1,16 @@
 
+from project.database import db, Base
 import datetime
-
-from project.database import Base, db
-
+from product import Product
 
 class Comment(Base):
-    __tablename__ = 'comment'
+    __tablename__ = 'comments'
     id = db.Column(db.BigInteger, primary_key=True)
     title = db.Column(db.String(length=255), nullable=False)
     message = db.Column(db.String(length=2048), nullable=False)
-    stars = db.Column(db.Integer, default=0)
-    customer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
-    product_id = db.Column(db.BigInteger, db.ForeignKey('product.id'))
-    
+    likes = db.Column(db.Integer, default=0)
+    date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
+    user = db.relationship('User')
+    product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
+    product = db.relationship('Product')

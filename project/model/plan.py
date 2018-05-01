@@ -1,17 +1,15 @@
-import datetime
-from project.database import Base, db
+from project.database import db, Base
+from user import User
+from payment import Payment
+from payment_plan import payment_plans
+from user_plan import user_plans
 
-from project.model.customer_plan_junction import customer_plan_junction
-from project.model.customer import Customer 
-# from project.model.auction import Auction
 
 class Plan(Base):
-    __tablename__ = 'plan'
-
+    __tablename__ = 'plans'
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(length=100), nullable=False)
     price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=True)
-    total_bids = db.Column(db.Integer, default=0)
-    auctions = db.relationship('Auction')
-
-    customers = db.relationship('Customer', secondary='customer_plan_junction', back_populates='plans')
+    total_offers = db.Column(db.Integer, default=0)
+    users = db.relationship('User', secondary = user_plans, back_populates='plans')
+    payments = db.relationship('Payment', secondary = payment_plans, back_populates='plans')

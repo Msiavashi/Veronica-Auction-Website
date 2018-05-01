@@ -2,3 +2,4 @@
 .idea
 storage
 *.pyc
+db_config.py

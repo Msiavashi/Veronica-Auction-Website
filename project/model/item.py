@@ -1,25 +1,20 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base , db
-
-import json
-# from project.model.product import Product
-# from project.model.offer import Offer 
-# from project.model.store import Store 
-# from project.model.auction import Auction
-# from project.model.insurance_item_junction import insurance_item_junction
-# from project.model.insurance import Insurance
+from project.database import db, Base
+from offer import Offer
+from insurance_item import insurance_items
+from payment_item import payment_items
 
 class Item(Base):
-    __tablename__ = 'item'
+    __tablename__ = 'items'
     id = db.Column(db.BigInteger, primary_key=True)
-    price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=True)
-    off = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
-    made_in = db.Column(db.String(length=25))
-    auction_id = db.Column(db.BigInteger, db.ForeignKey('auction.id'))
-    product_id = db.Column(db.BigInteger, db.ForeignKey('product.id'))
-    offers = db.relationship('Offer')
-    store_id = db.Column(db.BigInteger, db.ForeignKey('store.id'))
-    insurances = db.relationship('Insurance', secondary='insurance_item_junction', back_populates='items')
+    price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    discount = db.Column(db.DECIMAL(precision=20, scale=4))
+
+    auction_id = db.Column(db.BigInteger, db.ForeignKey('auctions.id'))
+    auction = db.relationship('Auction')
+    product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
+    product = db.relationship('Product')
+    inventory_id = db.Column(db.BigInteger, db.ForeignKey('inventories.id'))
+    inventory = db.relationship('Inventory')
+    offers = db.relationship('Offer',back_populates='items')
+    insurances = db.relationship('Insurance', secondary=insurance_items, back_populates='items')
+    payments = db.relationship('Payment', secondary=payment_items,back_populates='items')

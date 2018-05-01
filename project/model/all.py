@@ -1,7 +1,8 @@
 from project.database import db, Base, ma
 import datetime
 from sqlalchemy import ForeignKey
-customer_plan_junction = db.table('customer_plan_junction', 
+
+customer_plan_junction = db.table('customer_plan_junction',
     db.column('customer_id', db.foreignkey('customer.id')),
     db.column('plan_id', db.foreignkey('plan.id'))
 )
@@ -52,7 +53,7 @@ class Customer(Base):
     orders = db.relationship('Order')
     plans = db.relationship('Plan', secondary='customer_plan_junction', back_populates='customers', lazy='subquery')
 
-    
+
 
 
 insurance_item_junction = db.Table('insurance_item_junction',
@@ -118,7 +119,7 @@ class Offer(Base):
 class Order(Base):
 
     __tablename__ = 'order'
- 
+
     id = db.Column(db.BigInteger, primary_key=True)
     create_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     modify_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
@@ -137,7 +138,7 @@ class Payment(Base):
     date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     customer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
 
-    
+
 
 
 
@@ -168,7 +169,7 @@ class Product(Base):
     # state = Column("String", )sadasd
     manufactures = db.relationship('Manufacture', secondary='manufacture_product_junction', back_populates='products')
 
-    
+
 
 
 class Role(Base):
@@ -184,7 +185,7 @@ class Role(Base):
 class Shipment(Base):
     __tablename__ = 'shipment'
     id = db.Column(db.BigInteger, primary_key=True)
-    transport_company = db.Column(db.String(length=100), nullable=False)    
+    transport_company = db.Column(db.String(length=100), nullable=False)
     transport_method = db.Column(db.String(length=100), nullable=False)
     send_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     recieve_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
@@ -202,7 +203,7 @@ class Store(Base):
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(length=25), nullable=True)
     desciption = db.Column(db.String(length=255), nullable=True)
-    items = db.relationship('Item') 
+    items = db.relationship('Item')
     address_id = db.Column(db.BigInteger, db.ForeignKey('address.id'))
 
 class Comment(Base):
@@ -213,16 +214,16 @@ class Comment(Base):
     stars = db.Column(db.Integer, default=0)
     customer_id = db.Column(db.BigInteger, db.ForeignKey('customer.id'))
     product_id = db.Column(db.BigInteger, db.ForeignKey('product.id'))
-    
+
 
 class CommentSchema(ma.ModelSchema):
     class Meta:
-        model = Comment 
+        model = Comment
 
 
 class StoreSchema(ma.ModelSchema):
     class Meta:
-        model = Store 
+        model = Store
 
 
 
@@ -235,12 +236,12 @@ class ItemSchema(ma.ModelSchema):
 
 class AddressSchema(ma.ModelSchema):
     class Meta:
-        model = Address 
+        model = Address
 
 
 class AuctionSchema(ma.ModelSchema):
     class Meta:
-        model = Auction 
+        model = Auction
 
 
 
@@ -251,32 +252,32 @@ class CustomerSchema(ma.ModelSchema):
 
 class InsuranceSchema(ma.ModelSchema):
     class Meta:
-        model = Insurance 
+        model = Insurance
 
 class ManufactureSchema(ma.ModelSchema):
     class Meta:
-        model = Manufacture 
+        model = Manufacture
 class OfferSchema(ma.ModelSchema):
     class Meta:
-        model = Offer 
+        model = Offer
 class OrderSchema(ma.ModelSchema):
     class Meta:
-        model = Order 
+        model = Order
 class PaymentSchema(ma.ModelSchema):
     class Meta:
-        model = Payment 
+        model = Payment
 
 class PlanSchema(ma.ModelSchema):
     class Meta:
-        model = Plan 
+        model = Plan
 
 class ProductSchema(ma.ModelSchema):
     class Meta:
-        model = Product 
+        model = Product
 class RoleSchema(ma.ModelSchema):
     class Meta:
-        model = Role 
+        model = Role
 
 class ShipmentSchema(ma.ModelSchema):
     class Meta:
-        model = Shipment 
+        model = Shipment

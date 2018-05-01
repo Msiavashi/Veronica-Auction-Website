@@ -4,17 +4,12 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_classy import FlaskView, route
 from flask import jsonify, request
 import datetime
-# from project.model.user import User
-from project.logger import Logger
-from project.model.category import Category
-from project.model.customer import Customer 
-# from project.model.customer import Customer, CustomerSchema
 
 # Routes
 class ShopView(FlaskView):
-    trailing_slash = False 
+    trailing_slash = False
     route_prefix = '/api/'
-    
+
     @route("/category/<int:cid>/products", methods=['GET'])
     def products(self, cid):
         pass
@@ -27,6 +22,7 @@ class ShopView(FlaskView):
     @route("/offs", methods=['GET'])
     def offs(self):
         pass
+
 
     @route("/advertisements", methods=['GET'])
     def advertisements(self):
@@ -60,7 +56,7 @@ class ShopView(FlaskView):
         # schema = CustomerSchema()
         # data = schema.dump(Customer.query.filter_by(username="ms95").first()).data
         # return data
-        
+
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])
     def products_best_seller(self):
         pass
@@ -80,9 +76,6 @@ class ShopView(FlaskView):
 
         pass
 
-            
+
 
 ShopView.register(app)
-
-
-

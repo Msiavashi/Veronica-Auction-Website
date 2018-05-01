@@ -1,14 +1,15 @@
+from project.database import db, Base
 import datetime
-
-from project.database import Base, db
-
-from project.model.order import Order 
-# from project.model.item import Item 
+from user import User
 
 class Offer(Base):
     __tablename__ = 'offer'
     id = db.Column(db.BigInteger, primary_key=True)
     offer_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
-    order_id = db.Column(db.BigInteger, db.ForeignKey('order.id'))
-    item_id = db.Column(db.BigInteger, db.ForeignKey('item.id'))
+
+    user_id = db.Column(db.BigInteger,db.ForeignKey('users.id'))
+    user = db.relationship('User')
+    item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'))
+    item = db.relationship('Item')
+    win = db.Column(db.Boolean,default=False)
