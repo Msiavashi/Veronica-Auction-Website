@@ -1,7 +1,7 @@
 from project.database import db, Base
 import datetime
 from shipment import Shipment
-
+from order_item import order_items
 
 class Order(Base):
 
@@ -13,5 +13,6 @@ class Order(Base):
 
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     user = db.relationship('User')
-    items = db.relationship('Item',back_populates='orders')
-    shipments = db.relationship('Shipment',back_populates='orders')
+    items = db.relationship('Item', secondary = order_items, back_populates='orders')
+    shipment_id = db.Column(db.BigInteger, db.ForeignKey('shipments.id'))
+    

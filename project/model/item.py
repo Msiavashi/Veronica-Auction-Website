@@ -2,6 +2,7 @@ from project.database import db, Base
 from offer import Offer
 from insurance_item import insurance_items
 from payment_item import payment_items
+from order_item import order_items
 
 class Item(Base):
     __tablename__ = 'items'
@@ -15,6 +16,7 @@ class Item(Base):
     product = db.relationship('Product')
     inventory_id = db.Column(db.BigInteger, db.ForeignKey('inventories.id'))
     inventory = db.relationship('Inventory')
-    offers = db.relationship('Offer',back_populates='items')
-    insurances = db.relationship('Insurance', secondary=insurance_items, back_populates='items')
-    payments = db.relationship('Payment', secondary=payment_items,back_populates='items')
+    offers = db.relationship('Offer',back_populates = 'item')
+    insurances = db.relationship('Insurance', secondary = insurance_items, back_populates='items')
+    payments = db.relationship('Payment', secondary = payment_items,back_populates='items')
+    orders = db.relationship('Order', secondary = order_items, back_populates='items')

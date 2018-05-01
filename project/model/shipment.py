@@ -13,5 +13,6 @@ class Shipment(Base):
     recieve_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     transport_vehicle = db.Column(db.String(length=35), nullable=True)
-    order_id = db.Column(db.BigInteger, db.ForeignKey('orders.id'))
     insurance_id = db.Column(db.BigInteger, db.ForeignKey('insurances.id'))
+    order_id = db.Column(db.BigInteger, db.ForeignKey('orders.id'))
+    

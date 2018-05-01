@@ -11,4 +11,4 @@ class Category(Base):
     categories = db.relationship('Category', remote_side=[id])
     category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'))
     category = db.relationship('Category')
-    products = db.relationship('Product')
+    products = db.relationship('Product', back_populates = 'category')

@@ -8,6 +8,7 @@ from user_plan import user_plans
 from user_gift import user_gifts
 from user_role import user_roles
 from user_auction import user_auctions
+from product import Product
 from user_product_view import user_product_views
 from user_product_like import user_product_likes
 
@@ -36,8 +37,8 @@ class User(Base):
     address = db.relationship('Address')
     payments = db.relationship('Payment')
     orders = db.relationship('Order')
-    likes = db.relationship('Product', secondary=user_product_likes ,back_populates='products')
-    views = db.relationship('Product', secondary=user_product_views ,back_populates='products')
+    likes = db.relationship('Product', secondary=user_product_likes ,back_populates='likes')
+    views = db.relationship('Product', secondary=user_product_views ,back_populates='views')
     roles = db.relationship('Role',secondary=user_roles,back_populates='users')
     plans = db.relationship('Plan', secondary=user_plans, back_populates='users')
     gifts = db.relationship('Gift', secondary=user_gifts, back_populates='users')

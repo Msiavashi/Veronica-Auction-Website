@@ -13,21 +13,20 @@ from project.logger import Logger
 class Authentication(FlaskView):
     trailing_slash = False
     route_prefix = '/api/'
-    
+
     @route('/register/', methods=['POST'])
     def registration(self):
         if not request.is_json:
             return jsonify({"msg": "Missing JSON in request"}), 400
-        customer = User()
-        customer.username = request.json.get('username', None)       #TODO: hash the password
-        customer.password = request.json.get('password')
-        customer.first_name = request.json.get('first_name')
-        customer.last_name = request.json.get('last_name')
-        customer.email = request.json.get('email')
-        customer.phone_number = request.json.get('phone_number')
-        customer.organization_or_person = request.json.get('organization_or_person')
+        user = User()
+        user.username = request.json.get('username', None)       #TODO: hash the password
+        user.password = request.json.get('password')
+        user.first_name = request.json.get('first_name')
+        user.last_name = request.json.get('last_name')
+        user.mobile = request.json.get('mobile')
+        user.organization_or_person = request.json.get('organization_or_person')
         try:
-            db.session.add(customer)
+            db.session.add(user)
             db.session.commit()
             #TODO: redirect and provide JWT token and return it
             return jsonify(success=True), 201
@@ -35,7 +34,7 @@ class Authentication(FlaskView):
             db.session.rollback()
             Logger.debug("registration: Could not add new user to database")
             Logger.error(e.message)
-            return jsonify(success=False), 400
+            return jsonify(success=False,message=e.message), 400
 
     @route('/login/', methods=['POST'])
     def login(self):
@@ -45,7 +44,7 @@ class Authentication(FlaskView):
         username = request.json.get('username', None)
         password = request.json.get('password', None)
         try:
-            user = Customer.query.filter_by(username=username, password=password).first()
+            user = User.query.filter_by(username=username, password=password).first()
             if not user:
                 return jsonify({"msg": "wrong username or password"}), 401
 
@@ -57,7 +56,7 @@ class Authentication(FlaskView):
             Logger.debug("login: user could not login, entered username: " + username)
             Logger.error(e.message)
             print e.message
-            return jsonify({"msg": "server error"}), 500
+            return jsonify(success=False, message=e.message), 500
 
 
 Authentication.register(app)

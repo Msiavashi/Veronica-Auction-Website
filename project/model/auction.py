@@ -1,7 +1,9 @@
 from project.database import db, Base
 import datetime
 from item import Item
+from event import Event
 from user_auction import user_auctions
+from auction_event import auction_events
 
 class Auction(Base):
     __tablename__ = 'auctions'
@@ -16,8 +18,6 @@ class Auction(Base):
     minimum_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     maximum_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     max_members = db.Column(db.BigInteger,default=40)
-
-    item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'))
     item = db.relationship('Item')
-    users = db.relationship('User',secondary=user_auctions,back_populates='auctions')
-    events = db.relationship('AuctionEvent')
+    users = db.relationship('User',secondary = user_auctions,back_populates='auctions')
+    events = db.relationship('Event', secondary = auction_events, back_populates='auctions')

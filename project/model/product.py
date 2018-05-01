@@ -2,7 +2,9 @@ from project.database import db, Base
 from manufacture_product import manufacture_products
 from manufacture import Manufacture
 from category import Category
-
+from product_event import product_events
+from user_product_view import user_product_views
+from user_product_like import user_product_likes
 
 class Product(Base):
 
@@ -17,5 +19,7 @@ class Product(Base):
     category = db.relationship('Category',back_populates='products')
     items = db.relationship('Item')
     comments = db.relationship("Comment")
-    events = db.relationship("ProductEvent")
-    manufactures = db.relationship('Manufacture', secondary=manufacture_products, back_populates='products')
+    events = db.relationship('Event', secondary = product_events, back_populates='products')
+    manufactures = db.relationship('Manufacture', secondary = manufacture_products, back_populates='products')
+    likes = db.relationship('User', secondary=user_product_likes ,back_populates='likes')
+    views = db.relationship('User', secondary=user_product_views ,back_populates='views')

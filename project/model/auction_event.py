@@ -1,12 +1,7 @@
 from project.database import db, Base
-import datetime
 
-
-class AuctionEvent(Base):
-
-    __tablename__ = 'auction_events'
-    id = db.Column(db.BigInteger, primary_key=True)
-    start_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    end_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    auctions = db.relationship('Auction')
-    discount = db.Column(db.DECIMAL(precision=20, scale=4))
+auction_events = db.Table('auction_events', Base.metadata,
+    db.Column('auction_id', db.ForeignKey('auctions.id')),
+    db.Column('event_id', db.ForeignKey('events.id')),
+    db.Column('discount',db.DECIMAL(precision=20, scale=4))
+)

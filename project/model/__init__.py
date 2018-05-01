@@ -1,7 +1,7 @@
 
 from project.model.address import Address
 from project.model.auction import Auction
-from project.model.auction_event import AuctionEvent
+from project.model.auction_event import auction_events
 from project.model.category import Category
 from project.model.comment import Comment
 from project.model.gift import Gift
@@ -17,7 +17,7 @@ from project.model.payment_item import payment_items
 from project.model.payment_plan import payment_plans
 from project.model.payment import Payment
 from project.model.plan import Plan
-from project.model.product_event import ProductEvent
+from project.model.product_event import product_events
 from project.model.product import Product
 from project.model.role import Role
 from project.model.shipment import Shipment
