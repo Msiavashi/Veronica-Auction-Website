@@ -5,6 +5,7 @@ from category import Category
 from product_event import product_events
 from user_product_view import user_product_views
 from user_product_like import user_product_likes
+from marshmallow import Schema, fields
 
 class Product(Base):
 
@@ -23,3 +24,6 @@ class Product(Base):
     manufactures = db.relationship('Manufacture', secondary = manufacture_products, back_populates='products')
     likes = db.relationship('User', secondary=user_product_likes ,back_populates='likes')
     views = db.relationship('User', secondary=user_product_views ,back_populates='views')
+
+class ProductSchema(Schema):
+    id = fields.Int()

@@ -1,6 +1,6 @@
 from project.database import db, Base
 
-
+from marshmallow import Schema, fields
 
 class Category(Base):
     db.relationshipS_TO_DICT = True
@@ -12,3 +12,10 @@ class Category(Base):
     category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'))
     category = db.relationship('Category')
     products = db.relationship('Product', back_populates = 'category')
+
+
+class CategorySchema(Schema):
+    id = fields.Int()
+    description = fields.Str()
+    products = fields.Nested('ProductSchema', many=True)
+    categories = fields.Nested('CategorySchema')

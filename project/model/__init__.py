@@ -28,3 +28,4 @@ from project.model.user_product_like import user_product_likes
 from project.model.user_product_view import user_product_views
 from project.model.user_role import user_roles
 from project.model.user import User
+from project.model.product import ProductSchema

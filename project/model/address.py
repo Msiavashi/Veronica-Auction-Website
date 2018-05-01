@@ -1,4 +1,5 @@
 from project.database import db, Base
+from marshmallow import Schema, fields
 
 class Address(Base):
     __tablename__ = 'addresses'
@@ -8,3 +9,12 @@ class Address(Base):
     city = db.Column(db.String(length=50), nullable=False)
     address = db.Column(db.String(length=255), nullable=False)
     postal_code = db.Column(db.String(length=20), nullable=False)
+
+
+class AddressSchema(Schema):
+    id = fields.Str()
+    country = fields.Str()
+    state = fields.Str()
+    city = fields.Str()
+    address = fields.Str()
+    postal_code = fields.Str()

@@ -2,6 +2,7 @@ from project.database import db, Base
 import datetime
 from payment_item import payment_items
 from payment_plan import payment_plans
+from marshmallow import Schema , fields
 
 class Payment(Base):
     __tablename__ = 'payments'
@@ -15,3 +16,13 @@ class Payment(Base):
     user = db.relationship('User')
     plans = db.relationship('Plan',secondary=payment_plans,back_populates='payments')
     items = db.relationship('Item',secondary=payment_items,back_populates='payments')
+
+class PaymentSchema(Base):
+    id = fields.Int()
+    amount = fields.Decimal()
+    guid = fields.Str()
+    date = fields.DateTime()
+    method = fields.PickleType()
+    details = fields.PickleType()
+    plans = fields.Nested('PlanSchema', many=True)
+    items = fields.Nested('ItemSchema', many=True)
