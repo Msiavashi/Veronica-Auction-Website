@@ -7,12 +7,8 @@ from project.controllers.Authentication_API import *
 
 manager = APIManager(app, flask_sqlalchemy_db=db)
 
-@jwt_required
-def check(**kw):
-    print ("test")
-    pass
 
 
-manager.create_api(Category, methods = ['GET'], preprocessors={'GET': [check]})
+manager.create_api(Category, methods = ['GET'])
 manager.create_api(Product, methods = ['GET'])
 

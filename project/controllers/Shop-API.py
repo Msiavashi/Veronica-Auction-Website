@@ -4,6 +4,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_classy import FlaskView, route
 from flask import jsonify, request
 import datetime
+from project.model.category import CategorySchema, Category
 
 # Routes
 class ShopView(FlaskView):
@@ -40,22 +41,23 @@ class ShopView(FlaskView):
     def search(self):
 
         pass
+
+    @jwt_required
     @route("/categories", methods=['GET'])
     def categories(self):
-        user = Customer()
-        user.first_name = "ahmad"
-        user.last_name = "siavashi"
-        user.username = "ahmads"
-        user.password = "123456"
-        user.email = "ahmads@gmail.com"
-        user.phone_number = "2146798465"
-        user.organization_or_person = "person"
-        db.session.add(user)
-        print (Customer.query.filter_by(username="ahmads").first().password)
-        return "salam"
-        # schema = CustomerSchema()
-        # data = schema.dump(Customer.query.filter_by(username="ms95").first()).data
-        # return data
+        # user = Customer()
+        # user.first_name = "ahmad"
+        # user.last_name = "siavashi"
+        # user.username = "ahmads"
+        # user.password = "123456"
+        # user.email = "ahmads@gmail.com"
+        # user.phone_number = "2146798465"
+        # user.organization_or_person = "person"
+        # db.session.add(user)
+        # print (Customer.query.filter_by(username="ahmads").first().password)
+        # return "salam"
+        schema = CategorySchema(many=True)
+        return jsonify(schema.dump(Category.query.all()))
 
     @route("/category/<int:cid>/bestseller/products", methods=['GET'])
     def products_best_seller(self):
