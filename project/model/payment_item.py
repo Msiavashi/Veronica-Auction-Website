@@ -1,10 +1,6 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, Table
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
+from project.database import db, Base
 
-payment_items = Table('payment_items', Base.metadata,
-    Column('payment_id', ForeignKey('payments.id')),
-    Column('item_id', ForeignKey('items.id'))
+payment_items = db.Table('payment_items', Base.metadata,
+    db.Column('payment_id', db.ForeignKey('payments.id')),
+    db.Column('item_id', db.ForeignKey('items.id'))
 )

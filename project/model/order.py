@@ -1,9 +1,5 @@
+from project.database import db, Base
 import datetime
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
 from shipment import Shipment
 
 
@@ -11,11 +7,11 @@ class Order(Base):
 
     __tablename__ = 'orders'
 
-    id = Column(BigInteger, primary_key=True)
-    create_date = Column(TIMESTAMP, default=datetime.datetime.now)
-    updated_at = Column(TIMESTAMP, default=datetime.datetime.now)
+    id = db.Column(db.BigInteger, primary_key=True)
+    create_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
 
-    user_id = Column(BigInteger, ForeignKey('users.id'))
-    user = relationship('User')
-    items = relationship('Item',back_populates='orders')
-    shipments = relationship('Shipment',back_populates='orders')
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
+    user = db.relationship('User')
+    items = db.relationship('Item',back_populates='orders')
+    shipments = db.relationship('Shipment',back_populates='orders')

@@ -1,13 +1,9 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, Table
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from project.database import db, Base
 import datetime
-from project.database import Base
 
-user_product_views = Table('user_product_views', Base.metadata,
-    Column('product_id', ForeignKey('products.id')),
-    Column('user_id', ForeignKey('users.id')),
-    Column('ip_address',String(length=64)),
-    Column('date',TIMESTAMP, default=datetime.datetime.now)
+user_product_views = db.Table('user_product_views', Base.metadata,
+    db.Column('product_id', db.ForeignKey('products.id')),
+    db.Column('user_id', db.ForeignKey('users.id')),
+    db.Column('ip_address',db.String(length=64)),
+    db.Column('date',db.TIMESTAMP, default=datetime.datetime.now)
 )

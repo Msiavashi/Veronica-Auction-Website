@@ -1,16 +1,11 @@
-import datetime
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, DECIMAL
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time, PickleType
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
+from project.database import db, Base
 from manufacture_product import manufacture_products
 
 class Manufacture(Base):
     __tablename__ = 'manufactures'
-    id = Column(BigInteger, primary_key=True)
-    name = Column(String(length=25), nullable=False)
-    country = Column(String(length=100), nullable=False)
-    review = Column(Text, nullable=True)
-    details =  Column(PickleType, nullable=True)
-    products = relationship('Product', secondary=manufacture_products, back_populates='manufactures')
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(length=25), nullable=False)
+    country = db.Column(db.String(length=100), nullable=False)
+    review = db.Column(db.Text, nullable=True)
+    details =  db.Column(db.PickleType, nullable=True)
+    products = db.relationship('Product', secondary=manufacture_products, back_populates='manufactures')

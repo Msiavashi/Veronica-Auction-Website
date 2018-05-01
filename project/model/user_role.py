@@ -1,10 +1,6 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean, Table
-from sqlalchemy.types import BigInteger, TIMESTAMP, Time
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from project.database import Base
+from project.database import db, Base
 
-user_roles = Table('user_roles', Base.metadata,
-    Column('role_id', ForeignKey('roles.id')),
-    Column('user_id', ForeignKey('users.id'))
+user_roles = db.Table('user_roles', Base.metadata,
+    db.Column('role_id', db.ForeignKey('roles.id')),
+    db.Column('user_id', db.ForeignKey('users.id'))
 )

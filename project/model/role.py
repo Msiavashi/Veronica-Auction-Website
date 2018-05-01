@@ -1,14 +1,10 @@
-from sqlalchemy import Integer, Column, Text, ForeignKey, String, Boolean
-from sqlalchemy.types import BigInteger, TIMESTAMP
-from sqlalchemy.orm import relationship, backref
-import datetime
+from project.database import db, Base
 from user_role import user_roles
-from project.database import Base
 
 
 class Role(Base):
     __tablename__ = 'roles'
-    id = Column(BigInteger, primary_key=True)
-    name = Column(String(80), nullable=False)
-    description = Column(String(512))
-    users = relationship('User', secondary=user_roles,back_populates='roles')
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    description = db.Column(db.String(512))
+    users = db.relationship('User', secondary=user_roles,back_populates='roles')
