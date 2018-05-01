@@ -11,6 +11,7 @@ from user_auction import user_auctions
 from product import Product
 from user_product_view import user_product_views
 from user_product_like import user_product_likes
+from marshmallow import Schema, fields
 
 class User(Base):
     __tablename__ = 'users'
@@ -34,7 +35,7 @@ class User(Base):
 
     comments = db.relationship('Comment')
     address_id = db.Column(db.BigInteger, db.ForeignKey('addresses.id'))
-    address = db.relationship('Address')
+    # address = db.relationship('Address')
     payments = db.relationship('Payment')
     orders = db.relationship('Order')
     likes = db.relationship('Product', secondary=user_product_likes ,back_populates='likes')
@@ -43,3 +44,25 @@ class User(Base):
     plans = db.relationship('Plan', secondary=user_plans, back_populates='users')
     gifts = db.relationship('Gift', secondary=user_gifts, back_populates='users')
     auctions = db.relationship('Auction', secondary=user_auctions,back_populates='users')
+
+
+class UserSchema(Schema):
+    id = fields.Int()
+    username = fields.Str()
+    # password = fields.Str()
+    first_name = fields.Str()
+    last_name = fields.Str()
+    work_place = fields.Str()
+    mobile = fields.Str()
+    email = fields.Email()
+    credit = fields.Decimal()
+    address_id = fields.Int()
+
+    payments = fields.Nested('PaymentSchema', many=True)
+    orders = fields.Nested('OrderSchema', many=True)
+    likes = fields.Nested('LikeSchema', many=True)
+    views = fields.Nested('ViewSchema', many=True)
+    roles = fields.Nested('RoleSchema', many=True)
+    plans = fields.Nested('PlanSchema', many=True)
+    gifts = fields.Nested('GiftSchema', many=True)
+    auctions = fields.Nested('AuctionSchema', many=True)

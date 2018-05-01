@@ -4,6 +4,7 @@ from item import Item
 from event import Event
 from user_auction import user_auctions
 from auction_event import auction_events
+from marshmallow import Schema, fields
 
 class Auction(Base):
     __tablename__ = 'auctions'
@@ -21,3 +22,19 @@ class Auction(Base):
     item = db.relationship('Item')
     users = db.relationship('User',secondary = user_auctions,back_populates='auctions')
     events = db.relationship('Event', secondary = auction_events, back_populates='auctions')
+
+class AuctionSchema(Schema):
+    id = fields.Str()
+    name = fields.Str()
+    description = fields.Str()
+    created_at = fields.DateTime()
+    updated_at = fields.DateTime()
+    start_date = fields.DateTime()
+    end_date = fields.DateTime()
+    register_price = fields.Decimal()
+    minimum_price = fields.Decimal()
+    maximum_price = fields.Decimal()
+    max_members = fields.Int()
+    item = fields.Nested('ItemSchema', many=True)
+    users = fields.Nested('UserSchema', many=True)
+    events = fields.Nested('EventSchema', many=True)
