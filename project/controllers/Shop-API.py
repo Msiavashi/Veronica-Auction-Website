@@ -42,7 +42,7 @@ class ShopView(FlaskView):
 
         pass
 
-    @jwt_required
+    
     @route("/categories", methods=['GET'])
     def categories(self):
         # user = Customer()

@@ -1,5 +1,4 @@
 from project.database import db, Base
-
 from marshmallow import Schema, fields
 
 class Category(Base):
