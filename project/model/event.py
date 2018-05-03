@@ -15,6 +15,8 @@ class Event(Base):
     discount = db.Column(db.DECIMAL(precision=20, scale=4))
     auctions = db.relationship('Auction', secondary = auction_events, back_populates='events')
     products = db.relationship('Product', secondary = product_events, back_populates='events')
+    def __str__(self):
+        return self.title
 
 class EventSchema(Schema):
     id = fields.Int()

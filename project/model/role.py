@@ -8,7 +8,8 @@ class Role(Base):
     name = db.Column(db.String(80), nullable=False)
     description = db.Column(db.String(512))
     users = db.relationship('User', secondary=user_roles,back_populates='roles')
-
+    def __str__(self):
+        return self.name
 class RoleSchema(Schema):
     id = fields.Int()
     name = fields.Str()

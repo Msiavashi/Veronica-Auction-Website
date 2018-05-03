@@ -15,6 +15,8 @@ class Order(Base):
     items = db.relationship('Item', secondary = order_items, back_populates='orders')
     shipment_id = db.Column(db.BigInteger, db.ForeignKey('shipments.id'))
     shipment = db.relationship('Shipment')
+    def __str__(self):
+        return "order : "+ self.user + " done ?" + self.status
 
 class OrderSchema(Schema):
     id = fields.Int()

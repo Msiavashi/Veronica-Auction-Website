@@ -16,6 +16,8 @@ class Advertisement(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now,)
     auction_id = db.Column(db.BigInteger, db.ForeignKey('auctions.id'))
     auction = db.relationship('Auction', back_populates = 'advertisement')
+    def __str__(self):
+        return self.title + " " + auction
 
 class AdvertisementSchema(Schema):
     id = fields.Int()

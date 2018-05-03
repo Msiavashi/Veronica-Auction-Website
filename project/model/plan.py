@@ -13,7 +13,8 @@ class Plan(Base):
     total_offers = db.Column(db.Integer, default=0)
     users = db.relationship('User', secondary = user_plans, back_populates='plans')
     payments = db.relationship('Payment', secondary = payment_plans, back_populates='plans')
-
+    def __str__(self):
+        return self.name + "price :" + self.price
 class PlanSchema(Schema):
     id = fields.Int()
     name = fields.Str()

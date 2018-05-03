@@ -53,7 +53,8 @@ class User(Base):
     auctions = db.relationship('Auction', secondary=user_auctions,back_populates='users')
     auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='auction_views')
     auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='auction_likes')
-
+    def __str__(self):
+        return self.first_name + " " + self.last_name 
 class UserSchema(Schema):
     id = fields.Int()
     username = fields.Str()

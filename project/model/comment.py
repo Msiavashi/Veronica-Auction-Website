@@ -15,7 +15,8 @@ class Comment(Base):
     user = db.relationship('User')
     product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
     product = db.relationship('Product')
-
+    def __str__(self):
+        return self.title + " message :" + self.message
 
 class CommentSchema(Schema):
     id = fields.Int()

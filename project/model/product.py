@@ -25,7 +25,8 @@ class Product(Base):
     manufacture = db.relationship('Manufacture')
     likes = db.relationship('User', secondary=user_product_likes ,back_populates='likes')
     views = db.relationship('User', secondary=user_product_views ,back_populates='views')
-
+    def __str__(self):
+        return self.name
 class ProductSchema(Schema):
     id = fields.Int()
     details = fields.Str()

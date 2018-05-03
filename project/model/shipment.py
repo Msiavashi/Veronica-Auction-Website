@@ -16,7 +16,8 @@ class Shipment(Base):
     insurance_id = db.Column(db.BigInteger, db.ForeignKey('insurances.id'))
     insurance = db.relationship('Insurance')
     order = db.relationship('Order',back_populates = 'shipment')
-
+    def __str__(self):
+        return self.company + " methos : " + self.metho + "insurance :" + self.insurance
 
 class ShipmentSchema(Schema):
     id = fields.Int()

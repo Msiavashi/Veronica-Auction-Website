@@ -12,6 +12,8 @@ class Inventory(Base):
     items = db.relationship('Item', secondary = inventory_items , back_populates = 'inventories')
     address_id = db.Column(db.BigInteger, db.ForeignKey('addresses.id'))
     address = db.relationship('Address')
+    def __str__(self):
+        return self.name
 
 class InventorySchema(Schema):
     id = fields.Int()

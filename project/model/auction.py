@@ -28,6 +28,8 @@ class Auction(Base):
     advertisement = db.relationship('Advertisement' , back_populates ='auction')
     auction_views = db.relationship('User', secondary = user_auction_views, back_populates='auction_views')
     auction_likes = db.relationship('User', secondary = user_auction_likes, back_populates='auction_likes')
+    def __str__(self):
+        return self.name + " " + self.start_date
 
 class AuctionSchema(Schema):
     id = fields.Str()

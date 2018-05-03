@@ -6,9 +6,7 @@ from flask_jwt_extended import JWTManager
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(32)
-app.config['JWT_SECRET_KEY'] = os.urandom(32)
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config.from_pyfile('config.py')
 
 jwt = JWTManager(app)
 app.debug = True

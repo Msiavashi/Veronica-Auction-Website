@@ -15,7 +15,8 @@ class Offer(Base):
     user = db.relationship('User')
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'))
     item = db.relationship('Item')
-
+    def __str__(self):
+        return self.user +" " + self.item + " " + self.offer_price
 
 class OfferSchema(Schema):
     id = fields.Int()

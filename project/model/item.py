@@ -9,6 +9,8 @@ from marshmallow import Schema, fields
 class Item(Base):
     __tablename__ = 'items'
     id = db.Column(db.BigInteger, primary_key=True)
+    model = db.Column(db.String(length=100), nullable=False)
+    description = db.Column(db.Text())
     price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     discount = db.Column(db.DECIMAL(precision=20, scale=4))
     auction_id = db.Column(db.BigInteger, db.ForeignKey('auctions.id'))
@@ -21,6 +23,8 @@ class Item(Base):
     insurances = db.relationship('Insurance', secondary = insurance_items, back_populates='items')
     payments = db.relationship('Payment', secondary = payment_items,back_populates='items')
     orders = db.relationship('Order', secondary = order_items, back_populates='items')
+    def __str__(self):
+        return self.product.name + " " + self.model
 
 class ItemSchema(Schema):
     id = fields.Int()

@@ -10,6 +10,8 @@ class Manufacture(Base):
     review = db.Column(db.Text, nullable=True)
     details =  db.Column(db.PickleType, nullable=True)
     products = db.relationship('Product', secondary=manufacture_products, back_populates='manufacture')
+    def __str__(self):
+        return self.name
 
 class ManufactureSchema(Schema):
     id = fields.Int()

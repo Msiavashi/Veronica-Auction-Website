@@ -17,7 +17,8 @@ class Payment(Base):
     user = db.relationship('User')
     plans = db.relationship('Plan',secondary=payment_plans,back_populates='payments')
     items = db.relationship('Item',secondary=payment_items,back_populates='payments')
-
+    def __str__(self):
+        return self.guid + "status :" + self.status
 
 class PaymentSchema(Schema):
     id = fields.Int(dump_only=True)
