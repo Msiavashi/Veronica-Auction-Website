@@ -5,6 +5,8 @@ from advertisement import Advertisement
 from event import Event
 from user_auction import user_auctions
 from auction_event import auction_events
+from user_auction_view import user_auction_views
+from user_auction_like import user_auction_likes
 from marshmallow import Schema, fields
 
 class Auction(Base):
@@ -24,6 +26,8 @@ class Auction(Base):
     users = db.relationship('User',secondary = user_auctions,back_populates='auctions')
     events = db.relationship('Event', secondary = auction_events, back_populates='auctions')
     advertisement = db.relationship('Advertisement' , back_populates ='auction')
+    auction_views = db.relationship('User', secondary = user_auction_views, back_populates='auction_views')
+    auction_likes = db.relationship('User', secondary = user_auction_likes, back_populates='auction_likes')
 
 class AuctionSchema(Schema):
     id = fields.Str()

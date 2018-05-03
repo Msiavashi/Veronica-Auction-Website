@@ -8,9 +8,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://' + Config.username + ':' + 
 db = SQLAlchemy(app)
 Base = db.Model
 
-
 def init_db():
      import project.model
+     db.drop_all()
      db.create_all()
 
 # print "initing..."

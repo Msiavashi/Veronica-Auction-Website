@@ -8,6 +8,8 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(32)
 app.config['JWT_SECRET_KEY'] = os.urandom(32)
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)

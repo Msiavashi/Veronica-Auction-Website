@@ -11,6 +11,9 @@ from user_auction import user_auctions
 from product import Product
 from user_product_view import user_product_views
 from user_product_like import user_product_likes
+from user_auction_view import user_auction_views
+from user_auction_like import user_auction_likes
+
 from marshmallow import Schema, fields
 
 class User(Base):
@@ -48,7 +51,8 @@ class User(Base):
     plans = db.relationship('Plan', secondary=user_plans, back_populates='users')
     gifts = db.relationship('Gift', secondary=user_gifts, back_populates='users')
     auctions = db.relationship('Auction', secondary=user_auctions,back_populates='users')
-
+    auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='auction_views')
+    auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='auction_likes')
 
 class UserSchema(Schema):
     id = fields.Int()
