@@ -8,6 +8,8 @@ class Event(Base):
 
     __tablename__ = 'events'
     id = db.Column(db.BigInteger, primary_key=True)
+    title = db.Column(db.String(length=255))
+    description = db.Column(db.Text)
     start_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     end_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     discount = db.Column(db.DECIMAL(precision=20, scale=4))
@@ -16,6 +18,8 @@ class Event(Base):
 
 class EventSchema(Schema):
     id = fields.Int()
+    title = fields.Str()
+    description = fields.Str()
     start_date = fields.DateTime()
     end_date = fields.DateTime()
     discount = fields.Decimal()
