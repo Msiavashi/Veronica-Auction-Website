@@ -9,7 +9,8 @@ class Address(Base):
     city = db.Column(db.String(length=50), nullable=False)
     address = db.Column(db.String(length=255), nullable=False)
     postal_code = db.Column(db.String(length=20), nullable=False)
-
+    def __str__(self):
+        return self.country + " " + self.state + " " + self.city
 
 class AddressSchema(Schema):
     id = fields.Str()

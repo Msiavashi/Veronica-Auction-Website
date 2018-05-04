@@ -2,6 +2,7 @@
 from project.database import db, Base
 import datetime
 from product import Product
+from marshmallow import Schema, fields
 
 class Comment(Base):
     __tablename__ = 'comments'
@@ -14,3 +15,14 @@ class Comment(Base):
     user = db.relationship('User')
     product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
     product = db.relationship('Product')
+    def __str__(self):
+        return self.title + " message :" + self.message
+
+class CommentSchema(Schema):
+    id = fields.Int()
+    title = fields.Str()
+    message = fields.Str()
+    likes = fields.Int()
+    date = fields.DateTime()
+    user = fields.Nested('UserSchema')
+    product = fields.Nested('ProductSchema')

@@ -11,10 +11,15 @@ from user_auction import user_auctions
 from product import Product
 from user_product_view import user_product_views
 from user_product_like import user_product_likes
+from user_auction_view import user_auction_views
+from user_auction_like import user_auction_likes
+
 from marshmallow import Schema, fields
 
 class User(Base):
     __tablename__ = 'users'
+    __table_args__ = (db.UniqueConstraint('username', name='users_username_uc'),)
+
     id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.String(length=255), nullable=False)
     first_name = db.Column(db.String(length=100))
@@ -30,12 +35,14 @@ class User(Base):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
 
+    invitor = db.Column(db.String(length=255))
+
     #credit for each user
     credit = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
 
     comments = db.relationship('Comment')
     address_id = db.Column(db.BigInteger, db.ForeignKey('addresses.id'))
-    # address = db.relationship('Address')
+    address = db.relationship('Address')
     payments = db.relationship('Payment')
     orders = db.relationship('Order')
     likes = db.relationship('Product', secondary=user_product_likes ,back_populates='likes')
@@ -44,8 +51,10 @@ class User(Base):
     plans = db.relationship('Plan', secondary=user_plans, back_populates='users')
     gifts = db.relationship('Gift', secondary=user_gifts, back_populates='users')
     auctions = db.relationship('Auction', secondary=user_auctions,back_populates='users')
-
-
+    auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='auction_views')
+    auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='auction_likes')
+    def __str__(self):
+        return self.first_name + " " + self.last_name 
 class UserSchema(Schema):
     id = fields.Int()
     username = fields.Str()

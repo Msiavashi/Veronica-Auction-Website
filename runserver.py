@@ -3,9 +3,7 @@
 import os
 from project import app
 from project.database import init_db
-import project.rest_generator
-
-
+from project.admin import admin
 
 
 if __name__ == '__main__':

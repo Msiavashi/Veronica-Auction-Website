@@ -21,9 +21,23 @@ class Product(Base):
     items = db.relationship('Item')
     comments = db.relationship("Comment")
     events = db.relationship('Event', secondary = product_events, back_populates='products')
-    manufactures = db.relationship('Manufacture', secondary = manufacture_products, back_populates='products')
+    manufacture_id = db.Column(db.BigInteger,db.ForeignKey('manufactures.id'))
+    manufacture = db.relationship('Manufacture')
     likes = db.relationship('User', secondary=user_product_likes ,back_populates='likes')
     views = db.relationship('User', secondary=user_product_views ,back_populates='views')
-
+    def __str__(self):
+        return self.name
 class ProductSchema(Schema):
     id = fields.Int()
+    details = fields.Str()
+    quantity = fields.Int()
+    review = fields.Str()
+    likes = fields.Int()
+    details = fields.Raw()
+    category = fields.Nested('CategorySchema')
+    items = fields.Nested('ItemSchema',many=True)
+    comments = fields.Nested('CommentSchema',many=True)
+    events = fields.Nested('eventSchema',many=True)
+    manufacture = fields.Nested('ManufactureSchema')
+    likes = fields.Nested('UserSchema',many=True)
+    views = fields.Nested('UserSchema',many=True)

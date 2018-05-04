@@ -1,5 +1,4 @@
 from project.database import db, Base
-
 from marshmallow import Schema, fields
 
 class Category(Base):
@@ -12,7 +11,8 @@ class Category(Base):
     category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'))
     category = db.relationship('Category')
     products = db.relationship('Product', back_populates = 'category')
-
+    def __str__(self):
+        return self.name
 
 class CategorySchema(Schema):
     id = fields.Int()
