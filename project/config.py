@@ -8,5 +8,5 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 # Create in-memory database
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI = 'postgres://' + Config.username + ':' + Config.password + '@' + Config.host_name + ':' + Config.port + '/' + Config.db_name
+SQLALCHEMY_DATABASE_URI = 'mysql://' + Config.username + ':' + Config.password + '@' + Config.host_name + ':' + Config.port + '/' + Config.db_name
 SQLALCHEMY_ECHO = True
