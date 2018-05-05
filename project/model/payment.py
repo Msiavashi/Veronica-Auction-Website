@@ -1,7 +1,7 @@
 from project.database import db, Base
 import datetime
-from payment_item import payment_items
-from payment_plan import payment_plans
+from .payment_item import payment_items
+from .payment_plan import payment_plans
 from marshmallow import Schema , fields
 
 class Payment(Base):

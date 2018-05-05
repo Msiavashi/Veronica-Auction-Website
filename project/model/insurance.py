@@ -1,5 +1,5 @@
 from project.database import db, Base
-from insurance_item import insurance_items
+from .insurance_item import insurance_items
 from marshmallow import Schema, fields
 
 
@@ -12,7 +12,7 @@ class Insurance(Base):
     items = db.relationship('Item', secondary=insurance_items, back_populates='insurances')
     def __str__(self):
         return self.company_name
-    
+
 class InsuranceSchema(Schema):
     id = fields.Int()
     company_name = fields.Str()

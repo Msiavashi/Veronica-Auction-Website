@@ -2,23 +2,28 @@ from passlib.hash import pbkdf2_sha256 as sha256
 from project.database import db, Base
 from flask_login import UserMixin
 import datetime
-from comment import Comment
-from address import Address
-from payment import Payment
-from order import Order
-from user_plan import user_plans
-from user_gift import user_gifts
-from user_role import user_roles
-from user_auction import user_auctions
-from product import Product
-from user_product_view import user_product_views
-from user_product_like import user_product_likes
-from user_auction_view import user_auction_views
-from user_auction_like import user_auction_likes
+from .comment import Comment
+from .address import Address
+from .payment import Payment
+from .order import Order
+from .user_plan import user_plans
+from .user_gift import user_gifts
+from .user_role import user_roles
+from .user_auction import user_auctions
+from .product import Product
+from .user_product_view import user_product_views
+from .user_product_like import user_product_likes
+from .user_auction_view import user_auction_views
+from .user_auction_like import user_auction_likes
 
 from marshmallow import Schema, fields
 
 class User(Base,UserMixin):
+    def __init__(self, id):
+        self.id = id
+        # self.name = "user" + str(id)
+        # self.password = self.name + "_secret"
+
     __tablename__ = 'users'
     __table_args__ = (db.UniqueConstraint('username', name='users_username_uc'),)
 
@@ -55,6 +60,7 @@ class User(Base,UserMixin):
     auctions = db.relationship('Auction', secondary=user_auctions,back_populates='users')
     auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='auction_views')
     auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='auction_likes')
+
 
     def __str__(self):
         return self.first_name + " " + self.last_name

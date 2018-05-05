@@ -1,12 +1,12 @@
 from project.database import db, Base
 import datetime
-from item import Item
-from advertisement import Advertisement
-from event import Event
-from user_auction import user_auctions
-from auction_event import auction_events
-from user_auction_view import user_auction_views
-from user_auction_like import user_auction_likes
+from .item import Item
+from .advertisement import Advertisement
+from .event import Event
+from .user_auction import user_auctions
+from .auction_event import auction_events
+from .user_auction_view import user_auction_views
+from .user_auction_like import user_auction_likes
 from marshmallow import Schema, fields
 
 class Auction(Base):

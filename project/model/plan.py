@@ -1,8 +1,8 @@
 from project.database import db, Base
-from user import User
-from payment import Payment
-from payment_plan import payment_plans
-from user_plan import user_plans
+from .user import User
+from .payment import Payment
+from .payment_plan import payment_plans
+from .user_plan import user_plans
 from marshmallow import Schema , fields
 
 class Plan(Base):

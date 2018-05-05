@@ -1,9 +1,9 @@
 from project.database import db, Base
-from offer import Offer
-from insurance_item import insurance_items
-from payment_item import payment_items
-from order_item import order_items
-from inventory_item import inventory_items
+from .offer import Offer
+from .insurance_item import insurance_items
+from .payment_item import payment_items
+from .order_item import order_items
+from .inventory_item import inventory_items
 from marshmallow import Schema, fields
 
 class Item(Base):

@@ -8,3 +8,9 @@ wtforms
 flask_classy
 flask_sqlalchemy
 flask_login
+marshmallow
+passlib
+flask_restful
+flask_security
+flask_admin
+psycopg2

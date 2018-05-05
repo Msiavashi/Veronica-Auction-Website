@@ -4,20 +4,15 @@ from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_jwt_extended import JWTManager
 import os
-from flask_wtf.csrf import CSRFProtect
+# from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)
-csrf = CSRFProtect(app)
 
-from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
+# csrf = CSRFProtect(app)
 
 from project.route import route
 from project.controllers import *

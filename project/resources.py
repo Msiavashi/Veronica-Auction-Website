@@ -1,7 +1,7 @@
-# encoding=utf8
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+# # encoding=utf8
+# import sys
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
 
 from flask_restful import Resource, reqparse
 from project.model.user import User
@@ -9,6 +9,15 @@ from project.model.revoke import RevokedTokenModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 import json
+from project import app
+from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
 
 
 parser_register = reqparse.RequestParser()
@@ -41,9 +50,9 @@ class UserRegistration(Resource):
             new_user.save_to_db()
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
-            return json.dumps({'success': True,'access_token': access_token,'refresh_token': refresh_token}),200
+            return jsonify({'success': True,'access_token': access_token,'refresh_token': refresh_token}),200
         except Exception as e:
-            return json.dumps({'messages': str(e)}), 500
+            return jsonify({'messages': str(e)}), 500
 
 
 

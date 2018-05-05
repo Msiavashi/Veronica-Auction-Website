@@ -1,5 +1,5 @@
 from project.database import db, Base
-from user_role import user_roles
+from .user_role import user_roles
 from marshmallow import Schema, fields
 
 class Role(Base):

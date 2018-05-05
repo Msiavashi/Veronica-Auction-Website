@@ -1,7 +1,7 @@
 from project.database import db, Base
 import datetime
-from auction_event import auction_events
-from product_event import product_events
+from .auction_event import auction_events
+from .product_event import product_events
 from marshmallow import Schema, fields
 
 class Event(Base):

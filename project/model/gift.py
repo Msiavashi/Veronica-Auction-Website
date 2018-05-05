@@ -1,5 +1,5 @@
 from project.database import db, Base
-from user_gift import user_gifts
+from .user_gift import user_gifts
 from marshmallow import Schema, fields
 
 
@@ -12,7 +12,7 @@ class Gift(Base):
     users = db.relationship('User', secondary=user_gifts, back_populates='gifts')
     def __str__(self):
         return self.name
-    
+
 class GiftSchema(Schema):
     id = fields.Int()
     name = fields.Str()

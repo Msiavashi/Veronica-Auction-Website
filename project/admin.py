@@ -1,8 +1,8 @@
-# encoding=utf8
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-from database import db
+# # encoding=utf8
+# import sys
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
+from .database import db
 from project import app
 from project.model import *
 
@@ -18,9 +18,9 @@ from flask_admin.contrib.sqla import ModelView
 
 
 # Flask views
-@app.route('/')
-def index():
-    return render_template('home.html')
+# @app.route('/')
+# def index():
+#     return render_template('home.html')
 
 # Create admin
 admin = Admin(

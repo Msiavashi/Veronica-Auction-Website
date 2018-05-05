@@ -1,7 +1,7 @@
 from project.database import db, Base
-from address import Address
+from .address import Address
 from marshmallow import Schema, fields
-from inventory_item import inventory_items
+from .inventory_item import inventory_items
 
 class Inventory(Base):
     __tablename__ = 'inventories'

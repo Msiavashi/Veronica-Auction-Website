@@ -1,5 +1,5 @@
 {% extends 'site/layout.html' %}
-{% block title %}بید بازی خانه{% endblock %}
+{% block title %} بید بازی | ورود  {% endblock %}
 {% block content %}
 
 <div class="content-page woocommerce">
@@ -21,7 +21,7 @@
 										<div class="success_container"></div>
 									</div>
 									<form id="login_form">
-										<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
 										<h2 class="title24 title-form-account">ورود</h2>
 										<p>
 											<label for="username">نام کاربری<span class="required">*</span></label>
@@ -90,7 +90,7 @@ $( "#login_form" ).submit(function( event ) {
 		$(".error_alert").addClass('hide');
 		$(".success_alert").removeClass('hide');
 		$(".success_container").html('ورود شما با موفقیت انجام ')
-		window.location.href = "/site";
+		window.location.href = "/";
   });
 	posting.fail(function(xhr, status, error) {
 		obj = JSON.parse(xhr.responseText);

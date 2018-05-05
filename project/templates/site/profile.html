@@ -1,0 +1,441 @@
+{% extends 'site/layout.html' %}
+{% block title %} بید بازی | پنل کاربری {% endblock %}
+{% block content %}
+<div class="content-page woocommerce">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<!-- <h2 class="title-shop-page">پنل کاربری</h2> -->
+				<div id="tabMenu" class="tab_container">
+						<input class="tabinput" id="tab1" type="radio" name="tabs" checked>
+						<label class="tablabel" for="tab1"><i class="fa fa-dashboard"></i><span>داشبورد</span></label>
+
+						<input class="tabinput" id="tab2" type="radio" name="tabs">
+						<label class="tablabel" for="tab2"><i class="fa fa-pencil-square-o"></i><span>ویرایش اطلاعات</span></label>
+
+						<input class="tabinput" id="tab3" type="radio" name="tabs">
+						<label class="tablabel" for="tab3"><i class="fa fa-comments"></i><span>ارسال پیام</span></label>
+
+						<input class="tabinput" id="tab4" type="radio" name="tabs">
+						<label class="tablabel" for="tab4"><i class="fa fa-legal"></i><span>پرداختی ها</span></label>
+
+						<input class="tabinput" id="tab5" type="radio" name="tabs">
+						<label class="tablabel" for="tab5"><i class="fa fa-code"></i><span>کد معرف</span></label>
+
+						<input class="tabinput" id="tab6" type="radio" name="tabs">
+						<label class="tab6 tablabel" for="tab6"><span>شارژ موجودی</span></label>
+
+					<section id="content1" class="tab-content">
+						<h3>داشبورد</h3>
+						<div class="row">
+								<div class="col-lg-6 col-md-6">
+									<div class="panel panel-primary">
+									<div class="panel-heading">
+										<div class="row">
+										<div class="col-xs-3">
+											<i class="fa fa-usd fa-5x"></i>
+										</div>
+										<div class="col-xs-9 text-right">
+											<div class="huge">۲،۰۰۰،۰۰۰ تومان</div>
+											<div>موجودی</div>
+										</div>
+										</div>
+									</div>
+										<div class="panel-footer">
+										<span class="pull-left">مبلغ موجود در حسابتان</span>
+										<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+										<div class="clearfix"></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6">
+									<div class="panel panel-primary">
+									<div class="panel-heading">
+										<div class="row">
+										<div class="col-xs-3">
+											<i class="fa fa-percent fa-5x"></i>
+										</div>
+										<div class="col-xs-9 text-right">
+											<div class="huge">۹،۳۰۰،۰۰۰ تومان</div>
+											<div>تخفیف</div>
+										</div>
+										</div>
+									</div>
+										<div class="panel-footer">
+										<span class="pull-left">تخفیف های گرفته شده از بیدبازی</span>
+										<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+										<div class="clearfix"></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-3 col-md-6">
+									<div class="panel panel-green">
+									<div class="panel-heading">
+										<div class="row">
+										<div class="col-xs-3">
+											<i class="fa fa-trophy fa-5x"></i>
+										</div>
+										<div class="col-xs-9 text-right">
+											<div class="huge">۸</div>
+											<div>برنده</div>
+										</div>
+										</div>
+									</div>
+										<div class="panel-footer">
+										<span class="pull-left">تعداد حراجی های برنده شده</span>
+										<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+										<div class="clearfix"></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-3 col-md-6">
+									<div class="panel panel-yellow">
+									<div class="panel-heading">
+										<div class="row">
+										<div class="col-xs-3">
+											<i class="fa fa-shopping-cart fa-5x"></i>
+										</div>
+										<div class="col-xs-9 text-right">
+											<div class="huge">۴</div>
+											<div>خریدها</div>
+										</div>
+										</div>
+									</div>
+										<div class="panel-footer">
+										<span class="pull-left">تعداد خرید های انجام شده</span>
+										<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+										<div class="clearfix"></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-3 col-md-6">
+									<div class="panel panel-red">
+									<div class="panel-heading">
+										<div class="row">
+										<div class="col-xs-3">
+											<i class="fa fa-gavel fa-5x"></i>
+										</div>
+										<div class="col-xs-9 text-right">
+											<div class="huge">۱۶</div>
+											<div>حراجی ها</div>
+										</div>
+										</div>
+									</div>
+										<div class="panel-footer">
+										<span class="pull-left">تعداد حراجی های شرکت کرده</span>
+										<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+										<div class="clearfix"></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-3 col-md-6">
+									<div class="panel panel-purple">
+									<div class="panel-heading">
+										<div class="row">
+										<div class="col-xs-3">
+											<i class="fa fa-street-view fa-5x"></i>
+										</div>
+										<div class="col-xs-9 text-right">
+											<div class="huge">۱۶</div>
+											<div>دعوت شدگان</div>
+										</div>
+										</div>
+									</div>
+										<div class="panel-footer">
+										<span class="pull-left">تعداد دعوت شدگان توسط شما</span>
+										<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+										<div class="clearfix"></div>
+										</div>
+									</div>
+								</div>
+								</div>
+					</section>
+
+					<section id="content2" class="tab-content">
+						<h3>ویرایش اطلاعات</h3>
+						<form class="form-my-account">
+						<div class="row">
+							<div class="col-md-6 col-sm-6 col-ms-12">
+								<div class="check-billing">
+
+										<p><input type="text" value="نام مستعار" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
+										<p class="clearfix box-col2">
+											<input type="text" value="امینی" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام خانوادگی *"/>
+											<input type="text" value="احسان" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام *"/>
+										</p>
+										<p><input type="text" value="شرکت فلان" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام محل کار"/></p>
+										<p class="clearfix box-col2">
+											<input type="text" value="aminyehsan@gmail.com" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="ایمیل *"/>
+											<input type="text" value="09123384444" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شماره تلفن *"/>
+										</p>
+										<p>
+											<select name="country" id="country">
+												<option value="">استان *</option>
+												<option value="" selected>تهران</option>
+												<option value="">قم</option>
+												<option value="">رشت</option>
+												<option value="">لرستان</option>
+											</select>
+										</p>
+										<p><input type="text" value="تهران خیابان ستارخان" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
+										<p class="clearfix box-col2">
+											<input type="text" value="۳۳۳۴۴-۴۴۴۴۴" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="کدپستی *"/>
+											<input type="text" value="تهران" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام شهر *"/>
+										</p>
+
+								</div>
+							</div>
+							<div class="col-md-6 col-sm-6 col-ms-12">
+								<div class="my-profile-box register-content-box">
+									<div class="form-my-account">
+										<p>
+											<label for="current-password">گذرواژه فعلی (اگر نیاز به تغییر ندارید خالی بگذارید)</label>
+											<input type="text" name="current-password" />
+										</p>
+										<p>
+											<label for="new-password">رمز عبور جدید (اگر نیاز به تغییر ندارید خالی بگذارید)</label>
+											<input type="text" name="new-password" />
+										</p>
+										<p>
+											<label for="confirm-password">رمز عبور جدید را تأیید کنید</label>
+											<input type="text" name="confirm-password" />
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<h3>کد معرف</h3>
+						<div class="row">
+							<div class="col-md-6 col-sm-6 col-ms-12">
+								<div class="">
+
+										<p><input type="text" value="کد معرف" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
+
+									<p class="pText">
+										این قسمت فقط یک بار قابل استفاده است و بعد از زدن کد، شما و معرف شما ۲۰ هزار تومان هدیه دریافت خواهید کرد.
+									</p>
+								</div>
+							</div>
+						</div>
+						<h3>انتخاب آواتار</h3>
+						<div class="avatarUser">
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+							<img src="images/theme/004.png" />
+							<img src="images/theme/005.png" />
+						</div>
+						<div class="my-profile-box register-content-box">
+							<input type="submit" class="register-button save-change" name="register" value="ذخیره تغییرات">
+						</div>
+					</form>
+					</section>
+
+					<section id="content3" class="tab-content">
+						<h3>ارسال پیام</h3>
+						<div class="form-contact">
+							<form class="form-my-account">
+								<div class="row">
+									<div class="col-md-6 col-sm-4 col-xs-12">
+										<input type="text" name="name" value="عنوان مطلب" onfocus="if (this.value==this.defaultValue) this.value = ''" onblur="if (this.value=='') this.value = this.defaultValue">
+									</div>
+									<div class="col-md-3 col-sm-4 col-xs-12">
+										<select name="country" id="country">
+											<option value="">موضوع پیام</option>
+											<option value="">عنوان موضوع پیام در اینجا</option>
+											<option value="">عنوان موضوع پیام در اینجا</option>
+											<option value="">عنوان موضوع پیام در اینجا</option>
+										</select>
+									</div>
+									<div class="col-md-9 col-sm-9 col-xs-12">
+										<textarea name="message" cols="30" rows="8" onfocus="if (this.value==this.defaultValue) this.value = ''" onblur="if (this.value=='') this.value = this.defaultValue">پیام خود را بنویسید...</textarea>
+										<input type="submit" value="ارسال پیام" />
+										<input type="file" name="file" id="file" class="inputfile" data-multiple-caption="{count} files selected" multiple />
+										<label for="file"><i class="fa fa-upload"></i><span>بارگزاری فایل ضمیمه</span></label>
+									</div>
+								</div>
+							</form>
+						</div>
+					</section>
+
+					<section id="content4" class="tab-content">
+						<h3>پرداختی ها</h3>
+						<table class="fold-table">
+								<thead>
+									<tr>
+									<th>فاکتور / کد حراجی</th>
+									<th>مبلغ</th>
+									<th>تاریخ</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="view">
+									<td>۲۲۲۳-۳۳۳۳۳</td>
+									<td>۳،۷۰۰،۰۰۰ تومان</td>
+									<td>۱۳۹۷/۰۳/۲۲</td>
+									</tr>
+									<tr class="fold">
+									<td colspan="7">
+										<div class="fold-content">
+										<h4>فاکتور خرید ۲۲۲۳-۳۳۳۳۳</h4>
+										<p>پیغامی از طرف بیدبازی اگر لازم شد پیامی برای این سفارش داده شود.</p>
+										<table class="small-friendly">
+											<thead>
+											<tr>
+												<th>محصول</th>
+												<th>تعداد</th>
+												<th>مبلغ واحد</th>
+												<th>مبلغ کل</th>
+												<th>تخفیف</th>
+												<th>مبلغ پرداختی</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr>
+												<td>گوشی سونی</td>
+												<td>۱</td>
+												<td>۱،۸۰۰،۰۰۰</td>
+												<td>۱،۸۰۰،۰۰۰</td>
+												<td>۴۵۰،۰۰۰</td>
+												<td>۱،۴۵۰،۰۰۰</td>
+											</tr>
+											<tr>
+												<td>گوشی سامسونگ</td>
+												<td>۲</td>
+												<td>۳،۸۰۰،۰۰۰</td>
+												<td>۶،۸۰۰،۰۰۰</td>
+												<td>۷۵۰،۰۰۰</td>
+												<td>۵،۴۵۰،۰۰۰</td>
+											</tr>
+											<tr>
+												<td>گوشی سونی</td>
+												<td>۱</td>
+												<td>۱،۸۰۰،۰۰۰</td>
+												<td>۱،۸۰۰،۰۰۰</td>
+												<td>۴۵۰،۰۰۰</td>
+												<td>۱،۴۵۰،۰۰۰</td>
+											</tr>
+											</tbody>
+										</table>
+										<div class="checkout-wrap">
+												<ul class="checkout-bar">
+													<li class="visited first">سفارش</li>
+													<li class="previous visited">تایید سفارش</li>
+													<li class="active">انبارداری</li>
+													<li class="next">تحویل پست</li>
+													<li class="">خریدار</li>
+												</ul>
+											</div>
+										</div>
+									</td>
+									</tr>
+									<!-- Row -->
+									<tr class="view">
+									<td>۳۴۶۴۳۶۶</td>
+									<td>۲،۳۰۰،۰۰۰ تومان</td>
+									<td>۱۳۹۷/۰۳/۲۲</td>
+									</tr>
+									<tr class="fold">
+									<td colspan="7">
+										<div class="fold-content">
+										<h4>کد حراجی ۳۴۶۴۳۶۶</h4>
+										<p>پیغامی از طرف بیدبازی اگر لازم شد پیامی برای این سفارش داده شود.</p>
+										<table class="small-friendly">
+											<thead>
+											<tr>
+												<th>محصول</th>
+												<th>تعداد</th>
+												<th>مبلغ واحد</th>
+												<th>مبلغ کل</th>
+												<th>تخفیف</th>
+												<th>مبلغ پرداختی</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr>
+												<td>گوشی سونی</td>
+												<td>۱</td>
+												<td>۱،۸۰۰،۰۰۰</td>
+												<td>۱،۸۰۰،۰۰۰</td>
+												<td>۴۵۰،۰۰۰</td>
+												<td>۱،۴۵۰،۰۰۰</td>
+											</tr>
+											</tbody>
+										</table>
+										</div>
+									</td>
+									</tr>
+									<!-- Row -->
+								</tbody>
+								</table>
+					</section>
+
+					<section id="content5" class="tab-content">
+						<h3>کد معرف</h3>
+						<p>با دعوت از دوستان و آشنایان خود به بید بازی از طریق کد معرف خود، ۲۰ هزار تومان هدیه دو طرف از ما دریافت کنید! </p>
+						<p>هدیه کد معرف، پس از اولین شرکت در حراجی توسط شخصی که معرفی شده اعمال میشود.</p>
+						<div class="CodeM">کد معرف: ۹۹۳۴۳۲۵</div>
+					</section>
+					<section id="content6" class="tab-content">
+						<h3>شارژ موجودی</h3>
+						<p>شما می توانید به هر اندازه که می خواهید موجودی حسابتان را شارژ کنید.</p>
+						<form method="post">
+							<table cellspacing="0" class="shop_table cart table">
+								<tbody>
+									<tr>
+										<td class="actions" colspan="6">
+											<div class="coupon">
+												<label for="coupon_code">افزایش اعتبار : </label>
+												<input type="text" placeholder="مبلغ را به ریال وارد کنید" value="" id="coupon_code" class="input-text" name="coupon_code">
+												<input type="submit" value="پرداخت" name="apply_coupon" class="button">
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</form>
+					</section>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+
+</script>
+{% endblock scripts %}

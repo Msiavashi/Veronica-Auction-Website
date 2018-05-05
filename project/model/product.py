@@ -1,10 +1,10 @@
 from project.database import db, Base
-from manufacture_product import manufacture_products
-from manufacture import Manufacture
-from category import Category
-from product_event import product_events
-from user_product_view import user_product_views
-from user_product_like import user_product_likes
+from .manufacture_product import manufacture_products
+from .manufacture import Manufacture
+from .category import Category
+from .product_event import product_events
+from .user_product_view import user_product_views
+from .user_product_like import user_product_likes
 from marshmallow import Schema, fields
 
 class Product(Base):

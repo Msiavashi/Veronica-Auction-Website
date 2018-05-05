@@ -1,6 +1,6 @@
 from project.database import db, Base
 import datetime
-from user import User
+from .user import User
 from marshmallow import Schema, fields
 
 

@@ -1,7 +1,7 @@
 from project.database import db, Base
 import datetime
-from shipment import Shipment
-from order_item import order_items
+from .shipment import Shipment
+from .order_item import order_items
 from marshmallow import Schema, fields
 
 class Order(Base):

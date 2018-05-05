@@ -1,5 +1,5 @@
 from project.database import db, Base
-from manufacture_product import manufacture_products
+from .manufacture_product import manufacture_products
 from marshmallow import Schema, fields
 
 class Manufacture(Base):

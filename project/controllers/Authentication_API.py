@@ -18,9 +18,8 @@ class Authentication(FlaskView):
     def registration(self):
         if not request.is_json:
             return jsonify({"msg": "Missing JSON in request"}), 400
-    
+
         data = request.json
-        print "data", data
 
         user = User()
         user.username = request.json.get('username',None)       #TODO: hash the password
@@ -57,7 +56,7 @@ class Authentication(FlaskView):
         except Exception as e:
             Logger.debug("login: user could not login, entered username: " + username)
             Logger.error(e.message)
-            print e.message
+            print (e.message)
             return jsonify(success=False, message=e.message), 500
 
 

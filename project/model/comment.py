@@ -1,7 +1,7 @@
 
 from project.database import db, Base
 import datetime
-from product import Product
+from .product import Product
 from marshmallow import Schema, fields
 
 class Comment(Base):

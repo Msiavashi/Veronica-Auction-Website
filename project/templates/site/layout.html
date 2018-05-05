@@ -9,7 +9,7 @@
     	<meta name="keywords" content=""/>
     	<meta name="robots" content="noodp,index,follow"/>
     {% endblock head_meta %}
-    <title>{% block title %}{% endblock %} - بید بازی | حراجی آنلاین اینترنتی </title>
+    <title>{% block title %}{% endblock %} بید بازی | حراجی آنلاین اینترنتی </title>
     {% block head_css %}
 
       <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
@@ -68,7 +68,7 @@
       						<div class="col-md-3 col-sm-3 col-xs-12">
       							<div class="logo logo4">
       								<h1 class="hidden">حراجی آنلاین اینترنتی</h1>
-      								<a href="#"><img src="{{ url_for('static', filename='images/theme/logo.png') }}" alt="" /></a>
+      								<a href="/"><img src="{{ url_for('static', filename='images/theme/logo.png') }}" alt="" /></a>
       							</div>
       						</div>
       						<div class="col-md-6 col-sm-6 col-xs-12">
@@ -208,10 +208,14 @@
       								<div class="checkout-box">
       									<a href="#" class="checkout-link"><i class="fa fa-lock" aria-hidden="true"></i></a>
       									<ul class="list-checkout list-unstyled">
-      										<li><a href="#"><i class="fa fa-user"></i> مشاهده پنل</a></li>
-      										<li><a href="#"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
-      										<li><a href="#"><i class="fa fa-key" aria-hidden="true"></i>ورود</a></li>
-      										<li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
+                          {% if not current_user.is_authenticated %}
+      										<li><a href="/login"><i class="fa fa-key" aria-hidden="true"></i>ورود</a></li>
+                          {% else %}
+                          <li><a href="/profile"><i class="fa fa-user"></i> مشاهده پنل</a></li>
+                          <li><a href="#"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
+                          <li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
+                          <li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>خروج</a></li>
+                          {% endif%}
       									</ul>
       								</div>
       								<!-- End Check Out Box -->
@@ -256,7 +260,7 @@
       							<div class="col-md-9 col-sm-12 col-xs-12">
       								<nav class="main-nav main-nav6">
       									<ul>
-      										<li class="menu-item-has-children"><a href="#">صفحه اصلی</a></li>
+      										<li class="menu-item-has-children"><a href="/">صفحه اصلی</a></li>
       										<li class="menu-item-has-children"><a href="#">برندگان گذشته</a></li>
       										<li class="menu-item-has-children"><a href="#">راهنمایی</a></li>
       										<li class="menu-item-has-children"><a href="#">تماس با ما</a></li>
@@ -282,7 +286,7 @@
       					<div class="col-md-8 col-sm-8 col-xs-12">
       						<nav class="main-nav main-nav-ontop">
       							<ul>
-      								<li class="menu-item-has-children"><a href="#">خانه</a></li>
+      								<li class="menu-item-has-children"><a href="/">خانه</a></li>
       								<li class="menu-item-has-children"><a href="#">موبایل و تبلت</a></li>
       								<li class="menu-item-has-children"><a href="#">کامپیوتر</a></li>
       								<li class="menu-item-has-children"><a href="#">مد و پوشاک</a></li>
@@ -297,10 +301,14 @@
       							<div class="checkout-box">
       								<a href="#" class="checkout-link"><i class="fa fa-lock" aria-hidden="true"></i></a>
       								<ul class="list-checkout list-unstyled">
-      									<li><a href="#"><i class="fa fa-user"></i> مشاهده پنل</a></li>
-      									<li><a href="#"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
+                        {% if not current_user.is_authenticated %}
       									<li><a href="#"><i class="fa fa-key" aria-hidden="true"></i>ورود</a></li>
-      									<li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
+                        {% else %}
+                        <li><a href="/profile"><i class="fa fa-user"></i> مشاهده پنل</a></li>
+                        <li><a href="#"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
+                        <li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
+                        <li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>خروج</a></li>
+                        {% endif %}
       								</ul>
       							</div>
       							<!-- End Check Out Box -->
@@ -392,9 +400,11 @@
       <div id="footer">
         {% block footer %}
           <div class="footer footer4">
+
           <div class="container">
+            {% if current_user.is_authenticated %}
               <h3 class="title24 title-flash"><span class="bg-color white">حراجی های دیده شده</span></h3>
-            <div class="hot-cat-slider">
+              <div class="hot-cat-slider">
               <div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
@@ -461,6 +471,7 @@
                 </div>
               </div>
             </div>
+            {% endif %}
             <!-- End List Cat Price -->
             <div class="footer-list-box">
               <div class="row">
@@ -487,10 +498,10 @@
                   <div class="menu-footer-box footer-box">
                     <h2 class="title14">سایر لینک ها</h2>
                     <ul class="list-unstyled">
-                      <li><a href="#">راهنمای شرکت در حراجی</a></li>
-                      <li><a href="#">پرسش و پاسخ</a></li>
-                      <li><a href="#">قوانین و مقررات</a></li>
-                      <li><a href="#">حریم خصوصی</a></li>
+                      <li><a href="/help">راهنمای شرکت در حراجی</a></li>
+                      <li><a href="/faq">پرسش و پاسخ</a></li>
+                      <li><a href="/roles">قوانین و مقررات</a></li>
+                      <li><a href="/private">حریم خصوصی</a></li>
                     </ul>
                   </div>
                 </div>
@@ -498,17 +509,17 @@
                   <div class="menu-footer-box footer-box">
                     <h2 class="title14">سایر خدمات</h2>
                     <ul class="list-unstyled">
-                      <li><a href="#">پشتیبانی</a></li>
-                      <li><a href="#">اخبار</a></li>
-                      <li><a href="#">درباره ما</a></li>
-                      <li><a href="#">تماس با ما</a></li>
+                      <li><a href="/support">پشتیبانی</a></li>
+                      <li><a href="/news">اخبار</a></li>
+                      <li><a href="/about">درباره ما</a></li>
+                      <li><a href="/contact">تماس با ما</a></li>
                     </ul>
                   </div>
                 </div>
                 <div class="col-md-3 col-sm-6 col-xs-12">
                   <div class="contact-footer-box footer-box">
                     <h2 class="title14">تماس با بیدبازی</h2>
-                    <p class="formule-address">آدرس: تهران تهران تهران تهران تهران تهرانتهران</p>
+                    <p class="formule-address"> آدرس: تهران تهران تهران تهران تهران تهرانتهران</p>
                     <p class="formule-phone">۰۲۱۴۵۴۵۴۵۴۵<br>۰۲۱۳۴۳۴۵۳۵۳</p>
                     <p class="formule-email"><a href="mailto:info@bidbazi.com">info@bidbazi.com</a></p>
                   </div>
@@ -517,9 +528,10 @@
             </div>
             <!-- End Footer List Box -->
           </div>
+
           <div class="payment-method text-center">
-            <a href="#" class="wobble-vertical"><img src="images/theme/sibapp.png" alt="" /></a>
-            <a href="#" class="wobble-vertical"><img src="images/theme/googleplay.png" alt="" /></a>
+            <a href="#" class="wobble-vertical"><img src="{{url_for('static',filename='images/theme/sibapp.png')}}" alt="" /></a>
+            <a href="#" class="wobble-vertical"><img src="{{url_for('static',filename='images/theme/googleplay.png')}}" alt="" /></a>
           </div>
           <!-- End Payment -->
           <div class="footer-tabs">
@@ -587,7 +599,7 @@
             <div class="container">
               <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                  <p class="copyright"> تمامی كالاها و خدمات این فروشگاه، حسب مورد دارای مجوزهای لازم از مراجع مربوطه می باشند و فعالیت های این سایت تابع قوانین و مقررات جمهوری اسلامی ایران است. © 2018 bidbazi.com</p>
+                  <p class="copyright"> تمامی كالاها و خدمات این فروشگاه، حسب مورد دارای مجوزهای لازم از مراجع مربوطه می باشند و فعالیت های این سایت تابع قوانین و مقررات جمهوری اسلامی ایران است. © 2018 bidbazi.ir</p>
                 </div>
               </div>
             </div>
