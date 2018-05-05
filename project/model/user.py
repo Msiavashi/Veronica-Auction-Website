@@ -1,4 +1,6 @@
+from passlib.hash import pbkdf2_sha256 as sha256
 from project.database import db, Base
+from flask_login import UserMixin
 import datetime
 from comment import Comment
 from address import Address
@@ -16,7 +18,7 @@ from user_auction_like import user_auction_likes
 
 from marshmallow import Schema, fields
 
-class User(Base):
+class User(Base,UserMixin):
     __tablename__ = 'users'
     __table_args__ = (db.UniqueConstraint('username', name='users_username_uc'),)
 
@@ -53,8 +55,26 @@ class User(Base):
     auctions = db.relationship('Auction', secondary=user_auctions,back_populates='users')
     auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='auction_views')
     auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='auction_likes')
+
     def __str__(self):
-        return self.first_name + " " + self.last_name 
+        return self.first_name + " " + self.last_name
+
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.query.filter_by(username = username).first()
+
+    @staticmethod
+    def generate_hash(password):
+        return sha256.hash(password)
+
+    @staticmethod
+    def verify_hash(password, hash):
+        return sha256.verify(password, hash)
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
 class UserSchema(Schema):
     id = fields.Int()
     username = fields.Str()

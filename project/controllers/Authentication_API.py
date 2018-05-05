@@ -18,13 +18,15 @@ class Authentication(FlaskView):
     def registration(self):
         if not request.is_json:
             return jsonify({"msg": "Missing JSON in request"}), 400
+    
+        data = request.json
+        print "data", data
+
         user = User()
-        user.username = request.json.get('username', None)       #TODO: hash the password
-        user.password = request.json.get('password')
-        user.first_name = request.json.get('first_name')
-        user.last_name = request.json.get('last_name')
-        user.mobile = request.json.get('mobile')
-        user.organization_or_person = request.json.get('organization_or_person')
+        user.username = request.json.get('username',None)       #TODO: hash the password
+        user.password = request.json.get('password',None)
+        user.mobile = request.json.get('mobile',None)
+
         try:
             db.session.add(user)
             db.session.commit()
@@ -39,7 +41,7 @@ class Authentication(FlaskView):
     @route('/login/', methods=['POST'])
     def login(self):
         if not request.is_json:
-            return jsonify({"msg": "Missing JSON in request"}), 400
+            return jsonify({"msg": "Missing JSON in request","req":request.json}), 400
 
         username = request.json.get('username', None)
         password = request.json.get('password', None)

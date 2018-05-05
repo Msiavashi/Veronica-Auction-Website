@@ -8,8 +8,8 @@ Base = db.Model
 def init_db():
      import project.model
      #db.drop_all()
-     db.create_all()
+    #  db.create_all()
 
-# print "initing..."
-init_db()
-# print "done"
+#print "initing..."
+# init_db()
+#print "done"
