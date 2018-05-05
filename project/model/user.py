@@ -19,10 +19,8 @@ from .user_auction_like import user_auction_likes
 from marshmallow import Schema, fields
 
 class User(Base,UserMixin):
-    def __init__(self, id):
-        self.id = id
-        # self.name = "user" + str(id)
-        # self.password = self.name + "_secret"
+    def __init__(self, username):
+        self.username = username
 
     __tablename__ = 'users'
     __table_args__ = (db.UniqueConstraint('username', name='users_username_uc'),)

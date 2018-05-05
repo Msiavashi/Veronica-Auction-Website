@@ -16,8 +16,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 @login_manager.user_loader
-def load_user(user_id):
-    return User(user_id)
+def load_user(username):
+    return User(username)
 
 
 parser_register = reqparse.RequestParser()
@@ -40,21 +40,17 @@ class UserRegistration(Resource):
         if(data['password']!=data['c_password']):
             return make_response(jsonify({"message":{'password': 'رمز عبور با تکرار آن مطابقت ندارد'}}),400)
 
-        new_user = User(
-            username = data['username'],
-            mobile = data['mobile'],
-            password = User.generate_hash(data['password'])
-        )
+        new_user = User(data['username'])
+        new_user.mobile = data['mobile']
+        new_user.password = User.generate_hash(data['password'])
 
         try:
             new_user.save_to_db()
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
-            return jsonify({'success': True,'access_token': access_token,'refresh_token': refresh_token}),200
+            return make_response(jsonify({'success': True,'access_token': access_token,'refresh_token': refresh_token}),200)
         except Exception as e:
-            return jsonify({'messages': str(e)}), 500
-
-
+            return make_response(jsonify({"message":{"error" : str(e)}}), 500)
 
 class UserLogin(Resource):
     def post(self):
@@ -63,19 +59,19 @@ class UserLogin(Resource):
         current_user = User.find_by_username(data['username'])
 
         if not current_user:
-            return {'message': 'User {} doesn\'t exist'.format(data['username'])}
+            return make_response(jsonify({"message" :{"error" :'کاربری با نام کاربری مورد نظر شما پیدا نشد'}}),400)
 
         if User.verify_hash(data['password'], current_user.password):
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
             login_user(current_user)
-            return {
+            return make_response(jsonify({
                 'message': 'Logged in as {}'.format(current_user.username),
                 'access_token': access_token,
                 'refresh_token': refresh_token
-                }
+                }),200)
         else:
-            return {'message': 'Wrong credentials'}
+            return make_response(jsonify({'message':{"error" : 'رمز عبور شما نادرست است'}}),401)
 
     def get(self):
         return render_template('site/login.html')
@@ -87,9 +83,9 @@ class UserLogout(Resource):
         try:
             revoked_token = RevokedTokenModel(jti = jti)
             revoked_token.add()
-            return {'message': 'Access token has been revoked'}
+            return make_response(jsonify({'message': 'Access token has been revoked'}),200)
         except Exception as e:
-            return {'message':str(e)}, 500
+            return make_response(jsonify({'message':{ 'error' : str(e)}}), 500)
 
 
 class UserLogoutRefresh(Resource):
@@ -110,15 +106,6 @@ class TokenRefresh(Resource):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity = current_user)
         return {'access_token': access_token}
-
-
-class AllUsers(Resource):
-    def get(self):
-        return
-
-    def delete(self):
-        return {'message': 'Delete all users'}
-
 
 class SecretResource(Resource):
     @jwt_required
