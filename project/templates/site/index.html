@@ -7,23 +7,15 @@
 				<div class="wrap-cat-icon wrap-cat-icon1">
 					<h2 class="title14 title-cat-icon">دسته بندی ها</h2>
 					<ul class="list-cat-icon">
-						<li><a href="#"><img alt="" src="images/cat-icon/cat1.png"><span>موبایل و تبلت</span></a></li>
-						<li><a href="#"><img alt="" src="images/cat-icon/cat2.png"><span>کامپیوتر</span></a></li>
-						<li><a href="#"><img alt="" src="images/cat-icon/cat4.png"><span>مد و پوشاک</span></a></li>
-						<li><a href="#"><img alt="" src="images/cat-icon/cat8.png"><span>آشپزخانه و لوازم</span></a></li>
-						<li><a href="#"><img alt="" src="images/cat-icon/cat10.png"><span>ورزش و سفر</span></a></li>
-						<li><a href="#"><img alt="" src="images/cat-icon/cat3.png"><span>لوازم دیجیتال</span></a></li>
-						<li><a href="#"><img alt="" src="images/cat-icon/cat3.png"><span>لوازم دیجیتال</span></a></li>
-						<li><a href="#"><img alt="" src="images/cat-icon/cat3.png"><span>لوازم دیجیتال</span></a></li>
-						<li><a href="#"><img alt="" src="images/cat-icon/cat3.png"><span>لوازم دیجیتال</span></a></li>
+
 					</ul>
 				</div>
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12">
 				<div class="wrap-banner-slider1">
 					<div class="banner-slider banner-slider1">
-						<div class="wrap-item" data-autoplay="true" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1]]" data-transition="fade">
-							<div class="item-banner item-banner1">
+						<div class="wrap-item ads_banner" data-autoplay="true" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1]]" data-transition="fade">
+							<!-- <div class="item-banner item-banner1">
 								<div class="banner-thumb">
 									<a href="#"><img src="images/theme/slide1.jpg" alt="" /></a>
 								</div>
@@ -44,13 +36,14 @@
 									<p>قیمت ورودی: ۶۰ هزار تومان</p>
 									<a href="#" class="shopnow"><span>شرکت در حراجی</span></a>
 								</div>
-							</div>
+							</div> -->
 						</div>
 					</div>
 					<!-- End Banner -->
 					<div class="sub-banner-slider">
-						<div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
-							<div class="item-sub-banner">
+						<div class="wrap-item sub-ads-slider" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
+						
+							<!-- <div class="item-sub-banner">
 								<div class="product-thumb">
 									<a href="#"><img class="wobble-horizontal" src="images/theme/sub3.png" alt="" /></a>
 								</div>
@@ -103,7 +96,7 @@
 									<h3 class="product-title text-capitalize"><a href="#">ساعت کلاسیک رادو</a></h3>
 									<strong class="color">تا ۶۰٪ تخفیف</strong>
 								</div>
-							</div>
+							</div> -->
 						</div>
 					</div>
 					<!-- End Sub Banner -->
@@ -546,7 +539,9 @@
 										<ins><span>۲،۰۰۰،۰۰۰ تومان</span></ins>
 									</div>
 								</div>
-								<div class="product-extra-link2">
+								<div class="product-extra-link2
+
+								">
 									<a href="#" class="addcart-link">شرکت در حراجی</a>
 									<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 								</div>
@@ -1444,3 +1439,59 @@
 	<!-- End Deal -->
 </div>
 {% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+
+$.getJSON( "{{url_for('productadvertisements')}}", function( data ) {
+
+	$.each( data[0], function( key, val ) {
+		console.log(val.product.items[0].discount);
+
+		item_sub_slide =
+		'<div class="item-sub-banner">'+
+		'<div class="product-thumb">'+
+		'<a href="#"><img class="wobble-horizontal" src="'+val.images+'" alt="" /></a>'+
+		'</div>'+
+		'<div class="product-info">'+
+		'<h3 class="product-title text-capitalize"><a href="#">'+val.title+'</a></h3>'+
+		'<strong class="color">تا '+val.product.items[0].discount+' درصد تخفیف</strong>'+
+		'</div>'+
+		'</div>';
+		$('.sub-ads-slider').append(item_sub_slide);
+});
+});
+
+$.getJSON( "{{url_for('categories')}}", function( data ) {
+	console.log(data);
+	$.each( data[0], function( key, val ) {
+		item_cat_icon = '<li><a href="#"><img alt="" src="{{url_for("static",filename="'+val.icon+'")}}"><span>'+val.name+'</span></a></li>';
+		item_toggle = '<li><a href="#"><span>'+val.name+'</span></a></li>';
+		$('.list-cat-icon').append(item_cat_icon);
+		$('.list-category-toggle').append(item_toggle);
+	});
+});
+
+$.getJSON( "{{url_for('auctionadvertisements')}}", function( data ) {
+	console.log(data);
+	$.each( data[0], function( key, val ) {
+		console.log(data[0]);
+		item =
+		'<div class="item-banner item-banner1">'+
+		'<div class="banner-thumb">'+
+		'<a href="#"><img src="'+val.images+'" alt="" /></a>'+
+		'</div>'+
+		'<div class="banner-info animated" data-animated="lightSpeedIn">'+
+		'<h2 class="title30">'+val.title+'</h2>'+
+		'<h2 class="title30 color">تخفیف: <span>تا </span> '+val.auction.item[0].discount+'% <span> قیمت</span></h2>'+
+		'<p>'+val.description+'</p>'+
+		'<a href="#" class="shopnow"><span>'+val.link_title+'</span></a>'+
+		'</div>'+
+		'</div>';
+
+		$('.ads_banner').append(item);
+	});
+});
+
+</script>
+{% endblock scripts %}

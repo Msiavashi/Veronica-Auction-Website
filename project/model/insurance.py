@@ -17,5 +17,5 @@ class InsuranceSchema(Schema):
     id = fields.Int()
     company_name = fields.Str()
     description = fields.Str()
-    price = fields.Decimal()
-    items = fields.Nested("ItemSchema",many=True)
+    price = fields.Str()
+    items = fields.Nested("ItemSchema",many=True,exclude=('insurances',))

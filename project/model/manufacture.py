@@ -19,4 +19,4 @@ class ManufactureSchema(Schema):
     country = fields.Str()
     review = fields.Str()
     details = fields.Raw()
-    products = fields.Nested('ProductSchema',many=True)
+    products = fields.Nested('ProductSchema',many=True,exclude=('manufacture',))

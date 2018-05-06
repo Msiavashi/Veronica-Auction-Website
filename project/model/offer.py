@@ -20,9 +20,9 @@ class Offer(Base):
 
 class OfferSchema(Schema):
     id = fields.Int()
-    offer_price = fields.Decimal()
+    offer_price = fields.Str()
     date = fields.DateTime()
     status = fields.Int()
     win = fields.Boolean()
     user = fields.Nested('UserSchema')
-    item = fields.Nested('ItemSchema')
+    item = fields.Nested('ItemSchema',exclude=('offers',))

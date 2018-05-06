@@ -25,6 +25,7 @@ class Product(Base):
     manufacture = db.relationship('Manufacture')
     likes = db.relationship('User', secondary=user_product_likes ,back_populates='likes')
     views = db.relationship('User', secondary=user_product_views ,back_populates='views')
+    advertisement = db.relationship('Advertisement' , back_populates ='product')
     def __str__(self):
         return self.name
 class ProductSchema(Schema):
@@ -34,10 +35,11 @@ class ProductSchema(Schema):
     review = fields.Str()
     likes = fields.Int()
     details = fields.Raw()
-    category = fields.Nested('CategorySchema')
-    items = fields.Nested('ItemSchema',many=True)
-    comments = fields.Nested('CommentSchema',many=True)
-    events = fields.Nested('eventSchema',many=True)
-    manufacture = fields.Nested('ManufactureSchema')
-    likes = fields.Nested('UserSchema',many=True)
-    views = fields.Nested('UserSchema',many=True)
+    category = fields.Nested('CategorySchema',exclude=('products',))
+    items = fields.Nested('ItemSchema',many=True,exclude=('product',))
+    comments = fields.Nested('CommentSchema',many=True,exclude=('product',))
+    events = fields.Nested('EventSchema',many=True,exclude=('products',))
+    manufacture = fields.Nested('ManufactureSchema',exclude=('products',))
+    advertisement = fields.Nested('AdvertisementSchema',exclude=('product',))
+    likes = fields.Nested('LikeSchema',many=True,exclude=('likes',))
+    views = fields.Nested('ViewSchema',many=True,exclude=('views',))

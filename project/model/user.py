@@ -61,7 +61,7 @@ class User(Base,UserMixin):
 
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return str(self.first_name) + " " + str(self.last_name)
 
     @classmethod
     def find_by_username(cls, username):

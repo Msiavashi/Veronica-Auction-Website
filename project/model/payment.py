@@ -22,11 +22,11 @@ class Payment(Base):
 
 class PaymentSchema(Schema):
     id = fields.Int(dump_only=True)
-    amount = fields.Decimal()
+    amount = fields.Str()
     guid = fields.Str()
     date = fields.DateTime()
     method = fields.Raw()
     details = fields.Raw()
     user = fields.Nested('User')
     plans = fields.Nested('PlanSchema', many=True)
-    items = fields.Nested('ItemSchema', many=True)
+    items = fields.Nested('ItemSchema', many=True,exclude=('payments',))

@@ -29,7 +29,7 @@ class Auction(Base):
     auction_views = db.relationship('User', secondary = user_auction_views, back_populates='auction_views')
     auction_likes = db.relationship('User', secondary = user_auction_likes, back_populates='auction_likes')
     def __str__(self):
-        return self.name + " " + self.start_date
+        return self.name + " " + str(self.start_date)
 
 class AuctionSchema(Schema):
     id = fields.Str()
@@ -39,11 +39,11 @@ class AuctionSchema(Schema):
     updated_at = fields.DateTime()
     start_date = fields.DateTime()
     end_date = fields.DateTime()
-    register_price = fields.Decimal()
-    minimum_price = fields.Decimal()
-    maximum_price = fields.Decimal()
+    register_price = fields.Str()
+    minimum_price = fields.Str()
+    maximum_price = fields.Str()
     max_members = fields.Int()
-    item = fields.Nested('ItemSchema', many=True)
+    item = fields.Nested('ItemSchema', many=True,exclude=('auction',))
     users = fields.Nested('UserSchema', many=True)
     events = fields.Nested('EventSchema', many=True)
     advertisement = fields.Nested('AdvertisementSchema')

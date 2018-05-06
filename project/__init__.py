@@ -14,10 +14,10 @@ toolbar = DebugToolbarExtension(app)
 
 # csrf = CSRFProtect(app)
 
+import project.resources
 from project.route import route
 from project.controllers import *
 from flask_restful import Api
-import project.resources
 
 api = Api(app,'/api')
 
@@ -26,7 +26,9 @@ api.add_resource(resources.UserLogin, '/login')
 api.add_resource(resources.UserLogout, '/logout')
 api.add_resource(resources.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(resources.TokenRefresh, '/token/refresh')
-# api.add_resource(resources.AllUsers, '/users')
+api.add_resource(resources.Categories, '/categories')
+api.add_resource(resources.AuctionAdvertisements, '/auction/advertisements')
+api.add_resource(resources.ProductAdvertisements, '/product/advertisements')
 api.add_resource(resources.SecretResource, '/secret')
 
 @jwt.token_in_blacklist_loader

@@ -19,5 +19,5 @@ class InventorySchema(Schema):
     id = fields.Int()
     name = fields.Str()
     desciption = fields.Str()
-    items = fields.Nested('ItemSchema',many=True)
+    items = fields.Nested('ItemSchema',many=True,exclude=('inventories',))
     address = fields.Nested('AddressSchema')

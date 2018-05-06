@@ -1,10 +1,9 @@
-# # encoding=utf8
-# import sys
-# reload(sys)
-# sys.setdefaultencoding('utf-8')
-
 from flask_restful import Resource, reqparse
 from project.model.user import User
+from project.model.category import *
+from project.model.auction import *
+from project.model.product import *
+from project.model.advertisement import *
 from project.model.revoke import RevokedTokenModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
@@ -29,6 +28,7 @@ parser_register.add_argument('c_password', help = 'ورود تکرار رمز ع
 parser_login = reqparse.RequestParser()
 parser_login.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
 parser_login.add_argument('password', help = 'ورود رمز عبور ضروری است', required = True)
+
 
 class UserRegistration(Resource):
     def post(self):
@@ -99,7 +99,6 @@ class UserLogoutRefresh(Resource):
         except:
             return {'message': 'Something went wrong'}, 500
 
-
 class TokenRefresh(Resource):
     @jwt_refresh_token_required
     def post(self):
@@ -113,3 +112,21 @@ class SecretResource(Resource):
         return {
             'answer': 42
         }
+
+class Categories(Resource):
+    def get(self):
+        categories = Category.query.all()
+        category_schema = CategorySchema(many=True)
+        return make_response(jsonify(category_schema.dump(categories)),200)
+
+class AuctionAdvertisements(Resource):
+    def get(self):
+        advertisements = Advertisement.query.join(Auction).filter(Advertisement.show==True)
+        ads_schema = AdvertisementSchema(many=True)
+        return make_response(jsonify(ads_schema.dump(advertisements)),200)
+
+class ProductAdvertisements(Resource):
+    def get(self):
+        advertisements = Advertisement.query.join(Product).filter(Advertisement.show==True)
+        ads_schema = AdvertisementSchema(many=True)
+        return make_response(jsonify(ads_schema.dump(advertisements)),200)

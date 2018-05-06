@@ -67,25 +67,24 @@
 <script>
 
 $( "#register_form" ).submit(function( event ) {
-  event.preventDefault();
-  var $form = $( this );
-  var data = getFormData($form);
+	event.preventDefault();
+	var $form = $( this );
+	var data = getFormData($form);
 	var url = "{{url_for('userregistration')}}";
-  var posting = $.post( url, data);
-  posting.done(function( data ) {
+	var posting = $.post( url, data);
+	posting.done(function( data ) {
 		$(".error_alert").addClass('hide');
 		$(".success_alert").removeClass('hide');
 		$(".success_container").html('ثبت نام شما با موفقیت انجام شد')
 		window.location.href = '/login';
-
-  });
+	});
 	posting.fail(function(xhr, status, error) {
 		obj = JSON.parse(xhr.responseText);
 		$.each(obj.message, function (key, item) {
 			$(".error_alert").removeClass('hide');
 			$(".error_container").html(item)
 			});
-    });
+		});
 });
 
 </script>

@@ -24,5 +24,5 @@ class OrderSchema(Schema):
     updated_at = fields.DateTime()
     status = fields.Boolean()
     user = fields.Nested('UserSchema')
-    items = fields.Nested('ItemSchema',many=True)
+    items = fields.Nested('ItemSchema',many=True,exclude=('orders',))
     shipment = fields.Nested('ShipmentSchema')
