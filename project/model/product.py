@@ -47,3 +47,4 @@ class ProductSchema(Schema):
     manufacture = fields.Nested('ManufactureSchema')
     likes = fields.Nested('UserSchema', many=True)
     views = fields.Nested('UserSchema', many=True)
+# git pto
