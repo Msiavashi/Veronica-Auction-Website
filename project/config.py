@@ -1,8 +1,9 @@
 from project.db_config import Config
+import os
 
 # Create dummy secrey key so we can use sessions
-SECRET_KEY = '123456049795708790'
-JWT_SECRET_KEY = 'ijldfh934pu928tfkjwp4837159'
+SECRET_KEY = os.urandom(32)
+JWT_SECRET_KEY = os.urandom(32)
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 # Create in-memory database

@@ -1,9 +1,5 @@
 from flask_restful import Resource, reqparse
-from project.model.user import User
-from project.model.category import *
-from project.model.auction import *
-from project.model.product import *
-from project.model.advertisement import *
+from project.model.user import *
 from project.model.revoke import RevokedTokenModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
@@ -51,6 +47,8 @@ class UserRegistration(Resource):
             return make_response(jsonify({'success': True,'access_token': access_token,'refresh_token': refresh_token}),200)
         except Exception as e:
             return make_response(jsonify({"message":{"error" : str(e)}}), 500)
+    def get(self):
+        return make_response(jsonify({"message":"online resources register"}),404)
 
 class UserLogin(Resource):
     def post(self):
@@ -74,7 +72,7 @@ class UserLogin(Resource):
             return make_response(jsonify({'message':{"error" : 'رمز عبور شما نادرست است'}}),401)
 
     def get(self):
-        return render_template('site/login.html')
+        return make_response(jsonify({"message":"online resources login"}),404)
 
 class UserLogout(Resource):
     @jwt_required
@@ -105,28 +103,3 @@ class TokenRefresh(Resource):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity = current_user)
         return {'access_token': access_token}
-
-class SecretResource(Resource):
-    @jwt_required
-    def get(self):
-        return {
-            'answer': 42
-        }
-
-class Categories(Resource):
-    def get(self):
-        categories = Category.query.all()
-        category_schema = CategorySchema(many=True)
-        return make_response(jsonify(category_schema.dump(categories)),200)
-
-class AuctionAdvertisements(Resource):
-    def get(self):
-        advertisements = Advertisement.query.join(Auction).filter(Advertisement.show==True)
-        ads_schema = AdvertisementSchema(many=True)
-        return make_response(jsonify(ads_schema.dump(advertisements)),200)
-
-class ProductAdvertisements(Resource):
-    def get(self):
-        advertisements = Advertisement.query.join(Product).filter(Advertisement.show==True)
-        ads_schema = AdvertisementSchema(many=True)
-        return make_response(jsonify(ads_schema.dump(advertisements)),200)

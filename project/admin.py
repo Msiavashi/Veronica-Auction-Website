@@ -2,17 +2,10 @@ from .database import db
 from project import app
 from project.model import *
 from project.model.advertisement import Advertisement
+from project.model.event import Event
 
-import os
-from flask import url_for, redirect, render_template, request, abort
-
-from flask_security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required, current_user
-from flask_security.utils import encrypt_password
 from flask_admin import Admin
-from flask_admin import helpers as admin_helpers
 from flask_admin.contrib.sqla import ModelView
-
 
 # Create admin
 admin = Admin(
@@ -34,3 +27,4 @@ admin.add_view(ModelView(Manufacture, db.session))
 admin.add_view(ModelView(Offer, db.session))
 admin.add_view(ModelView(Item, db.session))
 admin.add_view(ModelView(Advertisement, db.session))
+admin.add_view(ModelView(Event, db.session))

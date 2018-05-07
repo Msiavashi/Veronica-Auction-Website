@@ -61,7 +61,9 @@ class User(Base,UserMixin):
 
 
     def __str__(self):
-        return str(self.first_name) + " " + str(self.last_name)
+        if(self.first_name):
+            return (str(self.first_name) + " " + str(self.last_name))
+        else: return self.username
 
     @classmethod
     def find_by_username(cls, username):
@@ -88,14 +90,14 @@ class UserSchema(Schema):
     work_place = fields.Str()
     mobile = fields.Str()
     email = fields.Email()
-    credit = fields.Decimal()
+    credit = fields.Str()
     address_id = fields.Int()
 
-    payments = fields.Nested('PaymentSchema', many=True)
-    orders = fields.Nested('OrderSchema', many=True)
-    likes = fields.Nested('LikeSchema', many=True)
-    views = fields.Nested('ViewSchema', many=True)
-    roles = fields.Nested('RoleSchema', many=True)
-    plans = fields.Nested('PlanSchema', many=True)
-    gifts = fields.Nested('GiftSchema', many=True)
-    auctions = fields.Nested('AuctionSchema', many=True)
+    payments = fields.Nested('PaymentSchema', many=True,exclude=('user',))
+    orders = fields.Nested('OrderSchema', many=True,exclude=('user',))
+    likes = fields.Nested('LikeSchema', many=True,exclude=('user',))
+    views = fields.Nested('ViewSchema', many=True,exclude=('user',))
+    roles = fields.Nested('RoleSchema', many=True,exclude=('user',))
+    plans = fields.Nested('PlanSchema', many=True,exclude=('user',))
+    gifts = fields.Nested('GiftSchema', many=True,exclude=('user',))
+    auctions = fields.Nested('AuctionSchema', many=True,exclude=('user',))

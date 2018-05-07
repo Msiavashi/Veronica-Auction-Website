@@ -59,13 +59,13 @@ function fixed_header(){
 			}
 		}
 	}
-} 
+}
 //Slider Background
 function background(){
 	$('.bg-slider .item-banner').each(function(){
 		var src=$(this).find('.banner-thumb a img').attr('src');
 		$(this).css('background-image','url("'+src+'")');
-	});	
+	});
 }
 function animated(){
 	$('.banner-slider .owl-item').each(function(){
@@ -132,12 +132,12 @@ jQuery(document).ready(function(){
 	$('.dropdown-box').on('mouseover',function(){
 		$('body').addClass('overlay');
 		$(this).addClass('active');
-	});	
+	});
 	$('.dropdown-box').on('mouseout',function(){
 		$('body').removeClass('overlay');
 		$(this).removeClass('active');
-	});	
-	//Menu Responsive 
+	});
+	//Menu Responsive
 	rep_menu();
 	//Offset Menu
 	offset_menu();
@@ -159,7 +159,7 @@ jQuery(document).ready(function(){
 	//Coupon Index
 	$('.list-coupon li').each(function(){
 		var index = $(this).index()+1;
-		$(this).prepend('<span class="coupon-index">'+index+'</span>');		
+		$(this).prepend('<span class="coupon-index">'+index+'</span>');
 	});
 	//Control Category Banner
 	if($('.cat-pro3').length>0){
@@ -188,17 +188,17 @@ jQuery(document).ready(function(){
 	$('.post-zoom-link').fancybox();
 	//Add Cart Special
 	$('.addcart-special,.btn-get-coupon').fancybox({
-		'closeBtn' : false 
+		'closeBtn' : false
 	});
 	//Get Coupon
 	$('.btn-get-coupon').fancybox({
-		'closeBtn' : false 
+		'closeBtn' : false
 	});
 	$('.close-light-box').on('click',function(event){
 		event.preventDefault();
-		$.fancybox.close(); 
+		$.fancybox.close();
 	})
-	//Blog Masonry 
+	//Blog Masonry
 	if($('.list-post-masonry').length>0){
 		$('.list-post-masonry').masonry({
 			// options
@@ -324,7 +324,7 @@ jQuery(document).ready(function(){
 					color: "#f9bc02"
 				}
 			}
-		}); 
+		});
 	}
 	if($('.deals-cowndown').length>0){
 		$(".deals-cowndown").TimeCircles({
@@ -354,7 +354,7 @@ jQuery(document).ready(function(){
 					color: "#f9bc02"
 				}
 			}
-		}); 
+		});
 	}
 	//Flash Count Down
 	if($('.flash-countdown').length>0){
@@ -385,7 +385,7 @@ jQuery(document).ready(function(){
 					color: "#f9bc02"
 				}
 			}
-		}); 
+		});
 	}
 	if($('.countdown-master').length>0){
 		$('.countdown-master').each(function(){
@@ -398,7 +398,7 @@ jQuery(document).ready(function(){
 	}
 });
 //Window Load
-jQuery(window).on('load',function(){ 
+jQuery(window).on('load',function(){
 	//Custom ScrollBar
 	if($('.custom-scroll').length>0){
 		$('.custom-scroll').each(function(){
@@ -418,14 +418,14 @@ jQuery(window).on('load',function(){
 				stopOnHover:true,
 				itemsCustom:data.itemscustom,
 				autoPlay:data.autoplay,
-				transitionStyle:data.transition, 
+				transitionStyle:data.transition,
 				beforeInit:background,
 				afterAction:animated,
 				navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
 			});
 			$(this).find('.owl-controls').css('left',data.control+'px');
 		});
-	}	
+	}
 	//BxSlider
 	if($('.bxslider-banner').length>0){
 		$('.bxslider-banner').each(function(){
@@ -510,44 +510,44 @@ $(".open").click(function() {
 	var container = $(this).parents(".topic");
 	var answer = container.find(".answer");
 	var trigger = container.find(".faq-t");
-  
+
 	answer.slideToggle(200);
-  
+
 	if (trigger.hasClass("faq-o")) {
 	  trigger.removeClass("faq-o");
 	} else {
 	  trigger.addClass("faq-o");
 	}
-  
+
 	if (container.hasClass("expanded")) {
 	  container.removeClass("expanded");
 	} else {
 	  container.addClass("expanded");
 	}
   });
-  
+
   jQuery(document).ready(function($) {
 	$('.question').each(function() {
 	  $(this).attr('data-search-term', $(this).text().toLowerCase() + $(this).find("ptag").text().toLowerCase());
-  
+
 	});
-  
+
 	$('.live-search-box').on('keyup', function() {
-  
+
 	  var searchTerm = $(this).val().toLowerCase();
-  
+
 	  $('.question').each(function() {
-  
+
 		if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
 		  $(this).parent().parent().show();
 		} else {
 		  $(this).parent().parent().hide();
 		}
-  
+
 	  });
-  
+
 	});
-  
+
   });
 
 
@@ -556,7 +556,7 @@ $('.avatarUser img').click( function(){
     if ( $(this).hasClass('current') ) {
     } else {
         $('img.current').removeClass('current');
-        $(this).addClass('current');    
+        $(this).addClass('current');
     }
 });
 

@@ -12,12 +12,3 @@ function getFormData($form){
 	});
 return indexed_array;
 }
-
-// $.getJSON( "{{url_for('categories')}}", function( data ) {
-// 	$.each( data[0], function( key, val ) {
-// 		console.log(val.name);
-// 		item = '<li><a href="#"><img alt="" src="{{url_for("static",filename="'+val.icon+'")}}"><span>'+val.name+'</span></a></li>';
-// 		$('.list-cat-icon').append(item);
-// 		$('.list-category-toggle').append(item);
-// 	});
-// });

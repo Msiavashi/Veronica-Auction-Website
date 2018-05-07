@@ -27,6 +27,6 @@ class PaymentSchema(Schema):
     date = fields.DateTime()
     method = fields.Raw()
     details = fields.Raw()
-    user = fields.Nested('User')
-    plans = fields.Nested('PlanSchema', many=True)
+    user = fields.Nested('UserSchema',exclude=('payments',))
+    plans = fields.Nested('PlanSchema', many=True,exclude=('payments',))
     items = fields.Nested('ItemSchema', many=True,exclude=('payments',))

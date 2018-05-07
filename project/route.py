@@ -5,7 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from flask_login import current_user,login_required,logout_user
-from .resources import login_manager
+from project.controllers.Auth_API import login_manager
 
 # class LoginForm(FlaskForm):
 #     username = StringField('نام کاربری', validators=[DataRequired('لطفا نام کاربری خود را وارد کنید')])

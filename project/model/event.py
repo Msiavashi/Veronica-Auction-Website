@@ -12,7 +12,8 @@ class Event(Base):
     description = db.Column(db.Text)
     start_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     end_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    discount = db.Column(db.DECIMAL(precision=20, scale=4))
+    discount = db.Column(db.Integer,default=0)
+    active = db.Column(db.Boolean,default=False)
     auctions = db.relationship('Auction', secondary = auction_events, back_populates='events')
     products = db.relationship('Product', secondary = product_events, back_populates='events')
     def __str__(self):
@@ -24,6 +25,7 @@ class EventSchema(Schema):
     description = fields.Str()
     start_date = fields.DateTime()
     end_date = fields.DateTime()
-    discount = fields.Decimal()
+    discount = fields.Str()
+    active = fields.Boolean()
     auctions = fields.Nested('AuctionSchema', many=True)
     products = fields.Nested('ProductSchema', many=True,exclude=('events',))

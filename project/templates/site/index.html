@@ -15,88 +15,13 @@
 				<div class="wrap-banner-slider1">
 					<div class="banner-slider banner-slider1">
 						<div class="wrap-item ads_banner" data-autoplay="true" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1]]" data-transition="fade">
-							<!-- <div class="item-banner item-banner1">
-								<div class="banner-thumb">
-									<a href="#"><img src="images/theme/slide1.jpg" alt="" /></a>
-								</div>
-								<div class="banner-info animated" data-animated="lightSpeedIn">
-									<h2 class="title30">حراجی موبایل و تبلت</h2>
-									<h2 class="title30 color">تخفیف: <span>تا </span> ۷۰% <span> قیمت</span></h2>
-									<p>سامسونگ، اپل، سونی و...</p>
-									<a href="#" class="shopnow"><span>شرکت در حراجی</span></a>
-								</div>
-							</div>
-							<div class="item-banner item-banner1">
-								<div class="banner-thumb">
-									<a href="#"><img src="images/theme/slide3.jpg" alt="" /></a>
-								</div>
-								<div class="banner-info animated" data-animated="zoomInRight">
-									<h2 class="title30">ساعت هوشمند سامسونگ</h2>
-									<h2 class="title30 color">تخفیف تا ۷۰٪ قیمت</h2>
-									<p>قیمت ورودی: ۶۰ هزار تومان</p>
-									<a href="#" class="shopnow"><span>شرکت در حراجی</span></a>
-								</div>
-							</div> -->
+
 						</div>
 					</div>
 					<!-- End Banner -->
 					<div class="sub-banner-slider">
 						<div class="wrap-item sub-ads-slider" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
-						
-							<!-- <div class="item-sub-banner">
-								<div class="product-thumb">
-									<a href="#"><img class="wobble-horizontal" src="images/theme/sub3.png" alt="" /></a>
-								</div>
-								<div class="product-info">
-									<h3 class="product-title text-capitalize"><a href="#">سامسونگ s7 ۶۴ گیگ</a></h3>
-									<strong class="color">تا ۳۰٪ تخفیف</strong>
-								</div>
-							</div>
-							<div class="item-sub-banner">
-								<div class="product-thumb">
-									<a href="#"><img class="wobble-horizontal" src="images/theme/sub2.png" alt="" /></a>
-								</div>
-								<div class="product-info">
-									<h3 class="product-title text-capitalize"><a href="#">ساعت کلاسیک رادو</a></h3>
-									<strong class="color">تا ۴۰٪ تخفیف</strong>
-								</div>
-							</div>
-							<div class="item-sub-banner">
-								<div class="product-thumb">
-									<a href="#"><img class="wobble-horizontal" src="images/theme/sub3.png" alt="" /></a>
-								</div>
-								<div class="product-info">
-									<h3 class="product-title text-capitalize"><a href="#">سامسونگ s7 ۶۴ گیگ</a></h3>
-									<strong class="color">تا ۸۰٪ تخفیف</strong>
-								</div>
-							</div>
-							<div class="item-sub-banner">
-								<div class="product-thumb">
-									<a href="#"><img class="wobble-horizontal" src="images/theme/sub2.png" alt="" /></a>
-								</div>
-								<div class="product-info">
-									<h3 class="product-title text-capitalize"><a href="#">ساعت کلاسیک رادو</a></h3>
-									<strong class="color">تا ۵۰٪ تخفیف</strong>
-								</div>
-							</div>
-							<div class="item-sub-banner">
-								<div class="product-thumb">
-									<a href="#"><img class="wobble-horizontal" src="images/theme/sub3.png" alt="" /></a>
-								</div>
-								<div class="product-info">
-									<h3 class="product-title text-capitalize"><a href="#">سامسونگ s7 ۶۴ گیگ</a></h3>
-									<strong class="color">تا ۳۰٪ تخفیف</strong>
-								</div>
-							</div>
-							<div class="item-sub-banner">
-								<div class="product-thumb">
-									<a href="#"><img class="wobble-horizontal" src="images/theme/sub2.png" alt="" /></a>
-								</div>
-								<div class="product-info">
-									<h3 class="product-title text-capitalize"><a href="#">ساعت کلاسیک رادو</a></h3>
-									<strong class="color">تا ۶۰٪ تخفیف</strong>
-								</div>
-							</div> -->
+
 						</div>
 					</div>
 					<!-- End Sub Banner -->
@@ -104,17 +29,16 @@
 			</div>
 		</div>
 	</div>
-	<div class="intro-countdown">
-		<h2 class="title30">ثبت نام فوق العاده تا <strong class="color">۳۰٪</strong> تخفیف در همه حراجی ها! <span class="color">محدود</span></h2>
-		<div class="deals-cowndown" data-date="12/12/2018"></div>
+	<div class="events_container">
+
 	</div>
 	<!-- End Intro Countown -->
 </div>
 <div class="list-flash">
 	<div class="container">
 		<h2 class="title24 title-flash"><span class="bg-color white">حراجی های امروز</span></h2>
-		<div class="row">
-			<div class="col-md-4 col-sm-6 col-xs-12">
+		<div class="row auctions_container">
+			<!-- <div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="banner-flash">
 					<div class="banner-zoom">
 						<a href="#" class="thumb-zoom"><img src="images/theme/ad1.jpg" alt="" /></a>
@@ -472,7 +396,7 @@
 						</ul>
 					</div>
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </div>
@@ -1441,13 +1365,11 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+
 <script>
 
-$.getJSON( "{{url_for('productadvertisements')}}", function( data ) {
-
+$.getJSON( "{{url_for('productcarouselads')}}", function( data ) {
 	$.each( data[0], function( key, val ) {
-		console.log(val.product.items[0].discount);
-
 		item_sub_slide =
 		'<div class="item-sub-banner">'+
 		'<div class="product-thumb">'+
@@ -1455,15 +1377,14 @@ $.getJSON( "{{url_for('productadvertisements')}}", function( data ) {
 		'</div>'+
 		'<div class="product-info">'+
 		'<h3 class="product-title text-capitalize"><a href="#">'+val.title+'</a></h3>'+
-		'<strong class="color">تا '+val.product.items[0].discount+' درصد تخفیف</strong>'+
+		'<strong class="color">تا '+ToPersian(val.product.items[0].discount)+' درصد تخفیف</strong>'+
 		'</div>'+
 		'</div>';
 		$('.sub-ads-slider').append(item_sub_slide);
 });
 });
 
-$.getJSON( "{{url_for('categories')}}", function( data ) {
-	console.log(data);
+$.getJSON( "{{url_for('categorymenuitems')}}", function( data ) {
 	$.each( data[0], function( key, val ) {
 		item_cat_icon = '<li><a href="#"><img alt="" src="{{url_for("static",filename="'+val.icon+'")}}"><span>'+val.name+'</span></a></li>';
 		item_toggle = '<li><a href="#"><span>'+val.name+'</span></a></li>';
@@ -1472,10 +1393,8 @@ $.getJSON( "{{url_for('categories')}}", function( data ) {
 	});
 });
 
-$.getJSON( "{{url_for('auctionadvertisements')}}", function( data ) {
-	console.log(data);
+$.getJSON( "{{url_for('auctioncarouselads')}}", function( data ) {
 	$.each( data[0], function( key, val ) {
-		console.log(data[0]);
 		item =
 		'<div class="item-banner item-banner1">'+
 		'<div class="banner-thumb">'+
@@ -1483,13 +1402,268 @@ $.getJSON( "{{url_for('auctionadvertisements')}}", function( data ) {
 		'</div>'+
 		'<div class="banner-info animated" data-animated="lightSpeedIn">'+
 		'<h2 class="title30">'+val.title+'</h2>'+
-		'<h2 class="title30 color">تخفیف: <span>تا </span> '+val.auction.item[0].discount+'% <span> قیمت</span></h2>'+
+		'<h2 class="title30 color">تخفیف: <span>تا </span> '+ToPersian(val.auction.item.discount)+'% <span> قیمت</span></h2>'+
 		'<p>'+val.description+'</p>'+
 		'<a href="#" class="shopnow"><span>'+val.link_title+'</span></a>'+
 		'</div>'+
 		'</div>';
 
 		$('.ads_banner').append(item);
+	});
+});
+
+$.getJSON( "{{url_for('sitetodayevents')}}", function( data ) {
+	$.each( data[0], function( key, val ) {
+		deadline = new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC");
+		item_event =
+		'<div class="intro-countdown">'+
+		'<h2 class="title30">'+val.title+
+		'<strong class="color"> '+ToPersian(val.discount)+'٪ </strong> '+val.description+' <span class="color">محدود</span></h2>'+
+		'<div class="deals-cowndown" data-date="'+deadline+'"></div>'+
+		'</div>';
+		$('.events_container').append(item_event);
+
+		if($('.deals-cowndown').length>0){
+			$(".deals-cowndown").TimeCircles({
+				fg_width: 0.01,
+				bg_width: 1.2,
+				text_size: 0.07,
+				circle_bg_color: "#ffffff",
+				time: {
+					Days: {
+						show: true,
+						text: "روز",
+						color: "#f9bc02"
+					},
+					Hours: {
+						show: true,
+						text: "ساعت",
+						color: "#f9bc02"
+					},
+					Minutes: {
+						show: true,
+						text: "دقیقه",
+						color: "#f9bc02"
+					},
+					Seconds: {
+						show: true,
+						text: "ثانیه",
+						color: "#f9bc02"
+					}
+				}
+			});
+		}
+	});
+});
+
+
+Date.prototype.format = function (format, utc){
+    return formatDate(this, format, utc);
+};
+
+function formatDate(date, format, utc){
+        var MMMM = ["\x00", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var MMM = ["\x01", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var dddd = ["\x02", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var ddd = ["\x03", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        function ii(i, len) { var s = i + ""; len = len || 2; while (s.length < len) s = "0" + s; return s; }
+
+        var y = utc ? date.getUTCFullYear() : date.getFullYear();
+        format = format.replace(/(^|[^\\])yyyy+/g, "$1" + y);
+        format = format.replace(/(^|[^\\])yy/g, "$1" + y.toString().substr(2, 2));
+        format = format.replace(/(^|[^\\])y/g, "$1" + y);
+
+        var M = (utc ? date.getUTCMonth() : date.getMonth()) + 1;
+        format = format.replace(/(^|[^\\])MMMM+/g, "$1" + MMMM[0]);
+        format = format.replace(/(^|[^\\])MMM/g, "$1" + MMM[0]);
+        format = format.replace(/(^|[^\\])MM/g, "$1" + ii(M));
+        format = format.replace(/(^|[^\\])M/g, "$1" + M);
+
+        var d = utc ? date.getUTCDate() : date.getDate();
+        format = format.replace(/(^|[^\\])dddd+/g, "$1" + dddd[0]);
+        format = format.replace(/(^|[^\\])ddd/g, "$1" + ddd[0]);
+        format = format.replace(/(^|[^\\])dd/g, "$1" + ii(d));
+        format = format.replace(/(^|[^\\])d/g, "$1" + d);
+
+        var H = utc ? date.getUTCHours() : date.getHours();
+        format = format.replace(/(^|[^\\])HH+/g, "$1" + ii(H));
+        format = format.replace(/(^|[^\\])H/g, "$1" + H);
+
+        var h = H > 12 ? H - 12 : H == 0 ? 12 : H;
+        format = format.replace(/(^|[^\\])hh+/g, "$1" + ii(h));
+        format = format.replace(/(^|[^\\])h/g, "$1" + h);
+
+        var m = utc ? date.getUTCMinutes() : date.getMinutes();
+        format = format.replace(/(^|[^\\])mm+/g, "$1" + ii(m));
+        format = format.replace(/(^|[^\\])m/g, "$1" + m);
+
+        var s = utc ? date.getUTCSeconds() : date.getSeconds();
+        format = format.replace(/(^|[^\\])ss+/g, "$1" + ii(s));
+        format = format.replace(/(^|[^\\])s/g, "$1" + s);
+
+        var f = utc ? date.getUTCMilliseconds() : date.getMilliseconds();
+        format = format.replace(/(^|[^\\])fff+/g, "$1" + ii(f, 3));
+        f = Math.round(f / 10);
+        format = format.replace(/(^|[^\\])ff/g, "$1" + ii(f));
+        f = Math.round(f / 10);
+        format = format.replace(/(^|[^\\])f/g, "$1" + f);
+
+        var T = H < 12 ? "AM" : "PM";
+        format = format.replace(/(^|[^\\])TT+/g, "$1" + T);
+        format = format.replace(/(^|[^\\])T/g, "$1" + T.charAt(0));
+
+        var t = T.toLowerCase();
+        format = format.replace(/(^|[^\\])tt+/g, "$1" + t);
+        format = format.replace(/(^|[^\\])t/g, "$1" + t.charAt(0));
+
+        var tz = -date.getTimezoneOffset();
+        var K = utc || !tz ? "Z" : tz > 0 ? "+" : "-";
+        if (!utc)
+        {
+            tz = Math.abs(tz);
+            var tzHrs = Math.floor(tz / 60);
+            var tzMin = tz % 60;
+            K += ii(tzHrs) + ":" + ii(tzMin);
+        }
+        format = format.replace(/(^|[^\\])K/g, "$1" + K);
+
+        var day = (utc ? date.getUTCDay() : date.getDay()) + 1;
+        format = format.replace(new RegExp(dddd[0], "g"), dddd[day]);
+        format = format.replace(new RegExp(ddd[0], "g"), ddd[day]);
+
+        format = format.replace(new RegExp(MMMM[0], "g"), MMMM[M]);
+        format = format.replace(new RegExp(MMM[0], "g"), MMM[M]);
+
+        format = format.replace(/\\(.)/g, "$1");
+
+        return format;
+    };
+
+function ToPersian( num, dontTrim ) {
+
+	    var i = 0,
+
+	        dontTrim = dontTrim || false,
+
+	        num = dontTrim ? num.toString() : num.toString().trim(),
+	        len = num.length,
+
+	        res = '',
+	        pos,
+
+	        persianNumbers = typeof persianNumber == 'undefined' ?
+	            ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'] :
+	            persianNumbers;
+
+	    for (; i < len; i++)
+	        if (( pos = persianNumbers[num.charAt(i)] ))
+	            res += pos;
+	        else
+	            res += num.charAt(i);
+
+	    return res;
+		}
+
+function formatCurrency(num){
+    num = num.toString().replace(/\$|\,/g, '');
+    if (isNaN(num))
+    {
+        num = "0";
+    }
+
+    sign = (num == (num = Math.abs(num)));
+    num = Math.floor(num * 100 + 0.50000000001);
+    cents = num % 100;
+    num = Math.floor(num / 100).toString();
+
+    if (cents < 10)
+    {
+        cents = "0" + cents;
+    }
+    for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+    {
+        num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
+    }
+
+    return (((sign) ? '' : '-') + num );
+}
+
+$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
+	$.each( data[0], function( key, val ) {
+		deadline = new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC");
+		item_auction =
+		'<div class="col-md-4 col-sm-6 col-xs-12">'+
+		'<div class="banner-flash">'+
+		'<div class="banner-zoom">'+
+		'<a href="#" class="thumb-zoom"><img src="static/images/theme/ad1.jpg" alt="" /></a>'+
+		'<div class="flash-label">'+
+		'<span class="text-uppercase white">'+ToPersian(val.users.length)+' از '+ToPersian(val.max_members)+'</span>'+
+		'</div>'+
+		'<div class="flash-label right-time">'+
+		'<span class="text-uppercase white"><div class="flash-countdown" data-date="'+deadline+'"></div></span>'+
+		'</div>'+
+		'</div>'+
+		'<div class="flash-info">'+
+		'<ul class="list-none clearfix">'+
+		'<li>'+
+		'<div class="flash-timer">'+
+		'<p> '+val.name+' </p>'+
+		'</div>'+
+		'</li>'+
+		'<li>'+
+		'<div class="flash-timer">'+
+		'<a href="package.html" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>'+
+		'</div>'+
+		'</li>'+
+		'<li>'+
+		'<div class="info-pro-hotdeal">'+
+		'<div class="deal-percent">'+
+		'<span>شروع حراجی:</span>'+
+		'<span> '+ToPersian(formatCurrency(val.register_price))+' </span>'+
+		'</div>'+
+		'<div class="product-price">'+
+		'<label>قیمت محصول:</label>'+
+		'<ins><span>'+ToPersian(formatCurrency(val.item.price))+'</span></ins>'+
+		'</div>'+
+		'</div>'+
+		'</li>'+
+		'</ul>'+
+		'</div>'+
+		'</div>'+
+		'</div>';
+
+		$('.auctions_container').append(item_auction);
+
+		if($('.flash-countdown').length>0){
+			$(".flash-countdown").TimeCircles({
+				fg_width: 0.01,
+				bg_width: 1.2,
+				text_size: 0.07,
+				circle_bg_color: "#ffffff",
+				time: {
+					Days: {
+						show: false,
+						text: "",
+						color: "#f9bc02"
+					},
+					Hours: {
+						show: true,
+						text: "",
+						color: "#f9bc02"
+					},
+					Minutes: {
+						show: true,
+						text: "",
+						color: "#f9bc02"
+					},
+					Seconds: {
+						show: true,
+						text: "",
+						color: "#f9bc02"
+					}
+				}
+			});
+		}
 	});
 });
 
