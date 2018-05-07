@@ -1,27 +1,11 @@
-<<<<<<< HEAD
-from .database import db
-=======
-# encoding=utf8
 import sys
-
 from markupsafe import Markup
 from wtforms.widgets import HTMLString
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
-from database import db
->>>>>>> 2a07f127a9c287e4a9ad8297ba2c38ab90ccc910
+from project.database import db
 from project import app
 from PIL import Image
 from wtforms.widgets import html_params, HTMLString
 from project.model import *
-<<<<<<< HEAD
-from project.model.advertisement import Advertisement
-from project.model.event import Event
-
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
-=======
 import os
 import os.path as op
 import ast
@@ -32,6 +16,8 @@ from flask_admin._compat import string_types, urljoin
 from wtforms.utils import unset_value
 from flask_admin.helpers import get_url
 from flask_admin.form.upload import ImageUploadField
+from project.model.advertisement import Advertisement
+from project.model.event import Event
 # git pto
 
 # Flask views
@@ -78,8 +64,8 @@ class MultipleImageUploadInput(object):
 
             filename = item
 
-            if field.thumbnail_size:
-                filename = field.thumbnail_size(filename)
+            # if field.thumbnail_size:
+            #     filename = field.thumbnail_size(filename)
 
             if field.url_relative_path:
                 filename = urljoin(field.url_relative_path, filename)
@@ -131,7 +117,6 @@ class MultipleImageUploadField(ImageUploadField):
 
         setattr(obj, name, str(filenames))
 
->>>>>>> 2a07f127a9c287e4a9ad8297ba2c38ab90ccc910
 
 # Create admin
 admin = Admin(
@@ -153,24 +138,22 @@ class ProductMultipleFileUpload(ModelView):
 
     def _list_thumbnail(view, context, model, name):
         if not model.images:
-            return ''
+            return None
 
         def gen_img(filename):
             return '<img src="{}">'.format(url_for('static',
-                                                   filename="images/custom/" + form.thumbgen_filename(image)))
+                                                   filename="images/custom/" + form.thumbgen_filename(model.images)))
 
-        return Markup("<br />".join([gen_img(image) for image in ast.literal_eval(model.image)]))
+        return Markup("<br />".join(gen_img(model.images) for image in ast.literal_eval(model.images)))
 
     column_formatters = {'images': _list_thumbnail}
 
     form_extra_fields = {'images': MultipleImageUploadField("Images",
-                                                            base_path="app/static/images/custom",
+                                                            base_path="project/static/images/custom",
                                                             url_relative_path="images/custom/",
-                                                            thumbnail_size=(400, 300, 1))}
+                                                            thumbnail_size=(64, 64, 1))}
 
 
-<<<<<<< HEAD
-=======
 # Product Administrative View
 # class ProductView(ModelView):
 #     form_excluded_columns = ('likes', 'views', 'events', 'items', 'comments')
@@ -190,7 +173,6 @@ class ProductMultipleFileUpload(ModelView):
 #     }
 
 
->>>>>>> 2a07f127a9c287e4a9ad8297ba2c38ab90ccc910
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Category, db.session))
 admin.add_view(ProductMultipleFileUpload(Product, db.session))

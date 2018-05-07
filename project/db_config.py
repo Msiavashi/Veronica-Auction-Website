@@ -5,8 +5,8 @@
 
 
 class Config:
-    port = "3306"
+    port = "5432"
     host_name = "localhost"
     db_name = "bidbazi_db"
-    password = ""
-    username = "root"
+    password = "12345"
+    username = "bidbazi"
