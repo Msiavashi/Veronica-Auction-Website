@@ -32,11 +32,23 @@ class Route():
             return redirect('/')
         return render_template('site/login.html')
 
+    @app.route('/ilogin')
+    def ilogin():
+        if current_user.is_authenticated:
+            return redirect('/')
+        return render_template('site/iframes/ilogin.html')
+
     @app.route('/register/')
     def account_register():
         if current_user.is_authenticated:
             return redirect('/')
         return render_template('site/register.html')
+
+    @app.route('/iregister')
+    def iregister():
+        if current_user.is_authenticated:
+            return redirect('/')
+        return render_template('site/iframes/iregister.html')
 
     @app.route("/logout")
     @login_required
@@ -48,6 +60,12 @@ class Route():
     @login_required
     def profile():
         return render_template('site/profile.html')
+
+    @app.route("/participate")
+    @login_required
+    def participate():
+        return render_template('site/iframes/package.html')
+
 
     @login_manager.unauthorized_handler
     def unauthorized():

@@ -1,5 +1,5 @@
-{% extends 'site/layout.html' %}
-{% block title %} بید بازی | ورود  {% endblock %}
+{% extends 'site/iframes/ilayout.html' %}
+{% block title %} بیدبازی | ثبت نام {% endblock %}
 {% block content %}
 <div class="content-page woocommerce">
 	<div class="container">
@@ -19,39 +19,28 @@
 										<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
 										<div class="success_container"></div>
 									</div>
-									<form id="login_form">
+									<form id="register_form">
 										<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-										<h2 class="title24 title-form-account">ورود</h2>
+										<h2 class="title24 title-form-account">ثبت نام</h2>
 										<p>
-											<label for="username">نام کاربری<span class="required">*</span></label>
-											<input type="text" name="username"/>
+											<label for="username">نام کاربری <span class="required">*</span></label>
+											<input type="text" name="username" />
+										</p>
+										<p>
+											<label for="password"> تلفن همراه <span class="required">*</span></label>
+											<input name="mobile" type="number"/>
 										</p>
 										<p>
 											<label for="password">رمز عبور <span class="required">*</span></label>
-											<input type="password" name="password"/>
+											<input name="password" type="password" />
 										</p>
 										<p>
-											<input type="submit" class="register-button" name="login" value="ورود">
+											<label for="password">تکرار رمز عبور <span class="required">*</span></label>
+											<input name="c_password" type="password"/>
 										</p>
-										<div class="table create-account">
-											<div class="text-left">
-												<p>
-													<input type="checkbox"  id="remember" /> <label for="remember">مرا به خاطر بسپار</label>
-												</p>
-											</div>
-											<div class="text-right">
-												<a href="#" class="color">رمز عبور خود را فراموش کرده اید؟</a>
-											</div>
-										</div>
-										<h2 class="title18 social-login-title">یا از طریق زیر وارد شوید</h2>
-										<div class="social-login-block table text-center">
-											<div class="social-login-btn">
-												<a href="#" class="login-fb-link">Facebook</a>
-											</div>
-											<div class="social-login-btn">
-												<a href="#" class="login-goo-link">Google</a>
-											</div>
-										</div>
+										<p>
+											<input type="submit" class="register-button" name="register" value="ثبت نام">
+										</p>
 									</form>
 								</div>
 							</div>
@@ -63,7 +52,7 @@
 									<p class="desc">
 											ثبت نام در بیدبازی به شما اجازه می دهد در حراجی ها شرکت کنید و به وضعیت و تاریخ سفارش خود دسترسی داشته باشید. فقط فیلدهای مربوطه را پر کنید و در هر زمان یک حساب جدید برای خود ایجاد کنید. ما فقط از شما برای اطلاعاتی که لازم است تا فرایند خرید را سریع تر و آسان تر خواهد کرد پرسیده ایم .
 									</p>
-									<a href="{{ ('/register') }}" class="shop-button">هم اکنون ثبت نام کنید!</a>
+									<a href="{{ '\ilogin' }}" class="shop-button">ورود به حساب کاربری</a>
 								</div>
 							</div>
 						</div>
@@ -78,26 +67,25 @@
 {{ super() }}
 <script>
 
-$( "#login_form" ).submit(function( event ) {
-
-  event.preventDefault();
-  var $form = $( this );
-  var data = getFormData($form);
-	var url = "{{url_for('userlogin')}}";
-  var posting = $.post( url, data);
-  posting.done(function( data ) {
+$( "#register_form" ).submit(function( event ) {
+	event.preventDefault();
+	var $form = $( this );
+	var data = getFormData($form);
+	var url = "{{url_for('userregistration')}}";
+	var posting = $.post( url, data);
+	posting.done(function( data ) {
 		$(".error_alert").addClass('hide');
 		$(".success_alert").removeClass('hide');
-		$(".success_container").html('ورود شما با موفقیت انجام ')
-		window.location.href = "/";
-  });
+		$(".success_container").html('ثبت نام شما با موفقیت انجام شد')
+		window.location.href = '/ilogin';
+	});
 	posting.fail(function(xhr, status, error) {
 		obj = JSON.parse(xhr.responseText);
 		$.each(obj.message, function (key, item) {
 			$(".error_alert").removeClass('hide');
 			$(".error_container").html(item)
 			});
-    });
+		});
 });
 
 </script>

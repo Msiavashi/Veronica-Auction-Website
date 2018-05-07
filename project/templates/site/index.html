@@ -855,32 +855,32 @@
 			<div class="service-slider3">
 				<div class="wrap-item" data-pagination="false" data-navigation="false" data-items="6">
 					<div class="item-service3 white">
-						<a class="service-icon" href="#"><img src="images/theme/for1.png" alt="" /></a>
+						<a class="service-icon" href="#"><img src="static/images/theme/for1.png" alt="" /></a>
 						<h2 class="title14">شرکت کنید</h2>
 						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
 					</div>
 					<div class="item-service3 white">
-						<a class="service-icon" href="#"><img src="images/theme/for2.png" alt="" /></a>
+						<a class="service-icon" href="#"><img src="static/images/theme/for2.png" alt="" /></a>
 						<h2 class="title14">تحویل ۲۴ ساعته</h2>
 						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
 					</div>
 					<div class="item-service3 white">
-						<a class="service-icon" href="#"><img src="images/theme/for3.png" alt="" /></a>
+						<a class="service-icon" href="#"><img src="static/images/theme/for3.png" alt="" /></a>
 						<h2 class="title14">پرداخت امن</h2>
 						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
 					</div>
 					<div class="item-service3 white">
-						<a class="service-icon" href="#"><img src="images/theme/for4.png" alt="" /></a>
+						<a class="service-icon" href="#"><img src="static/images/theme/for4.png" alt="" /></a>
 						<h2 class="title14">فروشگاهی با اعتبار</h2>
 						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
 					</div>
 					<div class="item-service3 white">
-						<a class="service-icon" href="#"><img src="images/theme/for5.png" alt="" /></a>
+						<a class="service-icon" href="#"><img src="static/images/theme/for5.png" alt="" /></a>
 						<h2 class="title14">پشتیبانی ۲۴ ساعته</h2>
 						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
 					</div>
 					<div class="item-service3 white">
-						<a class="service-icon" href="#"><img src="images/theme/for6.png" alt="" /></a>
+						<a class="service-icon" href="#"><img src="static/images/theme/for6.png" alt="" /></a>
 						<h2 class="title14">اپلیکیشن موبایل</h2>
 						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
 					</div>
@@ -1390,6 +1390,7 @@ $.getJSON( "{{url_for('categorymenuitems')}}", function( data ) {
 		item_toggle = '<li><a href="#"><span>'+val.name+'</span></a></li>';
 		$('.list-cat-icon').append(item_cat_icon);
 		$('.list-category-toggle').append(item_toggle);
+		$('.main-nav-ontop').find('ul').append(item_toggle);
 	});
 });
 
@@ -1612,7 +1613,11 @@ $.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
 		'</li>'+
 		'<li>'+
 		'<div class="flash-timer">'+
-		'<a href="package.html" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>'+
+		'{% if current_user.is_authenticated %}'+
+		'<a href="/participate" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>'+
+		'{% else %}'+
+		'<a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>'+
+		'{% endif %}'+
 		'</div>'+
 		'</li>'+
 		'<li>'+

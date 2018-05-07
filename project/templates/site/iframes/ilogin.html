@@ -1,4 +1,4 @@
-{% extends 'site/layout.html' %}
+{% extends 'site/iframes/ilayout.html' %}
 {% block title %} بید بازی | ورود  {% endblock %}
 {% block content %}
 <div class="content-page woocommerce">
@@ -63,7 +63,7 @@
 									<p class="desc">
 											ثبت نام در بیدبازی به شما اجازه می دهد در حراجی ها شرکت کنید و به وضعیت و تاریخ سفارش خود دسترسی داشته باشید. فقط فیلدهای مربوطه را پر کنید و در هر زمان یک حساب جدید برای خود ایجاد کنید. ما فقط از شما برای اطلاعاتی که لازم است تا فرایند خرید را سریع تر و آسان تر خواهد کرد پرسیده ایم .
 									</p>
-									<a href="{{ ('/register') }}" class="shop-button">هم اکنون ثبت نام کنید!</a>
+									<a href="{{ ('/iregister') }}" class="shop-button">هم اکنون ثبت نام کنید!</a>
 								</div>
 							</div>
 						</div>
@@ -89,7 +89,7 @@ $( "#login_form" ).submit(function( event ) {
 		$(".error_alert").addClass('hide');
 		$(".success_alert").removeClass('hide');
 		$(".success_container").html('ورود شما با موفقیت انجام ')
-		window.location.href = "/";
+		parent.location.reload();
   });
 	posting.fail(function(xhr, status, error) {
 		obj = JSON.parse(xhr.responseText);
