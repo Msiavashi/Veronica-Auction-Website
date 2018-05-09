@@ -9,7 +9,7 @@ class Advertisement(Base):
     id = db.Column(db.BigInteger, primary_key=True)
     title = db.Column(db.String(length=100),nullable=False)
     description = db.Column(db.String(length=100),nullable=False)
-    images = db.Column(db.Text,nullable=False,default="static/images/test/iphone.jpg")
+    images = db.Column(db.Text,nullable=False)
     link_title = db.Column(db.String(length=100),nullable=False)
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now,)

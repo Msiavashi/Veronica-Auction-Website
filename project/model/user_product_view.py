@@ -10,7 +10,7 @@ user_product_views = db.Table('user_product_views', Base.metadata,
     db.Column('date',db.TIMESTAMP, default=datetime.datetime.now)
 )
 
-class ViewSchema(Schema):
+class ViewProductSchema(Schema):
     user = fields.Nested("UserSchema")
     product = fields.Nested("ProductSchema")
     ip = fields.Str()

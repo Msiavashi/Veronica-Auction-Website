@@ -14,3 +14,5 @@ SQLALCHEMY_ECHO = True
 
 JWT_BLACKLIST_ENABLED = True
 JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+#
+# CACHE_TYPE = 'simple'

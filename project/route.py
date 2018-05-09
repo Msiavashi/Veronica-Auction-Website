@@ -66,6 +66,11 @@ class Route():
     def participate():
         return render_template('site/iframes/package.html')
 
+    @app.route("/instantview")
+    @login_required
+    def instantview():
+        return render_template('site/iframes/quickview.html')
+
 
     @login_manager.unauthorized_handler
     def unauthorized():

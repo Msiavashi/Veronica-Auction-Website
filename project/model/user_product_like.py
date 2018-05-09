@@ -6,6 +6,6 @@ user_product_likes = db.Table('user_product_likes', Base.metadata,
     db.Column('user_id', db.ForeignKey('users.id'))
 )
 
-class LikeSchema(Schema):
+class LikeProductSchema(Schema):
     user = fields.Nested("UserSchema")
     product = fields.Nested("ProductSchema")

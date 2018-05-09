@@ -4,6 +4,8 @@ from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_jwt_extended import JWTManager
 from flask_wtf.csrf import CSRFProtect
+# from flask_caching import Cache
+
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -11,6 +13,9 @@ jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)
 csrf = CSRFProtect(app)
+# cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+# with app.app_context():
+#         cache.clear()
 
 from project.route import route
 from project.controllers import *
@@ -27,6 +32,8 @@ api.add_resource(Site_API.AuctionCarouselAds, '/auction/carousel/ads')
 api.add_resource(Site_API.ProductCarouselAds, '/product/carousel/ads')
 api.add_resource(Site_API.SiteTodayEvents, '/today/events')
 api.add_resource(Site_API.SiteTodayAuctions, '/today/auctions')
+api.add_resource(Site_API.SiteMostpopularAuctions, '/mostpopular/auctions')
+api.add_resource(Site_API.SiteMostpopularProducts, '/mostpopular/products')
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):

@@ -6983,7 +6983,7 @@ a.protect-icon:hover {
   padding: 10px 0 10px;
 }
 .flash-label {
-	background: #333333 url("../images/home2/") repeat scroll 0 0;
+	background: #333333 /*url("../static/images/home2/")*/ repeat scroll 0 0;
 	font-size: 11px;
 	height: 30px;
 	padding-left: 18px;

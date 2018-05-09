@@ -50,15 +50,18 @@ class User(Base,UserMixin):
     address = db.relationship('Address')
     payments = db.relationship('Payment')
     orders = db.relationship('Order')
-    likes = db.relationship('Product', secondary=user_product_likes ,back_populates='likes')
-    views = db.relationship('Product', secondary=user_product_views ,back_populates='views')
+
+
     roles = db.relationship('Role',secondary=user_roles,back_populates='users')
     plans = db.relationship('Plan', secondary=user_plans, back_populates='users')
     gifts = db.relationship('Gift', secondary=user_gifts, back_populates='users')
-    auctions = db.relationship('Auction', secondary=user_auctions,back_populates='users')
-    auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='auction_views')
-    auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='auction_likes')
+    auctions = db.relationship('Auction', secondary=user_auctions,back_populates='participants')
 
+    product_likes = db.relationship('Product', secondary=user_product_likes ,back_populates='likes')
+    product_views = db.relationship('Product', secondary=user_product_views ,back_populates='views')
+    
+    auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='views')
+    auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='likes')
 
     def __str__(self):
         if(self.first_name):
@@ -95,9 +98,13 @@ class UserSchema(Schema):
 
     payments = fields.Nested('PaymentSchema', many=True,exclude=('user',))
     orders = fields.Nested('OrderSchema', many=True,exclude=('user',))
-    likes = fields.Nested('LikeSchema', many=True,exclude=('user',))
-    views = fields.Nested('ViewSchema', many=True,exclude=('user',))
+    likes = fields.Nested('LikeProductSchema', many=True,exclude=('user',))
     roles = fields.Nested('RoleSchema', many=True,exclude=('user',))
     plans = fields.Nested('PlanSchema', many=True,exclude=('user',))
     gifts = fields.Nested('GiftSchema', many=True,exclude=('user',))
     auctions = fields.Nested('AuctionSchema', many=True,exclude=('user',))
+
+    auction_likes = fields.Nested('LikeAuctionSchema',many=True,exclude=('user',))
+    auction_views = fields.Nested('ViewAuctionSchema', many=True,exclude=('user',))
+    product_likes = fields.Nested('LikeProductSchema',many=True,exclude=('user',))
+    product_views = fields.Nested('ViewProductSchema', many=True,exclude=('user',))
