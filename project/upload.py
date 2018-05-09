@@ -9,8 +9,6 @@ from .utils import MultipleImageUploadField
 
 
 class ProductUpload(ModelView):
-    form_excluded_columns = ('likes', 'views', 'events', 'items', 'comments')
-
     def _list_thumbnail(view, context, model, name):
         if not model.images:
             return None

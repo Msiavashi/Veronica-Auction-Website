@@ -15,7 +15,6 @@ admin = Admin(
     base_template='admin.html',
     template_mode='bootstrap3',
 )
-
 admin.add_view(ModelView(User, db.session))
 admin.add_view(CategoryUpload(Category, db.session))
 admin.add_view(ProductUpload(Product, db.session))
@@ -27,5 +26,5 @@ admin.add_view(ModelView(Inventory, db.session))
 admin.add_view(ModelView(Manufacture, db.session))
 admin.add_view(ModelView(Offer, db.session))
 admin.add_view(ModelView(Item, db.session))
-admin.add_view(AdvertisementUpload(Advertisement, db.session))
 admin.add_view(ModelView(Event, db.session))
+admin.add_view(AdvertisementUpload(Advertisement, db.session))

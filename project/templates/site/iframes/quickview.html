@@ -1,6 +1,7 @@
 {% extends 'site/iframes/ilayout.html' %}
 {% block title %} بید بازی | شرکت در حراجی {% endblock %}
 {% block content %}
+<input type="hidden" id="auction" value="{{auction_id}}">
 <div class="content-page">
   <div class="container">
     <div class="product-quickview detail-with-sidebar config-detail ">
@@ -58,7 +59,7 @@
         </div>
         <div class="col-md-8 col-sm-7 col-xs-12">
           <div class="detail-info">
-            <h2 class="title-detail">نام محصول حراجی شده</h2>
+            <h2 class="title-detail">عنوان محصول حراجی شده</h2>
             <div class="product-price">
               <!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
               <div class="textboX">
@@ -118,7 +119,10 @@
 {% block scripts %}
 {{ super() }}
 <script>
-var minutes = $( '#set-time' ).val();
+
+alert($('#auction').val())
+
+var minutes = $('#set-time').val();
 
 var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
 var time_limit = ((minutes * 70 ) * 1000);
@@ -138,7 +142,6 @@ getCountdown();
 setInterval(function () { getCountdown(); }, 1000);
 
 function getCountdown(){
-
   // find the amount of "seconds" between now and target
   var current_date = new Date().getTime();
   var seconds_left = (target_date - current_date) / 1000;

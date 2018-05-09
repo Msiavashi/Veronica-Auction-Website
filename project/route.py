@@ -6,6 +6,7 @@ from wtforms.validators import DataRequired
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from flask_login import current_user,login_required,logout_user
 from .controllers.Auth_API import login_manager
+from .model import *
 
 # class LoginForm(FlaskForm):
 #     username = StringField('نام کاربری', validators=[DataRequired('لطفا نام کاربری خود را وارد کنید')])
@@ -66,10 +67,10 @@ class Route():
     def participate():
         return render_template('site/iframes/package.html')
 
-    @app.route("/instantview")
+    @app.route("/instantview/<int:aid>")
     @login_required
-    def instantview():
-        return render_template('site/iframes/quickview.html')
+    def instantview(aid):
+        return render_template('site/iframes/quickview.html',auction_id=aid)
 
 
     @login_manager.unauthorized_handler

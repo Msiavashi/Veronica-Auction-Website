@@ -53,13 +53,12 @@ class SiteMostpopularAuctions(Resource):
     def get(self):
         select = 'SELECT auctions.*,count(auctions.id) as total FROM auctions inner join user_auction_likes on auctions.id = user_auction_likes.auction_id group by auctions.id order by total DESC'
         auctions=Auction.query.from_statement(select)
-        #auctions = db.session.query(db.func.count(Auction.id)).select_from(Auction).join(user_auction_likes).group_by(Auction.id).order_by('count_1 DESC')
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class SiteMostpopularProducts(Resource):
     def get(self):
-        # db.session.query(Post, func.count(likes.c.user_id).label('total')).join(likes).group_by(Post).order_by('total DESC')
-        auctions = Auction.query(db.func.count(user_auction_like.user_id).label('total')).join(user_auction_like).group_by(Auction).order_by('total DESC').limit(10)
+        select = 'SELECT auctions.*,count(*)as total FROM auctions inner join items on items.id=auctions.item_id inner join products on products.id=items.product_id inner join user_product_likes on user_product_likes.product_id=products.id group by(auctions.id) order by total DESC'
+        auctions=Auction.query.from_statement(select)
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)

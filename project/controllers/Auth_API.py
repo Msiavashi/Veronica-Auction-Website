@@ -62,7 +62,7 @@ class UserLogin(Resource):
         if User.verify_hash(data['password'], current_user.password):
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
-            login_user(current_user)
+            login_user(current_user,remember=True)
             return make_response(jsonify({
                 'message': 'Logged in as {}'.format(current_user.username),
                 'access_token': access_token,
