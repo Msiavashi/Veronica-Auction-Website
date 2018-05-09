@@ -17,8 +17,8 @@ csrf = CSRFProtect(app)
 # with app.app_context():
 #         cache.clear()
 
-from project.route import route
-from project.controllers import *
+from .route import route
+from .controllers import *
 from flask_restful import Api
 
 api = Api(app,'/api')

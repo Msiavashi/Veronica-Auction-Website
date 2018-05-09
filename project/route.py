@@ -1,11 +1,11 @@
-from project import app
+from . import app
 from flask import url_for, redirect, render_template, request, abort ,redirect
 from flask import render_template, jsonify
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from flask_login import current_user,login_required,logout_user
-from project.controllers.Auth_API import login_manager
+from .controllers.Auth_API import login_manager
 
 # class LoginForm(FlaskForm):
 #     username = StringField('نام کاربری', validators=[DataRequired('لطفا نام کاربری خود را وارد کنید')])

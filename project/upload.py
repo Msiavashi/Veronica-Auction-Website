@@ -1,11 +1,11 @@
 from markupsafe import Markup
-from project import app
+from . import app
 from PIL import Image
 import ast
 from flask import url_for
 from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
-from project.utils import MultipleImageUploadField
+from .utils import MultipleImageUploadField
 
 
 class ProductUpload(ModelView):

@@ -1,11 +1,11 @@
-from project.database import db
-from project import app
-from project.model import *
+from .database import db
+from . import app
+from .model import *
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from project.model.advertisement import Advertisement
-from project.model.event import Event
-from project.upload import *
+from .model.advertisement import Advertisement
+from .model.event import Event
+from .upload import *
 
 
 # Create admin
