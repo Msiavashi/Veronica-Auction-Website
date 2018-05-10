@@ -8,26 +8,23 @@
       <div class="row">
         <div class="col-md-4 col-sm-5 col-xs-12">
           <div class="product-extra-link2 rightList">
-            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times"></i>ضریب ۴</a>
-            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i>۲۲ از ۴۰</a>
+            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times" data-bind="text:auction_rate">ضریب</i></a>
+            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span  data-bind="text: participant_count"></span> از <span data-bind="text: max_members"></span></a>
           </div>
           <!-- End rightlist -->
           <div class="detail-gallery">
             <div class="mid">
-              <img src="images/photos/homeware/3.jpg" alt=""/>
+              <img data-bind="attr:{src: active_image}" alt=""/>
             </div>
             <div class="gallery-control">
               <a href="#" class="prev"><i class="fa fa-angle-left"></i></a>
+
               <div class="carousel">
-                <ul>
-                  <li><a href="#" class="active"><img src="images/photos/homeware/3.jpg" alt=""/></a></li>
-                  <li><a href="#"><img src="images/photos/homeware/2.jpg" alt=""/></a></li>
-                  <li><a href="#"><img src="images/photos/homeware/1.jpg" alt=""/></a></li>
-                  <li><a href="#"><img src="images/photos/homeware/2.jpg" alt=""/></a></li>
-                  <li><a href="#"><img src="images/photos/homeware/3.jpg" alt=""/></a></li>
-                  <li><a href="#"><img src="images/photos/homeware/1.jpg" alt=""/></a></li>
+                <ul data-bind="foreach: images">
+                  <li><a href="#"><img data-bind="attr:{src: url}" alt=""/></a></li>
                 </ul>
               </div>
+
               <a href="#" class="next"><i class="fa fa-angle-right"></i></a>
             </div>
           </div>
@@ -59,21 +56,27 @@
         </div>
         <div class="col-md-8 col-sm-7 col-xs-12">
           <div class="detail-info">
-            <h2 class="title-detail">عنوان محصول حراجی شده</h2>
+            <h2 class="title-detail" data-bind="text: auction_title"></h2>
             <div class="product-price">
               <!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
               <div class="textboX">
-                <div class="textboXX"><p>قیمت محصول : ۶،۷۰۰،۰۰۰ تومان</p></div>
+                <div class="textboXX"><p id="auction_item_price"> قیمت محصول : <span data-bind="text: auction_item_price"></span> تومان </p></div>
                 <div class="upArrow"></div>
               </div>
               <div class="textboX">
-                <div class="textboXX"><p>شروع حراجی : ۱،۳۰۰،۰۰۰ تومان</p></div>
+                <div class="textboXX"><p id="auction_register_price">شروع حراجی : <span data-bind="text: auction_register_price"></span></p></div>
                 <div class="upArrow"></div>
               </div>
             </div>
             <div class="detail-extralink">
-              <div class="list-member-bid">
-                <p class="item-Bid"><img src="images/theme/005.png"/>احسان امینی<span>۱</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+              <div class="list-member-bid" data-bind="foreach: people">
+                <p class="item-Bid" data-bind="css: { 'YOU' : its_me  }"><img data-bind="attr:{src: avatar}"/>
+                  <sd data-bind="text:name"></sd>
+                    <span>۲</span>
+                    <b>۱،۵۶۷،۰۰۰ تومان</b>
+                  </p>
+
+                <!-- <p class="item-Bid"><img src="images/theme/005.png"/>احسان امینی<span>۱</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
                 <p class="item-Bid"><img src="images/theme/004.png"/>امیرحسین امینی<span>۲</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
                 <p class="item-Bid"><img src="images/theme/005.png"/>پوریا نصیری پور<span>۳</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
                 <p class="item-Bid"><img src="images/theme/005.png"/>امید ابراهیمی<span>۴</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
@@ -81,30 +84,31 @@
                 <p class="item-Bid YOU"><img src="images/theme/005.png"/>سید حسین حسینی<span>۶</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
                 <p class="item-Bid"><img src="images/theme/004.png"/>سید مهدی رحمتی<span>۷</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
                 <p class="item-Bid"><img src="images/theme/005.png"/>روزبه چشمی<span>۸</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>فرمانده<span>۹</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+                <p class="item-Bid"><img src="images/theme/004.png"/>فرمانده<span>۹</span><b>۱،۵۶۷،۰۰۰ تومان</b></p> -->
               </div>
               <div class="product-extra-link2">
                 <div class="last-Bid-user">
                   <p class="img-price-Bid"><img src="images/theme/005.png"/></p>
-                  <p class="price-Bid">۱،۳۴۲،۰۰۰ تومان</p>
-                  <p class="name-price-Bid">احسان امینی</p>
+                  <p class="price-Bid" id="auction_current_offer">۱،۳۴۲،۰۰۰ تومان</p>
+                  <p class="name-price-Bid" id="auction_current_winner">احسان امینی</p>
                 </div>
-                <input type="hidden" id="set-time" value="1"/>
+                <input type="hidden" id="set-time" value="3"/>
                 <div id="countdown">
                   <div id='tiles' class="color-full"></div>
-                  <div class="countdown-label">دو شنبه ۱۳ فروردین ساعت ۱۴</div>
+                  <div class="countdown-label" data-bind="text:now_date"></div>
                 </div>
-                <a class="addcart-link" href="#">پیشنهاد <div class="detail-qty border radius">۱۲۲</div></a>
+                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">۱۲۲</div></a>
               </div>
               <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span>
-                  سه شنبه ۷فروردین ۱۳۹۷
-                <i aria-hidden="true" class="fa fa-clock-o"></i> ساعت: ۲۰:۲۵:۱۲
+                <div data-bind="text:auction_end_date">
+                </div>
+                <i aria-hidden="true" class="fa fa-clock-o"></i> ساعت: <span data-bind="text:auction_end_time"></span>
               </div>
             </div>
             <div class="detail-extralink mt-0">
               <div class="product-extra-link2">
-                <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true"></i> اضافه به سبد</a>
-                <a class="wishlist-link2" href="#"><i aria-hidden="true" class="fa fa-heart"></i></a>
+                <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"></i> اضافه به سبد</a>
+                <a class="wishlist-link2" href="#" id="like_auction"><i aria-hidden="true" class="fa fa-heart"></i></a>
                 <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i>۲،۴۵۰،۰۰۰ تومان</a>
               </div>
             </div>
@@ -115,64 +119,169 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+
+<script type="text/javascript" src="../../static/js/libs/owl.carousel.js"></script>
+<script type="text/javascript" src="../../static/js/libs/jquery.jcarousellite.js"></script>
+<script type="text/javascript" src="../../static/js/libs/jquery.elevatezoom.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.js')}}"></script>
+
 <script>
+var auction_id = $('#auction').val();
+var images_path = '../../static/images/products/';
+var avatar_path = '../../static/images/avatars/';
 
-alert($('#auction').val())
-
-var minutes = $('#set-time').val();
-
-var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
-var time_limit = ((minutes * 70 ) * 1000);
-//set actual timer
-setTimeout(
-function()
-{
-  alert( 'حراجی به پایان رسید!' );
-}, time_limit );
-
-var days, hours, minutes, seconds; // variables for time units
-
-var countdown = document.getElementById("tiles"); // get tag element
-
-getCountdown();
-
-setInterval(function () { getCountdown(); }, 1000);
-
-function getCountdown(){
-  // find the amount of "seconds" between now and target
-  var current_date = new Date().getTime();
-  var seconds_left = (target_date - current_date) / 1000;
-
-if ( seconds_left >= 0 ) {
-console.log(time_limit);
- if ( (seconds_left * 1000 ) < ( time_limit / 1 ) )  {
-   $( '#tiles' ).removeClass('color-full');
-   $( '#tiles' ).addClass('color-half');
-
-    }
-  if ( (seconds_left * 1000 ) < ( time_limit / 6 ) )  {
-    $( '#tiles' ).removeClass('color-half');
-    $( '#tiles' ).addClass('color-empty');
+function person(avatar,first_name, last_name,features) {
+    var self = this;
+    self.avatar = avatar;
+    self.first_name = first_name;
+    self.last_name = last_name;
+    self.feature = ko.observable(features);
   }
 
-  days = pad( parseInt(seconds_left / 86400) );
-  seconds_left = seconds_left % 86400;
+$.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
+  data = data[0];
+  var deadline = new Date(data.end_date).format("yyyy-M-d hh:mm:ss TT","UTC");
+  var event = new Date(Date.parse(deadline));
+  var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
+  var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
+  var end_month = event.toLocaleDateString('fa-IR', {month:'long'});
+  var end_time = event.getMinutes()
 
-  hours = pad( parseInt(seconds_left / 3600) );
-  seconds_left = seconds_left % 3600;
+  var end_date_date = end_weekday + " " + end_day +" "+ end_month;
+  var end_date_time = ToPersian(event.getHours());
 
-  minutes = pad( parseInt(seconds_left / 60) );
-  seconds = pad( parseInt( seconds_left % 60 ) );
+  var event = new Date(Date.now());
+  var now_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
+  var now_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
+  var now_month = event.toLocaleDateString('fa-IR', {month:'long'});
 
-  // format countdown string + set tag value
-  countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-}
-}
-function pad(n) {
-  return (n < 10 ? '0' : '') + n;
-}
+  var now_date_time = event.toLocaleTimeString('fa-IR');
+  var now_date_date = now_weekday + " " + now_day +" "+ now_month;
+
+
+  var participant_count = ToPersian(data.participants.length);
+  var max_members = ToPersian(data.max_members);
+  var images_temp = ClearifyNames( data.item.product.images);
+  var images = [];
+
+  console.log(images);
+  $.each(images_temp, function(key,val) {
+    images.push({url:images_path+val.trim(),active:false});
+  });
+  images[0].active=true;
+  console.log(images);
+
+  var participants = data.participants
+
+  var people = [];
+  var  current_user_id = '{{current_user.id}}';
+  $.each(participants, function(key,val) {
+    its_you = val.id == current_user_id ? true : false;
+    p = {avatar : avatar_path + ClearifyNames(val.avatar)[0],name :val.first_name +" "+ val.last_name,its_me : its_you};
+    people.push(p);
+  });
+
+  console.log(people);
+  function MyViewModel() {
+      this.participant_count = participant_count;
+      this.max_members = max_members;
+      this.images = images;
+      this.active_image = images[0].url;
+      this.auction_title = data.name;
+      this.auction_item_price = ToPersian(formatCurrency(data.item.price));
+      this.auction_register_price = ToPersian(formatCurrency(data.register_price));
+      this.people = people;
+      this.auction_rate = ToPersian(data.rate);
+      this.auction_end_date = end_date_date;
+      this.auction_end_time = end_date_time;
+      this.now_date = now_date_date;
+  }
+  ko.applyBindings(new MyViewModel());
+
+
+  if($('.detail-gallery').length>0){
+		$('.detail-gallery').each(function(){
+			$(this).find(".carousel").jCarouselLite({
+				btnNext: $(this).find(".gallery-control .next"),
+				btnPrev: $(this).find(".gallery-control .prev"),
+				speed: 800,
+				visible:3,
+			});
+			//Elevate Zoom
+			$(this).find('.mid img').elevateZoom({
+				zoomType: "inner",
+				cursor: "crosshair",
+				zoomWindowFadeIn: 500,
+				zoomWindowFadeOut: 750
+			});
+
+			$(this).find(".carousel a").on('click',function(event) {
+				event.preventDefault();
+				$(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
+				$(this).addClass('active');
+				$(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
+				var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
+				$('.zoomWindow').css('background-image','url("'+z_url+'")');
+			});
+		});
+	}
+  var minutes = end_time;
+
+  var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
+  var time_limit = ((minutes * 70 ) * 1000);
+  //set actual timer
+  setTimeout(
+  function()
+  {
+    alert( 'حراجی به پایان رسید!' );
+  }, time_limit );
+
+  var days, hours, minutes, seconds; // variables for time units
+
+  var countdown = document.getElementById("tiles"); // get tag element
+
+  getCountdown();
+
+  setInterval(function () { getCountdown(); }, 1000);
+
+  function getCountdown(){
+    // find the amount of "seconds" between now and target
+    var current_date = new Date().getTime();
+    var seconds_left = (target_date - current_date) / 1000;
+
+  if ( seconds_left >= 0 ) {
+  console.log(time_limit);
+   if ( (seconds_left * 1000 ) < ( time_limit / 1 ) )  {
+     $( '#tiles' ).removeClass('color-full');
+     $( '#tiles' ).addClass('color-half');
+
+      }
+    if ( (seconds_left * 1000 ) < ( time_limit / 6 ) )  {
+      $( '#tiles' ).removeClass('color-half');
+      $( '#tiles' ).addClass('color-empty');
+    }
+
+    days = pad( parseInt(seconds_left / 86400) );
+    seconds_left = seconds_left % 86400;
+
+    hours = pad( parseInt(seconds_left / 3600) );
+    seconds_left = seconds_left % 3600;
+
+    minutes = pad( parseInt(seconds_left / 60) );
+    seconds = pad( parseInt( seconds_left % 60 ) );
+
+    // format countdown string + set tag value
+    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+  }
+  }
+  function pad(n) {
+    return (n < 10 ? '0' : '') + n;
+  }
+});
+
 </script>
 {% endblock scripts %}

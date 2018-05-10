@@ -19,8 +19,11 @@ from .user_auction_like import user_auction_likes
 from marshmallow import Schema, fields
 
 class User(Base,UserMixin):
-    def __init__(self, username):
-        self.username = username
+    def __init__(self, uid):
+        try:
+            return cls.query.get(uid)
+        except:
+            return None
 
     __tablename__ = 'users'
     __table_args__ = (db.UniqueConstraint('username', name='users_username_uc'),)
@@ -59,7 +62,7 @@ class User(Base,UserMixin):
 
     product_likes = db.relationship('Product', secondary=user_product_likes ,back_populates='likes')
     product_views = db.relationship('Product', secondary=user_product_views ,back_populates='views')
-    
+
     auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='views')
     auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='likes')
 
@@ -95,7 +98,7 @@ class UserSchema(Schema):
     email = fields.Email()
     credit = fields.Str()
     address_id = fields.Int()
-
+    avatar = fields.Str()
     payments = fields.Nested('PaymentSchema', many=True,exclude=('user',))
     orders = fields.Nested('OrderSchema', many=True,exclude=('user',))
     likes = fields.Nested('LikeProductSchema', many=True,exclude=('user',))

@@ -34,6 +34,7 @@ api.add_resource(Site_API.SiteTodayEvents, '/today/events')
 api.add_resource(Site_API.SiteTodayAuctions, '/today/auctions')
 api.add_resource(Site_API.SiteMostpopularAuctions, '/mostpopular/auctions')
 api.add_resource(Site_API.SiteMostpopularProducts, '/mostpopular/products')
+api.add_resource(Site_API.AuctionInstanceView, '/auction/<int:aid>/instantview')
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):

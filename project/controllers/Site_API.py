@@ -38,11 +38,6 @@ class SiteTodayAuctions(Resource):
     def get(self):
         today = datetime.today()
         auctions = Auction.query.filter(Auction.start_date <= today).filter(Auction.end_date >= today).all()
-        # remained = event.end_date - today
-        # days, seconds = remained.days, remained.seconds
-        # hours = seconds // 3600
-        # minutes = (seconds % 3600) // 60
-        # seconds = seconds % 60
         for auction in auctions:
             date_obj = auction.end_date.strftime('%Y-%m-%d %H:%M:%S')
             auction.remained =str(date_obj)
@@ -62,3 +57,9 @@ class SiteMostpopularProducts(Resource):
         auctions=Auction.query.from_statement(select)
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
+
+class AuctionInstanceView(Resource):
+    def get(self,aid):
+        auction = Auction.query.get(aid)
+        auction_schema = AuctionSchema()
+        return make_response(jsonify(auction_schema.dump(auction)),200)

@@ -8,6 +8,23 @@ from flask_admin.contrib.sqla import ModelView
 from .utils import MultipleImageUploadField
 
 
+class AvatarUpload(ModelView):
+    def _list_thumbnail(view, context, model, name):
+        if not model.avatar:
+            return None
+
+        def gen_img(filename):
+            return '<img src="{}">'.format(url_for('static',
+                                                   filename="images/avatars/" + form.thumbgen_filename(model.avatar)))
+
+        return Markup("<br />".join(gen_img(model.avatar) for image in ast.literal_eval(model.avatar)))
+
+    column_formatters = {'avatar': _list_thumbnail}
+
+    form_extra_fields = {'avatar': MultipleImageUploadField("avatar",
+                                                            base_path="project/static/images/avatars",
+                                                            url_relative_path="images/avatars/",
+                                                            thumbnail_size=(64, 64, 1))}
 class ProductUpload(ModelView):
     def _list_thumbnail(view, context, model, name):
         if not model.images:

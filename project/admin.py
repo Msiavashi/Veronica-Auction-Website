@@ -15,7 +15,7 @@ admin = Admin(
     base_template='admin.html',
     template_mode='bootstrap3',
 )
-admin.add_view(ModelView(User, db.session))
+admin.add_view(AvatarUpload(User, db.session))
 admin.add_view(CategoryUpload(Category, db.session))
 admin.add_view(ProductUpload(Product, db.session))
 admin.add_view(ModelView(Auction, db.session))

@@ -13,6 +13,9 @@ function getFormData($form){
 return indexed_array;
 }
 
+function ClearifyNames(ugly_text) {
+	return ugly_text.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',');
+}
 
 Date.prototype.format = function (format, utc){
     return formatDate(this, format, utc);

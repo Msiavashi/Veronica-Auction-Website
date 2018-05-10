@@ -9,27 +9,28 @@
 	<meta name="robots" content="noodp,index,follow" />
 	<title>بید بازی</title>
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" href="css/libs/font-awesome.min.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/bootstrap.min.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/bootstrap-theme.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/jquery.fancybox.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/jquery-ui.min.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/owl.carousel.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/owl.transitions.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/owl.theme.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/jquery.mCustomScrollbar.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/fontiran.css" media="all"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/animate.css"/>
-	<link rel="stylesheet" type="text/css" href="css/libs/hover.css"/>
-	<link rel="stylesheet" type="text/css" href="css/theme.css" media="all"/>
-	<link rel="stylesheet" type="text/css" href="css/color-orange.css" media="all"/>
-	<link rel="stylesheet" type="text/css" href="css/responsive.css" media="all"/>
-	<link rel="stylesheet" type="text/css" href="css/browser.css" media="all"/>
-	<link rel="stylesheet" type="text/css" href="css/rtl.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/font-awesome.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/bootstrap-theme.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/jquery.fancybox.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/jquery-ui.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/owl.carousel.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/owl.transitions.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/owl.theme.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/jquery.mCustomScrollbar.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/fontiran.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/animate.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/libs/hover.css"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/theme.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/color-orange.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/responsive.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/browser.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="../../static/css/rtl.css" media="all"/>
 </head>
 <body style="background:#fff">
 <div class="wrap">
 	<div id="content">
+		<input type="hidden" id="auction" value="{{auction_id}}">
 		<div class="content-page">
 			<div class="container">
 				<div class="product-quickview detail-with-sidebar config-detail ">
@@ -42,18 +43,18 @@
 							<!-- End rightlist -->
 							<div class="detail-gallery">
 								<div class="mid">
-									<img src="images/photos/homeware/3.jpg" alt=""/>
+									  <img data-bind="attr:{src: active_image}" alt=""/>
 								</div>
 								<div class="gallery-control">
 									<a href="#" class="prev"><i class="fa fa-angle-left"></i></a>
 									<div class="carousel">
 										<ul>
-											<li><a href="#" class="active"><img src="images/photos/homeware/3.jpg" alt=""/></a></li>
-											<li><a href="#"><img src="images/photos/homeware/2.jpg" alt=""/></a></li>
-											<li><a href="#"><img src="images/photos/homeware/1.jpg" alt=""/></a></li>
-											<li><a href="#"><img src="images/photos/homeware/2.jpg" alt=""/></a></li>
-											<li><a href="#"><img src="images/photos/homeware/3.jpg" alt=""/></a></li>
-											<li><a href="#"><img src="images/photos/homeware/1.jpg" alt=""/></a></li>
+											<!-- <li><a href="#"><img src="../../static/images/photos/homeware/3.jpg" alt=""/></a></li>
+											<li><a href="#"><img src="../../static/images/photos/homeware/2.jpg" alt=""/></a></li>
+											<li><a href="#"><img src="../../static/images/photos/homeware/1.jpg" alt=""/></a></li>
+											<li><a href="#"><img src="../../static/images/photos/homeware/2.jpg" alt=""/></a></li>
+											<li><a href="#"><img src="../../static/images/photos/homeware/3.jpg" alt=""/></a></li>
+											<li><a href="#"><img src="../../static/images/photos/homeware/1.jpg" alt=""/></a></li> -->
 										</ul>
 									</div>
 									<a href="#" class="next"><i class="fa fa-angle-right"></i></a>
@@ -101,19 +102,19 @@
 								</div>
 								<div class="detail-extralink">
 									<div class="list-member-bid">
-										<p class="item-Bid"><img src="images/theme/005.png"/>احسان امینی<span>۱</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-										<p class="item-Bid"><img src="images/theme/004.png"/>امیرحسین امینی<span>۲</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-										<p class="item-Bid"><img src="images/theme/005.png"/>پوریا نصیری پور<span>۳</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-										<p class="item-Bid"><img src="images/theme/005.png"/>امید ابراهیمی<span>۴</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-										<p class="item-Bid"><img src="images/theme/004.png"/>کاوه رضایی<span>۵</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-										<p class="item-Bid YOU"><img src="images/theme/005.png"/>سید حسین حسینی<span>۶</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-										<p class="item-Bid"><img src="images/theme/004.png"/>سید مهدی رحمتی<span>۷</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-										<p class="item-Bid"><img src="images/theme/005.png"/>روزبه چشمی<span>۸</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-										<p class="item-Bid"><img src="images/theme/004.png"/>فرمانده<span>۹</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid"><img src="../../static/images/theme/005.png"/>احسان امینی<span>۱</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid"><img src="../../static/images/theme/004.png"/>امیرحسین امینی<span>۲</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid"><img src="../../static/images/theme/005.png"/>پوریا نصیری پور<span>۳</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid"><img src="../../static/images/theme/005.png"/>امید ابراهیمی<span>۴</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid"><img src="../../static/images/theme/004.png"/>کاوه رضایی<span>۵</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid YOU"><img src="../../static/images/theme/005.png"/>سید حسین حسینی<span>۶</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid"><img src="../../static/images/theme/004.png"/>سید مهدی رحمتی<span>۷</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid"><img src="../../static/images/theme/005.png"/>روزبه چشمی<span>۸</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<p class="item-Bid"><img src="../../static/images/theme/004.png"/>فرمانده<span>۹</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
 									</div>
 									<div class="product-extra-link2">
 										<div class="last-Bid-user">
-											<p class="img-price-Bid"><img src="images/theme/005.png"/></p>
+											<p class="img-price-Bid"><img src="../../static/images/theme/005.png"/></p>
 											<p class="price-Bid">۱،۳۴۲،۰۰۰ تومان</p>
 											<p class="name-price-Bid">احسان امینی</p>
 										</div>
@@ -139,81 +140,150 @@
 							</div>
 							<!-- Detail Info -->
 						</div>
-					</div>	
-				</div>	
-			</div>	
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<!-- End Content -->
 </div>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
-<script type="text/javascript" src="js/libs/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/libs/jquery.fancybox.js"></script>
-<script type="text/javascript" src="js/libs/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/libs/owl.carousel.js"></script>
-<script type="text/javascript" src="js/libs/jquery.jcarousellite.js"></script>
-<script type="text/javascript" src="js/libs/jquery.elevatezoom.js"></script>
-<script type="text/javascript" src="js/libs/TimeCircles.js"></script>
-<script type="text/javascript" src="js/libs/jquery.mCustomScrollbar.js"></script>
-<script type="text/javascript" src="js/libs/wow.js"></script>
-<script type="text/javascript" src="js/theme.js"></script>
+<script type="text/javascript" src="../../static/js/libs/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../static/js/libs/jquery.fancybox.js"></script>
+<script type="text/javascript" src="../../static/js/libs/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../static/js/knockout.js"></script>
+<script type="text/javascript" src="../../static/js/libs/owl.carousel.js"></script>
+<script type="text/javascript" src="../../static/js/libs/jquery.jcarousellite.js"></script>
+<script type="text/javascript" src="../../static/js/libs/jquery.elevatezoom.js"></script>
+<script type="text/javascript" src="../../static/js/libs/TimeCircles.js"></script>
+<script type="text/javascript" src="../../static/js/libs/jquery.mCustomScrollbar.js"></script>
+<script type="text/javascript" src="../../static/js/libs/wow.js"></script>
+<script type="text/javascript" src="../../static/js/theme.js"></script>
+<script type="text/javascript" src="../../static/js/site.js"></script>
 <script>
-	
-		//countdown
-		var minutes = $( '#set-time' ).val();
-	  
-	  var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
-	  var time_limit = ((minutes * 70 ) * 1000);
-	  //set actual timer
-	  setTimeout(
-		function() 
-		{
-		  alert( 'حراجی به پایان رسید!' );
-		}, time_limit );
-	  
-	  var days, hours, minutes, seconds; // variables for time units
-	  
-	  var countdown = document.getElementById("tiles"); // get tag element
-	  
-	  getCountdown();
-	  
-	  setInterval(function () { getCountdown(); }, 1000);
-	  
-	  function getCountdown(){
-	  
-		  // find the amount of "seconds" between now and target
-		  var current_date = new Date().getTime();
-		  var seconds_left = (target_date - current_date) / 1000;
-		
-	  if ( seconds_left >= 0 ) {
-		console.log(time_limit);
-		 if ( (seconds_left * 1000 ) < ( time_limit / 1 ) )  {
-		   $( '#tiles' ).removeClass('color-full');
-		   $( '#tiles' ).addClass('color-half');
-	  
-			  } 
-		  if ( (seconds_left * 1000 ) < ( time_limit / 6 ) )  {
-			  $( '#tiles' ).removeClass('color-half');
-			  $( '#tiles' ).addClass('color-empty');
-		  }
-		
-		  days = pad( parseInt(seconds_left / 86400) );
-		  seconds_left = seconds_left % 86400;
-			   
-		  hours = pad( parseInt(seconds_left / 3600) );
-		  seconds_left = seconds_left % 3600;
-				
-		  minutes = pad( parseInt(seconds_left / 60) );
-		  seconds = pad( parseInt( seconds_left % 60 ) );
-	  
-		  // format countdown string + set tag value
-		  countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";  
-	  }
-	  }
-	  function pad(n) {
-		  return (n < 10 ? '0' : '') + n;
-	  }
-	  </script>
-	  
-</body>
+
+function detail_gallery(){
+	if($('.detail-gallery').length>0){
+		$('.detail-gallery').each(function(){
+			$(this).find(".carousel").jCarouselLite({
+				btnNext: $(this).find(".gallery-control .next"),
+				btnPrev: $(this).find(".gallery-control .prev"),
+				speed: 800,
+				visible:3,
+			});
+			//Elevate Zoom
+			$(this).find('.mid img').elevateZoom({
+				zoomType: "inner",
+				cursor: "crosshair",
+				zoomWindowFadeIn: 500,
+				zoomWindowFadeOut: 750
+			});
+			$(this).find(".carousel a").on('click',function(event) {
+				event.preventDefault();
+				$(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
+				$(this).addClass('active');
+				$(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
+				var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
+				$('.zoomWindow').css('background-image','url("'+z_url+'")');
+			});
+		});
+	}
+}
+
+    var auction_id = $('#auction').val();
+    var images_path = '../../static/images/products/';
+
+  $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
+    data = data[0];
+    var participant_count = ToPersian(data.participants.length);
+    var max_members = ToPersian(data.max_members);
+    var images_temp = data.item.product.images.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',');
+    var images = [];
+
+    $.each(images_temp, function(key,val) {
+      images.push(images_path+val.trim());
+    });
+		console.log(images[0]);
+    function MyViewModel() {
+        this.participant_count = participant_count;
+        this.max_members = max_members;
+        this.product_images = images;
+				this.active_image = images[0];
+    }
+
+    ko.applyBindings(new MyViewModel());
+
+  });
+  // var auction_id = $('#auction').val()
+  // $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
+  //   data = data[0]
+  //
+  //   $("#participant_count").html(ToPersian(data.participants.length))
+  //   $("#auction_max_members").html(ToPersian(data.max_members))
+  //
+  //   image_names = data.item.product.images.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',');
+  //   console.log(image_names);
+  //
+  //   // $("#main_pic").attr('src','/static/images/products/'+image_names[0])
+  //   // $("#first_image").attr('src','/static/images/products/'+image_names[0])
+  //
+  //   // for (i = 0; i < image_names.length; i++) {
+  //   //   $("#carousel_images").find('ul').append('<li><a href="#"><img src="/static/images/products/'+image_names[i]+'" alt=""/></a></li>')
+  //   // }
+  //
+  // });
+
+  var minutes = $('#set-time').val();
+
+  var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
+  var time_limit = ((minutes * 70 ) * 1000);
+  //set actual timer
+  setTimeout(
+  function()
+  {
+    alert( 'حراجی به پایان رسید!' );
+  }, time_limit );
+
+  var days, hours, minutes, seconds; // variables for time units
+
+  var countdown = document.getElementById("tiles"); // get tag element
+
+  getCountdown();
+
+  setInterval(function () { getCountdown(); }, 1000);
+
+  function getCountdown(){
+    // find the amount of "seconds" between now and target
+    var current_date = new Date().getTime();
+    var seconds_left = (target_date - current_date) / 1000;
+
+  if ( seconds_left >= 0 ) {
+  console.log(time_limit);
+   if ( (seconds_left * 1000 ) < ( time_limit / 1 ) )  {
+     $( '#tiles' ).removeClass('color-full');
+     $( '#tiles' ).addClass('color-half');
+
+      }
+    if ( (seconds_left * 1000 ) < ( time_limit / 6 ) )  {
+      $( '#tiles' ).removeClass('color-half');
+      $( '#tiles' ).addClass('color-empty');
+    }
+
+    days = pad( parseInt(seconds_left / 86400) );
+    seconds_left = seconds_left % 86400;
+
+    hours = pad( parseInt(seconds_left / 3600) );
+    seconds_left = seconds_left % 3600;
+
+    minutes = pad( parseInt(seconds_left / 60) );
+    seconds = pad( parseInt( seconds_left % 60 ) );
+
+    // format countdown string + set tag value
+    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+  }
+  }
+  function pad(n) {
+    return (n < 10 ? '0' : '') + n;
+  }
+</script>
 </html>

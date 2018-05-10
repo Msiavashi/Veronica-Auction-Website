@@ -616,15 +616,13 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/popup.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/TimeCircles.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/flipclock.js')}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/theme.js')}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/site.js')}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.jcarousellite.js')}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.elevatezoom.js')}}"></script>
 
   {% endblock scripts %}
 
-  {% block after_scripts %}
-
-  <script type="text/javascript" src="{{ url_for('static', filename='js/theme.js')}}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/site.js')}}"></script>
-
-  {% endblock %}
 
   </body>
 </html>

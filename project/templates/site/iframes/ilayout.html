@@ -43,7 +43,11 @@
   <body style="background:#f4f4f4">
     <div class="wrap">
       {% block header %}
+        <div id="header">
+      		<div class="header">
 
+      		</div>
+    	  </div>
       {% endblock header %}
 
       <div id="content">
@@ -52,6 +56,11 @@
         {% endblock %}
       </div>
 
+      <div id="footer">
+        {% block footer %}
+
+        {% endblock %}
+      </div>
   </div>
   {% block scripts %}
 
@@ -65,10 +74,11 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/popup.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/TimeCircles.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/flipclock.js')}}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/theme.js')}}"></script>
+  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/theme.js')}}"></script> -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/site.js')}}"></script>
 
-  {% endblock %}
+  {% endblock scripts %}
+
 
   </body>
 </html>
