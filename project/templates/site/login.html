@@ -1,0 +1,104 @@
+{% extends 'site/layout.html' %}
+{% block title %} بید بازی | ورود  {% endblock %}
+{% block content %}
+<div class="content-page woocommerce">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<h2 class="title-shop-page">حساب کاربری</h2>
+				<div class="register-content-box">
+					<div class="row">
+						<div class="col-md-6 col-sm-6 col-ms-12">
+							<div class="check-billing">
+								<div class="form-my-account">
+									<div class="alert alert-danger error_alert hide">
+										<a href="#" class="close" aria-label="close">×</a>
+										<div class="error_container"></div>
+									</div>
+									<div class="alert alert-success alert-dismissable success_alert hide">
+										<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+										<div class="success_container"></div>
+									</div>
+									<form id="login_form">
+										<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+										<h2 class="title24 title-form-account">ورود</h2>
+										<p>
+											<label for="username">نام کاربری<span class="required">*</span></label>
+											<input type="text" name="username"/>
+										</p>
+										<p>
+											<label for="password">رمز عبور <span class="required">*</span></label>
+											<input type="password" name="password"/>
+										</p>
+										<p>
+											<input type="submit" class="register-button" name="login" value="ورود">
+										</p>
+										<div class="table create-account">
+											<div class="text-left">
+												<p>
+													<input type="checkbox"  id="remember" /> <label for="remember">مرا به خاطر بسپار</label>
+												</p>
+											</div>
+											<div class="text-right">
+												<a href="#" class="color">رمز عبور خود را فراموش کرده اید؟</a>
+											</div>
+										</div>
+										<h2 class="title18 social-login-title">یا از طریق زیر وارد شوید</h2>
+										<div class="social-login-block table text-center">
+											<div class="social-login-btn">
+												<a href="#" class="login-fb-link">Facebook</a>
+											</div>
+											<div class="social-login-btn">
+												<a href="#" class="login-goo-link">Google</a>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6 col-sm-6 col-ms-12">
+							<div class="check-address">
+								<div class="form-my-account check-register text-center">
+									<h2 class="title24 title-form-account">ثبت نام کنید!</h2>
+									<p class="desc">
+											ثبت نام در بیدبازی به شما اجازه می دهد در حراجی ها شرکت کنید و به وضعیت و تاریخ سفارش خود دسترسی داشته باشید. فقط فیلدهای مربوطه را پر کنید و در هر زمان یک حساب جدید برای خود ایجاد کنید. ما فقط از شما برای اطلاعاتی که لازم است تا فرایند خرید را سریع تر و آسان تر خواهد کرد پرسیده ایم .
+									</p>
+									<a href="{{ ('/register') }}" class="shop-button">هم اکنون ثبت نام کنید!</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+
+$( "#login_form" ).submit(function( event ) {
+
+  event.preventDefault();
+  var $form = $( this );
+  var data = getFormData($form);
+	var url = "{{url_for('userlogin')}}";
+  var posting = $.post( url, data);
+  posting.done(function( data ) {
+		$(".error_alert").addClass('hide');
+		$(".success_alert").removeClass('hide');
+		$(".success_container").html('ورود شما با موفقیت انجام ')
+		window.location.href = "/";
+  });
+	posting.fail(function(xhr, status, error) {
+		obj = JSON.parse(xhr.responseText);
+		$.each(obj.message, function (key, item) {
+			$(".error_alert").removeClass('hide');
+			$(".error_container").html(item)
+			});
+    });
+});
+
+</script>
+{% endblock scripts %}

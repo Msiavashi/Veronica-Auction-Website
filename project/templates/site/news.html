@@ -1,0 +1,353 @@
+{% extends 'site/layout.html' %}
+{% block title %} بیدبازی | اخبار {% endblock %}
+{% block content %}
+<div class="content-page">
+	<div class="container">
+		<div class="bread-crumb radius">
+			<a href="/">خانه</a> <span>اخبار</span>
+		</div>
+		<!-- End Bread Crumb -->
+		<div class="row">
+			<div class="col-md-3 col-sm-4 col-xs-12">
+				<div class="sidebar sidebar-left">
+					<div class="widget widget-product-cat">
+						<h2 class="widget-title title14">دسته بندی خبرها</h2>
+						<div class="widget-content">
+							<ul>
+								<li><a href="#">دسته یک</a></li>
+								<li><a href="#">دسته یک</a></li>
+								<li><a href="#">دسته یک</a></li>
+								<li><a href="#">دسته یک</a></li>
+								<li><a href="#">دسته یک</a></li>
+							</ul>
+						</div>
+					</div>
+					<!-- End widget -->
+					<div class="widget widget-recent-post">
+						<h2 class="widget-title title14">آخرین اخبار</h2>
+						<div class="widget-content">
+							<ul>
+								<li>
+									<div class="post-thumb">
+										<a href="#" class="post-thumb-link"><img src="images/photos/blog/1.jpg" alt="" /></a>
+									</div>
+									<div class="post-info">
+										<h3 class="post-title"><a href="#">نام پست خبر اینجا</a></h3>
+										<ul class="post-date-comment">
+											<li><i class="fa fa-clock-o" aria-hidden="true"></i><span>۱۷ فروردین ۱۳۹۷</span></li>
+											<li><i class="fa fa-comment" aria-hidden="true"></i><a href="#comment">۱۰ نظر</a></li>
+										</ul>
+									</div>
+								</li>
+								<li>
+									<div class="post-thumb">
+										<a href="#" class="post-thumb-link"><img src="images/photos/blog/2.jpg" alt="" /></a>
+									</div>
+									<div class="post-info">
+										<h3 class="post-title"><a href="#">نام پست خبر اینجا</a></h3>
+										<ul class="post-date-comment">
+											<li><i class="fa fa-clock-o" aria-hidden="true"></i><span>۱۷ فروردین ۱۳۹۷</span></li>
+											<li><i class="fa fa-comment" aria-hidden="true"></i><a href="#comment">۳ نظر</a></li>
+										</ul>
+									</div>
+								</li>
+								<li>
+									<div class="post-thumb">
+										<a href="#" class="post-thumb-link"><img src="images/photos/blog/3.jpg" alt="" /></a>
+									</div>
+									<div class="post-info">
+										<h3 class="post-title"><a href="#">نام پست خبر اینجا</a></h3>
+										<ul class="post-date-comment">
+											<li><i class="fa fa-clock-o" aria-hidden="true"></i><span>۱۷ فروردین ۱۳۹۷</span></li>
+											<li><i class="fa fa-comment" aria-hidden="true"></i><a href="#comment">۲۳ نظر</a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<!-- End widget -->
+					<div class="widget widget-tag-cloud">
+						<h2 class="widget-title title14">برچسب ها</h2>
+						<div class="widget-content">
+							<ul>
+								<li><a href="#">موبایل</a></li>
+								<li><a href="#">حراجی</a></li>
+								<li><a href="#">بیدبازی</a></li>
+								<li><a href="#">تبلت</a></li>
+								<li><a href="#">ساعت</a></li>
+								<li><a href="#">موبایل</a></li>
+								<li><a href="#">حراجی</a></li>
+								<li><a href="#">بیدبازی</a></li>
+								<li><a href="#">تبلت</a></li>
+								<li><a href="#">ساعت</a></li>
+							</ul>
+						</div>
+					</div>
+					<!-- End widget -->
+					<div class="widget widget-slide-banner">
+						<h2 class="widget-title title14">تبلیغات</h2>
+						<div class="widget-content">
+							<div class="wrap-item" data-itemscustom="[[0,1]]" data-pagination="false" data-navigation="true">
+								<div class="banner-image">
+									<a href="#"><img src="images/photos/blog/banner-1.jpg" alt="" /></a>
+								</div>
+								<div class="banner-image">
+									<a href="#"><img src="images/photos/blog/banner-1.jpg" alt="" /></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- End widget -->
+				</div>
+			</div>
+			<div class="col-md-9 col-sm-8 col-xs-12">
+				<div class="content-blog-page border radius">
+					<div class="sort-pagi-bar clearfix">
+						<div class="sort-bar select-box pull-left">
+							<label>مرتب سازی بر اساس:</label>
+							<select>
+								<option value="">قیمت</option>
+								<option value="">زمان</option>
+							</select>
+						</div>
+						<div class="sort-paginav pull-right">
+							<div class="show-bar select-box">
+								<label>تعداد نمایش:</label>
+								<select>
+									<option value="">۱۰</option>
+									<option value="">۲۰</option>
+									<option value="">۳۰</option>
+								</select>
+							</div>
+							<div class="pagi-bar">
+								<a href="#" class="current-page">۱</a>
+								<a href="#">۲</a>
+								<a href="#" class="next-page"><i class="fa fa-caret-left" aria-hidden="true"></i></a>
+							</div>
+						</div>
+					</div>
+					<!-- End Sort PagiBar -->
+					<div class="content-blog-small">
+						<div class="item-post-small">
+							<div class="row">
+								<div class="col-md-5 col-sm-6 col-xs-12">
+									<div class="post-thumb">
+										<div class="wrap-item" data-itemscustom="[[0,1]]" data-navigation="true" data-pagination="false">
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/1.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/2.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/3.jpg" alt="" /></a>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-7 col-sm-6 col-xs-12">
+									<div class="post-info">
+										<ul class="post-date-comment">
+											<li><i class="fa fa-calendar-o" aria-hidden="true"></i><span>۱۷ فروردین ۱۳۹۷</span></li>
+										</ul>
+										<h3 class="post-title"><a href="#">نام پست خبر اینجا</a></h3>
+										<p class="desc">متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا </p>
+										<ul class="post-date-comment">
+											<li><i class="fa fa-user" aria-hidden="true"></i><label>نوشته: </label><a href="#">بیدبازی</a></li>
+											<li><i aria-hidden="true" class="fa fa-comment"></i><a href="#comment">۸ نظر</a></li>
+										</ul>
+										<ul class="post-date-comment list-post-tag">
+											<li>
+												<i class="fa fa-tags" aria-hidden="true"></i><label>برچسب:</label>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End Item -->
+						<div class="item-post-small">
+							<div class="row">
+								<div class="col-md-5 col-sm-6 col-xs-12">
+									<div class="post-thumb">
+										<div class="wrap-item" data-itemscustom="[[0,1]]" data-navigation="true" data-pagination="false">
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/2.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/1.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/3.jpg" alt="" /></a>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-7 col-sm-6 col-xs-12">
+									<div class="post-info">
+										<ul class="post-date-comment">
+											<li><i class="fa fa-calendar-o" aria-hidden="true"></i><span>۱۷ فروردین ۱۳۹۷</span></li>
+										</ul>
+										<h3 class="post-title"><a href="#">نام پست خبر اینجا</a></h3>
+										<p class="desc">متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا </p>
+										<ul class="post-date-comment">
+											<li><i class="fa fa-user" aria-hidden="true"></i><label>نوشته: </label><a href="#">بیدبازی</a></li>
+											<li><i aria-hidden="true" class="fa fa-comment"></i><a href="#comment">۸ نظر</a></li>
+										</ul>
+										<ul class="post-date-comment list-post-tag">
+											<li>
+												<i class="fa fa-tags" aria-hidden="true"></i><label>برچسب:</label>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End Item -->
+						<div class="item-post-small">
+							<div class="row">
+								<div class="col-md-5 col-sm-6 col-xs-12">
+									<div class="post-thumb">
+										<div class="wrap-item" data-itemscustom="[[0,1]]" data-navigation="true" data-pagination="false">
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/3.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/2.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/1.jpg" alt="" /></a>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-7 col-sm-6 col-xs-12">
+									<div class="post-info">
+										<ul class="post-date-comment">
+											<li><i class="fa fa-calendar-o" aria-hidden="true"></i><span>۱۷ فروردین ۱۳۹۷</span></li>
+										</ul>
+										<h3 class="post-title"><a href="#">نام پست خبر اینجا</a></h3>
+										<p class="desc">متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا </p>
+										<ul class="post-date-comment">
+											<li><i class="fa fa-user" aria-hidden="true"></i><label>نوشته: </label><a href="#">بیدبازی</a></li>
+											<li><i aria-hidden="true" class="fa fa-comment"></i><a href="#comment">۸ نظر</a></li>
+										</ul>
+										<ul class="post-date-comment list-post-tag">
+											<li>
+												<i class="fa fa-tags" aria-hidden="true"></i><label>برچسب:</label>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End Item -->
+						<div class="item-post-small">
+							<div class="row">
+								<div class="col-md-5 col-sm-6 col-xs-12">
+									<div class="post-thumb">
+										<div class="wrap-item" data-itemscustom="[[0,1]]" data-navigation="true" data-pagination="false">
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/1.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/2.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/3.jpg" alt="" /></a>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-7 col-sm-6 col-xs-12">
+									<div class="post-info">
+										<ul class="post-date-comment">
+											<li><i class="fa fa-calendar-o" aria-hidden="true"></i><span>۱۷ فروردین ۱۳۹۷</span></li>
+										</ul>
+										<h3 class="post-title"><a href="#">نام پست خبر اینجا</a></h3>
+										<p class="desc">متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا </p>
+										<ul class="post-date-comment">
+											<li><i class="fa fa-user" aria-hidden="true"></i><label>نوشته: </label><a href="#">بیدبازی</a></li>
+											<li><i aria-hidden="true" class="fa fa-comment"></i><a href="#comment">۸ نظر</a></li>
+										</ul>
+										<ul class="post-date-comment list-post-tag">
+											<li>
+												<i class="fa fa-tags" aria-hidden="true"></i><label>برچسب:</label>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End Item -->
+						<div class="item-post-small">
+							<div class="row">
+								<div class="col-md-5 col-sm-6 col-xs-12">
+									<div class="post-thumb">
+										<div class="wrap-item" data-itemscustom="[[0,1]]" data-navigation="true" data-pagination="false">
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/3.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/2.jpg" alt="" /></a>
+											<a href="#" class="post-thumb-link"><img src="images/photos/blog/3.jpg" alt="" /></a>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-7 col-sm-6 col-xs-12">
+									<div class="post-info">
+										<ul class="post-date-comment">
+											<li><i class="fa fa-calendar-o" aria-hidden="true"></i><span>۱۷ فروردین ۱۳۹۷</span></li>
+										</ul>
+										<h3 class="post-title"><a href="#">نام پست خبر اینجا</a></h3>
+										<p class="desc">متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا متن خلاصه ای از خبر در اینجا </p>
+										<ul class="post-date-comment">
+											<li><i class="fa fa-user" aria-hidden="true"></i><label>نوشته: </label><a href="#">بیدبازی</a></li>
+											<li><i aria-hidden="true" class="fa fa-comment"></i><a href="#comment">۸ نظر</a></li>
+										</ul>
+										<ul class="post-date-comment list-post-tag">
+											<li>
+												<i class="fa fa-tags" aria-hidden="true"></i><label>برچسب:</label>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+												<a href="#">موبایل</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End Item -->
+						<div class="pagi-bar bottom">
+							<a href="#" class="current-page">۱</a>
+							<a href="#">۲</a>
+							<a href="#" class="next-page"><i class="fa fa-caret-right" aria-hidden="true"></i></a>
+						</div>
+						<!-- ENd Pagibar -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+
+{% endblock scripts %}

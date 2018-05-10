@@ -1,8 +1,7 @@
 from project.database import db, Base
 import datetime
-from shipment import Shipment
-from order_item import order_items
 from marshmallow import Schema, fields
+from .order_item import order_items
 
 class Order(Base):
     __tablename__ = 'orders'
@@ -12,11 +11,11 @@ class Order(Base):
     status = db.Column(db.Boolean)
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     user = db.relationship('User')
-    items = db.relationship('Item', secondary = order_items, back_populates='orders')
+    items = db.relationship('Item', secondary = 'order_items', back_populates='orders')
     shipment_id = db.Column(db.BigInteger, db.ForeignKey('shipments.id'))
     shipment = db.relationship('Shipment')
     def __str__(self):
-        return "order : "+ self.user + " done ?" + self.status
+        return str(self)
 
 class OrderSchema(Schema):
     id = fields.Int()
@@ -24,5 +23,5 @@ class OrderSchema(Schema):
     updated_at = fields.DateTime()
     status = fields.Boolean()
     user = fields.Nested('UserSchema')
-    items = fields.Nested('ItemSchema',many=True)
+    items = fields.Nested('ItemSchema',many=True,exclude=('orders',))
     shipment = fields.Nested('ShipmentSchema')

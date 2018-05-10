@@ -1,0 +1,100 @@
+{% extends 'site/iframes/ilayout.html' %}
+{% block title %} بید بازی | شرکت در حراجی {% endblock %}
+{% block content %}
+<div class="Package">
+	<div class="container">
+		<div class="product-quickview woocommerce">
+			<div class="row">
+				<h3 class="order_review_heading">ثبت نام در حراجی</h3>
+				<div class="woocommerce-checkout-review-order" id="order_review">
+					<div class="table-responsive">
+						<table class="shop_table woocommerce-checkout-review-order-table">
+							<thead>
+								<tr>
+									<th class="product-name">بسته ها</th>
+									<th class="product-total">هزینه</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="cart_item">
+									<td class="product-name">
+										<ul id="shipping_method" class="list-none">
+											<li>
+												<input type="radio" class="shipping_method" checked="checked" value="free_shipping" id="shipping1" data-index="0" name="shipping_method[0]">
+												<label for="shipping1">بسته پیشنهادی اول</label>
+											</li>
+										</ul>
+									</td>
+									<td class="product-total">
+										<span class="amount">۲۰۰،۰۰۰ تومان</span>
+									</td>
+								</tr>
+								<tr class="cart_item">
+									<td class="product-name">
+										<ul id="shipping_method" class="list-none">
+											<li>
+												<input type="radio" class="shipping_method" value="local_pickup" id="shipping2" data-index="0" name="shipping_method[0]">
+												<label for="shipping2">بسته پیشنهادی دوم</label>
+											</li>
+										</ul>
+									</td>
+									<td class="product-total">
+										<span class="amount">۲۰۰،۰۰۰ تومان</span>
+									</td>
+								</tr>
+								<tr class="cart_item">
+									<td class="product-name">
+										<ul id="shipping_method" class="list-none">
+											<li>
+												<input type="radio" class="shipping_method" value="local_pickup" id="shipping3" data-index="0" name="shipping_method[0]">
+												<label for="shipping3">بسته پیشنهادی سوم</label>
+											</li>
+										</ul>
+									</td>
+									<td class="product-total">
+										<span class="amount">۲۰۰،۰۰۰ تومان</span>
+									</td>
+								</tr>
+							</tbody>
+							<tfoot>
+								<tr class="cart-subtotal">
+									<th>هزینه بسته انتخابی</th>
+									<td><strong class="amount">۲۰۰،۰۰۰ تومان</strong></td>
+								</tr>
+								<tr class="cart-subtotal">
+									<th class="text-orange">کسر موجودی</th>
+									<td><strong class="amount text-orange">۰</strong></td>
+								</tr>
+								<tr class="order-total">
+									<th>مبلغ پرداختی نهایی</th>
+									<td><strong><span class="amount">۲۰۰،۰۰۰ تومان </span></strong> </td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<div class="woocommerce-checkout-payment" id="payment">
+						<ul class="payment_methods methods list-none">
+							<li class="payment_method_bacs">
+								<input type="radio" data-order_button_text="" value="bacs" name="payment_method" class="input-radio" id="payment_method_bacs" checked="checked">
+								<label for="payment_method_bacs">پرداخت از بانک</label>
+							</li>
+							<li class="payment_method_cheque">
+								<input type="radio" data-order_button_text="" value="cheque" name="payment_method" class="input-radio" id="payment_method_cheque">
+								<label for="payment_method_cheque">پرداخت از حساب موجودی (۷۵۰،۰۰۰ تومان)</label>
+							</li>
+						</ul>
+						<div class="form-row place-order">
+							<input type="submit" data-value="Place order" value="تایید پرداختی" id="place_order" name="woocommerce_checkout_place_order" class="button alt">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+</script>
+{% endblock scripts %}

@@ -1,5 +1,7 @@
 from project.database import db, Base
 import datetime
+from marshmallow import Schema, fields
+
 
 user_auction_views = db.Table('user_auction_views', Base.metadata,
     db.Column('user_id', db.ForeignKey('users.id')),
@@ -8,3 +10,9 @@ user_auction_views = db.Table('user_auction_views', Base.metadata,
     db.Column('ip',db.String(length=50)),
     db.Column('date',db.TIMESTAMP, default=datetime.datetime.now)
 )
+class ViewAuctionSchema(Schema):
+    user = fields.Nested("UserSchema")
+    auction = fields.Nested("AuctionSchema")
+    count = fields.Int()
+    ip = fields.Str()
+    date = fields.Str()

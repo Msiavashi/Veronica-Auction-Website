@@ -1,5 +1,4 @@
 from project.database import db, Base
-from user_role import user_roles
 from marshmallow import Schema, fields
 
 class Role(Base):
@@ -7,7 +6,7 @@ class Role(Base):
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     description = db.Column(db.String(512))
-    users = db.relationship('User', secondary=user_roles,back_populates='roles')
+    users = db.relationship('User', secondary='user_roles',back_populates='roles')
     def __str__(self):
         return self.name
 class RoleSchema(Schema):

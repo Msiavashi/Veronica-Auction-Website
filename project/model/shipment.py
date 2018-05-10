@@ -1,6 +1,5 @@
 from project.database import db, Base
 import datetime
-from insurance import Insurance
 from marshmallow import Schema, fields
 
 class Shipment(Base):
@@ -17,7 +16,7 @@ class Shipment(Base):
     insurance = db.relationship('Insurance')
     order = db.relationship('Order',back_populates = 'shipment')
     def __str__(self):
-        return self.company + " methos : " + self.metho + "insurance :" + self.insurance
+        return str(self)
 
 class ShipmentSchema(Schema):
     id = fields.Int()
