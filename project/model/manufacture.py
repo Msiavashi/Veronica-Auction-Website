@@ -1,5 +1,4 @@
 from project.database import db, Base
-from .manufacture_product import manufacture_products
 from marshmallow import Schema, fields
 
 class Manufacture(Base):
@@ -9,7 +8,7 @@ class Manufacture(Base):
     country = db.Column(db.String(length=100), nullable=False)
     review = db.Column(db.Text, nullable=True)
     details =  db.Column(db.PickleType, nullable=True)
-    products = db.relationship('Product', secondary=manufacture_products, back_populates='manufacture')
+    products = db.relationship('Product', secondary='manufacture_products', back_populates='manufacture')
     def __str__(self):
         return self.name
 

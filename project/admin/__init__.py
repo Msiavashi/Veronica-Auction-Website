@@ -1,10 +1,10 @@
-from .database import db
-from . import app
-from .model import *
+from ..database import db
+from .. import app
+from ..model import *
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from .model.advertisement import Advertisement
-from .model.event import Event
+from ..model.advertisement import Advertisement
+from ..model.event import Event
 from .upload import *
 
 

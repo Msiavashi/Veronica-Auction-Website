@@ -1,10 +1,4 @@
 from project.database import db, Base
-from .manufacture_product import manufacture_products
-from .manufacture import Manufacture
-from .category import Category
-from .product_event import product_events
-from .user_product_view import user_product_views
-from .user_product_like import user_product_likes
 from marshmallow import Schema, fields
 
 class Product(Base):
@@ -22,11 +16,11 @@ class Product(Base):
     category = db.relationship('Category', back_populates='products')
     items = db.relationship('Item')
     comments = db.relationship("Comment")
-    events = db.relationship('Event', secondary = product_events, back_populates='products')
+    events = db.relationship('Event', secondary = 'product_events', back_populates='products')
     manufacture_id = db.Column(db.BigInteger,db.ForeignKey('manufactures.id'))
     manufacture = db.relationship('Manufacture')
-    likes = db.relationship('User', secondary=user_product_likes ,back_populates='product_likes')
-    views = db.relationship('User', secondary=user_product_views ,back_populates='product_views')
+    likes = db.relationship('User', secondary='user_product_likes' ,back_populates='product_likes')
+    views = db.relationship('User', secondary='user_product_views' ,back_populates='product_views')
     advertisement = db.relationship('Advertisement' , back_populates ='product')
     def __str__(self):
         return self.name

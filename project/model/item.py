@@ -1,10 +1,7 @@
 from project.database import db, Base
-from .offer import Offer
-from .insurance_item import insurance_items
-from .payment_item import payment_items
-from .order_item import order_items
-from .inventory_item import inventory_items
 from marshmallow import Schema, fields
+from .inventory_item import inventory_items
+from .order_item import order_items
 
 class Item(Base):
     __tablename__ = 'items'
@@ -18,11 +15,11 @@ class Item(Base):
     product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
     product = db.relationship('Product')
     inventory_id = db.Column(db.BigInteger, db.ForeignKey('inventories.id'))
-    inventories = db.relationship('Inventory', secondary = inventory_items , back_populates='items')
+    inventories = db.relationship('Inventory', secondary = 'inventory_items' , back_populates='items')
     offers = db.relationship('Offer',back_populates = 'item')
-    insurances = db.relationship('Insurance', secondary = insurance_items, back_populates='items')
-    payments = db.relationship('Payment', secondary = payment_items,back_populates='items')
-    orders = db.relationship('Order', secondary = order_items, back_populates='items')
+    insurances = db.relationship('Insurance', secondary = 'insurance_items', back_populates='items')
+    payments = db.relationship('Payment', secondary = 'payment_items',back_populates='items')
+    orders = db.relationship('Order', secondary = 'order_items', back_populates='items')
     def __str__(self):
         return self.product.name + " " + self.model
 

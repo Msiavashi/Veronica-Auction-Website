@@ -2,21 +2,9 @@ from passlib.hash import pbkdf2_sha256 as sha256
 from project.database import db, Base
 from flask_login import UserMixin
 import datetime
-from .comment import Comment
-from .address import Address
-from .payment import Payment
-from .order import Order
-from .user_plan import user_plans
-from .user_gift import user_gifts
-from .user_role import user_roles
-from .user_auction import user_auctions
-from .product import Product
-from .user_product_view import user_product_views
-from .user_product_like import user_product_likes
+from marshmallow import Schema, fields
 from .user_auction_view import user_auction_views
 from .user_auction_like import user_auction_likes
-
-from marshmallow import Schema, fields
 
 class User(Base,UserMixin):
     def __init__(self, uid):
@@ -55,23 +43,23 @@ class User(Base,UserMixin):
     orders = db.relationship('Order')
 
 
-    roles = db.relationship('Role',secondary=user_roles,back_populates='users')
-    plans = db.relationship('Plan', secondary=user_plans, back_populates='users')
-    gifts = db.relationship('Gift', secondary=user_gifts, back_populates='users')
-    auctions = db.relationship('Auction', secondary=user_auctions,back_populates='participants')
+    roles = db.relationship('Role',secondary='user_roles',back_populates='users')
+    plans = db.relationship('Plan', secondary='user_plans', back_populates='users')
+    gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users')
+    auctions = db.relationship('Auction', secondary='user_auctions',back_populates='participants')
 
-    product_likes = db.relationship('Product', secondary=user_product_likes ,back_populates='likes')
-    product_views = db.relationship('Product', secondary=user_product_views ,back_populates='views')
+    product_likes = db.relationship('Product', secondary='user_product_likes' ,back_populates='likes')
+    product_views = db.relationship('Product', secondary='user_product_views' ,back_populates='views')
 
-    auction_views = db.relationship('Auction', secondary = user_auction_views, back_populates='views')
-    auction_likes = db.relationship('Auction', secondary = user_auction_likes, back_populates='likes')
+    auction_views = db.relationship('Auction', secondary ='user_auction_views', back_populates='views')
+    auction_likes = db.relationship('Auction', secondary ='user_auction_likes', back_populates='likes')
 
     def __str__(self):
         if(self.first_name):
             return (str(self.first_name) + " " + str(self.last_name))
         else: return self.username
 
-    @classmethod
+    @staticmethod
     def find_by_username(cls, username):
         return cls.query.filter_by(username = username).first()
 
@@ -82,7 +70,7 @@ class User(Base,UserMixin):
     @staticmethod
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
-
+    
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()

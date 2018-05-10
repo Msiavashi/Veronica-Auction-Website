@@ -1,7 +1,5 @@
 from project.database import db, Base
 import datetime
-from .auction_event import auction_events
-from .product_event import product_events
 from marshmallow import Schema, fields
 
 class Event(Base):
@@ -14,8 +12,8 @@ class Event(Base):
     end_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     discount = db.Column(db.Integer,default=0)
     active = db.Column(db.Boolean,default=False)
-    auctions = db.relationship('Auction', secondary = auction_events, back_populates='events')
-    products = db.relationship('Product', secondary = product_events, back_populates='events')
+    auctions = db.relationship('Auction', secondary = 'auction_events', back_populates='events')
+    products = db.relationship('Product', secondary = 'product_events', back_populates='events')
     def __str__(self):
         return self.title
 

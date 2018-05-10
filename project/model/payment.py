@@ -1,7 +1,5 @@
 from project.database import db, Base
 import datetime
-from .payment_item import payment_items
-from .payment_plan import payment_plans
 from marshmallow import Schema , fields
 
 class Payment(Base):
@@ -15,8 +13,8 @@ class Payment(Base):
     details = db.Column(db.PickleType)
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     user = db.relationship('User')
-    plans = db.relationship('Plan',secondary=payment_plans,back_populates='payments')
-    items = db.relationship('Item',secondary=payment_items,back_populates='payments')
+    plans = db.relationship('Plan',secondary='payment_plans',back_populates='payments')
+    items = db.relationship('Item',secondary='payment_items',back_populates='payments')
     def __str__(self):
         return self.guid + "status :" + self.status
 

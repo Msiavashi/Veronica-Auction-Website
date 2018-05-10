@@ -1,6 +1,5 @@
 from project.database import db, Base
 import datetime
-from .insurance import Insurance
 from marshmallow import Schema, fields
 
 class Shipment(Base):

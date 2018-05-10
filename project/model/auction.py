@@ -1,13 +1,7 @@
 from project.database import db, Base
 import datetime
-from .item import Item
-from .advertisement import Advertisement
-from .event import Event
-from .user_auction import user_auctions
-from .auction_event import auction_events
-from .user_auction_view import user_auction_views
-from .user_auction_like import user_auction_likes
 from marshmallow import Schema, fields
+from .user import User
 
 class Auction(Base):
     __tablename__ = 'auctions'
@@ -25,11 +19,11 @@ class Auction(Base):
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'),nullable=False)
     item = db.relationship('Item')
     rate = db.Column(db.Integer)
-    participants = db.relationship('User',secondary = user_auctions,back_populates='auctions')
-    events = db.relationship('Event', secondary = auction_events, back_populates='auctions')
+    participants = db.relationship('User',secondary = 'user_auctions',back_populates='auctions')
+    events = db.relationship('Event', secondary = 'auction_events', back_populates='auctions')
     advertisement = db.relationship('Advertisement' , back_populates ='auction')
-    views = db.relationship('User', secondary = user_auction_views, back_populates='auction_views')
-    likes = db.relationship('User', secondary = user_auction_likes, back_populates='auction_likes')
+    views = db.relationship('User', secondary = 'user_auction_views', back_populates='auction_views')
+    likes = db.relationship('User', secondary = 'user_auction_likes', back_populates='auction_likes')
     def __str__(self):
         return self.name + " " + str(self.start_date)
 

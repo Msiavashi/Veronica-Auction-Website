@@ -37,10 +37,7 @@ class SiteTodayEvents(Resource):
 class SiteTodayAuctions(Resource):
     def get(self):
         today = datetime.today()
-        auctions = Auction.query.filter(Auction.start_date <= today).filter(Auction.end_date >= today).all()
-        for auction in auctions:
-            date_obj = auction.end_date.strftime('%Y-%m-%d %H:%M:%S')
-            auction.remained =str(date_obj)
+        auctions = Auction.query.filter(Auction.start_date <= today ,Auction.end_date >= today).all()
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
