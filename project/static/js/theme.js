@@ -581,7 +581,7 @@ Array.prototype.forEach.call( inputs, function( input )
 			label.innerHTML = labelVal;
 	});
 });
-
+//test
 // table
 $(function(){
 $(".fold-table tr.view").on("click", function(){
