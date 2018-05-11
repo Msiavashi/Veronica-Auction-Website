@@ -15,6 +15,7 @@ admin = Admin(
     base_template='admin.html',
     template_mode='bootstrap3',
 )
+#admin.add_view(MyView(name='My View', menu_icon_type='glyph', menu_icon_value='glyphicon-home'))
 admin.add_view(AvatarUpload(User, db.session))
 admin.add_view(CategoryUpload(Category, db.session))
 admin.add_view(ProductUpload(Product, db.session))
