@@ -7,9 +7,9 @@ from .user_auction_view import user_auction_views
 from .user_auction_like import user_auction_likes
 
 class User(Base,UserMixin):
-    def __init__(self, uid):
+    def __init__(self, username):
         try:
-            return cls.query.get(uid)
+            return cls.query.filter_by(username=username)
         except:
             return None
 
@@ -59,7 +59,7 @@ class User(Base,UserMixin):
             return (str(self.first_name) + " " + str(self.last_name))
         else: return self.username
 
-    @staticmethod
+    @classmethod
     def find_by_username(cls, username):
         return cls.query.filter_by(username = username).first()
 
@@ -70,7 +70,7 @@ class User(Base,UserMixin):
     @staticmethod
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
-    
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()

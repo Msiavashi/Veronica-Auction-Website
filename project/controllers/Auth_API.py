@@ -11,8 +11,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 @login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
+def load_user(username):
+    return User(username)
 
 
 parser_register = reqparse.RequestParser()
@@ -37,6 +37,7 @@ class UserRegistration(Resource):
             return make_response(jsonify({"message":{'password': 'رمز عبور با تکرار آن مطابقت ندارد'}}),400)
 
         new_user = User(data['username'])
+        new_user.username = data['username']
         new_user.mobile = data['mobile']
         new_user.password = User.generate_hash(data['password'])
 
