@@ -89,7 +89,7 @@ $( "#login_form" ).submit(function( event ) {
 		$(".error_alert").addClass('hide');
 		$(".success_alert").removeClass('hide');
 		$(".success_container").html('ورود شما با موفقیت انجام ')
-		parent.location.reload();
+		window.parent.location.reload();
   });
 	posting.fail(function(xhr, status, error) {
 		obj = JSON.parse(xhr.responseText);

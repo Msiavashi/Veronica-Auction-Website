@@ -30,5 +30,5 @@ class AdvertisementSchema(Schema):
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
     show = fields.Boolean()
-    auction = fields.Nested('AuctionSchema')
-    product = fields.Nested('ProductSchema')
+    auction = fields.Nested('AuctionSchema',exclude=('advertisement',))
+    product = fields.Nested('ProductSchema',exclude=('advertisement',))

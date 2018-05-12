@@ -179,13 +179,13 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
   var people = [];
   var  current_user_id = '{{current_user.id}}';
+  console.log(current_user_id);
   $.each(participants, function(key,val) {
     its_you = val.id == current_user_id ? true : false;
     p = {avatar : avatar_path + ClearifyNames(val.avatar)[0],name :val.first_name +" "+ val.last_name,its_me : its_you};
     people.push(p);
   });
 
-  console.log(people);
   function MyViewModel() {
       this.participant_count = participant_count;
       this.max_members = max_members;

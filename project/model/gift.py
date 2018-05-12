@@ -15,5 +15,5 @@ class Gift(Base):
 class GiftSchema(Schema):
     id = fields.Int()
     name = fields.Str()
-    amount = fields.Decimal()
-    users = fields.Nested('UserSchema', many=True)
+    amount = fields.Str()
+    users = fields.Nested('UserSchema', many=True,exclude=('gifts',))

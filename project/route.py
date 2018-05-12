@@ -62,10 +62,10 @@ class Route():
     def profile():
         return render_template('site/profile.html')
 
-    @app.route("/participate")
+    @app.route("/participate/<int:aid>")
     @login_required
-    def participate():
-        return render_template('site/iframes/package.html')
+    def participate(aid):
+        return render_template('site/iframes/package.html',auction_id=aid)
 
     @app.route("/instantview/<int:aid>")
     @login_required

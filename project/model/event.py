@@ -25,5 +25,5 @@ class EventSchema(Schema):
     end_date = fields.DateTime()
     discount = fields.Str()
     active = fields.Boolean()
-    auctions = fields.Nested('AuctionSchema', many=True)
+    auctions = fields.Nested('AuctionSchema', many=True,exclude=('events',))
     products = fields.Nested('ProductSchema', many=True,exclude=('events',))

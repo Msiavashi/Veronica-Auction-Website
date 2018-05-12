@@ -35,8 +35,10 @@ api.add_resource(Site_API.SiteTodayAuctions, '/today/auctions')
 api.add_resource(Site_API.SiteMostpopularAuctions, '/mostpopular/auctions')
 api.add_resource(Site_API.SiteMostpopularProducts, '/mostpopular/products')
 api.add_resource(Site_API.AuctionInstanceView, '/auction/<int:aid>/instantview')
+api.add_resource(Site_API.AuctionPlans, '/auction/plans')
+api.add_resource(Site_API.UserParticipateAuction, '/user/participate/auction')
 
-@jwt.token_in_blacklist_loader
-def check_if_token_in_blacklist(decrypted_token):
-    jti = decrypted_token['jti']
-    return project.model.RevokedTokenModel.is_jti_blacklisted(jti)
+# @jwt.token_in_blacklist_loader
+# def check_if_token_in_blacklist(decrypted_token):
+#     jti = decrypted_token['jti']
+#     return project.model.RevokedTokenModel.is_jti_blacklisted(jti)

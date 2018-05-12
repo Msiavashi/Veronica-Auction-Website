@@ -23,5 +23,5 @@ class CommentSchema(Schema):
     message = fields.Str()
     likes = fields.Int()
     date = fields.DateTime()
-    user = fields.Nested('UserSchema')
-    product = fields.Nested('ProductSchema')
+    user = fields.Nested('UserSchema',exclude=('comments',))
+    product = fields.Nested('ProductSchema',exclude=('products',))

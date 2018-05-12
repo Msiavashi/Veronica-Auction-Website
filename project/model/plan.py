@@ -10,11 +10,11 @@ class Plan(Base):
     users = db.relationship('User', secondary = 'user_plans', back_populates='plans')
     payments = db.relationship('Payment', secondary = 'payment_plans', back_populates='plans')
     def __str__(self):
-        return self.name + "price :" + self.price
+        return self.name
 class PlanSchema(Schema):
     id = fields.Int()
     name = fields.Str()
-    price = fields.Decimal()
+    price = fields.Str()
     total_offers = fields.Int()
-    users = fields.Nested('UserSchema', many=True)
-    payments = fields.Nested('PaymentSchema',many=True)
+    users = fields.Nested('UserSchema', many=True,exclude=('plans',))
+    payments = fields.Nested('PaymentSchema',many=True,exclude=('plans',))

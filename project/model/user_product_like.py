@@ -7,5 +7,5 @@ user_product_likes = db.Table('user_product_likes', Base.metadata,
 )
 
 class LikeProductSchema(Schema):
-    user = fields.Nested("UserSchema")
-    product = fields.Nested("ProductSchema")
+    user = fields.Nested("UserSchema",exclude=('product_likes',))
+    product = fields.Nested("ProductSchema",exclude=('likes',))

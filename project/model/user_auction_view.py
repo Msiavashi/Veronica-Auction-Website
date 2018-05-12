@@ -11,8 +11,8 @@ user_auction_views = db.Table('user_auction_views', Base.metadata,
     db.Column('date',db.TIMESTAMP, default=datetime.datetime.now)
 )
 class ViewAuctionSchema(Schema):
-    user = fields.Nested("UserSchema")
-    auction = fields.Nested("AuctionSchema")
+    user = fields.Nested("UserSchema",exclude=('auction_views',))
+    auction = fields.Nested("AuctionSchema",exclude=('views',))
     count = fields.Int()
     ip = fields.Str()
     date = fields.Str()

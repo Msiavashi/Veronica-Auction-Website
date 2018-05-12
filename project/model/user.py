@@ -9,9 +9,9 @@ from .user_auction_like import user_auction_likes
 class User(Base,UserMixin):
     def __init__(self, username):
         try:
-            return cls.query.filter_by(username=username)
+             return cls.query.get(uid)
         except:
-            return None
+         return None
 
     __tablename__ = 'users'
     __table_args__ = (db.UniqueConstraint('username', name='users_username_uc'),)
@@ -87,13 +87,12 @@ class UserSchema(Schema):
     credit = fields.Str()
     address_id = fields.Int()
     avatar = fields.Str()
-    payments = fields.Nested('PaymentSchema', many=True,exclude=('user',))
-    orders = fields.Nested('OrderSchema', many=True,exclude=('user',))
-    likes = fields.Nested('LikeProductSchema', many=True,exclude=('user',))
-    roles = fields.Nested('RoleSchema', many=True,exclude=('user',))
-    plans = fields.Nested('PlanSchema', many=True,exclude=('user',))
-    gifts = fields.Nested('GiftSchema', many=True,exclude=('user',))
-    auctions = fields.Nested('AuctionSchema', many=True,exclude=('user',))
+    payments = fields.Nested('PaymentSchema', many=True,exclude=('users',))
+    orders = fields.Nested('OrderSchema', many=True,exclude=('users',))
+    roles = fields.Nested('RoleSchema', many=True,exclude=('users',))
+    plans = fields.Nested('PlanSchema', many=True,exclude=('users',))
+    gifts = fields.Nested('GiftSchema', many=True,exclude=('users',))
+    auctions = fields.Nested('AuctionSchema', many=True,exclude=('participants',))
 
     auction_likes = fields.Nested('LikeAuctionSchema',many=True,exclude=('user',))
     auction_views = fields.Nested('ViewAuctionSchema', many=True,exclude=('user',))

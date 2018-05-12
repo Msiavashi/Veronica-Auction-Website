@@ -83,7 +83,7 @@ function animated(){
 		}
 	});
 }
-Detail Gallery
+//Detail Gallery
 function detail_gallery(){
 	if($('.detail-gallery').length>0){
 		$('.detail-gallery').each(function(){

@@ -23,5 +23,5 @@ class OfferSchema(Schema):
     date = fields.DateTime()
     status = fields.Int()
     win = fields.Boolean()
-    user = fields.Nested('UserSchema')
+    user = fields.Nested('UserSchema',exclude=('offers',))
     item = fields.Nested('ItemSchema',exclude=('offers',))

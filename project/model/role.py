@@ -13,4 +13,4 @@ class RoleSchema(Schema):
     id = fields.Int()
     name = fields.Str()
     description = fields.Str()
-    users = fields.Nested('UserSchema',many=True)
+    users = fields.Nested('UserSchema',many=True,exclude=('roles',))
