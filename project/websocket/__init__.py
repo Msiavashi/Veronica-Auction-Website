@@ -1,18 +1,6 @@
-# -*- coding: utf-8 -*-
-
-"""
-WebSockets Server
-===========
-
-This simple application uses WebSockets to run a primitive WebSocket server.
-"""
-
-from gevent import monkey
-monkey.patch_all()
-from gevent.monkey import patch_all; patch_all()
 import gevent
-from . import app
-from . import redis
+from .. import app
+from .. import redis
 
 REDIS_URL = "redis://localhost:6379/0"
 REDIS_CHAN = 'auction'
@@ -54,4 +42,5 @@ class SocketBackend(object):
         """Maintains Redis subscription in the background."""
         gevent.spawn(self.run)
 
-socketbackend = SocketBackend()
+websocket = SocketBackend()
+websocket.start()

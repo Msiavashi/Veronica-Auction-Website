@@ -1,4 +1,9 @@
-from . import app
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
+import gevent
 from flask import url_for, redirect, render_template, request, abort ,redirect
 from flask import render_template, jsonify
 from flask_wtf import FlaskForm
@@ -7,20 +12,7 @@ from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from flask_login import current_user,login_required,logout_user
 from .controllers.Auth_API import login_manager
 from .model import *
-
-# class LoginForm(FlaskForm):
-#     username = StringField('نام کاربری', validators=[DataRequired('لطفا نام کاربری خود را وارد کنید')])
-#     password = StringField('رمز عبور', validators=[DataRequired('لطفا رمز عبور خود را وارد کنید')])
-#
-# class RegisterForm(FlaskForm):
-#     username = StringField('نام کاربری', validators=[DataRequired('لطفا نام کاربری خود را وارد کنید')])
-#     mobile = StringField('تلفن همراه', validators=[DataRequired('لطفا شماره تلفن همراه خود را وارد کنید')])
-#     password = PasswordField('رمز عبور', [
-#         validators.DataRequired(),
-#         validators.EqualTo('c_password', message='رمز عبور با تکرار باید همخوانی داشته باشد')
-#     ])
-#     c_password = PasswordField('تکرار رمز عبور', validators=[DataRequired('لطفا تکرار رمز عبور خود را وارد کنید')])
-#
+from . import app
 
 class Route():
     @app.route('/')
@@ -97,6 +89,8 @@ class Route():
     def news():
         return render_template('site/news.html')
 
-
+    @app.route('/socket')
+    def socket():
+        return render_template('/socket.html')
 
 route = Route()
