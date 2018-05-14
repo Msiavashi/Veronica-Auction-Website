@@ -1,27 +1,36 @@
 from project.database import db, Base
-import datetime
 from marshmallow import Schema, fields
-from .order_item import order_items
+import datetime
 
 class Order(Base):
     __tablename__ = 'orders'
     id = db.Column(db.BigInteger, primary_key=True)
-    create_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
-    status = db.Column(db.Boolean)
+    desciption = db.Column(db.Text)
+    status = db.Column(db.Integer,default=0)
+    register_user = db.Column(db.Boolean,default=False)
+    total_cost = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     user = db.relationship('User')
-    items = db.relationship('Item', secondary = 'order_items', back_populates='orders')
-    shipment_id = db.Column(db.BigInteger, db.ForeignKey('shipments.id'))
-    shipment = db.relationship('Shipment')
+
+    items = db.relationship('Item',secondary='order_items',back_populates='orders')
+
+    payment = db.relationship('Payment')
+
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+
     def __str__(self):
         return str(self)
 
 class OrderSchema(Schema):
     id = fields.Int()
+    desciption = fields.Str()
+    status = fields.Boolean()
+    register_user = fields.Boolean()
+    total_cost = fields.Str()
     create_at = fields.DateTime()
     updated_at = fields.DateTime()
-    status = fields.Boolean()
     user = fields.Nested('UserSchema')
+    payment = fields.Nested('PaymentSchema',many=True,exclude=('order',))
     items = fields.Nested('ItemSchema',many=True,exclude=('orders',))
-    shipment = fields.Nested('ShipmentSchema',exclude=('order',))

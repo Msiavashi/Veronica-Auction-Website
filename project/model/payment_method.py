@@ -1,23 +1,27 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
-class Manufacture(Base):
-    __tablename__ = 'manufactures'
+class PaymentMethod(Base):
+    __tablename__ = 'payment_methods'
     id = db.Column(db.BigInteger, primary_key=True)
-    name = db.Column(db.String(length=25), nullable=False)
-    country = db.Column(db.String(length=100), nullable=False)
-    desciption = db.Column(db.Text, nullable=False)
-    details =  db.Column(db.Text, nullable=True)
+    title = db.Column(db.String(length=100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    details = db.Column(db.Text)
+
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return self.name
+        return self.title
 
-class ManufactureSchema(Schema):
+class PaymentMethodSchema(Schema):
     id = fields.Int()
-    name = fields.Str()
-    country = fields.Str()
+    title = fields.Str()
     desciption = fields.Str()
     details = fields.Str()

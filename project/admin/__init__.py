@@ -6,12 +6,9 @@ sys.setdefaultencoding("utf-8")
 from ..database import db
 from .. import app
 from ..model import *
+from .upload import *
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from ..model.advertisement import Advertisement
-from ..model.event import Event
-from .upload import *
-
 
 # Create admin
 admin = Admin(

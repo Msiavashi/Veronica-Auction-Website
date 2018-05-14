@@ -1,20 +1,23 @@
 from project.database import db, Base
-from marshmallow import Schema , fields
+from marshmallow import Schema, fields
+import datetime
 
 class Plan(Base):
     __tablename__ = 'plans'
     id = db.Column(db.BigInteger, primary_key=True)
-    name = db.Column(db.String(length=100), nullable=False)
-    price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=True)
-    total_offers = db.Column(db.Integer, default=0)
-    users = db.relationship('User', secondary = 'user_plans', back_populates='plans')
-    payments = db.relationship('Payment', secondary = 'payment_plans', back_populates='plans')
+    title = db.Column(db.String(length=255), nullable=False)
+    desciption = db.Column(db.Text, nullable=False)
+
+    auctions = db.relationship('AuctionPlan')
+
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+
     def __str__(self):
         return self.name
+
 class PlanSchema(Schema):
     id = fields.Int()
-    name = fields.Str()
-    price = fields.Str()
-    total_offers = fields.Int()
-    users = fields.Nested('UserSchema', many=True,exclude=('plans',))
-    payments = fields.Nested('PaymentSchema',many=True,exclude=('plans',))
+    title = fields.Str()
+    description = fields.Str()
+    auctions = fields.Nested('AuctionPlanSchema',many=True,exclude=('plan',))

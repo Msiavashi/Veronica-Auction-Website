@@ -1,11 +1,5 @@
 from flask_restful import Resource, reqparse
 from ..model import *
-from project.model.advertisement import *
-from project.model.category import *
-from project.model.event import *
-from project.model.auction import *
-from project.model.plan import *
-from project.model.user_auction_like import user_auction_likes
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 import json
 from project import app
@@ -35,7 +29,7 @@ class ProductCarouselAds(Resource):
 class SiteTodayEvents(Resource):
     def get(self):
         today = datetime.today()
-        events = Event.query.filter_by(active = True).filter(Event.start_date <= today).filter(Event.end_date >= today).all()
+        events = Event.query.filter_by(is_active = True).filter(Event.start_date <= today).filter(Event.end_date >= today).all()
         event_schema = EventSchema(many=True)
         return make_response(jsonify(event_schema.dump(events)),200)
 
@@ -56,15 +50,15 @@ class SiteMostpopularAuctions(Resource):
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
-class SiteMostpopularProducts(Resource):
-    def get(self):
-        today = datetime.today()
-        result = db.session.query(Auction.id, db.func.count(user_product_likes.c.user_id).label('total')).join(Item).join(Product).join(user_product_likes).group_by(Auction.id).having(Auction.end_date >= today).order_by('total DESC')
-        auctions =[]
-        for auction in result:
-            auctions.append(Auction.query.get(auction.id))
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+# class SiteMostpopularProducts(Resource):
+#     def get(self):
+#         today = datetime.today()
+#         result = db.session.query(Auction.id, db.func.count(user_product_likes.c.user_id).label('total')).join(Item).join(Product).join(user_product_likes).group_by(Auction.id).having(Auction.end_date >= today).order_by('total DESC')
+#         auctions =[]
+#         for auction in result:
+#             auctions.append(Auction.query.get(auction.id))
+#         auction_schema = AuctionSchema(many=True)
+#         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class AuctionInstanceView(Resource):
     def get(self,aid):

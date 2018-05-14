@@ -3,6 +3,8 @@ from .. import app
 from .. import redis
 from .. import sockets
 from . import websocket
+import ast
+from handler import *
 
 REDIS_URL = "redis://localhost:6379/0"
 REDIS_CHAN = 'auction'
@@ -15,6 +17,8 @@ class SocketBroker():
             # Sleep to prevent *constant* context-switches.
             gevent.sleep(0.1)
             message = ws.receive()
+            data = ast.literal_eval(message)
+            message = offer_bid(data)
 
             if message:
                 app.logger.info(u'Inserting message: {}'.format(message))

@@ -1061,46 +1061,5 @@ $.getJSON( "{{url_for('sitemostpopularauctions')}}", function( data ) {
 
 });
 
-$.getJSON( "{{url_for('sitemostpopularproducts')}}", function( data ) {
-	$.each( data[0], function( key, val ) {
-
-		if(val.item.product.images)
-			image_name = val.item.product.images.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];
-
-		item_mostpopular_product =
-			'<div class="item-pro-hotdeal">'+
-			'<div class="product-thumb">'+
-			'<a href="#" class="product-thumb-link">'+
-			'<img src=static/images/products/'+image_name+' alt="">'+
-			'</a>'+
-			'<a href="/instantview/'+val.id+'" class="quickview-link pos-bottom fancybox.iframe"><span>مشاهده سریع</span></a>'+
-			'</div>'+
-			'<div class="product-info">'+
-			'<h3 class="product-title"><a href="#">'+val.name+'</a></h3>'+
-			'<div class="info-pro-hotdeal">'+
-			'<div class="deal-percent">'+
-			'<span>شروع حراجی:</span>'+
-			'<span>'+ToPersian(formatCurrency(val.register_price))+'</span>'+
-			'</div>'+
-			'<div class="product-price">'+
-			'<del><span>قیمت محصول</span></del>'+
-			'<ins><span>'+ToPersian(formatCurrency(val.item.price))+'تومان</span></ins>'+
-			'</div>'+
-			'</div>'+
-			'<div class="product-extra-link2">'+
-			'{% if current_user.is_authenticated %}'+
-			'<a href="/participate/'+val.id+'" class="addcart-link quickview-link fancybox.iframe">شرکت در حراجی</a>'+
-			'<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>'+
-			'{% else %}'+
-			'<a href="/ilogin" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>'+
-			'{% endif %}'+
-			'</div>'+
-			'</div>'+
-			'</div>';
-
-		$('.mostpopular_products_container').append(item_mostpopular_product);
-	});
-});
-
 </script>
 {% endblock scripts %}

@@ -1,10 +1,8 @@
-from passlib.hash import pbkdf2_sha256 as sha256
 from project.database import db, Base
-from flask_login import UserMixin
-import datetime
 from marshmallow import Schema, fields
-from .user_auction_view import user_auction_views
-from .user_auction_like import user_auction_likes
+import datetime
+from passlib.hash import pbkdf2_sha256 as sha256
+from flask_login import UserMixin
 
 class User(Base,UserMixin):
     def __init__(self, username):
@@ -28,28 +26,29 @@ class User(Base,UserMixin):
     #please check for dafault avatar address from config file
     avatar = db.Column(db.String(length=300))
 
-    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+
 
     invitor = db.Column(db.String(length=255))
 
-    #credit for each user
     credit = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
 
-    comments = db.relationship('Comment')
     address_id = db.Column(db.BigInteger, db.ForeignKey('addresses.id'))
+
+    comments = db.relationship('Comment')
+
     address = db.relationship('Address')
-    payments = db.relationship('Payment')
+
     orders = db.relationship('Order')
 
+    offers = db.relationship('Offer')
 
-    roles = db.relationship('Role',secondary='user_roles',back_populates='users')
-    plans = db.relationship('Plan', secondary='user_plans', back_populates='users')
+    role_id = db.Column(db.BigInteger,db.ForeignKey('roles.id'))
+    role = db.relationship('Role')
+
     gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users')
-    auctions = db.relationship('Auction', secondary='user_auctions',back_populates='participants')
-
-    product_likes = db.relationship('Product', secondary='user_product_likes' ,back_populates='likes')
-    product_views = db.relationship('Product', secondary='user_product_views' ,back_populates='views')
+    auctions = db.relationship('UserAuctionParticipation')
 
     auction_views = db.relationship('Auction', secondary ='user_auction_views', back_populates='views')
     auction_likes = db.relationship('Auction', secondary ='user_auction_likes', back_populates='likes')
@@ -87,9 +86,12 @@ class UserSchema(Schema):
     credit = fields.Str()
     address_id = fields.Int()
     avatar = fields.Str()
+
+    comments = fields.Nested('CommentSchema', many=True,exclude=('user',))
     payments = fields.Nested('PaymentSchema', many=True,exclude=('users',))
-    orders = fields.Nested('OrderSchema', many=True,exclude=('users',))
-    roles = fields.Nested('RoleSchema', many=True,exclude=('users',))
+    offers = fields.Nested('OfferSchema', many=True,exclude=('user',))
+    orders = fields.Nested('OrderSchema', many=True,exclude=('user',))
+    roles = fields.Nested('RoleSchema',exclude=('user',))
     plans = fields.Nested('PlanSchema', many=True,exclude=('users',))
     gifts = fields.Nested('GiftSchema', many=True,exclude=('users',))
     auctions = fields.Nested('AuctionSchema', many=True,exclude=('participants',))

@@ -14,15 +14,13 @@ import redis
 
 
 REDIS_URL = "redis://localhost:6379/0"
-REDIS_CHAN = 'auction'
-
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 
 sockets = Sockets(app)
 redis = redis.from_url(REDIS_URL)
@@ -40,15 +38,15 @@ api = Api(app,'/api')
 api.add_resource(Auth_API.UserRegistration,'/register')
 api.add_resource(Auth_API.UserLogin, '/login')
 api.add_resource(Auth_API.UserLogout, '/logout')
-api.add_resource(Auth_API.UserLogoutRefresh, '/logout/refresh')
-api.add_resource(Auth_API.TokenRefresh, '/token/refresh')
+# api.add_resource(Auth_API.UserLogoutRefresh, '/logout/refresh')
+# api.add_resource(Auth_API.TokenRefresh, '/token/refresh')
 api.add_resource(Site_API.CategoryMenuItems, '/category/menu/items')
 api.add_resource(Site_API.AuctionCarouselAds, '/auction/carousel/ads')
 api.add_resource(Site_API.ProductCarouselAds, '/product/carousel/ads')
 api.add_resource(Site_API.SiteTodayEvents, '/today/events')
 api.add_resource(Site_API.SiteTodayAuctions, '/today/auctions')
 api.add_resource(Site_API.SiteMostpopularAuctions, '/mostpopular/auctions')
-api.add_resource(Site_API.SiteMostpopularProducts, '/mostpopular/products')
+# api.add_resource(Site_API.SiteMostpopularProducts, '/mostpopular/products')
 api.add_resource(Site_API.AuctionInstanceView, '/auction/<int:aid>/instantview')
 api.add_resource(Site_API.AuctionPlans, '/auction/plans')
 api.add_resource(Site_API.UserParticipateAuction, '/user/participate/auction')

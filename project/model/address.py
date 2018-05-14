@@ -1,16 +1,25 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from project.database import db, Base
 from marshmallow import Schema, fields
+import datetime
 
 class Address(Base):
     __tablename__ = 'addresses'
     id = db.Column(db.BigInteger, primary_key=True)
-    country = db.Column(db.String(length=50),nullable=True)
+    country = db.Column(db.String(length=50),nullable=False,default="ایران")
     state = db.Column(db.String(length=50), nullable=False)
     city = db.Column(db.String(length=50), nullable=False)
     address = db.Column(db.String(length=255), nullable=False)
     postal_code = db.Column(db.String(length=20), nullable=False)
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+
     def __str__(self):
-        return self.country + " " + self.state + " " + self.city
+        return " آدرس :" + self.country + " - " + self.state + "  - " + self.city + " - " + self.address
 
 class AddressSchema(Schema):
     id = fields.Str()

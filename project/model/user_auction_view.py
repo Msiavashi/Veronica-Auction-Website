@@ -1,6 +1,6 @@
 from project.database import db, Base
-import datetime
 from marshmallow import Schema, fields
+import datetime
 
 
 user_auction_views = db.Table('user_auction_views', Base.metadata,

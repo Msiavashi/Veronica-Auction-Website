@@ -124,10 +124,11 @@
 {% block scripts %}
 {{ super() }}
 
-<script type="text/javascript" src="../../static/js/libs/owl.carousel.js"></script>
-<script type="text/javascript" src="../../static/js/libs/jquery.jcarousellite.js"></script>
-<script type="text/javascript" src="../../static/js/libs/jquery.elevatezoom.js"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.js')}}"></script>
+<script type="text/javascript" src=" {{ url_for('static',filename='js/libs/owl.carousel.js')}} "></script>
+<script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.jcarousellite.js')}} "></script>
+<script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.elevatezoom.js')}} "></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static',filename='js/socket/reconnecting-websocket.min.js')}}"></script>
 
 <script>
 var auction_id = $('#auction').val();
@@ -229,6 +230,38 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 			});
 		});
 	}
+
+  if (window.location.protocol == "https:") {
+    var ws_scheme = "wss://";
+  } else {
+    var ws_scheme = "ws://"
+  };
+
+
+  var inbox = new ReconnectingWebSocket(ws_scheme + location.host + "/receive");
+  var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "/submit");
+
+  inbox.onmessage = function(message) {
+    // var data = JSON.parse(message.data);
+    console.log(message.data);
+  };
+
+  inbox.onclose = function(){
+      console.log('inbox closed');
+      this.inbox = new WebSocket(inbox.url);
+  };
+
+  outbox.onclose = function(){
+      console.log('outbox closed');
+      this.outbox = new WebSocket(outbox.url);
+  };
+
+  $("#offer").on("click", function(event) {
+    event.preventDefault();
+    outbox.send(JSON.stringify({ user_id: '{{current_user.id}}', auction_id: auction_id }));
+  });
+
+
   var minutes = end_time;
 
   var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date

@@ -50,17 +50,17 @@ class Route():
         return redirect('/')
 
     @app.route("/profile")
-    @login_required
+    # @login_required
     def profile():
         return render_template('site/profile.html')
 
     @app.route("/participate/<int:aid>")
-    @login_required
+    # @login_required
     def participate(aid):
         return render_template('site/iframes/package.html',auction_id=aid)
 
     @app.route("/instantview/<int:aid>")
-    @login_required
+    # @login_required
     def instantview(aid):
         return render_template('site/iframes/quickview.html',auction_id=aid)
 

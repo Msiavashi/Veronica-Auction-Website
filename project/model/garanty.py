@@ -2,24 +2,24 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
-class Advertisement(Base):
-    __tablename__ = 'advertisements'
+
+class Garanty(Base):
+    __tablename__ = "garanties"
     id = db.Column(db.BigInteger, primary_key=True)
-    title = db.Column(db.String(length=100),nullable=False)
+    title = db.Column(db.String(length=100), nullable=False)
     description = db.Column(db.Text,nullable=False)
-    images = db.Column(db.Text,nullable=False)
-    link_title = db.Column(db.String(length=100),nullable=False)
-    show = db.Column(db.Boolean,default=False)
+    price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+
+    products = db.relationship('Product', secondary='garanty_products', back_populates='garanties')
+
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-
     def __str__(self):
-        return self.title
+        return self.company_name
 
-class AdvertisementSchema(Schema):
+class GarantySchema(Schema):
     id = fields.Int()
     title = fields.Str()
     description = fields.Str()
-    images = fields.Str()
-    link_title =fields.Str()
-    show = fields.Boolean()
+    price = fields.Str()
+    products = fields.Nested("ProductSchema",many=True,exclude=('garanties',))
