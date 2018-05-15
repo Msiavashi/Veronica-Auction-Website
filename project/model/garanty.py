@@ -15,7 +15,7 @@ class Garanty(Base):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
-        return self.company_name
+        return self.title
 
 class GarantySchema(Schema):
     id = fields.Int()

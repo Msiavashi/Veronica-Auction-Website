@@ -18,9 +18,12 @@ class AuctionPlan(Base):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
+    def __str__(self):
+        return self.plan.title
+
 class AuctionPlanSchema(Schema):
     id = fields.Int()
-    price = fields.Str()
+    price = fields.Int()
     max_offers = fields.Int()
-    auction = fields.Nested('AuctionSchema',exclude=('plans'))
-    plan = fields.Nested('PlanSchema',exclude=('auctions'))
+    auction = fields.Nested('AuctionSchema',exclude=('plans',))
+    plan = fields.Nested('PlanSchema',exclude=('auctions',))

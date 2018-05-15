@@ -13,7 +13,7 @@
 							<thead>
 								<tr>
 									<th class="product-name">بسته ها</th>
-									<th class="product-total">هزینه</th>
+									<th class="product-total"> هزینه و تعداد پیشنهاد</th>
 								</tr>
 							</thead>
 							<tbody data-bind="foreach:plans">
@@ -21,15 +21,17 @@
 									<td class="product-name">
 										<ul id="shipping_method" class="list-none">
 											<li>
-												<input type="radio" data-bind="checked : $index()==0 ,attr:{id : name } ,click : applyPrice(id,price) " name="plan">
-												<label data-bind="text: name,attr:{for: name}"></label>
+												<input type="radio" data-bind="attr:{id : title } ,click : applyPrice(id,price) " name="plan">
+												<label data-bind="text: title,attr:{for: title}"></label>
 											</li>
 										</ul>
 									</td>
 									<td class="product-total">
-										<span class="amount"><span data-bind="text:ToPersian(formatCurrency(price))"></span> تومان</span>
+										<span class="amount"><span data-bind="text:ToPersian(formatCurrency(price))"></span> تومان</span> با <span data-bind="text:ToPersian(max_offers)"></span> عدد پیشنهاد
 									</td>
 								</tr>
+								<!-- ko text: triggerSelect() -->
+								<!-- /ko -->
 							</tbody>
 							<tfoot>
 								<tr class="cart-subtotal">
@@ -70,35 +72,49 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-<script type="text/javascript" src="{{ url_for('static', filename='js/knockout.js')}}"></script>
-
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script>
 var plan_id = 0;
-var auction_id = $('#auction').val();
+var auction_id = $('#auction_id').val();
 var method_id = 0;
+var total_price = 0;
 
 function applyPrice(id,price){
 	$('#selected_plan_price').html(ToPersian(formatCurrency(price)));
 	$('#total_plan_price').html(ToPersian(formatCurrency(price)));
 	plan_id = id;
+	total_price = price;
 }
 
-$.getJSON( "{{url_for('auctionplans')}}", function( data ) {
-	function MyViewModel() {
-      this.plans = data[0];
-			this.credit = {{current_user.credit}}
-  }
-  ko.applyBindings(new MyViewModel());
-});
+function MyViewModel() {
+	var self = this;
+	var plans = []
+	self.plans = ko.observableArray([]);
+	self.credit = {{current_user.credit}};
+	$.getJSON( "/api/auction/plans/"+auction_id, function( data ) {
+		$.each(data[0],function(key,val) {
+			p = { id : val.id , title : val.plan.title , price : val.price , max_offers : val.max_offers };
+			plans.push(p);
+		})
+		self.plans(plans);
+	});
+}
+ko.applyBindings(new MyViewModel());
+
+function triggerSelect() {
+	$("input:radio[name=plan]:first").click();
+}
 
 $('#place_order').on('click',function(){
 
- // 	var data = {plan_id:plan_id,auction_id:auction_id,method_id:method_id, csrf_token:'{{ csrf_token() }}' };
+	if (total_price > {{current_user.credit}} && $("#payment_method_cheque").is(':checked') ){
+		alert('مبلغ حساب شما برای پرداخت کافی نمیباشد. لطفا حساب خود را شارژ کنید');
+		return;
+	}
 	$.ajax({
     url: "{{url_for('userparticipateauction')}}",
     type: 'post',
     data: {
-        csrf_token: '{{ csrf_token() }}',
 				plan_id:plan_id,
 				auction_id:$('#auction_id').val(),
 				method_id:method_id

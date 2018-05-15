@@ -36,13 +36,13 @@ class Auction(Base):
     views = db.relationship('User', secondary = 'user_auction_views', back_populates='auction_views')
     likes = db.relationship('User', secondary = 'user_auction_likes', back_populates='auction_likes')
 
-    plans = db.relationship('AuctionPlan')
+    plans = db.relationship('AuctionPlan' ,lazy='dynamic',)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return self.name + " تاریخ شروع : " + str(self.start_date) + " تاریخ پایان : " + str(self.end_date)
+        return self.title + " تاریخ شروع : " + str(self.start_date) + " تاریخ پایان : " + str(self.end_date)
 
 class AuctionSchema(Schema):
     id = fields.Str()
@@ -50,9 +50,9 @@ class AuctionSchema(Schema):
     description = fields.Str()
     start_date = fields.DateTime()
     end_date = fields.DateTime()
-    base_price = fields.Str()
-    max_price = fields.Str()
-    max_members = fields.Str()
+    base_price = fields.Int()
+    max_price = fields.Int()
+    max_members = fields.Int()
     ratio = fields.Int()
 
     item = fields.Nested('ItemSchema')

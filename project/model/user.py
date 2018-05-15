@@ -3,6 +3,7 @@ from marshmallow import Schema, fields
 import datetime
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask_login import UserMixin
+from . import Role
 
 class User(Base,UserMixin):
     def __init__(self, username):
@@ -44,11 +45,11 @@ class User(Base,UserMixin):
 
     offers = db.relationship('Offer')
 
-    role_id = db.Column(db.BigInteger,db.ForeignKey('roles.id'))
-    role = db.relationship('Role')
+    roles = db.relationship('Role' , secondary = 'user_roles', back_populates='users' )
 
     gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users')
-    auctions = db.relationship('UserAuctionParticipation')
+
+    auctions = db.relationship('UserAuctionParticipation', lazy='dynamic')
 
     auction_views = db.relationship('Auction', secondary ='user_auction_views', back_populates='views')
     auction_likes = db.relationship('Auction', secondary ='user_auction_likes', back_populates='likes')
@@ -70,7 +71,16 @@ class User(Base,UserMixin):
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
 
+    def has_role(self, name):
+        return next(r for r in self.roles if r.name == name),None
+
+    def has_auction(self,id):
+        return next(a for a in self.auctions if a.id == id),None
+
     def save_to_db(self):
+        #add default role to created user
+        role = Role.query.get(2)
+        self.roles.append(role)
         db.session.add(self)
         db.session.commit()
 
@@ -91,7 +101,7 @@ class UserSchema(Schema):
     payments = fields.Nested('PaymentSchema', many=True,exclude=('users',))
     offers = fields.Nested('OfferSchema', many=True,exclude=('user',))
     orders = fields.Nested('OrderSchema', many=True,exclude=('user',))
-    roles = fields.Nested('RoleSchema',exclude=('user',))
+    roles = fields.Nested('RoleSchema',many=True,exclude=('users',))
     plans = fields.Nested('PlanSchema', many=True,exclude=('users',))
     gifts = fields.Nested('GiftSchema', many=True,exclude=('users',))
     auctions = fields.Nested('AuctionSchema', many=True,exclude=('participants',))

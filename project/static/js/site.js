@@ -10,7 +10,7 @@ function getFormData($form){
 			indexed_array[n['name']] = n['value'];
 		}
 	});
-return indexed_array;
+	return indexed_array;
 }
 
 function ClearifyNames(ugly_text) {

@@ -30,7 +30,7 @@ class Product(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return self.name
+        return self.title
 
 
 class ProductSchema(Schema):

@@ -30,10 +30,10 @@ class ItemSchema(Schema):
     id = fields.Int()
     title = fields.Str()
     desciption = fields.Str()
-    price = fields.Str()
+    price = fields.Int()
     discount = fields.Int()
     details = fields.Str()
-    
+
     product = fields.Nested('ProductSchema',exclude=('items',))
     inventories = fields.Nested('InventorySchema', many=True,exclude=('items',))
     insurances = fields.Nested('InsuranceSchema',many=True,exclude=('items',))

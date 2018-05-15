@@ -67,9 +67,10 @@ class AuctionInstanceView(Resource):
         return make_response(jsonify(auction_schema.dump(auction)),200)
 
 class AuctionPlans(Resource):
-    def get(self):
-        plans = Plan.query.all()
-        plan_schema = PlanSchema(many=True)
+    def get(self,aid):
+        auction=Auction.query.get(aid)
+        plans = auction.plans.order_by('price DESC')
+        plan_schema = AuctionPlanSchema(many=True)
         return make_response(jsonify(plan_schema.dump(plans)),200)
 
 class UserParticipateAuction(Resource):
@@ -77,8 +78,10 @@ class UserParticipateAuction(Resource):
         try:
             plan = Plan.query.get(request.form.get('plan_id'))
             auction = Auction.query.get(request.form.get('auction_id'))
-            current_user.plans.append(plan)
-            current_user.auctions.append(auction)
+            uap = UserAuctionParticipation()
+            uap.auction = auction
+            uap.plan = plan
+            current_user.auctions.append(uap)
             db.session.add(current_user)
             db.session.commit()
             return make_response(jsonify({'success':True}),200)

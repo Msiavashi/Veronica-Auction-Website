@@ -4,7 +4,8 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 import gevent
-from flask import url_for, redirect, render_template, request, abort ,redirect
+from flask import url_for, redirect, render_template, request, abort ,redirect, session
+from datetime import timedelta
 from flask import render_template, jsonify
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired
@@ -15,6 +16,11 @@ from .model import *
 from . import app
 
 class Route():
+    @app.before_request
+    def make_session_permanent():
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=30)
+
     @app.route('/')
     def site():
         return render_template('site/index.html')
@@ -57,6 +63,8 @@ class Route():
     @app.route("/participate/<int:aid>")
     # @login_required
     def participate(aid):
+        if(current_user.has_auction(aid)):
+            return render_template('site/iframes/quickview.html',auction_id=aid)
         return render_template('site/iframes/package.html',auction_id=aid)
 
     @app.route("/instantview/<int:aid>")

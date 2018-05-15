@@ -14,7 +14,18 @@
 			<div class="col-md-12 col-sm-12 col-xs-12">
 				<div class="wrap-banner-slider1">
 					<div class="banner-slider banner-slider1">
-						<div class="wrap-item ads_banner" data-autoplay="true" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1]]" data-transition="fade">
+						<div class="wrap-item ads_banner" data-autoplay="true" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1]]" data-transition="fade" data-bind="foreach: ads">
+							<div class="item-banner item-banner1">
+								<div class="banner-thumb">
+									<a href="#"><img data-bind="attr:{src : ad_image_path + ClearifyNames(images)[0]}" alt="" /></a>
+								</div>
+								<div class="banner-info animated" data-animated="lightSpeedIn">
+									<h2 class="title30" data-bind="text: title"></h2>
+									<h2 class="title30 color">تخفیف: <span>تا </span> <span data-bind="text:ToPersian(discount)"></span>% <span> قیمت</span></h2>
+									<p data-bind="text: description"></p>
+									<a href="#" class="shopnow"><span data-bind="text: link_title"></span></a>
+								</div>
+							</div>
 
 						</div>
 					</div>
@@ -29,47 +40,57 @@
 			</div>
 		</div>
 	</div>
-	<div class="events_container">
-
+	<div class="events_container" data-bind="foreach:events">
+		<div class="intro-countdown">
+			<h2 class="title30"> ٪<strong class="color" data-bind="text: discount "></strong> <span data-bind="text:description"></span> <span class="color"> محدود </span></h2>
+			<div class="deals-cowndown" data-bind="attr:{ 'data-date' : deadline}"></div>
+		</div>
+		<!-- ko text: triggerBigTimer () -->
+		<!-- /ko -->
+		<!-- End Intro Countown -->
 	</div>
-	<!-- End Intro Countown -->
+
 </div>
 <div class="list-flash">
 	<div class="container">
 		<h2 class="title24 title-flash"><span class="bg-color white">حراجی های امروز</span></h2>
-		<div class="row auctions_container">
-			<!-- <div class="col-md-4 col-sm-6 col-xs-12">
+		<div class="row" data-bind="foreach:auctions">
+			<div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="banner-flash">
 					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad1.jpg" alt="" /></a>
+						<a href="#" class="thumb-zoom"><img data-bind="attr:{src : image}" alt="" /></a>
 						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
+							<span class="text-uppercase white"><span data-bind="text:participant_count"></span> از <span data-bind="text:max_members"></span> </span>
 						</div>
 						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
+							<span class="text-uppercase white"><div class="flash-countdown" data-bind = "attr:{'data-date':deadline}" ></div></span>
 						</div>
 					</div>
 					<div class="flash-info">
 						<ul class="list-none clearfix">
 							<li>
 								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
+									<p data-bind="text:title"></p>
 								</div>
 							</li>
 							<li>
 								<div class="flash-timer">
-									<a href="package.html" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+									{% if current_user.is_authenticated %}
+									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+									{% else %}
+									<a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
+									{% endif %}
 								</div>
 							</li>
 							<li>
 								<div class="info-pro-hotdeal">
 									<div class="deal-percent">
 										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
+										<span data-bind="text:base_price"></span>
 									</div>
 									<div class="product-price">
 										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
+										<ins><span data-bind="text:price"></span></ins>
 									</div>
 								</div>
 							</li>
@@ -77,326 +98,9 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad2.jpg" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
-						</div>
-					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									<a href="#" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad3.jpg" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
-						</div>
-					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									<a href="#" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad2.jpg" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
-						</div>
-					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									<a href="#" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad3.jpg" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
-						</div>
-					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									<a href="#" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad1.jpg" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
-						</div>
-					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									<a href="#" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad3.jpg" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
-						</div>
-					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									<a href="#" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad2.jpg" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
-						</div>
-					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									<a href="#" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img src="images/theme/ad3.jpg" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white">۲۳ از ۴۵</span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-date="10/10/2018"></div></span>
-						</div>
-					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p>گوشی سامسونگ S7 ۱۲۸ گیگابایت</p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									<a href="#" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span>۳۵۰،۰۰۰</span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span>۲،۵۰۰،۰۰۰</span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div> -->
+			<!-- ko text: triggerFlashTimer () -->
+			<!-- /ko -->
+			<!-- End Intro Countown -->
 		</div>
 	</div>
 </div>
@@ -828,165 +532,92 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script>
 
-$.getJSON( "{{url_for('categorymenuitems')}}", function( data ) {
-		$.each( data[0], function( key, val ) {
-		if(val.icon)
-			image_name ='/static/images/icons/category/'+val.icon.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];
-		else
-			image_name="test.png"
+var today_auctions = []
+var best_auctions = []
+var ad_image_path = '../../static/images/ads/';
+var product_image_path = '../../static/images/products/';
+var ads = []
+var events = []
+var auctions = []
 
-		item_cat_icon = '<li><a href="#"><img alt="" src="'+image_name+'"><span>'+val.name+'</span></a></li>';
-		item_toggle = '<li><a href="#"><span>'+val.name+'</span></a></li>';
-		$('.list-cat-icon').append(item_cat_icon);
-		$('.list-category-toggle').append(item_toggle);
-		$('.main-nav-ontop').find('ul').append(item_toggle);
+function dealModel() {
+	var self = this;
+	self.ads = ko.observableArray([]);
+	self.events = ko.observableArray([]);
+	self.auctions = ko.observableArray([]);
+
+	$.getJSON("{{url_for('auctioncarouselads')}}", function(data) {
+		self.ads(data[0]);
+	})
+
+	$.getJSON( "{{url_for('sitetodayevents')}}", function( data ) {
+		$.each(data[0],function(key,val){
+			e = { title : val.title , description : val.description , deadline : new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC"), discount :ToPersian(val.discount)};
+			events.push(e);
+		})
+		self.events(events)
 	});
-});
 
-$.getJSON( "{{url_for('auctioncarouselads')}}", function( data ) {
-	$.each( data[0], function( key, val ) {
-
-		if(val.images)
-			image_name ='/static/images/ads/'+val.images.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];
-		else
-			image_name="test.jpg"
-
-		item_auction_carousel =
-		'<div class="item-banner item-banner1">'+
-		'<div class="banner-thumb">'+
-		'<a href="#"><img src="'+image_name+'" alt="تصویر تبلیغات" /></a>'+
-		'</div>'+
-		'<div class="banner-info animated" data-animated="lightSpeedIn">'+
-		'<h2 class="title30">'+val.title+'</h2>'+
-		'<h2 class="title30 color">تخفیف: <span>تا </span> '+ToPersian(val.auction.item.discount)+'% <span> قیمت</span></h2>'+
-		'<p>'+val.description+'</p>'+
-		'<a href="#" class="shopnow"><span>'+val.link_title+'</span></a>'+
-		'</div>'+
-		'</div>';
-
-		$('.ads_banner').append(item_auction_carousel);
-	});
-});
-
-$.getJSON( "{{url_for('productcarouselads')}}", function( data ) {
-	$.each( data[0], function( key, val ) {
-		if(val.images)
-			image_name ='/static/images/ads/'+val.images.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];
-		else
-			image_name="test.jpg"
-
-		item_sub_slide =
-		'<div class="clearfix">'+
-		'<div class="item-sub-banner">'+
-		'<div class="product-thumb">'+
-		'<a href="#"><img class="wobble-horizontal" src="'+image_name+'" alt="تصویر تبلیغات" /></a>'+
-		'</div>'+
-		'<div class="product-info">'+
-		'<h3 class="product-title text-capitalize"><a href="#">'+val.title+'</a></h3>'+
-		'<strong class="color">تا '+ToPersian(val.product.items[0].discount)+' درصد تخفیف</strong>'+
-		'</div>'+
-		'</div>'+
-		'</div>';
-
-		$('.sub-ads-slider').append(item_sub_slide);
-	});
-});
-
-$.getJSON( "{{url_for('sitetodayevents')}}", function( data ) {
-	$.each( data[0], function( key, val ) {
-		deadline = new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC");
-		item_event =
-		'<div class="intro-countdown">'+
-		'<h2 class="title30">'+val.title+
-		'<strong class="color"> '+ToPersian(val.discount)+'٪ </strong> '+val.description+' <span class="color">محدود</span></h2>'+
-		'<div class="deals-cowndown" data-date="'+deadline+'"></div>'+
-		'</div>';
-		$('.events_container').append(item_event);
-	});
-	if($('.deals-cowndown').length>0){
-		$(".deals-cowndown").TimeCircles({
-			fg_width: 0.01,
-			bg_width: 1.2,
-			text_size: 0.07,
-			circle_bg_color: "#ffffff",
-			time: {
-				Days: {
-					show: true,
-					text: "روز",
-					color: "#f9bc02"
-				},
-				Hours: {
-					show: true,
-					text: "ساعت",
-					color: "#f9bc02"
-				},
-				Minutes: {
-					show: true,
-					text: "دقیقه",
-					color: "#f9bc02"
-				},
-				Seconds: {
-					show: true,
-					text: "ثانیه",
-					color: "#f9bc02"
-				}
-			}
+	$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
+		$.each(data[0],function(key,val){
+			auction =
+			{
+				title : val.title ,
+				description : val.description ,
+				deadline : new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
+				participant_count :ToPersian(val.participants.length),
+				max_members :ToPersian(val.max_members),
+				base_price : ToPersian(formatCurrency(val.base_price)),
+				max_price : ToPersian(formatCurrency(val.max_price)),
+				price : ToPersian(formatCurrency(val.item.price)),
+				image : product_image_path + ClearifyNames(val.item.product.images)[0],
+				link : "/participate/"+ val.id
+			};
+			auctions.push(auction);
 		});
-	}
-});
-
-$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
-	$.each( data[0], function( key, val ) {
-		deadline = new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC");
-		item_auction =
-			'<div class="col-md-4 col-sm-6 col-xs-12">'+
-			'<div class="banner-flash">'+
-			'<div class="banner-zoom">'+
-			'<a href="#" class="thumb-zoom"><img src="static/images/theme/ad1.jpg" alt="" /></a>'+
-			'<div class="flash-label">'+
-			'<span class="text-uppercase white">'+ToPersian(val.participants.length)+' از '+ToPersian(val.max_members)+'</span>'+
-			'</div>'+
-			'<div class="flash-label right-time">'+
-			'<span class="text-uppercase white"><div class="flash-countdown" data-date="'+deadline+'"></div></span>'+
-			'</div>'+
-			'</div>'+
-			'<div class="flash-info">'+
-			'<ul class="list-none clearfix">'+
-			'<li>'+
-			'<div class="flash-timer">'+
-			'<p> '+val.name+' </p>'+
-			'</div>'+
-			'</li>'+
-			'<li>'+
-			'<div class="flash-timer">'+
-			'{% if current_user.is_authenticated %}'+
-			'<a href="/participate/'+val.id+'" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>'+
-			'{% else %}'+
-			'<a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>'+
-			'{% endif %}'+
-			'</div>'+
-			'</li>'+
-			'<li>'+
-			'<div class="info-pro-hotdeal">'+
-			'<div class="deal-percent">'+
-			'<span>شروع حراجی:</span>'+
-			'<span> '+ToPersian(formatCurrency(val.register_price))+' </span>'+
-			'</div>'+
-			'<div class="product-price">'+
-			'<label>قیمت محصول:</label>'+
-			'<ins><span>'+ToPersian(formatCurrency(val.item.price))+'</span></ins>'+
-			'</div>'+
-			'</div>'+
-			'</li>'+
-			'</ul>'+
-			'</div>'+
-			'</div>'+
-			'</div>';
-		$('.auctions_container').append(item_auction);
+		self.auctions(auctions)
 	});
+}
+
+ko.applyBindings(new dealModel());
+
+function triggerBigTimer() {
+	if($('.deals-cowndown').length>0){
+		 $(".deals-cowndown").TimeCircles({
+			 fg_width: 0.01,
+			 bg_width: 1.2,
+			 text_size: 0.07,
+			 circle_bg_color: "#ffffff",
+			 time: {
+				 Days: {
+					 show: true,
+					 text: "روز",
+					 color: "#f9bc02"
+				 },
+				 Hours: {
+					 show: true,
+					 text: "ساعت",
+					 color: "#f9bc02"
+				 },
+				 Minutes: {
+					 show: true,
+					 text: "دقیقه",
+					 color: "#f9bc02"
+				 },
+				 Seconds: {
+					 show: true,
+					 text: "ثانیه",
+					 color: "#f9bc02"
+				 }
+			 }
+		 });
+	 	}
+}
+
+function triggerFlashTimer() {
 	if($('.flash-countdown').length>0){
 		$(".flash-countdown").TimeCircles({
 			fg_width: 0.01,
@@ -1017,49 +648,53 @@ $.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
 			}
 		});
 	}
-});
+}
 
 $.getJSON( "{{url_for('sitemostpopularauctions')}}", function( data ) {
-	$.each( data[0], function( key, val ) {
-
-		if(val.item.product.images)
-			image_name = val.item.product.images.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];
-
-		item_mostpopular_auction =
-			'<div class="item-pro-hotdeal">'+
-			'<div class="product-thumb">'+
-			'<a href="#" class="product-thumb-link">'+
-			'<img src=static/images/products/'+image_name+' alt="">'+
-			'</a>'+
-			'<a href="/instantview/'+val.id+'" class="quickview-link pos-bottom fancybox.iframe"><span>مشاهده سریع</span></a>'+
-			'</div>'+
-			'<div class="product-info">'+
-			'<h3 class="product-title"><a href="#">'+val.name+'</a></h3>'+
-			'<div class="info-pro-hotdeal">'+
-			'<div class="deal-percent">'+
-			'<span>شروع حراجی:</span>'+
-			'<span>'+ToPersian(formatCurrency(val.register_price))+'</span>'+
-			'</div>'+
-			'<div class="product-price">'+
-			'<del><span>قیمت محصول</span></del>'+
-			'<ins><span>'+ToPersian(formatCurrency(val.item.price))+'تومان</span></ins>'+
-			'</div>'+
-			'</div>'+
-			'<div class="product-extra-link2">'+
-			'{% if current_user.is_authenticated %}'+
-			'<a href="/participate/'+val.id+'" class="addcart-link quickview-link fancybox.iframe">شرکت در حراجی</a>'+
-			'<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>'+
-			'{% else %}'+
-			'<a href="/ilogin" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>'+
-			'{% endif %}'+
-			'</div>'+
-			'</div>'+
-			'</div>';
-
-		$('.mostpopular_auctions_container').append(item_mostpopular_auction);
-	});
 
 });
+
+// $.getJSON( "{{url_for('sitemostpopularauctions')}}", function( data ) {
+// 	$.each( data[0], function( key, val ) {
+//
+// 		if(val.item.product.images)
+// 			image_name = val.item.product.images.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];
+//
+// 		item_mostpopular_auction =
+// 			'<div class="item-pro-hotdeal">'+
+// 			'<div class="product-thumb">'+
+// 			'<a href="#" class="product-thumb-link">'+
+// 			'<img src=static/images/products/'+image_name+' alt="">'+
+// 			'</a>'+
+// 			'<a href="/instantview/'+val.id+'" class="quickview-link pos-bottom fancybox.iframe"><span>مشاهده سریع</span></a>'+
+// 			'</div>'+
+// 			'<div class="product-info">'+
+// 			'<h3 class="product-title"><a href="#">'+val.name+'</a></h3>'+
+// 			'<div class="info-pro-hotdeal">'+
+// 			'<div class="deal-percent">'+
+// 			'<span>شروع حراجی:</span>'+
+// 			'<span>'+ToPersian(formatCurrency(val.register_price))+'</span>'+
+// 			'</div>'+
+// 			'<div class="product-price">'+
+// 			'<del><span>قیمت محصول</span></del>'+
+// 			'<ins><span>'+ToPersian(formatCurrency(val.item.price))+'تومان</span></ins>'+
+// 			'</div>'+
+// 			'</div>'+
+// 			'<div class="product-extra-link2">'+
+// 			'{% if current_user.is_authenticated %}'+
+// 			'<a href="/participate/'+val.id+'" class="addcart-link quickview-link fancybox.iframe">شرکت در حراجی</a>'+
+// 			'<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>'+
+// 			'{% else %}'+
+// 			'<a href="/ilogin" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>'+
+// 			'{% endif %}'+
+// 			'</div>'+
+// 			'</div>'+
+// 			'</div>';
+//
+// 		$('.mostpopular_auctions_container').append(item_mostpopular_auction);
+// 	});
+//
+// });
 
 </script>
 {% endblock scripts %}

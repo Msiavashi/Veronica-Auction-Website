@@ -38,20 +38,11 @@ api = Api(app,'/api')
 api.add_resource(Auth_API.UserRegistration,'/register')
 api.add_resource(Auth_API.UserLogin, '/login')
 api.add_resource(Auth_API.UserLogout, '/logout')
-# api.add_resource(Auth_API.UserLogoutRefresh, '/logout/refresh')
-# api.add_resource(Auth_API.TokenRefresh, '/token/refresh')
 api.add_resource(Site_API.CategoryMenuItems, '/category/menu/items')
 api.add_resource(Site_API.AuctionCarouselAds, '/auction/carousel/ads')
-api.add_resource(Site_API.ProductCarouselAds, '/product/carousel/ads')
 api.add_resource(Site_API.SiteTodayEvents, '/today/events')
 api.add_resource(Site_API.SiteTodayAuctions, '/today/auctions')
 api.add_resource(Site_API.SiteMostpopularAuctions, '/mostpopular/auctions')
-# api.add_resource(Site_API.SiteMostpopularProducts, '/mostpopular/products')
 api.add_resource(Site_API.AuctionInstanceView, '/auction/<int:aid>/instantview')
-api.add_resource(Site_API.AuctionPlans, '/auction/plans')
+api.add_resource(Site_API.AuctionPlans, '/auction/plans/<int:aid>')
 api.add_resource(Site_API.UserParticipateAuction, '/user/participate/auction')
-
-# @jwt.token_in_blacklist_loader
-# def check_if_token_in_blacklist(decrypted_token):
-#     jti = decrypted_token['jti']
-#     return project.model.RevokedTokenModel.is_jti_blacklisted(jti)

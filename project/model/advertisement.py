@@ -10,6 +10,7 @@ class Advertisement(Base):
     images = db.Column(db.Text,nullable=False)
     link_title = db.Column(db.String(length=100),nullable=False)
     show = db.Column(db.Boolean,default=False)
+    discount = db.Column(db.Integer,nullable=False)
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
@@ -23,3 +24,4 @@ class AdvertisementSchema(Schema):
     images = fields.Str()
     link_title =fields.Str()
     show = fields.Boolean()
+    discount = fields.Int()

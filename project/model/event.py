@@ -10,6 +10,7 @@ class Event(Base):
     start_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     end_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     is_active = db.Column(db.Boolean,default=False)
+    discount = db.Column(db.Integer,nullable=False)
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
@@ -22,3 +23,4 @@ class EventSchema(Schema):
     start_date = fields.DateTime()
     end_date = fields.DateTime()
     is_active = fields.Boolean()
+    discount = fields.Int()

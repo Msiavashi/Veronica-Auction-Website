@@ -211,6 +211,9 @@
                           {% if not current_user.is_authenticated %}
       										<li><a href="/login"><i class="fa fa-key" aria-hidden="true"></i>ورود</a></li>
                           {% else %}
+                          {% if current_user.has_role('admin') %}
+                          <li><a href="/admin"><i class="fa fa-cog"></i> پنل مدیریت </a></li>
+                          {% endif %}
                           <li><a href="/profile"><i class="fa fa-user"></i> مشاهده پنل</a></li>
                           <li><a href="#"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
                           <li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
@@ -620,7 +623,22 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/site.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.jcarousellite.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.elevatezoom.js')}}"></script>
+  <script>
+  $.getJSON( "{{url_for('categorymenuitems')}}", function( data ) {
+  		$.each( data[0], function( key, val ) {
+  		if(val.icon)
+  			image_name ='/static/images/icons/category/'+val.icon.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];
+  		else
+  			image_name="test.png"
 
+  		item_cat_icon = '<li><a href="#"><img alt="" src="'+image_name+'"><span>'+val.title+'</span></a></li>';
+  		item_toggle = '<li><a href="#"><span>'+val.title+'</span></a></li>';
+  		$('.list-cat-icon').append(item_cat_icon);
+  		$('.list-category-toggle').append(item_toggle);
+  		$('.main-nav-ontop').find('ul').append(item_toggle);
+  	});
+  });
+  </script>
   {% endblock scripts %}
 
 
