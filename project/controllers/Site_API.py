@@ -14,6 +14,12 @@ class CategoryMenuItems(Resource):
         category_schema = CategorySchema(many=True)
         return make_response(jsonify(category_schema.dump(categories)),200)
 
+class CategoryAuctions(Resource):
+    def get(self,cid):
+        auctions = Auction.query.join(Item).join(Product).join(Category).filter_by(id = cid)
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
+
 class AuctionCarouselAds(Resource):
     def get(self):
         advertisements = Advertisement.query.join(Auction).filter(Advertisement.show==True)
@@ -44,6 +50,16 @@ class SiteMostpopularAuctions(Resource):
     def get(self):
         today = datetime.today()
         result = db.session.query(Auction.id, db.func.count(user_auction_likes.c.user_id).label('total')).join(user_auction_likes).group_by(Auction.id).having(Auction.end_date >= today).order_by('total DESC')
+        auctions =[]
+        for auction in result:
+            auctions.append(Auction.query.get(auction.id))
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
+
+class SiteMostviewedAuctions(Resource):
+    def get(self):
+        today = datetime.today()
+        result = db.session.query(Auction.id, db.func.count(user_auction_views.c.user_id).label('total')).join(user_auction_views).group_by(Auction.id).having(Auction.end_date >= today).order_by('total DESC')
         auctions =[]
         for auction in result:
             auctions.append(Auction.query.get(auction.id))

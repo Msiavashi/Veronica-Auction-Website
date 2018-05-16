@@ -145,6 +145,7 @@ function person(avatar,first_name, last_name,features) {
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   data = data[0];
+  console.log(data);
   var data-date = new Date(data.end_date).format("yyyy-M-d hh:mm:ss TT","UTC");
   var event = new Date(Date.parse(data-date));
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});

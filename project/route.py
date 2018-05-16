@@ -63,8 +63,6 @@ class Route():
     @app.route("/participate/<int:aid>")
     # @login_required
     def participate(aid):
-        if(current_user.has_auction(aid)):
-            return render_template('site/iframes/quickview.html',auction_id=aid)
         return render_template('site/iframes/package.html',auction_id=aid)
 
     @app.route("/instantview/<int:aid>")

@@ -36,7 +36,7 @@ class Auction(Base):
     views = db.relationship('User', secondary = 'user_auction_views', back_populates='auction_views')
     likes = db.relationship('User', secondary = 'user_auction_likes', back_populates='auction_likes')
 
-    plans = db.relationship('AuctionPlan' ,lazy='dynamic',)
+    plans = db.relationship('AuctionPlan' ,lazy='dynamic')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
