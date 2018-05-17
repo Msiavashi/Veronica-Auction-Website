@@ -22,6 +22,9 @@ class Product(Base):
     manufacture_id = db.Column(db.BigInteger,db.ForeignKey('manufactures.id'))
     manufacture = db.relationship('Manufacture')
 
+    advertisement_id = db.Column(db.BigInteger,db.ForeignKey('advertisements.id'))
+    advertisement = db.relationship('Advertisement')
+
     inventories = db.relationship('Inventory', secondary='inventory_products' ,back_populates='products')
 
     garanties = db.relationship('Garanty', secondary='garanty_products' ,back_populates='products')
@@ -47,3 +50,5 @@ class ProductSchema(Schema):
     events = fields.Nested('EventSchema',many=True,exclude=('products',))
     manufacture = fields.Nested('ManufactureSchema',exclude=('products',))
     garanties = fields.Nested('GarantySchema',many=True,exclude=('products',))
+    advertisement = fields.Nested('AdvertisementSchema',exclude=('auction',))
+    

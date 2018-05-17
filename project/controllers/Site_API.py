@@ -22,15 +22,21 @@ class CategoryAuctions(Resource):
 
 class AuctionCarouselAds(Resource):
     def get(self):
-        advertisements = Advertisement.query.join(Auction).filter(Advertisement.show==True)
-        ads_schema = AdvertisementSchema(many=True)
-        return make_response(jsonify(ads_schema.dump(advertisements)),200)
+        auctions = Auction.query.join(Advertisement).filter(Advertisement.show==True)
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
+
+class AuctionUserViewed(Resource):
+    def get(self):
+        auctions = Auction.query.join(user_auction_views).filter_by(user_id=current_user.id)
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class ProductCarouselAds(Resource):
     def get(self):
-        advertisements = Advertisement.query.join(Product).filter(Advertisement.show==True)
-        ads_schema = AdvertisementSchema(many=True)
-        return make_response(jsonify(ads_schema.dump(advertisements)),200)
+        products = Product.query.join(Advertisement).filter(Advertisement.show==True)
+        product_schema = ProductSchema(many=True)
+        return make_response(jsonify(product_schema.dump(products)),200)
 
 class SiteTodayEvents(Resource):
     def get(self):

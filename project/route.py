@@ -70,6 +70,11 @@ class Route():
     def instantview(aid):
         return render_template('site/iframes/quickview.html',auction_id=aid)
 
+    @app.route("/view/auction/<int:aid>")
+    # @login_required
+    def viewAuction(aid):
+        return render_template('site/auction.html',auction_id=aid)
+
 
     @login_manager.unauthorized_handler
     def unauthorized():
