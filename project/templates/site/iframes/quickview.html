@@ -184,9 +184,9 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   console.log(current_user_id);
 
   $.each(participants, function(key,val) {
-    its_you = val.user.id == current_user_id ? true : false;
-    name = val.user.first_name ? val.user.first_name +" "+ val.user.last_name : val.user.username ;
-    p = {avatar : val.user.avatar ? avatar_path + ClearifyNames(val.user.avatar)[0] : "#",name : name ,its_me : its_you};
+    its_you = val.id == current_user_id ? true : false;
+    name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+    p = {avatar : val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#",name : name ,its_me : its_you};
     people.push(p);
   });
 

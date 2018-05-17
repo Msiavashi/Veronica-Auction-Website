@@ -45,7 +45,7 @@ class User(Base,UserMixin):
 
     orders = db.relationship('Order')
 
-    offers = db.relationship('Offer')
+    # offers = db.relationship('Offer')
 
     roles = db.relationship('Role' , secondary = 'user_roles', back_populates='users' )
 

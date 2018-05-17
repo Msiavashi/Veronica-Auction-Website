@@ -6,18 +6,16 @@ class Offer(Base):
     __tablename__ = 'offers'
 
     id = db.Column(db.BigInteger, primary_key=True)
-    offer_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
-    status = db.Column(db.Integer,default=0,nullable=False)
+
+    total_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    current_bids = db.Column(db.Integer,nullable=False)
     win = db.Column(db.Boolean,default=False)
 
-    user_id = db.Column(db.BigInteger,db.ForeignKey('users.id'))
-    user = db.relationship('User')
+    user_plan_id = db.Column(db.BigInteger,db.ForeignKey('user_plans.id'))
+    user_plan = db.relationship('UserPlan')
 
     auction_id = db.Column(db.BigInteger,db.ForeignKey('auctions.id'))
     auction = db.relationship('Auction')
-
-    plan_id = db.Column(db.BigInteger,db.ForeignKey('plans.id'))
-    plan = db.relationship('Plan')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)

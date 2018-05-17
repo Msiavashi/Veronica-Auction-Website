@@ -11,15 +11,13 @@ def offer_bid(data):
     try:
         auction = Auction.query.get(data['auction_id'])
         user = User.query.get(data['user_id'])
-        plan = Plan.query.join(auction_plans).filter_by(auction_id=auction.id).first()
+        user_plan = UserPlan.query.join(User).filter_by(user_id=user.id,auction_id=auction.id)
+
 
         offer = Offer()
-        offer.user_id = user.id
-        offer.item_id = auction.item.id
-        # if(plan.total_offers > 0):
-        #     plan.total_offers = plan.total_offers - 1
-        #     db.session.add(plan)
-        main_plan = Plan.query.get(plan.id)
+        offer.user_plan = user_plan
+        offer.auction = auction
+        
         offer.offer_price = (main_plan.price // main_plan.total_offers ) * auction.rate
         #
         db.session.add(offer)
