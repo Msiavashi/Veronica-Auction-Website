@@ -41,6 +41,8 @@ class User(Base,UserMixin):
 
     address = db.relationship('Address')
 
+    user_plans = db.relationship('UserPlan')
+
     orders = db.relationship('Order')
 
     offers = db.relationship('Offer')
@@ -49,14 +51,14 @@ class User(Base,UserMixin):
 
     gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users')
 
-    auctions = db.relationship('UserAuctionParticipation', lazy='dynamic')
+    auctions = db.relationship('Auction', lazy='dynamic', secondary='user_auction_participations',back_populates='participants')
 
     auction_views = db.relationship('Auction', secondary ='user_auction_views', back_populates='views')
     auction_likes = db.relationship('Auction', secondary ='user_auction_likes', back_populates='likes')
 
     def __str__(self):
         if(self.first_name):
-            return (str(self.first_name) + " " + str(self.last_name))
+            return self.first_name + " " + self.last_name
         else: return self.username
 
     @classmethod
@@ -75,7 +77,11 @@ class User(Base,UserMixin):
         return next(r for r in self.roles if r.name == name),None
 
     def has_auction(self,id):
-        return next(a for a in self.auctions if a.id == id),None
+        try:
+            return next(a for a in self.auctions if a.id == id),None
+        except Exception as e:
+            return None
+
 
     def save_to_db(self):
         #add default role to created user
@@ -105,6 +111,7 @@ class UserSchema(Schema):
     plans = fields.Nested('PlanSchema', many=True,exclude=('users',))
     gifts = fields.Nested('GiftSchema', many=True,exclude=('users',))
     auctions = fields.Nested('AuctionSchema', many=True,exclude=('participants',))
+    user_plans = fields.Nested('UserPlanSchema', many=True,exclude=('user',))
 
     auction_likes = fields.Nested('LikeAuctionSchema',many=True,exclude=('user',))
     auction_views = fields.Nested('ViewAuctionSchema', many=True,exclude=('user',))

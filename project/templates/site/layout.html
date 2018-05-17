@@ -613,7 +613,7 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
   <script>
 
-  $.getJSON( "{{url_for('categorymenuitems')}}", function( data ) {
+  $.getJSON( "{{url_for('sitecategorymenuitems')}}", function( data ) {
   		$.each( data[0], function( key, val ) {
   		if(val.icon)
   			image_name ='/static/images/icons/category/'+val.icon.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];

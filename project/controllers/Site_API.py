@@ -8,31 +8,25 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 
 
-class CategoryMenuItems(Resource):
+class SiteCategoryMenuItems(Resource):
     def get(self):
         categories = Category.query.all()
         category_schema = CategorySchema(many=True)
         return make_response(jsonify(category_schema.dump(categories)),200)
 
-class CategoryAuctions(Resource):
+class SiteCategoryAuctions(Resource):
     def get(self,cid):
         auctions = Auction.query.join(Item).join(Product).join(Category).filter_by(id = cid)
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
-class AuctionCarouselAds(Resource):
+class SiteAuctionCarouselAds(Resource):
     def get(self):
         auctions = Auction.query.join(Advertisement).filter(Advertisement.show==True)
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
-class AuctionUserViewed(Resource):
-    def get(self):
-        auctions = Auction.query.join(user_auction_views).filter_by(user_id=current_user.id)
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
-
-class ProductCarouselAds(Resource):
+class SiteProductCarouselAds(Resource):
     def get(self):
         products = Product.query.join(Advertisement).filter(Advertisement.show==True)
         product_schema = ProductSchema(many=True)
@@ -81,31 +75,3 @@ class SiteMostviewedAuctions(Resource):
 #             auctions.append(Auction.query.get(auction.id))
 #         auction_schema = AuctionSchema(many=True)
 #         return make_response(jsonify(auction_schema.dump(auctions)),200)
-
-class AuctionInstanceView(Resource):
-    def get(self,aid):
-        auction = Auction.query.get(aid)
-        auction_schema = AuctionSchema()
-        return make_response(jsonify(auction_schema.dump(auction)),200)
-
-class AuctionPlans(Resource):
-    def get(self,aid):
-        auction=Auction.query.get(aid)
-        plans = auction.plans.order_by('price DESC')
-        plan_schema = AuctionPlanSchema(many=True)
-        return make_response(jsonify(plan_schema.dump(plans)),200)
-
-class UserParticipateAuction(Resource):
-    def post(self):
-        try:
-            plan = Plan.query.get(request.form.get('plan_id'))
-            auction = Auction.query.get(request.form.get('auction_id'))
-            uap = UserAuctionParticipation()
-            uap.auction = auction
-            uap.plan = plan
-            current_user.auctions.append(uap)
-            db.session.add(current_user)
-            db.session.commit()
-            return make_response(jsonify({'success':True}),200)
-        except Exception as e:
-            return make_response(jsonify({"message":{"error" : str(e)}}), 500)

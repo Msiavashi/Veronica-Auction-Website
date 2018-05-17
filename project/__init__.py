@@ -35,18 +35,22 @@ from .controllers import *
 from flask_restful import Api
 
 api = Api(app,'/api')
+
 api.add_resource(Auth_API.UserRegistration,'/register')
 api.add_resource(Auth_API.UserLogin, '/login')
 api.add_resource(Auth_API.UserLogout, '/logout')
-api.add_resource(Site_API.CategoryMenuItems, '/category/menu/items')
-api.add_resource(Site_API.CategoryAuctions, '/category/<int:cid>/auctions/')
-api.add_resource(Site_API.AuctionCarouselAds, '/auction/carousel/ads')
-api.add_resource(Site_API.AuctionUserViewed, '/auction/user/viewed')
-api.add_resource(Site_API.ProductCarouselAds, '/product/carousel/ads')
-api.add_resource(Site_API.SiteTodayEvents, '/today/events')
-api.add_resource(Site_API.SiteTodayAuctions, '/today/auctions')
-api.add_resource(Site_API.SiteMostpopularAuctions, '/mostpopular/auctions')
-api.add_resource(Site_API.SiteMostviewedAuctions, '/mostviewed/auctions')
-api.add_resource(Site_API.AuctionInstanceView, '/auction/<int:aid>/instantview')
-api.add_resource(Site_API.AuctionPlans, '/auction/plans/<int:aid>')
-api.add_resource(Site_API.UserParticipateAuction, '/user/participate/auction')
+
+
+api.add_resource(Site_API.SiteCategoryMenuItems, '/site/category/menu/items')
+api.add_resource(Site_API.SiteCategoryAuctions, '/site/category/<int:cid>/auctions/')
+api.add_resource(Site_API.SiteAuctionCarouselAds, '/site/auction/carousel/ads')
+api.add_resource(Site_API.SiteProductCarouselAds, '/site/product/carousel/ads')
+api.add_resource(Site_API.SiteTodayEvents, '/site/today/events')
+api.add_resource(Site_API.SiteTodayAuctions, '/site/today/auctions')
+api.add_resource(Site_API.SiteMostpopularAuctions, '/site/mostpopular/auctions')
+api.add_resource(Site_API.SiteMostviewedAuctions, '/site/mostviewed/auctions')
+
+api.add_resource(Auction_API.AuctionInstanceView, '/auction/<int:aid>/instantview')
+api.add_resource(Auction_API.AuctionGetPlans, '/auction/get/plans/<int:aid>')
+api.add_resource(Auction_API.AuctionUserParticipation, '/auction/user/participation')
+api.add_resource(Auction_API.AuctionUserViewed, '/auction/user/viewed')

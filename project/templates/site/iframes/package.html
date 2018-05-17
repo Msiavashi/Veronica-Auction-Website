@@ -91,7 +91,7 @@ function MyViewModel() {
 	var plans = []
 	self.plans = ko.observableArray([]);
 	self.credit = {{current_user.credit}};
-	$.getJSON( "/api/auction/plans/"+auction_id, function( data ) {
+	$.getJSON( "/api/auction/get/plans/"+auction_id, function( data ) {
 		$.each(data[0],function(key,val) {
 			p = { id : val.id , title : val.plan.title , price : val.price , max_offers : val.max_offers };
 			plans.push(p);
@@ -112,7 +112,7 @@ $('#place_order').on('click',function(){
 		return;
 	}
 	$.ajax({
-    url: "{{url_for('userparticipateauction')}}",
+    url: "{{url_for('auctionuserparticipation')}}",
     type: 'post',
     data: {
 				plan_id:plan_id,
@@ -124,11 +124,7 @@ $('#place_order').on('click',function(){
         console.info(data);
     }
 });
-	//
-	//
-	// $.post("{{url_for('userparticipateauction')}}", JSON.stringify(data),'jqXHR','application/jaon', function(returnedData) {
-	// 	console.log(returnedData);
-	// });
+
 });
 
 </script>

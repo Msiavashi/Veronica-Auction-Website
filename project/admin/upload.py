@@ -25,7 +25,8 @@ class AvatarUpload(ModelView):
                                                             base_path="project/static/images/avatars",
                                                             url_relative_path="images/avatars/",
                                                             thumbnail_size=(64, 64, 1))}
-class ProductUpload(ModelView):
+
+class ItemImageUpload(ModelView):
     def _list_thumbnail(view, context, model, name):
         if not model.images:
             return None

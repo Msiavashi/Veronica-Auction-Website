@@ -10,7 +10,6 @@ class Product(Base):
     desciption = db.Column(db.Text,nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     details = db.Column(db.Text)
-    images = db.Column(db.Text, nullable=False)
 
     category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'))
     category = db.relationship('Category', back_populates='products')
@@ -42,7 +41,6 @@ class ProductSchema(Schema):
     desciption = fields.Str()
     quantity = fields.Int()
     details = fields.Str()
-    images = fields.Str()
     category = fields.Nested('CategorySchema',exclude=('products',))
     items = fields.Nested('ItemSchema',many=True,exclude=('product',))
     comments = fields.Nested('CommentSchema',many=True,exclude=('product',))
@@ -51,4 +49,3 @@ class ProductSchema(Schema):
     manufacture = fields.Nested('ManufactureSchema',exclude=('products',))
     garanties = fields.Nested('GarantySchema',many=True,exclude=('products',))
     advertisement = fields.Nested('AdvertisementSchema',exclude=('auction',))
-    

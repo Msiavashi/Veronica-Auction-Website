@@ -11,7 +11,7 @@ def offer_bid(data):
     try:
         auction = Auction.query.get(data['auction_id'])
         user = User.query.get(data['user_id'])
-        plan = Plan.query.join(user_plans).filter_by(used=False).first()
+        plan = Plan.query.join(auction_plans).filter_by(auction_id=auction.id).first()
 
         offer = Offer()
         offer.user_id = user.id

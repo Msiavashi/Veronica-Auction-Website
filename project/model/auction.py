@@ -23,7 +23,7 @@ class Auction(Base):
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'),nullable=False)
     item = db.relationship('Item')
 
-    participants = db.relationship('UserAuctionParticipation')
+    participants = db.relationship('User',secondary='user_auction_participations',back_populates='auctions')
 
     offers = db.relationship('Offer')
 
@@ -42,7 +42,7 @@ class Auction(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return self.title + " تاریخ شروع : " + str(self.start_date) + " تاریخ پایان : " + str(self.end_date)
+        return self.title
 
 class AuctionSchema(Schema):
     id = fields.Str()
@@ -56,7 +56,7 @@ class AuctionSchema(Schema):
     ratio = fields.Int()
 
     item = fields.Nested('ItemSchema')
-    participants = fields.Nested('UserSchema', many=True,exclude=('auctions',))
+    participants = fields.Nested('UserSchema',many=True,exclude=('auctions',))
     offers = fields.Nested('OfferSchema', many=True,exclude=('auction',))
     likes = fields.Nested('LikeAuctionSchema', many=True,exclude=('auction',))
     views = fields.Nested('ViewAuctionSchema', many=True,exclude=('auction',))

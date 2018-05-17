@@ -28,5 +28,6 @@ from  .user_auction_like import *
 from  .user_auction_participation import *
 from  .user_auction_view import *
 from  .user_gift import *
+from  .user_plan import *
 from  .user_role import *
 from  .user import *

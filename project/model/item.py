@@ -15,6 +15,7 @@ class Item(Base):
     price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     discount = db.Column(db.Integer())
     details = db.Column(db.Text())
+    images = db.Column(db.Text, nullable=False)
 
     product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
     product = db.relationship('Product')
@@ -33,6 +34,7 @@ class ItemSchema(Schema):
     price = fields.Int()
     discount = fields.Int()
     details = fields.Str()
+    images = fields.Str()
 
     product = fields.Nested('ProductSchema',exclude=('items',))
     inventories = fields.Nested('InventorySchema', many=True,exclude=('items',))
