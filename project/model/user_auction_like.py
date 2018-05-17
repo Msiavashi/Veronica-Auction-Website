@@ -1,6 +1,6 @@
 from project.database import db, Base
-import datetime
 from marshmallow import Schema, fields
+import datetime
 
 user_auction_likes = db.Table('user_auction_likes', Base.metadata,
     db.Column('user_id', db.ForeignKey('users.id')),
@@ -9,6 +9,6 @@ user_auction_likes = db.Table('user_auction_likes', Base.metadata,
 )
 
 class LikeAuctionSchema(Schema):
-    user = fields.Nested("UserSchema")
-    auction = fields.Nested("AuctionSchema")
+    user = fields.Nested("UserSchema",exclude=('auction_likes',))
+    auction = fields.Nested("AuctionSchema",exclude=('likes',))
     date = fields.Str()

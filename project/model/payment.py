@@ -1,22 +1,32 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 from project.database import db, Base
+from marshmallow import Schema, fields
 import datetime
-from marshmallow import Schema , fields
 
 class Payment(Base):
     __tablename__ = 'payments'
     id = db.Column(db.Integer, primary_key=True)
+    GUID = db.Column(db.String(length=50))
     amount = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
-    guid = db.Column(db.String(length=50))
-    date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
-    method = db.Column(db.PickleType)
-    status = db.Column(db.Boolean)
-    details = db.Column(db.PickleType)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
-    user = db.relationship('User')
-    plans = db.relationship('Plan',secondary='payment_plans',back_populates='payments')
-    items = db.relationship('Item',secondary='payment_items',back_populates='payments')
+    status = db.Column(db.Integer,default=0,nullable=False)
+    details = db.Column(db.Text)
+
+    payment_method_id = db.Column(db.BigInteger,db.ForeignKey('payment_methods.id'),nullable=False)
+    payment_method = db.relationship('PaymentMethod')
+
+    order_id = db.Column(db.BigInteger,db.ForeignKey('orders.id'),nullable=False)
+    order = db.relationship('Order')
+
+    shipment = db.relationship('Shipment')
+
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+
     def __str__(self):
-        return self.guid + "status :" + self.status
+        return " پرداخت به کد رهگیری : "+ self.guid + " باوضعیت  :" + self.status + " در تاریخ : " + self.date
 
 class PaymentSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -25,6 +35,6 @@ class PaymentSchema(Schema):
     date = fields.DateTime()
     method = fields.Raw()
     details = fields.Raw()
-    user = fields.Nested('UserSchema',exclude=('payments',))
-    plans = fields.Nested('PlanSchema', many=True,exclude=('payments',))
-    items = fields.Nested('ItemSchema', many=True,exclude=('payments',))
+    payment_method = fields.Nested('PaymentMethodSchema')
+    order = fields.Nested('OrderSchema',exclude=('payment',))
+    shipment = fields.Nested('ShipmentSchema',exclude=('order',))

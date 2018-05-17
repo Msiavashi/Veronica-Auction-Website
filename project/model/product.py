@@ -1,44 +1,54 @@
 from project.database import db, Base
 from marshmallow import Schema, fields
+import datetime
 
 class Product(Base):
 
     __tablename__ = 'products'
     id = db.Column(db.BigInteger, primary_key=True)
-    name = db.Column(db.String(length=25), nullable=False)
+    title = db.Column(db.String(length=255), nullable=False)
+    desciption = db.Column(db.Text,nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    review = db.Column(db.Text)
-    likes = db.Column(db.Integer, default=0)
-    details = db.Column(db.PickleType, nullable=True)
-    # product images link
-    images = db.Column(db.Text, nullable=True)
+    details = db.Column(db.Text)
+    images = db.Column(db.Text, nullable=False)
+
     category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'))
     category = db.relationship('Category', back_populates='products')
+
     items = db.relationship('Item')
+
     comments = db.relationship("Comment")
-    events = db.relationship('Event', secondary = 'product_events', back_populates='products')
+
     manufacture_id = db.Column(db.BigInteger,db.ForeignKey('manufactures.id'))
     manufacture = db.relationship('Manufacture')
-    likes = db.relationship('User', secondary='user_product_likes' ,back_populates='product_likes')
-    views = db.relationship('User', secondary='user_product_views' ,back_populates='product_views')
-    advertisement = db.relationship('Advertisement' , back_populates ='product')
+
+    advertisement_id = db.Column(db.BigInteger,db.ForeignKey('advertisements.id'))
+    advertisement = db.relationship('Advertisement')
+
+    inventories = db.relationship('Inventory', secondary='inventory_products' ,back_populates='products')
+
+    garanties = db.relationship('Garanty', secondary='garanty_products' ,back_populates='products')
+
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+
     def __str__(self):
-        return self.name
+        return self.title
 
 
 class ProductSchema(Schema):
     id = fields.Int()
-    details = fields.Str()
+    title = fields.Str()
+    desciption = fields.Str()
     quantity = fields.Int()
-    review = fields.Str()
-    likes = fields.Int()
-    details = fields.Raw()
-    images = fields.Raw()
+    details = fields.Str()
+    images = fields.Str()
     category = fields.Nested('CategorySchema',exclude=('products',))
     items = fields.Nested('ItemSchema',many=True,exclude=('product',))
     comments = fields.Nested('CommentSchema',many=True,exclude=('product',))
+    inventories = fields.Nested('InventorySchema',many=True,exclude=('products',))
     events = fields.Nested('EventSchema',many=True,exclude=('products',))
     manufacture = fields.Nested('ManufactureSchema',exclude=('products',))
-    advertisement = fields.Nested('AdvertisementSchema',exclude=('product',))
-    likes = fields.Nested('LikeProductSchema',many=True,exclude=('likes',))
-    views = fields.Nested('ViewProductSchema',many=True,exclude=('views',))
+    garanties = fields.Nested('GarantySchema',many=True,exclude=('products',))
+    advertisement = fields.Nested('AdvertisementSchema',exclude=('auction',))
+    

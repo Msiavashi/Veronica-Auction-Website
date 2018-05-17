@@ -1,5 +1,11 @@
-from . import app
-from flask import url_for, redirect, render_template, request, abort ,redirect
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
+import gevent
+from flask import url_for, redirect, render_template, request, abort ,redirect, session
+from datetime import timedelta
 from flask import render_template, jsonify
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired
@@ -7,22 +13,14 @@ from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from flask_login import current_user,login_required,logout_user
 from .controllers.Auth_API import login_manager
 from .model import *
-
-# class LoginForm(FlaskForm):
-#     username = StringField('نام کاربری', validators=[DataRequired('لطفا نام کاربری خود را وارد کنید')])
-#     password = StringField('رمز عبور', validators=[DataRequired('لطفا رمز عبور خود را وارد کنید')])
-#
-# class RegisterForm(FlaskForm):
-#     username = StringField('نام کاربری', validators=[DataRequired('لطفا نام کاربری خود را وارد کنید')])
-#     mobile = StringField('تلفن همراه', validators=[DataRequired('لطفا شماره تلفن همراه خود را وارد کنید')])
-#     password = PasswordField('رمز عبور', [
-#         validators.DataRequired(),
-#         validators.EqualTo('c_password', message='رمز عبور با تکرار باید همخوانی داشته باشد')
-#     ])
-#     c_password = PasswordField('تکرار رمز عبور', validators=[DataRequired('لطفا تکرار رمز عبور خود را وارد کنید')])
-#
+from . import app
 
 class Route():
+    @app.before_request
+    def make_session_permanent():
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=30)
+
     @app.route('/')
     def site():
         return render_template('site/index.html')
@@ -58,19 +56,24 @@ class Route():
         return redirect('/')
 
     @app.route("/profile")
-    @login_required
+    # @login_required
     def profile():
         return render_template('site/profile.html')
 
-    @app.route("/participate")
-    @login_required
-    def participate():
-        return render_template('site/iframes/package.html')
+    @app.route("/participate/<int:aid>")
+    # @login_required
+    def participate(aid):
+        return render_template('site/iframes/package.html',auction_id=aid)
 
     @app.route("/instantview/<int:aid>")
-    @login_required
+    # @login_required
     def instantview(aid):
         return render_template('site/iframes/quickview.html',auction_id=aid)
+
+    @app.route("/view/auction/<int:aid>")
+    # @login_required
+    def viewAuction(aid):
+        return render_template('site/auction.html',auction_id=aid)
 
 
     @login_manager.unauthorized_handler
@@ -97,6 +100,8 @@ class Route():
     def news():
         return render_template('site/news.html')
 
-
+    @app.route('/socket')
+    def socket():
+        return render_template('/socket.html')
 
 route = Route()

@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from flask_restful import Resource, reqparse
 from project.model.user import *
-from project.model.revoke import RevokedTokenModel
-from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
+from flask_jwt_extended import (create_access_token,set_access_cookies, set_refresh_cookies ,create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 import json
 from project import app
@@ -11,8 +15,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 @login_manager.user_loader
-def load_user(username):
-    return User(username)
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
 parser_register = reqparse.RequestParser()
@@ -64,16 +68,26 @@ class UserLogin(Resource):
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
             login_user(current_user,remember=True)
-            return make_response(jsonify({
+            # Set the JWT cookies in the response
+            resp = jsonify({
                 'message': 'Logged in as {}'.format(current_user.username),
                 'access_token': access_token,
-                'refresh_token': refresh_token
-                }),200)
+                'refresh_token': refresh_token })
+
+            set_access_cookies(resp, access_token)
+            set_refresh_cookies(resp, refresh_token)
+            return make_response(resp,200)
         else:
             return make_response(jsonify({'message':{"error" : 'رمز عبور شما نادرست است'}}),401)
 
     def get(self):
         return make_response(jsonify({"message":"online resources login"}),404)
+
+class Logout(object):
+    def post(self):
+        resp = jsonify({'logout': True})
+        unset_jwt_cookies(resp)
+        return resp, 200
 
 class UserLogout(Resource):
     @jwt_required
@@ -87,20 +101,22 @@ class UserLogout(Resource):
             return make_response(jsonify({'message':{ 'error' : str(e)}}), 500)
 
 
-class UserLogoutRefresh(Resource):
-    @jwt_refresh_token_required
-    def post(self):
-        jti = get_raw_jwt()['jti']
-        try:
-            revoked_token = RevokedTokenModel(jti = jti)
-            revoked_token.add()
-            return {'message': 'Refresh token has been revoked'}
-        except:
-            return {'message': 'Something went wrong'}, 500
-
-class TokenRefresh(Resource):
-    @jwt_refresh_token_required
-    def post(self):
-        current_user = get_jwt_identity()
-        access_token = create_access_token(identity = current_user)
-        return {'access_token': access_token}
+# class UserLogoutRefresh(Resource):
+#     @jwt_refresh_token_required
+#     def post(self):
+#         jti = get_raw_jwt()['jti']
+#         try:
+#             revoked_token = RevokedTokenModel(jti = jti)
+#             revoked_token.add()
+#             return {'message': 'Refresh token has been revoked'}
+#         except:
+#             return {'message': 'Something went wrong'}, 500
+#
+# class TokenRefresh(Resource):
+#     @jwt_refresh_token_required
+#     def post(self):
+#         current_user = get_jwt_identity()
+#         access_token = create_access_token(identity = current_user)
+#         resp = jsonify({'refrech':True})
+#         set_access_cookies(resp, access_token)
+#         return resp,200

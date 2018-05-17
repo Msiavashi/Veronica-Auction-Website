@@ -1,14 +1,18 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
-class Plan(Base):
-    __tablename__ = 'plans'
+class ShipmentMethod(Base):
+    __tablename__ = 'shipment_methods'
     id = db.Column(db.BigInteger, primary_key=True)
-    title = db.Column(db.String(length=255), nullable=False)
-    desciption = db.Column(db.Text, nullable=False)
-
-    auctions = db.relationship('AuctionPlan')
+    title = db.Column(db.String(length=100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    price = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
@@ -16,8 +20,8 @@ class Plan(Base):
     def __str__(self):
         return self.title
 
-class PlanSchema(Schema):
+class ShipmentMethodSchema(Schema):
     id = fields.Int()
     title = fields.Str()
-    description = fields.Str()
-    auctions = fields.Nested('AuctionPlanSchema',many=True,exclude=('plan',))
+    desciption = fields.Str()
+    price = fields.Str()

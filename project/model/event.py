@@ -1,19 +1,18 @@
 from project.database import db, Base
-import datetime
 from marshmallow import Schema, fields
+import datetime
 
 class Event(Base):
-
     __tablename__ = 'events'
     id = db.Column(db.BigInteger, primary_key=True)
-    title = db.Column(db.String(length=255))
-    description = db.Column(db.Text)
+    title = db.Column(db.String(length=255),nullable=False)
+    description = db.Column(db.Text,nullable=False)
     start_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     end_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    discount = db.Column(db.Integer,default=0)
-    active = db.Column(db.Boolean,default=False)
-    auctions = db.relationship('Auction', secondary = 'auction_events', back_populates='events')
-    products = db.relationship('Product', secondary = 'product_events', back_populates='events')
+    is_active = db.Column(db.Boolean,default=False)
+    discount = db.Column(db.Integer,nullable=False)
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
         return self.title
 
@@ -23,7 +22,5 @@ class EventSchema(Schema):
     description = fields.Str()
     start_date = fields.DateTime()
     end_date = fields.DateTime()
-    discount = fields.Str()
-    active = fields.Boolean()
-    auctions = fields.Nested('AuctionSchema', many=True)
-    products = fields.Nested('ProductSchema', many=True,exclude=('events',))
+    is_active = fields.Boolean()
+    discount = fields.Int()

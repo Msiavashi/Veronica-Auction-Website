@@ -1,4 +1,6 @@
 from project.database import db, Base
+from marshmallow import Schema, fields
+import datetime
 
 user_gifts = db.Table('user_gifts', Base.metadata,
     db.Column('user_id', db.ForeignKey('users.id')),

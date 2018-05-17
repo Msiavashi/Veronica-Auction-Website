@@ -211,6 +211,9 @@
                           {% if not current_user.is_authenticated %}
       										<li><a href="/login"><i class="fa fa-key" aria-hidden="true"></i>ورود</a></li>
                           {% else %}
+                          {% if current_user.has_role('admin') %}
+                          <li><a href="/admin"><i class="fa fa-cog"></i> پنل مدیریت </a></li>
+                          {% endif %}
                           <li><a href="/profile"><i class="fa fa-user"></i> مشاهده پنل</a></li>
                           <li><a href="#"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
                           <li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
@@ -400,70 +403,57 @@
             {% if current_user.is_authenticated %}
               <h3 class="title24 title-flash"><span class="bg-color white">حراجی های دیده شده</span></h3>
               <div class="hot-cat-slider">
-              <div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
+              <div class="wrap-item" data-bind="foreach:viewed" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
+                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/12.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.product.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
                 </div>
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
+                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/13.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.product.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
                 </div>
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
+                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/3.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.product.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
                 </div>
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
+                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/15.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.product.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
                 </div>
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
+                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/4.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.product.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
                 </div>
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
+                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/7.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.product.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
                 </div>
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
+                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/10.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.product.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
                 </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/10.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#">نام محصول</a></h3>
-                    <p class="price-from">شروع<span>۴،۰۰۰،۰۰۰</span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img src="static/images/photos/electronics/4.jpg" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
+
               </div>
             </div>
             {% endif %}
@@ -620,9 +610,33 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/site.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.jcarousellite.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.elevatezoom.js')}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
+  <script>
 
+  $.getJSON( "{{url_for('categorymenuitems')}}", function( data ) {
+  		$.each( data[0], function( key, val ) {
+  		if(val.icon)
+  			image_name ='/static/images/icons/category/'+val.icon.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',')[0];
+  		else
+  			image_name="test.png"
+
+  		item_cat_icon = '<li><a href="#"><img alt="" src="'+image_name+'"><span>'+val.title+'</span></a></li>';
+  		item_toggle = '<li><a href="#"><span>'+val.title+'</span></a></li>';
+  		$('.list-cat-icon').append(item_cat_icon);
+  		$('.list-category-toggle').append(item_toggle);
+  		$('.main-nav-ontop').find('ul').append(item_toggle);
+  	});
+  });
+
+  $.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
+    OnDataReady(data[0]);
+  })
+  function OnDataReady(data) {
+    ko.applyBindings({ viewed : data});
+  }
+
+  </script>
   {% endblock scripts %}
-
 
   </body>
 </html>

@@ -1,14 +1,17 @@
 from project.database import db, Base
 from marshmallow import Schema, fields
+import datetime
 
 class Manufacture(Base):
     __tablename__ = 'manufactures'
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(length=25), nullable=False)
     country = db.Column(db.String(length=100), nullable=False)
-    review = db.Column(db.Text, nullable=True)
-    details =  db.Column(db.PickleType, nullable=True)
-    products = db.relationship('Product', secondary='manufacture_products', back_populates='manufacture')
+    desciption = db.Column(db.Text, nullable=False)
+    details =  db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+
     def __str__(self):
         return self.name
 
@@ -16,6 +19,5 @@ class ManufactureSchema(Schema):
     id = fields.Int()
     name = fields.Str()
     country = fields.Str()
-    review = fields.Str()
-    details = fields.Raw()
-    products = fields.Nested('ProductSchema',many=True,exclude=('manufacture',))
+    desciption = fields.Str()
+    details = fields.Str()

@@ -436,6 +436,8 @@
 {% block scripts %}
 {{ super() }}
 <script>
-
+$(document).ready(function(){
+	sleep(1000);
+});
 </script>
 {% endblock scripts %}

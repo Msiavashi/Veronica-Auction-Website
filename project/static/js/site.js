@@ -2,6 +2,15 @@ $('.close').on('click',function(){
 	$(this).parent().removeClass('show').addClass('hide')
 });
 
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+
 function getFormData($form){
 	var unindexed_array = $form.serializeArray();
 	var indexed_array = {};
@@ -10,7 +19,7 @@ function getFormData($form){
 			indexed_array[n['name']] = n['value'];
 		}
 	});
-return indexed_array;
+	return indexed_array;
 }
 
 function ClearifyNames(ugly_text) {
@@ -146,4 +155,127 @@ function formatCurrency(num){
     }
 
     return (((sign) ? '' : '-') + num );
+}
+
+function triggerBigTimer() {
+	if($('.deals-cowndown').length>0){
+		 $(".deals-cowndown").TimeCircles({
+			 fg_width: 0.01,
+			 bg_width: 1.2,
+			 text_size: 0.07,
+			 circle_bg_color: "#ffffff",
+			 time: {
+				 Days: {
+					 show: true,
+					 text: "روز",
+					 color: "#f9bc02"
+				 },
+				 Hours: {
+					 show: true,
+					 text: "ساعت",
+					 color: "#f9bc02"
+				 },
+				 Minutes: {
+					 show: true,
+					 text: "دقیقه",
+					 color: "#f9bc02"
+				 },
+				 Seconds: {
+					 show: true,
+					 text: "ثانیه",
+					 color: "#f9bc02"
+				 }
+			 }
+		 });
+	 	}
+}
+
+function triggerFlashTimer() {
+	if($('.flash-countdown').length>0){
+		$(".flash-countdown").TimeCircles({
+			fg_width: 0.01,
+			bg_width: 1.2,
+			text_size: 0.07,
+			circle_bg_color: "#ffffff",
+			time: {
+				Days: {
+					show: false,
+					text: "",
+					color: "#f9bc02"
+				},
+				Hours: {
+					show: true,
+					text: "",
+					color: "#f9bc02"
+				},
+				Minutes: {
+					show: true,
+					text: "",
+					color: "#f9bc02"
+				},
+				Seconds: {
+					show: true,
+					text: "",
+					color: "#f9bc02"
+				}
+			}
+		});
+	}
+}
+var ad_image_path = '../../static/images/ads/';
+var product_image_path = '../../static/images/products/';
+
+function triggerSlider(element){
+	var data = element.data();
+	console.log(data);
+
+	setTimeout(function() {
+
+		element.owlCarousel({
+			addClassActive:true,
+			stopOnHover:true,
+			itemsCustom:data.itemscustom,
+			autoPlay:data.autoplay,
+			transitionStyle:data.transition,
+			beforeInit:background,
+			afterAction:animated,
+			navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+		});
+		element.find('.owl-controls').css('left',data.control+'px');
+
+		//BxSlider
+		if($('.bxslider-banner').length>0){
+			$('.bxslider-banner').each(function(){
+				$(this).find('.bxslider').bxSlider({
+					controls:false,
+					pagerCustom: $(this).find('.bx-pager')
+				});
+			});
+		}
+
+	}, 500);
+}
+
+function background(){
+	$('.bg-slider .item-banner').each(function(){
+		var src=$(this).find('.banner-thumb a img').attr('src');
+		$(this).css('background-image','url("'+src+'")');
+	});
+}
+
+function animated(){
+	$('.banner-slider .owl-item').each(function(){
+		var check = $(this).hasClass('active');
+		if(check==true){
+			$(this).find('.animated').each(function(){
+				var anime = $(this).attr('data-animated');
+				$(this).addClass(anime);
+			});
+		}else{
+			$(this).find('.animated').each(function(){
+				var anime = $(this).attr('data-animated');
+				$(this).removeClass(anime);
+			});
+		}
+	});
 }

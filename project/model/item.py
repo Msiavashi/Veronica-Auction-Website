@@ -1,36 +1,41 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from project.database import db, Base
 from marshmallow import Schema, fields
-from .inventory_item import inventory_items
-from .order_item import order_items
+import datetime
 
 class Item(Base):
     __tablename__ = 'items'
     id = db.Column(db.BigInteger, primary_key=True)
-    model = db.Column(db.String(length=100), nullable=False)
-    description = db.Column(db.Text())
+    title = db.Column(db.String(length=100), nullable=False)
+    description = db.Column(db.Text(),nullable=False)
     price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     discount = db.Column(db.Integer())
-    # auction_id = db.Column(db.BigInteger, db.ForeignKey('auctions.id'))
-    # auction = db.relationship('Auction')
+    details = db.Column(db.Text())
+
     product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
     product = db.relationship('Product')
-    inventory_id = db.Column(db.BigInteger, db.ForeignKey('inventories.id'))
-    inventories = db.relationship('Inventory', secondary = 'inventory_items' , back_populates='items')
-    offers = db.relationship('Offer',back_populates = 'item')
-    insurances = db.relationship('Insurance', secondary = 'insurance_items', back_populates='items')
-    payments = db.relationship('Payment', secondary = 'payment_items',back_populates='items')
-    orders = db.relationship('Order', secondary = 'order_items', back_populates='items')
+
+    orders = db.relationship('Order',secondary='order_items',back_populates='items')
+
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
-        return self.product.name + " " + self.model
+        return  " محصول :"+self.product.title + " آیتم: " + self.title
 
 class ItemSchema(Schema):
     id = fields.Int()
-    price = fields.Str()
+    title = fields.Str()
+    desciption = fields.Str()
+    price = fields.Int()
     discount = fields.Int()
-    auction = fields.Nested('AuctionSchema',exclude=('item',))
+    details = fields.Str()
+
     product = fields.Nested('ProductSchema',exclude=('items',))
     inventories = fields.Nested('InventorySchema', many=True,exclude=('items',))
-    offers = fields.Nested('OfferSchema',many=True,exclude=('items',))
     insurances = fields.Nested('InsuranceSchema',many=True,exclude=('items',))
     payments = fields.Nested('PaymentSchema',many=True,exclude=('items',))
     orders = fields.Nested('OrderSchema',many=True,exclude=('items',))
