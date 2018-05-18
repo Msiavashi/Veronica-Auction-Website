@@ -5,7 +5,7 @@ sys.setdefaultencoding("utf-8")
 
 from flask_restful import Resource, reqparse
 from project.model.user import *
-from flask_jwt_extended import (create_access_token,create_refresh_token,set_access_cookies, jwt_required, get_jwt_identity, get_raw_jwt)
+from flask_jwt_extended import (create_access_token,create_refresh_token,set_access_cookies,set_refresh_cookies, jwt_required, get_jwt_identity, get_raw_jwt)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 import json
 from project import app
