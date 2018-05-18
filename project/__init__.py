@@ -38,7 +38,7 @@ from definitions import SESSION_EXPIRE_TIME
 
 @app.before_request
 def make_session_permanent():
-    session.permanent = False
+    session.permanent = True
     permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
     session.modified = True
 

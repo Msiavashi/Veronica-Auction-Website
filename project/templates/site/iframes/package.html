@@ -121,8 +121,10 @@ $('#place_order').on('click',function(){
     },
     dataType: 'application/json',
     success: function (data) {
-        console.info(data);
+        alert('پرداخت شما با موفقیت انجام شد و در حراجی ثبت نام شدید');
+				window.parent.location.reload();
     }
+
 });
 
 });
