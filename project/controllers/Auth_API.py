@@ -5,7 +5,7 @@ sys.setdefaultencoding("utf-8")
 
 from flask_restful import Resource, reqparse
 from project.model.user import *
-from flask_jwt_extended import (create_access_token,set_access_cookies, set_refresh_cookies ,create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
+from flask_jwt_extended import (create_access_token,set_access_cookies, jwt_required, get_jwt_identity, get_raw_jwt)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 import json
 from project import app
@@ -48,8 +48,8 @@ class UserRegistration(Resource):
         try:
             new_user.save_to_db()
             access_token = create_access_token(identity = data['username'])
-            refresh_token = create_refresh_token(identity = data['username'])
-            return make_response(jsonify({'success': True,'access_token': access_token,'refresh_token': refresh_token}),200)
+            # refresh_token = create_refresh_token(identity = data['username'])
+            return make_response(jsonify({'success': True,'access_token': access_token}),200)
         except Exception as e:
             return make_response(jsonify({"message":{"error" : str(e)}}), 500)
     def get(self):
@@ -66,16 +66,18 @@ class UserLogin(Resource):
 
         if User.verify_hash(data['password'], current_user.password):
             access_token = create_access_token(identity = data['username'])
-            refresh_token = create_refresh_token(identity = data['username'])
+            # refresh_token = create_refresh_token(identity = data['username'])
             login_user(current_user,remember=True)
+            next = request.args.get('next')
             # Set the JWT cookies in the response
             resp = jsonify({
                 'message': 'Logged in as {}'.format(current_user.username),
                 'access_token': access_token,
-                'refresh_token': refresh_token })
+                # 'refresh_token': refresh_token,
+                'next':next})
 
             set_access_cookies(resp, access_token)
-            set_refresh_cookies(resp, refresh_token)
+            # set_refresh_cookies(resp, refresh_token)
             return make_response(resp,200)
         else:
             return make_response(jsonify({'message':{"error" : 'رمز عبور شما نادرست است'}}),401)

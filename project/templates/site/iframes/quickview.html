@@ -89,15 +89,15 @@
               <div class="product-extra-link2">
                 <div class="last-Bid-user">
                   <p class="img-price-Bid"><img src="images/theme/005.png"/></p>
-                  <p class="price-Bid" id="auction_current_offer">۱،۳۴۲،۰۰۰ تومان</p>
-                  <p class="name-price-Bid" id="auction_current_winner">احسان امینی</p>
+                  <p class="price-Bid"><span id="auction_current_offer"></span> تومان</p>
+                  <p class="name-price-Bid" id="auction_current_winner"></p>
                 </div>
-                <input type="hidden" id="set-time" value="3"/>
+                <input type="hidden" id="set-time" value="1"/>
                 <div id="countdown">
                   <div id='tiles' class="color-full"></div>
                   <div class="countdown-label" data-bind="text:now_date"></div>
                 </div>
-                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">۱۲۲</div></a>
+                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">۰</div></a>
               </div>
               <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span>
                 <div data-bind="text:auction_end_date">
@@ -134,25 +134,20 @@
 var auction_id = $('#auction').val();
 var images_path = '../../static/images/products/';
 var avatar_path = '../../static/images/avatars/';
-
-function person(avatar,first_name, last_name,features) {
-    var self = this;
-    self.avatar = avatar;
-    self.first_name = first_name;
-    self.last_name = last_name;
-    self.feature = ko.observable(features);
-  }
+var end_time = null;
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
-  data = data[0];
-  console.log(data);
 
-  var deadline = new Date(data.end_date).format("yyyy-M-d hh:mm:ss TT","UTC");
+  data = data[0];
+
+  var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
   var event = new Date(Date.parse(deadline));
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
   var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
   var end_month = event.toLocaleDateString('fa-IR', {month:'long'});
-  var end_time = event.getMinutes()
+  var today = new Date();
+  var Christmas = new Date(deadline);
+  end_time = (Christmas - today);
 
   var end_date_date = end_weekday + " " + end_day +" "+ end_month;
   var end_date_time = ToPersian(event.getHours());
@@ -170,7 +165,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   var images_temp = ClearifyNames( data.item.images);
   var images = [];
 
-  console.log(images);
   $.each(images_temp, function(key,val) {
     images.push({url:images_path+val.trim(),active:false});
   });
@@ -180,8 +174,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
   var people = [];
   var  current_user_id = '{{current_user.id}}';
-
-  console.log(current_user_id);
 
   $.each(participants, function(key,val) {
     its_you = val.id == current_user_id ? true : false;
@@ -195,7 +187,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
       this.max_members = max_members;
       this.images = images;
       this.active_image = images[0].url;
-      this.auction_title = data.name;
+      this.auction_title = data.title;
       this.auction_item_price = ToPersian(formatCurrency(data.item.price));
       this.auction_register_price = ToPersian(formatCurrency(data.base_price));
       this.people = people;
@@ -206,88 +198,103 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   }
   ko.applyBindings(new MyViewModel());
 
-
   if($('.detail-gallery').length>0){
-		$('.detail-gallery').each(function(){
-			$(this).find(".carousel").jCarouselLite({
-				btnNext: $(this).find(".gallery-control .next"),
-				btnPrev: $(this).find(".gallery-control .prev"),
-				speed: 800,
-				visible:3,
-			});
-			//Elevate Zoom
-			$(this).find('.mid img').elevateZoom({
-				zoomType: "inner",
-				cursor: "crosshair",
-				zoomWindowFadeIn: 500,
-				zoomWindowFadeOut: 750
-			});
+    $('.detail-gallery').each(function(){
+      $(this).find(".carousel").jCarouselLite({
+        btnNext: $(this).find(".gallery-control .next"),
+        btnPrev: $(this).find(".gallery-control .prev"),
+        speed: 800,
+        visible:3,
+      });
+      //Elevate Zoom
+      $(this).find('.mid img').elevateZoom({
+        zoomType: "inner",
+        cursor: "crosshair",
+        zoomWindowFadeIn: 500,
+        zoomWindowFadeOut: 750
+      });
 
-			$(this).find(".carousel a").on('click',function(event) {
-				event.preventDefault();
-				$(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
-				$(this).addClass('active');
-				$(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
-				var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
-				$('.zoomWindow').css('background-image','url("'+z_url+'")');
-			});
-		});
-	}
+      $(this).find(".carousel a").on('click',function(event) {
+        event.preventDefault();
+        $(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
+        $(this).addClass('active');
+        $(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
+        var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
+        $('.zoomWindow').css('background-image','url("'+z_url+'")');
+      });
+    });
+  }
 
-  if (window.location.protocol == "https:") {
+});
+
+if (window.location.protocol == "https:") {
     var ws_scheme = "wss://";
-  } else {
+    }
+  else {
     var ws_scheme = "ws://"
-  };
+};
 
+var inbox = new ReconnectingWebSocket(ws_scheme + location.host + "/receive");
+var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "/submit");
 
-  var inbox = new ReconnectingWebSocket(ws_scheme + location.host + "/receive");
-  var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "/submit");
+inbox.onmessage = function(message) {
+  console.log(message.data);
+  var data = JSON.parse(message.data);
+  if(data.success=='true'){
+    $('#offer_count').html(ToPersian(data.total_bids));
+    $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
+    $('#auction_current_winner').html(data.user);
+    target_date += (10 * 1000);
+    getCountdown();
+  }
+  else {
+    alert(data.reason)
+  }
+};
 
-  inbox.onmessage = function(message) {
-    // var data = JSON.parse(message.data);
-    console.log(message.data);
-  };
+inbox.onclose = function(){
+    console.log('inbox closed');
+    this.inbox = new WebSocket(inbox.url);
+};
 
-  inbox.onclose = function(){
-      console.log('inbox closed');
-      this.inbox = new WebSocket(inbox.url);
-  };
+outbox.onclose = function(){
+    console.log('outbox closed');
+    this.outbox = new WebSocket(outbox.url);
+};
 
-  outbox.onclose = function(){
-      console.log('outbox closed');
-      this.outbox = new WebSocket(outbox.url);
-  };
+$("#offer").on("click", function(event) {
+  event.preventDefault();
+  outbox.send(JSON.stringify({ user_id: '{{current_user.id}}', auction_id: auction_id }));
+});
 
-  $("#offer").on("click", function(event) {
-    event.preventDefault();
-    outbox.send(JSON.stringify({ user_id: '{{current_user.id}}', auction_id: auction_id }));
-  });
+//************************************************countdown*****************************
 
+//countdown
+var minutes = $( '#set-time' ).val();
 
-  var minutes = end_time;
+var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
+var time_limit = ((minutes * 70 ) * 1000);
 
-  var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
-  var time_limit = ((minutes * 70 ) * 1000);
-  //set actual timer
-  setTimeout(
-  function()
-  {
-    alert( 'حراجی به پایان رسید!' );
-  }, time_limit );
+//set actual timer
+setTimeout(
+function()
+{
+  alert( 'حراجی به پایان رسید!' );
+}, time_limit );
 
-  var days, hours, minutes, seconds; // variables for time units
+var days, hours, minutes, seconds; // variables for time units
 
-  var countdown = document.getElementById("tiles"); // get tag element
+var countdown = document.getElementById("tiles"); // get tag element
 
-  getCountdown();
+getCountdown();
 
-  setInterval(function () { getCountdown(); }, 1000);
+setInterval(function () { getCountdown(); }, 1000);
 
-  function getCountdown(){
-    // find the amount of "seconds" between now and target
-    var current_date = new Date().getTime();
-    var seconds_left = (target_date - current_date) / 1000;
+function getCountdown(){
+
+  // find the amount of "seconds" between now and target
+  var current_date = new Date().getTime();
+  var seconds_left = (target_date - current_date) / 1000;
 
   if ( seconds_left >= 0 ) {
   console.log(time_limit);
@@ -301,23 +308,24 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
       $( '#tiles' ).addClass('color-empty');
     }
 
-    days = pad( parseInt(seconds_left / 86400) );
-    seconds_left = seconds_left % 86400;
+  days = pad( parseInt(seconds_left / 86400) );
+  seconds_left = seconds_left % 86400;
 
-    hours = pad( parseInt(seconds_left / 3600) );
-    seconds_left = seconds_left % 3600;
+  hours = pad( parseInt(seconds_left / 3600) );
+  seconds_left = seconds_left % 3600;
 
-    minutes = pad( parseInt(seconds_left / 60) );
-    seconds = pad( parseInt( seconds_left % 60 ) );
+  minutes = pad( parseInt(seconds_left / 60) );
+  seconds = pad( parseInt( seconds_left % 60 ) );
 
-    // format countdown string + set tag value
-    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+  // format countdown string + set tag value
+  countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
   }
-  }
-  function pad(n) {
-    return (n < 10 ? '0' : '') + n;
-  }
-});
+}
+
+function pad(n) {
+  return (n < 10 ? '0' : '') + n;
+}
 
 </script>
+
 {% endblock scripts %}

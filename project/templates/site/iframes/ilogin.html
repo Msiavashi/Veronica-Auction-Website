@@ -88,7 +88,12 @@ $( "#login_form" ).submit(function( event ) {
 		$(".error_alert").addClass('hide');
 		$(".success_alert").removeClass('hide');
 		$(".success_container").html('ورود شما با موفقیت انجام ')
-		window.parent.location.reload();
+		if(data.next){
+			parent.location.reload(next);
+		}else {
+			window.parent.location.reload();
+		}
+		console.log(data);
   });
 	posting.fail(function(xhr, status, error) {
 		obj = JSON.parse(xhr.responseText);

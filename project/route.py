@@ -16,11 +16,6 @@ from .model import *
 from . import app
 
 class Route():
-    @app.before_request
-    def make_session_permanent():
-        session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=30)
-
     @app.route('/')
     def site():
         return render_template('site/index.html')
@@ -56,12 +51,12 @@ class Route():
         return redirect('/')
 
     @app.route("/profile")
-    # @login_required
+    @login_required
     def profile():
         return render_template('site/profile.html')
 
     @app.route("/participate/<int:aid>")
-    @login_required
+    # @login_required
     def participate(aid):
         return render_template('site/iframes/package.html',auction_id=aid)
 

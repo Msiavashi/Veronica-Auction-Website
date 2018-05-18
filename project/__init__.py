@@ -4,7 +4,8 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 __version__ = '0.1'
-from flask import Flask
+from flask import Flask , session
+from datetime import timedelta
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_jwt_extended import JWTManager
 from flask_wtf.csrf import CSRFProtect
@@ -33,13 +34,19 @@ from websocket import broker
 from .route import route
 from .controllers import *
 from flask_restful import Api
+from definitions import SESSION_EXPIRE_TIME
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = False
+    permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
+    session.modified = True
 
 api = Api(app,'/api')
 
 api.add_resource(Auth_API.UserRegistration,'/register')
 api.add_resource(Auth_API.UserLogin, '/login')
 api.add_resource(Auth_API.UserLogout, '/logout')
-
 
 api.add_resource(Site_API.SiteCategoryMenuItems, '/site/category/menu/items')
 api.add_resource(Site_API.SiteCategoryAuctions, '/site/category/<int:cid>/auctions/')
