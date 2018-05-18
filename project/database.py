@@ -10,12 +10,12 @@ Base = db.Model
 
 def init_db():
     from . import model
-    # db.drop_all()
-    # db.create_all()
+    db.drop_all()
+    db.create_all()
 
-#print "initing..."
+# print "initing..."
 # init_db()
-#print "done"
+# print "done"
 
 # def migrate():
 #     migrate = Migrate(app, db)
