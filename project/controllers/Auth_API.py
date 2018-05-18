@@ -5,18 +5,11 @@ sys.setdefaultencoding("utf-8")
 
 from flask_restful import Resource, reqparse
 from project.model.user import *
-from flask_jwt_extended import (create_access_token,create_refresh_token,set_access_cookies,set_refresh_cookies, jwt_required, get_jwt_identity, get_raw_jwt)
+from flask_jwt_extended import (create_access_token,create_refresh_token,set_access_cookies,set_refresh_cookies)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 import json
 from project import app
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
 
 
 parser_register = reqparse.RequestParser()
@@ -85,23 +78,23 @@ class UserLogin(Resource):
     def get(self):
         return make_response(jsonify({"message":"online resources login"}),404)
 
-class Logout(object):
-    def post(self):
-        resp = jsonify({'logout': True})
-        unset_jwt_cookies(resp)
-        return resp, 200
+# class Logout(object):
+#     def post(self):
+#         resp = jsonify({'logout': True})
+#         unset_jwt_cookies(resp)
+#         return resp, 200
 
-class UserLogout(Resource):
-    @jwt_required
-    def post(self):
-        jti = get_raw_jwt()['jti']
-        try:
-            revoked_token = RevokedTokenModel(jti = jti)
-            revoked_token.add()
-            return make_response(jsonify({'message': 'Access token has been revoked'}),200)
-        except Exception as e:
-            return make_response(jsonify({'message':{ 'error' : str(e)}}), 500)
-
+# class UserLogout(Resource):
+#     @jwt_required
+#     def post(self):
+#         jti = get_raw_jwt()['jti']
+#         try:
+#             revoked_token = RevokedTokenModel(jti = jti)
+#             revoked_token.add()
+#             return make_response(jsonify({'message': 'Access token has been revoked'}),200)
+#         except Exception as e:
+#             return make_response(jsonify({'message':{ 'error' : str(e)}}), 500)
+#
 
 # class UserLogoutRefresh(Resource):
 #     @jwt_refresh_token_required

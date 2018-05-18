@@ -39,7 +39,7 @@ api = Api(app,'/api')
 
 api.add_resource(Auth_API.UserRegistration,'/register')
 api.add_resource(Auth_API.UserLogin, '/login')
-api.add_resource(Auth_API.UserLogout, '/logout')
+# api.add_resource(Auth_API.UserLogout, '/logout')
 
 api.add_resource(Site_API.SiteCategoryMenuItems, '/site/category/menu/items')
 api.add_resource(Site_API.SiteCategoryAuctions, '/site/category/<int:cid>/auctions/')

@@ -7,22 +7,26 @@ import gevent
 from flask import url_for, redirect, render_template, request, abort ,redirect, session
 from datetime import timedelta
 from flask import render_template, jsonify
-from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired
-from wtforms import Form, BooleanField, StringField, PasswordField, validators
-from flask_login import current_user,login_required,logout_user
-from .controllers.Auth_API import login_manager
+from flask_login import current_user,login_required,logout_user,LoginManager
 from .model import *
 from . import app
 from definitions import SESSION_EXPIRE_TIME
 
 
 class Route():
+
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
+
     @app.before_request
     def make_session_permanent():
         session.permanent = True
         permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
-        # session.modified = True
+        session.modified = True
 
     @app.route('/')
     def site():
