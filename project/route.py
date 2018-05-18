@@ -16,6 +16,12 @@ from .model import *
 from . import app
 
 class Route():
+    @app.before_request
+    def make_session_permanent():
+        session.permanent = True
+        permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
+        # session.modified = True
+
     @app.route('/')
     def site():
         return render_template('site/index.html')
