@@ -34,7 +34,6 @@ from websocket import broker
 from .route import route
 from .controllers import *
 from flask_restful import Api
-from definitions import SESSION_EXPIRE_TIME
 
 api = Api(app,'/api')
 

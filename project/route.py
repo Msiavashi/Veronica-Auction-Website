@@ -14,6 +14,8 @@ from flask_login import current_user,login_required,logout_user
 from .controllers.Auth_API import login_manager
 from .model import *
 from . import app
+from definitions import SESSION_EXPIRE_TIME
+
 
 class Route():
     @app.before_request
