@@ -123,7 +123,12 @@ $('#place_order').on('click',function(){
     success: function (data) {
         alert('پرداخت شما با موفقیت انجام شد و در حراجی ثبت نام شدید');
 				window.parent.location.reload();
-    }
+    },
+		error:function(data) {
+			result = JSON.parse(data.responseText)
+			alert(result.reason);
+			window.parent.location.reload();
+		}
 
 });
 

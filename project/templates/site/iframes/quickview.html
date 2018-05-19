@@ -72,23 +72,12 @@
               <div class="list-member-bid" data-bind="foreach: people">
                 <p class="item-Bid" data-bind="css: { 'YOU' : its_me  }"><img data-bind="attr:{src: avatar}"/>
                   <sd data-bind="text:name"></sd>
-                    <span>۲</span>
-                    <b>۱،۵۶۷،۰۰۰ تومان</b>
+                    <span data-bind="text:row"></span>
                   </p>
-
-                <!-- <p class="item-Bid"><img src="images/theme/005.png"/>احسان امینی<span>۱</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>امیرحسین امینی<span>۲</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/005.png"/>پوریا نصیری پور<span>۳</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/005.png"/>امید ابراهیمی<span>۴</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>کاوه رضایی<span>۵</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid YOU"><img src="images/theme/005.png"/>سید حسین حسینی<span>۶</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>سید مهدی رحمتی<span>۷</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/005.png"/>روزبه چشمی<span>۸</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>فرمانده<span>۹</span><b>۱،۵۶۷،۰۰۰ تومان</b></p> -->
               </div>
               <div class="product-extra-link2">
                 <div class="last-Bid-user">
-                  <p class="img-price-Bid"><img src="images/theme/005.png"/></p>
+                  <p class="img-price-Bid"><img id="auction_current_winner_image"/></p>
                   <p class="price-Bid"><span id="auction_current_offer"></span> تومان</p>
                   <p class="name-price-Bid" id="auction_current_winner"></p>
                 </div>
@@ -97,12 +86,15 @@
                   <div id='tiles' class="color-full"></div>
                   <div class="countdown-label" data-bind="text:now_date"></div>
                 </div>
-                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">۰</div></a>
+                {% if current_user.is_authenticated %}
+                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count"></div></a>
+                {% else %}
+                <a class="addcart-link fancybox.iframe" href="/login">ورود<div class="detail-qty border radius" id="offer_count"></div></a>
+                {% endif %}
               </div>
               <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span>
-                <div data-bind="text:auction_end_date">
-                </div>
-                <i aria-hidden="true" class="fa fa-clock-o"></i> ساعت: <span data-bind="text:auction_end_time"></span>
+                <span data-bind="text:auction_end_date"></span>
+                <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
               </div>
             </div>
             <div class="detail-extralink mt-0">
@@ -127,6 +119,7 @@
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/owl.carousel.js')}} "></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.jcarousellite.js')}} "></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.elevatezoom.js')}} "></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static',filename='js/socket/reconnecting-websocket.min.js')}}"></script>
 
@@ -135,6 +128,16 @@ var auction_id = $('#auction').val();
 var images_path = '../../static/images/products/';
 var avatar_path = '../../static/images/avatars/';
 var end_time = null;
+var people = ko.observableArray([]);
+var current_user_id = '{{current_user.id}}';
+
+function Person(name,avatar,its_me,row) {
+    var self = this;
+    self.name = ko.observable(name);
+    self.avatar = ko.observable(avatar);
+    self.its_me = ko.observable(its_me);
+    self.row = ko.observable(row);
+}
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
@@ -145,18 +148,13 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
   var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
   var end_month = event.toLocaleDateString('fa-IR', {month:'long'});
-  var today = new Date();
-  var Christmas = new Date(deadline);
-  end_time = (Christmas - today);
-
+  var end_date_time =  " ساعت  " + event.toLocaleTimeString('fa-IR');
   var end_date_date = end_weekday + " " + end_day +" "+ end_month;
-  var end_date_time = ToPersian(event.getHours());
 
   var event = new Date(Date.now());
   var now_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
   var now_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
   var now_month = event.toLocaleDateString('fa-IR', {month:'long'});
-
   var now_date_time = event.toLocaleTimeString('fa-IR');
   var now_date_date = now_weekday + " " + now_day +" "+ now_month;
 
@@ -168,18 +166,18 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   $.each(images_temp, function(key,val) {
     images.push({url:images_path+val.trim(),active:false});
   });
+
   images[0].active=true;
 
   var participants = data.participants
 
-  var people = [];
-  var  current_user_id = '{{current_user.id}}';
-
+  rowIndex = 1;
   $.each(participants, function(key,val) {
     its_you = val.id == current_user_id ? true : false;
     name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-    p = {avatar : val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#",name : name ,its_me : its_you};
-    people.push(p);
+    avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+    person = new Person(name,avatar,its_you,ToPersian(rowIndex++));
+    people.push(person);
   });
 
   function MyViewModel() {
@@ -234,18 +232,56 @@ if (window.location.protocol == "https:") {
     var ws_scheme = "ws://"
 };
 
-var inbox = new ReconnectingWebSocket(ws_scheme + location.host + "8000:/receive");
-var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "8000:/submit");
+var inbox = new ReconnectingWebSocket(SERVERSOCKET_RECEIVE);
+var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
+
+inbox.onopen = function(){
+    console.log('inbox opened');
+};
+
+outbox.onopen = function(){
+    console.log('outbox opened');
+    outbox.send(JSON.stringify({handler:'loadview',auction_id: auction_id }));
+};
 
 inbox.onmessage = function(message) {
-  console.log(message.data);
   var data = JSON.parse(message.data);
+  console.log(data);
   if(data.success=='true'){
-    $('#offer_count').html(ToPersian(data.total_bids));
-    $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
-    $('#auction_current_winner').html(data.user);
-    target_date += (10 * 1000);
-    getCountdown();
+    switch (data.handler) {
+      case 'offer':
+        $('#offer_count').html(ToPersian(data.total_bids));
+        $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
+        $('#auction_current_winner').html(data.users[0][0].username);
+        $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+        console.log(data.users[0][0]);
+
+        rowIndex = 0;
+        people([]);
+        $.each(data.users[0],function(key,val){
+          its_you = val.id == current_user_id ? true : false;
+          name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+          avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+          row = ++rowIndex;
+          person = new Person(name,avatar,its_you,ToPersian(row));
+          people.push(person);
+        })
+        people.valueHasMutated();
+
+        target_date += (10 * 1000);
+        time_limit += (10 * 1000);
+
+        getCountdown();
+        break;
+      case 'loadview':
+
+        $('#offer_count').html(ToPersian(data.total_bids));
+        $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+        $('#auction_current_winner').html(data.users[0][0].username);
+        $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+        break;
+      default:
+    }
   }
   else {
     alert(data.reason)
@@ -264,7 +300,7 @@ outbox.onclose = function(){
 
 $("#offer").on("click", function(event) {
   event.preventDefault();
-  outbox.send(JSON.stringify({ user_id: '{{current_user.id}}', auction_id: auction_id }));
+  outbox.send(JSON.stringify({handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
 });
 
 //************************************************countdown*****************************
@@ -272,8 +308,8 @@ $("#offer").on("click", function(event) {
 //countdown
 var minutes = $( '#set-time' ).val();
 
-var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
-var time_limit = ((minutes * 70 ) * 1000);
+var target_date = new Date().getTime() + ((minutes * 60 ) * 1000); // set the countdown date
+var time_limit = ((minutes * 60 ) * 1000);
 
 //set actual timer
 setTimeout(

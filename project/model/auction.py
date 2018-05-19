@@ -23,7 +23,7 @@ class Auction(Base):
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'),nullable=False)
     item = db.relationship('Item')
 
-    participants = db.relationship('User',secondary='user_auction_participations',back_populates='auctions')
+    participants = db.relationship('User',secondary='user_auction_participations',lazy='dynamic',back_populates='auctions')
 
     offers = db.relationship('Offer')
 

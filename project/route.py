@@ -68,17 +68,17 @@ class Route():
         return render_template('site/profile.html')
 
     @app.route("/participate/<int:aid>")
-    # @login_required
+    @login_required
     def participate(aid):
         return render_template('site/iframes/package.html',auction_id=aid)
 
     @app.route("/instantview/<int:aid>")
-    @login_required
+    # @login_required
     def instantview(aid):
         return render_template('site/iframes/quickview.html',auction_id=aid)
 
     @app.route("/view/auction/<int:aid>")
-    # @login_required
+    @login_required
     def viewAuction(aid):
         return render_template('site/auction.html',auction_id=aid)
 
