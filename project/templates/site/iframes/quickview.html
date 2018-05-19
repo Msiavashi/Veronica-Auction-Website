@@ -88,7 +88,7 @@
               </div>
               <div class="product-extra-link2">
                 <div class="last-Bid-user">
-                  <p class="img-price-Bid"><img src="images/theme/005.png"/></p>
+                  <p class="img-price-Bid"><img id="auction_current_winner_image"/></p>
                   <p class="price-Bid"><span id="auction_current_offer"></span> تومان</p>
                   <p class="name-price-Bid" id="auction_current_winner"></p>
                 </div>
@@ -258,7 +258,8 @@ inbox.onmessage = function(message) {
       case 'offer':
         $('#offer_count').html(ToPersian(data.total_bids));
         $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
-        $('#auction_current_winner').html(data.user);
+        $('#auction_current_winner').html(data.user[0].username);
+        $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.user[0].avatar)[0]);
         target_date += (10 * 1000);
         time_limit += (10 * 1000);
         getCountdown();
@@ -267,6 +268,8 @@ inbox.onmessage = function(message) {
         console.log(data.users[0]);
         $('#offer_count').html(ToPersian(data.total_bids));
         $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+        $('#auction_current_winner').html(data.users[0][0].username);
+        $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
 
         break;
       default:
