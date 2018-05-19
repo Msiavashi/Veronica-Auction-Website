@@ -44,8 +44,9 @@ def offer_bid(data):
         db.session.commit()
 
         all_bids = Offer.query.filter_by(auction_id=auction.id).count()
-        user_schema = UserSchema()
-        return '{"handler":"offer","success":"true","total_price":'+str(offer.total_price)+',"user":'+json.dumps(user_schema.dump(user))+',"total_bids":'+str(all_bids)+'}'
+        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
+        user_schema = UserSchema(many=True)
+        return '{"handler":"offer","success":"true","total_price":'+str(offer.total_price)+',"users":'+json.dumps(user_schema.dump(users))+',"total_bids":'+str(all_bids)+'}'
 
 
         # user_plan = UserPlan.query.filter_by(user_id=user_id,auction_id=auction_id).first()

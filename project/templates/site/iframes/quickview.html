@@ -72,19 +72,8 @@
               <div class="list-member-bid" data-bind="foreach: people">
                 <p class="item-Bid" data-bind="css: { 'YOU' : its_me  }"><img data-bind="attr:{src: avatar}"/>
                   <sd data-bind="text:name"></sd>
-                    <span>۲</span>
-                    <b>۱،۵۶۷،۰۰۰ تومان</b>
+                    <span data-bind="text:row"></span>
                   </p>
-
-                <!-- <p class="item-Bid"><img src="images/theme/005.png"/>احسان امینی<span>۱</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>امیرحسین امینی<span>۲</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/005.png"/>پوریا نصیری پور<span>۳</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/005.png"/>امید ابراهیمی<span>۴</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>کاوه رضایی<span>۵</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid YOU"><img src="images/theme/005.png"/>سید حسین حسینی<span>۶</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>سید مهدی رحمتی<span>۷</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/005.png"/>روزبه چشمی<span>۸</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-                <p class="item-Bid"><img src="images/theme/004.png"/>فرمانده<span>۹</span><b>۱،۵۶۷،۰۰۰ تومان</b></p> -->
               </div>
               <div class="product-extra-link2">
                 <div class="last-Bid-user">
@@ -139,6 +128,16 @@ var auction_id = $('#auction').val();
 var images_path = '../../static/images/products/';
 var avatar_path = '../../static/images/avatars/';
 var end_time = null;
+var people = ko.observableArray([]);
+var current_user_id = '{{current_user.id}}';
+
+function Person(name,avatar,its_me,row) {
+    var self = this;
+    self.name = ko.observable(name);
+    self.avatar = ko.observable(avatar);
+    self.its_me = ko.observable(its_me);
+    self.row = ko.observable(row);
+}
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
@@ -158,7 +157,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   var now_month = event.toLocaleDateString('fa-IR', {month:'long'});
   var now_date_time = event.toLocaleTimeString('fa-IR');
   var now_date_date = now_weekday + " " + now_day +" "+ now_month;
-  
+
   var participant_count = ToPersian(data.participants.length);
   var max_members = ToPersian(data.max_members);
   var images_temp = ClearifyNames( data.item.images);
@@ -167,18 +166,18 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   $.each(images_temp, function(key,val) {
     images.push({url:images_path+val.trim(),active:false});
   });
+
   images[0].active=true;
 
   var participants = data.participants
 
-  var people = [];
-  var  current_user_id = '{{current_user.id}}';
-
+  rowIndex = 1;
   $.each(participants, function(key,val) {
     its_you = val.id == current_user_id ? true : false;
     name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-    p = {avatar : val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#",name : name ,its_me : its_you};
-    people.push(p);
+    avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+    person = new Person(name,avatar,its_you,ToPersian(rowIndex++));
+    people.push(person);
   });
 
   function MyViewModel() {
@@ -253,19 +252,33 @@ inbox.onmessage = function(message) {
       case 'offer':
         $('#offer_count').html(ToPersian(data.total_bids));
         $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
-        $('#auction_current_winner').html(data.user[0].username);
-        $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.user[0].avatar)[0]);
+        $('#auction_current_winner').html(data.users[0][0].username);
+        $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+        console.log(data.users[0][0]);
+
+        rowIndex = 0;
+        people([]);
+        $.each(data.users[0],function(key,val){
+          its_you = val.id == current_user_id ? true : false;
+          name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+          avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+          row = ++rowIndex;
+          person = new Person(name,avatar,its_you,ToPersian(row));
+          people.push(person);
+        })
+        people.valueHasMutated();
+
         target_date += (10 * 1000);
         time_limit += (10 * 1000);
+
         getCountdown();
         break;
       case 'loadview':
-        console.log(data.users[0]);
+
         $('#offer_count').html(ToPersian(data.total_bids));
         $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
         $('#auction_current_winner').html(data.users[0][0].username);
         $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
-
         break;
       default:
     }
