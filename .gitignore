@@ -5,3 +5,4 @@ storage
 db_config.py
 images
 venv
+js_config

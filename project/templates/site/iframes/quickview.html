@@ -131,6 +131,7 @@
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/owl.carousel.js')}} "></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.jcarousellite.js')}} "></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.elevatezoom.js')}} "></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static',filename='js/socket/reconnecting-websocket.min.js')}}"></script>
 
@@ -238,8 +239,8 @@ if (window.location.protocol == "https:") {
     var ws_scheme = "ws://"
 };
 
-var inbox = new ReconnectingWebSocket(ws_scheme + location.host + "/receive");
-var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "/submit");
+var inbox = new ReconnectingWebSocket(SERVERSOCKET_RECEIVE);
+var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
 
 inbox.onopen = function(){
     console.log('inbox opened');
