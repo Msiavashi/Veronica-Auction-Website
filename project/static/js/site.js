@@ -227,8 +227,7 @@ var product_image_path = '../../static/images/products/';
 
 function triggerSlider(element){
 	var data = element.data();
-	console.log(data);
-
+	
 	setTimeout(function() {
 
 		element.owlCarousel({

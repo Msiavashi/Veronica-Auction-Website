@@ -97,7 +97,11 @@
                   <div id='tiles' class="color-full"></div>
                   <div class="countdown-label" data-bind="text:now_date"></div>
                 </div>
-                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">۰</div></a>
+                {% if current_user.is_authenticated %}
+                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count"></div></a>
+                {% else %}
+                <a class="addcart-link fancybox.iframe" href="/login">ورود<div class="detail-qty border radius" id="offer_count"></div></a>
+                {% endif %}
               </div>
               <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span>
                 <div data-bind="text:auction_end_date">
@@ -234,18 +238,39 @@ if (window.location.protocol == "https:") {
     var ws_scheme = "ws://"
 };
 
-var inbox = new ReconnectingWebSocket(ws_scheme + location.host + "8000:/receive");
-var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "8000:/submit");
+var inbox = new ReconnectingWebSocket(ws_scheme + location.host + "/receive");
+var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "/submit");
+
+inbox.onopen = function(){
+    console.log('inbox opened');
+};
+
+outbox.onopen = function(){
+    console.log('outbox opened');
+    outbox.send(JSON.stringify({handler:'loadview',auction_id: auction_id }));
+};
 
 inbox.onmessage = function(message) {
-  console.log(message.data);
   var data = JSON.parse(message.data);
+  console.log(data);
   if(data.success=='true'){
-    $('#offer_count').html(ToPersian(data.total_bids));
-    $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
-    $('#auction_current_winner').html(data.user);
-    target_date += (10 * 1000);
-    getCountdown();
+    switch (data.handler) {
+      case 'offer':
+        $('#offer_count').html(ToPersian(data.total_bids));
+        $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
+        $('#auction_current_winner').html(data.user);
+        target_date += (10 * 1000);
+        time_limit += (10 * 1000);
+        getCountdown();
+        break;
+      case 'loadview':
+        console.log(data.users[0]);
+        $('#offer_count').html(ToPersian(data.total_bids));
+        $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+
+        break;
+      default:
+    }
   }
   else {
     alert(data.reason)
@@ -264,7 +289,7 @@ outbox.onclose = function(){
 
 $("#offer").on("click", function(event) {
   event.preventDefault();
-  outbox.send(JSON.stringify({ user_id: '{{current_user.id}}', auction_id: auction_id }));
+  outbox.send(JSON.stringify({handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
 });
 
 //************************************************countdown*****************************
@@ -272,8 +297,8 @@ $("#offer").on("click", function(event) {
 //countdown
 var minutes = $( '#set-time' ).val();
 
-var target_date = new Date().getTime() + ((minutes * 70 ) * 1000); // set the countdown date
-var time_limit = ((minutes * 70 ) * 1000);
+var target_date = new Date().getTime() + ((minutes * 60 ) * 1000); // set the countdown date
+var time_limit = ((minutes * 60 ) * 1000);
 
 //set actual timer
 setTimeout(

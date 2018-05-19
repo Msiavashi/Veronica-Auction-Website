@@ -46,7 +46,7 @@ def offer_bid(data):
         all_bids = Offer.query.filter_by(auction_id=auction.id).count()
         # auc_last_offer =User.query.join(UserPlan).join(Offer).filter_by(auction_id=auction.id).order_by('offers.created_at DESC').first()
 
-        return '{"success":"true","total_price":'+str(offer.total_price)+',"user":"'+user.username+'","total_bids":'+str(all_bids)+'}'
+        return '{"handler":"offer","success":"true","total_price":'+str(offer.total_price)+',"user":"'+user.username+'","total_bids":'+str(all_bids)+'}'
 
 
         # user_plan = UserPlan.query.filter_by(user_id=user_id,auction_id=auction_id).first()
@@ -61,5 +61,16 @@ def offer_bid(data):
         # db.session.add(offer)
         # db.session.commit()
         return "{'success':'true','auction':"+auction.name+",'user':"+user.username+"'offers:'"+offers+"}"
+    except Exception as e:
+        return "{'error':"+str(e)+"}"
+
+def loadview(data):
+    try:
+        auction_id = data['auction_id']
+        total_bids = Offer.query.filter_by(auction_id=auction_id).count()
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('created_at DESC').first()
+        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price')
+        user_schema = UserSchema(many=True)
+        return '{"success":"true","handler":"loadview","total_bids": "'+ str(total_bids) +'","current_offer_price":"'+ str(last_offer.total_price) +'" ,"users":'+json.dumps(user_schema.dump(users))+'}'
     except Exception as e:
         return "{'error':"+str(e)+"}"
