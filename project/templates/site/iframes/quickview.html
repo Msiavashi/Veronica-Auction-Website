@@ -104,9 +104,8 @@
                 {% endif %}
               </div>
               <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span>
-                <div data-bind="text:auction_end_date">
-                </div>
-                <i aria-hidden="true" class="fa fa-clock-o"></i> ساعت: <span data-bind="text:auction_end_time"></span>
+                <span data-bind="text:auction_end_date"></span>
+                <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
               </div>
             </div>
             <div class="detail-extralink mt-0">
@@ -150,21 +149,16 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
   var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
   var end_month = event.toLocaleDateString('fa-IR', {month:'long'});
-  var today = new Date();
-  var Christmas = new Date(deadline);
-  end_time = (Christmas - today);
-
+  var end_date_time =  " ساعت  " + event.toLocaleTimeString('fa-IR');
   var end_date_date = end_weekday + " " + end_day +" "+ end_month;
-  var end_date_time = ToPersian(event.getHours());
 
   var event = new Date(Date.now());
   var now_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
   var now_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
   var now_month = event.toLocaleDateString('fa-IR', {month:'long'});
-
   var now_date_time = event.toLocaleTimeString('fa-IR');
   var now_date_date = now_weekday + " " + now_day +" "+ now_month;
-
+  
   var participant_count = ToPersian(data.participants.length);
   var max_members = ToPersian(data.max_members);
   var images_temp = ClearifyNames( data.item.images);
