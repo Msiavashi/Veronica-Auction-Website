@@ -20,6 +20,8 @@ class Payment(Base):
     order_id = db.Column(db.BigInteger,db.ForeignKey('orders.id'),nullable=False)
     order = db.relationship('Order')
 
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
+
     shipment = db.relationship('Shipment')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)

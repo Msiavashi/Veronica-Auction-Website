@@ -9,6 +9,19 @@ from flask_login import LoginManager, UserMixin,login_required, login_user, logo
 from ..model.order import PaymentStatus
 
 
+class PaymentsInfo(Resource):
+    # @login_required
+    def get(self):
+        current_user = User.query.filter_by(username="mohammad").first()
+        pagenum = int(request.args.get('pagenum')) 
+        pagesize = int(request.args.get('pagesize'))
+        
+        payments = Payment.query.filter_by(user_id=current_user.id).paginate(pagenum, pagesize, True).items
+        paymentSchema = PaymentSchema(many=True)
+        return make_response(jsonify(paymentSchema.dump(payments)),200)
+
+
+
 class DashBoard(Resource):
     @login_required
     def get(self):

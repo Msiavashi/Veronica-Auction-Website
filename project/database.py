@@ -17,11 +17,11 @@ def init_db():
 # init_db()
 # print "done"
 
-# def migrate():
-#     migrate = Migrate(app, db)
-#     manager = Manager(app)
-#     manager.add_command('db', MigrateCommand)
-#
+def migrate():
+    migrate = Migrate(app, db)
+    manager = Manager(app)
+    manager.add_command('db', MigrateCommand)
+
 # print "migrating ... "
 # migrate()
 # print "migration done..!"
