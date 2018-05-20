@@ -81,13 +81,13 @@
                   <p class="price-Bid"><span id="auction_current_offer"></span> تومان</p>
                   <p class="name-price-Bid" id="auction_current_winner"></p>
                 </div>
-                <input type="hidden" id="set-time" value="1"/>
+                <input type="hidden" id="set-time" value="0.3"/>
                 <div id="countdown">
                   <div id='tiles' class="color-full"></div>
                   <div class="countdown-label" data-bind="text:now_date"></div>
                 </div>
                 {% if current_user.is_authenticated %}
-                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count"></div></a>
+                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" data-bind="click:new_offer" id="offer_count"></div></a>
                 {% else %}
                 <a class="addcart-link fancybox.iframe" href="/login">ورود<div class="detail-qty border radius" id="offer_count"></div></a>
                 {% endif %}
@@ -122,13 +122,15 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static',filename='js/socket/reconnecting-websocket.min.js')}}"></script>
-
 <script>
+
 var auction_id = $('#auction').val();
 var images_path = '../../static/images/products/';
 var avatar_path = '../../static/images/avatars/';
-var end_time = null;
+var auction_deadline = null;
 var people = ko.observableArray([]);
+var target_date = ko.observable();
+
 var current_user_id = '{{current_user.id}}';
 
 function Person(name,avatar,its_me,row) {
@@ -140,10 +142,12 @@ function Person(name,avatar,its_me,row) {
 }
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
-
-  data = data[0];
+  product = data.product[0]
+  data = data.auction[0]
 
   var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
+  auction_deadline = new Date(deadline);
+
   var event = new Date(Date.parse(deadline));
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
   var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
@@ -160,13 +164,14 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
   var participant_count = ToPersian(data.participants.length);
   var max_members = ToPersian(data.max_members);
-  var images_temp = ClearifyNames( data.item.images);
+  var images_temp = ClearifyNames(data.item.images);
   var images = [];
 
-  $.each(images_temp, function(key,val) {
-    images.push({url:images_path+val.trim(),active:false});
+  $.each(product.items,function(key,item) {
+    $.each(ClearifyNames(item.images),function(key1,val) {
+      images.push({url:images_path+val.trim(),active:false});
+    });
   });
-
   images[0].active=true;
 
   var participants = data.participants
@@ -193,6 +198,11 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
       this.auction_end_date = end_date_date;
       this.auction_end_time = end_date_time;
       this.now_date = now_date_date;
+
+      this.new_offer = function() {
+        timer.current += MAXTIMERSET * 1000;
+        console.log(timer.current);
+      }
   }
   ko.applyBindings(new MyViewModel());
 
@@ -223,6 +233,77 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
     });
   }
 
+  sleep(1000);
+
+  today = new Date();
+  console.log(today);
+  console.log(auction_deadline);
+
+  var milliseconds = auction_deadline - today;
+
+  console.log(milliseconds);
+
+  target_date = new Date().getTime() + milliseconds; // set the countdown date
+  time_limit = milliseconds;
+
+  var days, hours, minutes, seconds; // variables for time units
+
+  var countdown = document.getElementById("tiles"); // get tag element
+
+  getCountdown();
+
+  var timer = setInterval(function () { getCountdown(); }, 1000);
+
+  function getCountdown(){
+    // find the amount of "seconds" between now and target
+    var current_date = new Date().getTime();
+    var seconds_left = (target_date - current_date) / 1000;
+    console.log(time_limit);
+
+    if ( seconds_left >= 0 ) {
+
+     if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
+     {
+       $( '#tiles' ).removeClass('color-full');
+       $( '#tiles' ).addClass('color-half');
+     }
+     else {
+       $( '#tiles' ).addClass('color-full');
+       $( '#tiles' ).removeClass('color-half');
+     }
+
+     if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
+      {
+        $( '#tiles' ).removeClass('color-half');
+        $( '#tiles' ).addClass('color-empty');
+      }else {
+        $( '#tiles' ).addClass('color-half');
+        $( '#tiles' ).removeClass('color-empty');
+      }
+
+    days = pad( parseInt(seconds_left / 86400) );
+    seconds_left = seconds_left % 86400;
+
+    hours = pad( parseInt(seconds_left / 3600) );
+    seconds_left = seconds_left % 3600;
+
+    minutes = pad( parseInt(seconds_left / 60) );
+    seconds = pad( parseInt( seconds_left % 60 ) );
+
+    // format countdown string + set tag value
+    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+    }
+    else {
+      alert('زمان حراجی به اتمام رسید');
+      clearInterval(timer);
+      outbox.send(JSON.stringify({handler:'auction_done', auction_id: auction_id }));
+    }
+  }
+
+  function pad(n) {
+    return (n < 10 ? '0' : '') + n;
+  }
+
 });
 
 if (window.location.protocol == "https:") {
@@ -245,6 +326,7 @@ outbox.onopen = function(){
 };
 
 inbox.onmessage = function(message) {
+  console.log(message);
   var data = JSON.parse(message.data);
   console.log(data);
   if(data.success=='true'){
@@ -254,6 +336,7 @@ inbox.onmessage = function(message) {
         $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
         $('#auction_current_winner').html(data.users[0][0].username);
         $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+
         console.log(data.users[0][0]);
 
         rowIndex = 0;
@@ -269,16 +352,27 @@ inbox.onmessage = function(message) {
         people.valueHasMutated();
 
         target_date += (10 * 1000);
-        time_limit += (10 * 1000);
 
-        getCountdown();
         break;
       case 'loadview':
-
         $('#offer_count').html(ToPersian(data.total_bids));
         $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
         $('#auction_current_winner').html(data.users[0][0].username);
         $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+        rowIndex = 0;
+        people([]);
+        $.each(data.users[0],function(key,val){
+          its_you = val.id == current_user_id ? true : false;
+          name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+          avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+          row = ++rowIndex;
+          person = new Person(name,avatar,its_you,ToPersian(row));
+          people.push(person);
+        });
+        people.valueHasMutated();
+        break;
+      case 'auction_done':
+        alert('برنده حراجی :'+ data.winner[0].username);
         break;
       default:
     }
@@ -304,63 +398,10 @@ $("#offer").on("click", function(event) {
 });
 
 //************************************************countdown*****************************
-
 //countdown
-var minutes = $( '#set-time' ).val();
 
-var target_date = new Date().getTime() + ((minutes * 60 ) * 1000); // set the countdown date
-var time_limit = ((minutes * 60 ) * 1000);
 
-//set actual timer
-setTimeout(
-function()
-{
-  alert( 'حراجی به پایان رسید!' );
-}, time_limit );
 
-var days, hours, minutes, seconds; // variables for time units
-
-var countdown = document.getElementById("tiles"); // get tag element
-
-getCountdown();
-
-setInterval(function () { getCountdown(); }, 1000);
-
-function getCountdown(){
-
-  // find the amount of "seconds" between now and target
-  var current_date = new Date().getTime();
-  var seconds_left = (target_date - current_date) / 1000;
-
-  if ( seconds_left >= 0 ) {
-  console.log(time_limit);
-   if ( (seconds_left * 1000 ) < ( time_limit / 1 ) )  {
-     $( '#tiles' ).removeClass('color-full');
-     $( '#tiles' ).addClass('color-half');
-
-      }
-    if ( (seconds_left * 1000 ) < ( time_limit / 6 ) )  {
-      $( '#tiles' ).removeClass('color-half');
-      $( '#tiles' ).addClass('color-empty');
-    }
-
-  days = pad( parseInt(seconds_left / 86400) );
-  seconds_left = seconds_left % 86400;
-
-  hours = pad( parseInt(seconds_left / 3600) );
-  seconds_left = seconds_left % 3600;
-
-  minutes = pad( parseInt(seconds_left / 60) );
-  seconds = pad( parseInt( seconds_left % 60 ) );
-
-  // format countdown string + set tag value
-  countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-  }
-}
-
-function pad(n) {
-  return (n < 10 ? '0' : '') + n;
-}
 
 </script>
 

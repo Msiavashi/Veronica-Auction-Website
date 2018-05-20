@@ -19,21 +19,27 @@ def offer_bid(data):
         #     return '{"success":"false","reason":"لطفا قبل از ارسال پیشنهاد به سایت وارد شوید"}'
         #
         auction_id = data['auction_id']
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('created_at DESC').first()
+        if(last_offer and last_offer.win):
+            winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
+            user_schema = UserSchema()
+            return '{"success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
+
         user_id = data['user_id']
         auction = Auction.query.get(auction_id)
         user = User.query.get(user_id)
         user_plan = UserPlan.query.filter_by(user_id=user_id,auction_id=auction_id).first()
-        last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('created_at DESC').first()
+        my_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('created_at DESC').first()
         offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
 
         offer = Offer()
         offer.user_plan=user_plan
         offer.auction=auction
 
-        if(last_offer):
-            if(last_offer.current_bids > 0):
+        if(my_last_offer):
+            if(my_last_offer.current_bids > 0):
                 offer.total_price = auction.base_price + offer_count * (BASE_BID_PRICE * auction.ratio)
-                offer.current_bids = last_offer.current_bids - 1
+                offer.current_bids = my_last_offer.current_bids - 1
             else:
                 return '{"success":"false","reason":"پیشنهادات شما به پایان رسید"}'
         else:
@@ -71,6 +77,27 @@ def loadview(data):
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('created_at DESC').first()
         users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
         user_schema = UserSchema(many=True)
-        return '{"success":"true","handler":"loadview","total_bids": "'+ str(total_bids) +'","current_offer_price":"'+ str(last_offer.total_price) +'" ,"users":'+json.dumps(user_schema.dump(users))+'}'
+        if(last_offer):
+            return '{"success":"true","handler":"loadview","total_bids": "'+ str(total_bids) +'","current_offer_price":"'+ str(last_offer.total_price) +'" ,"users":'+json.dumps(user_schema.dump(users))+'}'
+        else:
+            return '{"success":"true","handler":"loadview","total_bids": "0","current_offer_price":"0" ,"users":'+json.dumps(user_schema.dump(users))+'}'
+
+    except Exception as e:
+        return "{'error':"+str(e)+"}"
+
+def auction_done(data):
+    try:
+        auction_id = data['auction_id']
+        total_bids = Offer.query.filter_by(auction_id=auction_id).count()
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
+        if(last_offer):
+            last_offer.win = True
+            db.session.add(last_offer)
+            db.session.commit()
+            winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
+            user_schema = UserSchema()
+            return '{"success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
+        else:
+            return '{"success":"false","handler":"auction_done" , "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"}'
     except Exception as e:
         return "{'error':"+str(e)+"}"

@@ -50,7 +50,9 @@ class AuctionInstanceView(Resource):
         auction = Auction.query.get(aid)
         auction.participants.order_by('created_at')
         auction_schema = AuctionSchema()
-        return make_response(jsonify(auction_schema.dump(auction)),200)
+        product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
+        product_schema = ProductSchema()
+        return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product)}),200)
 
 class AuctionGetPlans(Resource):
     def get(self,aid):

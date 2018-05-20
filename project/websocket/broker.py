@@ -23,6 +23,8 @@ class SocketBroker():
                 message = offer_bid(data)
             elif handler == 'loadview':
                 message = loadview(data)
+            elif handler == 'auction_done':
+                message = auction_done(data)
             else:
                 pass
 
