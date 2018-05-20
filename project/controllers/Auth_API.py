@@ -11,7 +11,6 @@ import json
 from project import app
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 
-
 parser_register = reqparse.RequestParser()
 parser_register.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
 parser_register.add_argument('mobile', help = 'ورود شماره همراه ضروری است', required = True)
