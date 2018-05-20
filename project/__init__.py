@@ -54,3 +54,7 @@ api.add_resource(Auction_API.AuctionInstanceView, '/auction/<int:aid>/instantvie
 api.add_resource(Auction_API.AuctionGetPlans, '/auction/get/plans/<int:aid>')
 api.add_resource(Auction_API.AuctionUserParticipation, '/auction/user/participation')
 api.add_resource(Auction_API.AuctionUserViewed, '/auction/user/viewed')
+
+
+api.add_resource(User_API.DashBoard, '/user/profile/info')
+api.add_resource(User_API.PaymentsInfo, '/user/payments/info')

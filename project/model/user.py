@@ -43,6 +43,8 @@ class User(Base,UserMixin):
 
     user_plans = db.relationship('UserPlan')
 
+    payments = db.relationship('Payment')
+
     orders = db.relationship('Order')
 
     # offers = db.relationship('Offer')

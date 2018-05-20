@@ -1,12 +1,18 @@
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
+import enum
+
+class PaymentStatus(enum.Enum):
+    unpaid = "unpaid"
+    paid = "paid"
+
 
 class Order(Base):
     __tablename__ = 'orders'
     id = db.Column(db.BigInteger, primary_key=True)
     desciption = db.Column(db.Text)
-    status = db.Column(db.Integer,default=0)
+    status = db.Column(db.Enum(PaymentStatus), default=PaymentStatus.unpaid)
     register_user = db.Column(db.Boolean,default=False)
     total_cost = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
 
@@ -26,7 +32,7 @@ class Order(Base):
 class OrderSchema(Schema):
     id = fields.Int()
     desciption = fields.Str()
-    status = fields.Boolean()
+    status = fields.Str()
     register_user = fields.Boolean()
     total_cost = fields.Str()
     create_at = fields.DateTime()
