@@ -1,16 +1,20 @@
 from flask_restful import Resource, reqparse
+import os
 from ..model import *
-from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
+from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash
 import json
 from project import app
 from datetime import datetime
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.order import PaymentStatus
+from ..model.user_message import UserMessage
+import definitions 
+from werkzeug.utils import secure_filename
 
 
 class PaymentsInfo(Resource):
-    # @login_required
+    @login_required
     def get(self):
         current_user = User.query.filter_by(username="mohammad").first()
         pagenum = int(request.args.get('pagenum')) 
@@ -56,3 +60,35 @@ class DashBoard(Resource):
         print info
         return make_response(jsonify(info),200)
 
+
+class UserContactUs(Resource):
+
+    def _allowed_file(self, filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in definitions.ALLOWED_EXTENTIONS
+
+    @login_required
+    def post(self): 
+
+        new_message = UserMessage()
+
+        new_message.title = request.get.json('title', None)
+        new_message.subject = request.get.json('subject', None)
+        new_message.message = request.get.json('message', None)
+
+        if 'file' in request.files:
+            file = request.files['file']
+            if file and self._allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(path)
+
+                new_message.file = path 
+
+        db.session.add(new_message)
+        db.session.commit()
+
+        flash("پیام با موفقیت ارسال شد")
+        return redirect(url_for('profile'))
+        
+        

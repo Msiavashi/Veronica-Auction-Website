@@ -2,6 +2,6 @@
 .idea
 storage
 *.pyc
-db_config.py
+./project/db_config.py
 images
 venv

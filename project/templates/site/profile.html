@@ -35,7 +35,7 @@
 											<i class="fa fa-usd fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge"><p data-bind="text: userInfo.credit" ></p> تومان</div>
+											<div class="huge"><h2 data-bind="text: userInfo.credit" >test</h2> تومان</div>
 											<div>موجودی</div>
 										</div>
 										</div>
@@ -435,32 +435,24 @@
 {% block scripts %}
 {{ super() }}
 <script>
-function dashboardViewModel() {
-    var self = this;
-
-    self.userInfo = ko.observable();
-	self.paymentsInfo = ko.observable();
-    self.getInfo = function () {
-        $.getJSON("{{url_for('dashboard')}}", function(data){
-			self.userInfo(data);
-		});
-	};
-
-	self.getPaymentsInfo = function(){
-		$.getJSON("{{url_for(paymentsinfo)}}", function(data){
-			self.paymentsInfo(data);
-		});
+$.getJSON("{{url_for('dashboard')}}", function(data){
+	function dashboardViewModel(){
+		self = this;
+		self.userInfo = ko.observable();
+		self.paymentsInfo = ko.observable();
+		self.userInfo(data);
+		console.log(data);
 	}
-
-	self.getInfo();	
-	self.getPaymentsInfo();
-
-}
-
-<!-- TODO: do the bindings -->
-$(document).ready(function () {
-    ko.applyBindings(new dashboardViewModel());
+	ko.applyBindings(new dashboardViewModel());
+	console.log(userInfo);
 });
+
+	// $.getJSON("{{url_for('paymentsinfo')}}", function(data){
+	// 	self.paymentsInfo(data);
+	// 	console.log(data);
+	// });
+
+
 
 </script>
 {% endblock scripts %}

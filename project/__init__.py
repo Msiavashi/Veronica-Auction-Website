@@ -18,12 +18,14 @@ REDIS_URL = "redis://localhost:6379/0"
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)
 # csrf = CSRFProtect(app)
 
 sockets = Sockets(app)
+
 redis = redis.from_url(REDIS_URL)
 
 # cache = Cache(app,config={'CACHE_TYPE': 'simple'})

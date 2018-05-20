@@ -1,5 +1,6 @@
 from project.db_config import Config
 import os
+import definitions
 
 # Create dummy secrey key so we can use sessions
 SECRET_KEY = os.urandom(32)
@@ -34,3 +35,6 @@ JWT_REFRESH_COOKIE_PATH = '/token/refresh'
 JWT_COOKIE_CSRF_PROTECT = False
 
 # CACHE_TYPE = 'simple'
+
+# UPLOAD ATACHMENTS
+UPLOAD_FOLDER = definitions.UPLOAD_FOLDER
