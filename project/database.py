@@ -10,18 +10,18 @@ Base = db.Model
 
 def init_db():
     from . import model
-    # db.drop_all()
-    # db.create_all()
+    db.drop_all()
+    db.create_all()
 
-#print "initing..."
+# print "initing..."
 # init_db()
-#print "done"
+# print "done"
 
-# def migrate():
-#     migrate = Migrate(app, db)
-#     manager = Manager(app)
-#     manager.add_command('db', MigrateCommand)
-#
+def migrate():
+    migrate = Migrate(app, db)
+    manager = Manager(app)
+    manager.add_command('db', MigrateCommand)
+
 # print "migrating ... "
 # migrate()
 # print "migration done..!"

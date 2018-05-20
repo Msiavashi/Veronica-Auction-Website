@@ -21,7 +21,6 @@
 
 						<input class="tabinput" id="tab5" type="radio" name="tabs">
 						<label class="tablabel" for="tab5"><i class="fa fa-code"></i><span>کد معرف</span></label>
-
 						<input class="tabinput" id="tab6" type="radio" name="tabs">
 						<label class="tab6 tablabel" for="tab6"><span>شارژ موجودی</span></label>
 
@@ -36,7 +35,7 @@
 											<i class="fa fa-usd fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">۲،۰۰۰،۰۰۰ تومان</div>
+											<div class="huge"><p data-bind="text: userInfo.credit" ></p> تومان</div>
 											<div>موجودی</div>
 										</div>
 										</div>
@@ -436,8 +435,32 @@
 {% block scripts %}
 {{ super() }}
 <script>
-$(document).ready(function(){
-	sleep(1000);
+function dashboardViewModel() {
+    var self = this;
+
+    self.userInfo = ko.observable();
+	self.paymentsInfo = ko.observable();
+    self.getInfo = function () {
+        $.getJSON("{{url_for('dashboard')}}", function(data){
+			self.userInfo(data);
+		});
+	};
+
+	self.getPaymentsInfo = function(){
+		$.getJSON("{{url_for(paymentsinfo)}}", function(data){
+			self.paymentsInfo(data);
+		});
+	}
+
+	self.getInfo();	
+	self.getPaymentsInfo();
+
+}
+
+<!-- TODO: do the bindings -->
+$(document).ready(function () {
+    ko.applyBindings(new dashboardViewModel());
 });
+
 </script>
 {% endblock scripts %}
