@@ -27,6 +27,12 @@ def offer_bid(data):
 
         user_id = data['user_id']
         auction = Auction.query.get(auction_id)
+
+        today = datetime.today()
+        if(auction.start_date < today):
+            return '{"success":"false","reason":"مهلت ارسال پیشنهادات به اتمام رسیده است"}'
+
+
         user = User.query.get(user_id)
         user_plan = UserPlan.query.filter_by(user_id=user_id,auction_id=auction_id).first()
         my_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('created_at DESC').first()

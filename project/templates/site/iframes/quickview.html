@@ -141,12 +141,100 @@ function Person(name,avatar,its_me,row) {
     self.row = ko.observable(row);
 }
 
+if (window.location.protocol == "https:") {
+    var ws_scheme = "wss://";
+    }
+  else {
+    var ws_scheme = "ws://"
+};
+
+
+var inbox = new ReconnectingWebSocket(SERVERSOCKET_RECEIVE);
+var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
+
+
+  inbox.onopen = function(){
+      console.log('inbox opened');
+  };
+
+  outbox.onopen = function(){
+      console.log('outbox opened');
+      outbox.send(JSON.stringify({handler:'loadview',auction_id: auction_id }));
+  };
+
+  inbox.onmessage = function(message) {
+    console.log(message);
+    var data = JSON.parse(message.data);
+    console.log(data);
+    if(data.success=='true'){
+      switch (data.handler) {
+        case 'offer':
+          $('#offer_count').html(ToPersian(data.total_bids));
+          $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
+          $('#auction_current_winner').html(data.users[0][0].username);
+          $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+
+          console.log(data.users[0][0]);
+
+          rowIndex = 0;
+          people([]);
+          $.each(data.users[0],function(key,val){
+            its_you = val.id == current_user_id ? true : false;
+            name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+            avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+            row = ++rowIndex;
+            person = new Person(name,avatar,its_you,ToPersian(row));
+            people.push(person);
+          })
+          people.valueHasMutated();
+
+          target_date += (10 * 1000);
+
+          break;
+        case 'loadview':
+          $('#offer_count').html(ToPersian(data.total_bids));
+          $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+          $('#auction_current_winner').html(data.users[0][0].username);
+          $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+          rowIndex = 0;
+          people([]);
+          $.each(data.users[0],function(key,val){
+            its_you = val.id == current_user_id ? true : false;
+            name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+            avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+            row = ++rowIndex;
+            person = new Person(name,avatar,its_you,ToPersian(row));
+            people.push(person);
+          });
+          people.valueHasMutated();
+          break;
+        case 'auction_done':
+          alert('برنده حراجی :'+ data.winner[0].username);
+          break;
+        default:
+      }
+    }
+    else {
+      alert(data.reason)
+    }
+  };
+
+  inbox.onclose = function(){
+      console.log('inbox closed');
+      this.inbox = new WebSocket(inbox.url);
+  };
+
+  outbox.onclose = function(){
+      console.log('outbox closed');
+      this.outbox = new WebSocket(outbox.url);
+  };
+
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   product = data.product[0]
   data = data.auction[0]
 
   var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
-  auction_deadline = new Date(deadline);
+  auction_deadline = Date.parse(deadline);
 
   var event = new Date(Date.parse(deadline));
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
@@ -240,8 +328,10 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   console.log(auction_deadline);
 
   var milliseconds = auction_deadline - today;
-
-  console.log(milliseconds);
+  if (milliseconds < 0){
+    alert('حراجی به اتمام رسیده است');
+    return;
+  }
 
   target_date = new Date().getTime() + milliseconds; // set the countdown date
   time_limit = milliseconds;
@@ -306,102 +396,10 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
 });
 
-if (window.location.protocol == "https:") {
-    var ws_scheme = "wss://";
-    }
-  else {
-    var ws_scheme = "ws://"
-};
-
-var inbox = new ReconnectingWebSocket(SERVERSOCKET_RECEIVE);
-var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
-
-inbox.onopen = function(){
-    console.log('inbox opened');
-};
-
-outbox.onopen = function(){
-    console.log('outbox opened');
-    outbox.send(JSON.stringify({handler:'loadview',auction_id: auction_id }));
-};
-
-inbox.onmessage = function(message) {
-  console.log(message);
-  var data = JSON.parse(message.data);
-  console.log(data);
-  if(data.success=='true'){
-    switch (data.handler) {
-      case 'offer':
-        $('#offer_count').html(ToPersian(data.total_bids));
-        $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
-        $('#auction_current_winner').html(data.users[0][0].username);
-        $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
-
-        console.log(data.users[0][0]);
-
-        rowIndex = 0;
-        people([]);
-        $.each(data.users[0],function(key,val){
-          its_you = val.id == current_user_id ? true : false;
-          name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-          avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-          row = ++rowIndex;
-          person = new Person(name,avatar,its_you,ToPersian(row));
-          people.push(person);
-        })
-        people.valueHasMutated();
-
-        target_date += (10 * 1000);
-
-        break;
-      case 'loadview':
-        $('#offer_count').html(ToPersian(data.total_bids));
-        $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
-        $('#auction_current_winner').html(data.users[0][0].username);
-        $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
-        rowIndex = 0;
-        people([]);
-        $.each(data.users[0],function(key,val){
-          its_you = val.id == current_user_id ? true : false;
-          name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-          avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-          row = ++rowIndex;
-          person = new Person(name,avatar,its_you,ToPersian(row));
-          people.push(person);
-        });
-        people.valueHasMutated();
-        break;
-      case 'auction_done':
-        alert('برنده حراجی :'+ data.winner[0].username);
-        break;
-      default:
-    }
-  }
-  else {
-    alert(data.reason)
-  }
-};
-
-inbox.onclose = function(){
-    console.log('inbox closed');
-    this.inbox = new WebSocket(inbox.url);
-};
-
-outbox.onclose = function(){
-    console.log('outbox closed');
-    this.outbox = new WebSocket(outbox.url);
-};
-
 $("#offer").on("click", function(event) {
   event.preventDefault();
   outbox.send(JSON.stringify({handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
 });
-
-//************************************************countdown*****************************
-//countdown
-
-
-
 
 </script>
 

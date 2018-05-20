@@ -35,7 +35,7 @@ class SiteProductCarouselAds(Resource):
 class SiteTodayEvents(Resource):
     def get(self):
         today = datetime.today()
-        events = Event.query.filter_by(is_active = True).filter(Event.start_date <= today).filter(Event.end_date >= today).all()
+        events = Event.query.filter_by(is_active = True).filter(Event.start_date <= today , Event.end_date >= today).all()
         event_schema = EventSchema(many=True)
         return make_response(jsonify(event_schema.dump(events)),200)
 

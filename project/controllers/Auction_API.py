@@ -19,7 +19,6 @@ class AuctionUserViewed(Resource):
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
-
 class AuctionUserParticipation(Resource):
     def post(self):
         plan_id = request.form.get('plan_id')
@@ -43,7 +42,6 @@ class AuctionUserParticipation(Resource):
             return make_response(jsonify({'success':True,"reason":"شرکت در حراجی با موفقیت انجام شد"}),200)
         else:
             return make_response(jsonify({'success':False,"reason":"شما قبلا در این حراجی عضو شده اید"}),400)
-
 
 class AuctionInstanceView(Resource):
     def get(self,aid):
