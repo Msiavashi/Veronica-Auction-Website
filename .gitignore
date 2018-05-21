@@ -2,7 +2,7 @@
 .idea
 storage
 *.pyc
-project/db_config.py
+./project/db_config.py
 images
 venv
-project/static/js/js_config.js
+./project/static/js/js_config.js

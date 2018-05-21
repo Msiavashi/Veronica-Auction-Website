@@ -45,6 +45,8 @@ class User(Base,UserMixin):
 
     payments = db.relationship('Payment')
 
+    messages = db.relationship('Message')
+
     orders = db.relationship('Order')
 
     # offers = db.relationship('Offer')
