@@ -5,6 +5,7 @@
 
 
 class Config:
+    database
     port = "5432"
     host_name = "localhost"
     db_name = "bidbazi_db"
