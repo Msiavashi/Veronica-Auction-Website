@@ -629,13 +629,16 @@
   	});
   });
 
+
   $.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
     OnDataReady(data[0]);
-  })
-  function OnDataReady(data) {
-    ko.applyBindings({ viewed : data});
-  }
+	});
 
+	var viewed = ko.observable();
+  function OnDataReady(data) {
+		viewed(data);
+    ko.applyBindings(viewed);
+  }
   </script>
   {% endblock scripts %}
 
