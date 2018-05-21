@@ -74,7 +74,7 @@ class Route():
         return redirect(url_for('instantview',aid=aid))
 
     @app.route("/instantview/<int:aid>")
-    @login_required
+    # @login_required
     def instantview(aid):
         return render_template('site/iframes/quickview.html',auction_id=aid)
 
@@ -90,8 +90,7 @@ class Route():
 
     @app.errorhandler(404)
     def page_not_found(e):
-        next=url_for(request.endpoint,**request.view_args)
-        return render_template('site/404.html',next=next), 404
+        return render_template('site/404.html'), 404
 
     @app.route('/about')
     def about():

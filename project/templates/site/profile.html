@@ -435,32 +435,16 @@
 {% block scripts %}
 {{ super() }}
 <script>
-function dashboardViewModel() {
-    var self = this;
+	var userInfo = ko.observable();
+	$.getJSON("{{url_for('dashboard')}}", function(data){
 
-    self.userInfo = ko.observable();
-	self.paymentsInfo = ko.observable();
-    self.getInfo = function () {
-        $.getJSON("{{url_for('dashboard')}}", function(data){
-			self.userInfo(data);
-		});
-	};
-
-	self.getPaymentsInfo = function(){
-		$.getJSON("{{url_for(paymentsinfo)}}", function(data){
-			self.paymentsInfo(data);
-		});
-	}
-
-	self.getInfo();	
-	self.getPaymentsInfo();
-
-}
-
-<!-- TODO: do the bindings -->
-$(document).ready(function () {
-    ko.applyBindings(new dashboardViewModel());
-});
-
+		userInfo = data;
+		function dashboardViewModel() {
+		    var self = this;
+				self.userInfo = userInfo;
+				// self.paymentsInfo = ;
+		}
+		ko.applyBindings(new dashboardViewModel());
+	});
 </script>
 {% endblock scripts %}

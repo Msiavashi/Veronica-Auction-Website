@@ -13,29 +13,36 @@ from project import app
 from datetime import datetime
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 
+@login_required
 def offer_bid(data):
     try:
         # if(not current_user.is_authenticated):
         #     return '{"success":"false","reason":"لطفا قبل از ارسال پیشنهاد به سایت وارد شوید"}'
         #
         auction_id = data['auction_id']
-        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('created_at DESC').first()
+        auction = Auction.query.get(auction_id)
+
+        # check for one minutes remained for starting auction
+        now = datetime.now()
+        remained = (auction.start_date - now).seconds
+        if(remained > 60):
+            return '{"success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"}'
+
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
         if(last_offer and last_offer.win):
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
             return '{"success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
 
         user_id = data['user_id']
-        auction = Auction.query.get(auction_id)
-
-        today = datetime.today()
-        if(auction.start_date < today):
-            return '{"success":"false","reason":"مهلت ارسال پیشنهادات به اتمام رسیده است"}'
-
-
         user = User.query.get(user_id)
+
         user_plan = UserPlan.query.filter_by(user_id=user_id,auction_id=auction_id).first()
-        my_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('created_at DESC').first()
+        my_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
+
+        if(last_offer and my_last_offer and my_last_offer.total_price==last_offer.total_price):
+            return '{"success":"false","reason":"آخرین پیشنهاد دهنده خود شما هستید"}'
+
         offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
 
         offer = Offer()
@@ -60,19 +67,6 @@ def offer_bid(data):
         user_schema = UserSchema(many=True)
         return '{"handler":"offer","success":"true","total_price":'+str(offer.total_price)+',"users":'+json.dumps(user_schema.dump(users))+',"total_bids":'+str(all_bids)+'}'
 
-
-        # user_plan = UserPlan.query.filter_by(user_id=user_id,auction_id=auction_id).first()
-        # auction_plan = AuctionPlan.query.get(user_plan.auction_plan_id)
-        #
-        # offer = Offer()
-        # offer.user_plan = user_plan
-        # offer.auction = auction
-        # offer.current_bids = UserPlan.query.filter_by(user_id=user.id,auction_id=auction.id).count()
-        # offer.total_price =  BASE_BID_PRICE * auction.ratio
-        # print "here i am***************"
-        # db.session.add(offer)
-        # db.session.commit()
-        return "{'success':'true','auction':"+auction.name+",'user':"+user.username+"'offers:'"+offers+"}"
     except Exception as e:
         return "{'error':"+str(e)+"}"
 
@@ -80,7 +74,7 @@ def loadview(data):
     try:
         auction_id = data['auction_id']
         total_bids = Offer.query.filter_by(auction_id=auction_id).count()
-        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('created_at DESC').first()
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
         users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
         user_schema = UserSchema(many=True)
         if(last_offer):

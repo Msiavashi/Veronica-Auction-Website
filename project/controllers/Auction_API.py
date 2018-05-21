@@ -23,10 +23,13 @@ class AuctionUserParticipation(Resource):
     def post(self):
         plan_id = request.form.get('plan_id')
         auction_id = request.form.get('auction_id')
-        print auction_id,plan_id
-        print "***************"
-
         auction = Auction.query.get(auction_id)
+        now = datetime.now()
+        remained = (auction.start_date - now).seconds
+        
+        if(remained < 60):
+            return make_response(jsonify({'success':False,"reason":"حداکثر تا یک دقیقه قبل از حراجی برای ثبت نام فرصت دارید"}),400)
+
         plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
 
         auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()

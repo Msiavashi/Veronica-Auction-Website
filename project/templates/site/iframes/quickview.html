@@ -56,15 +56,18 @@
         </div>
         <div class="col-md-8 col-sm-7 col-xs-12">
           <div class="detail-info">
-            <h2 class="title-detail" data-bind="text: auction_title"></h2>
+            <h2 class="title-detail" data-bind="text: auction.title + ' '+auction.item.title"></h2>
             <div class="product-price">
               <!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
               <div class="textboX">
-                <div class="textboXX"><p id="auction_item_price"> قیمت محصول : <span data-bind="text: auction_item_price"></span> تومان </p></div>
+                <div class="textboXX"><p id="auction_item_price"> قیمت محصول : <span data-bind="text:ToPersian(formatCurrency(auction.item.price))"></span> تومان <div> &nbsp  </div></p></div>
                 <div class="upArrow"></div>
               </div>
               <div class="textboX">
-                <div class="textboXX"><p id="auction_register_price">شروع حراجی : <span data-bind="text: auction_register_price"></span></p></div>
+                <div class="textboXX">
+                  <p id="auction_register_price">شروع حراجی : <span data-bind="text: ToPersian(formatCurrency(auction.base_price))"></span> تومان
+                  <div>  سقف حراجی : <span data-bind="text: ToPersian(formatCurrency(auction.max_price))"></span> تومان </p></div>
+                </div>
                 <div class="upArrow"></div>
               </div>
             </div>
@@ -86,11 +89,9 @@
                   <div id='tiles' class="color-full"></div>
                   <div class="countdown-label" data-bind="text:now_date"></div>
                 </div>
-                {% if current_user.is_authenticated %}
-                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" data-bind="click:new_offer" id="offer_count"></div></a>
-                {% else %}
-                <a class="addcart-link fancybox.iframe" href="/login">ورود<div class="detail-qty border radius" id="offer_count"></div></a>
-                {% endif %}
+
+                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count"></div></a>
+
               </div>
               <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span>
                 <span data-bind="text:auction_end_date"></span>
@@ -165,7 +166,6 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
   inbox.onmessage = function(message) {
     console.log(message);
     var data = JSON.parse(message.data);
-    console.log(data);
     if(data.success=='true'){
       switch (data.handler) {
         case 'offer':
@@ -173,9 +173,6 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
           $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
           $('#auction_current_winner').html(data.users[0][0].username);
           $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
-
-          console.log(data.users[0][0]);
-
           rowIndex = 0;
           people([]);
           $.each(data.users[0],function(key,val){
@@ -187,27 +184,33 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
             people.push(person);
           })
           people.valueHasMutated();
-
-          target_date += (10 * 1000);
-
+          remained = target_date - Date.now();
+          console.log(remained);
+          if( remained < 10){
+                target_date += (10 * 1000);
+          }
           break;
         case 'loadview':
+
           $('#offer_count').html(ToPersian(data.total_bids));
           $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
-          $('#auction_current_winner').html(data.users[0][0].username);
-          $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
-          rowIndex = 0;
-          people([]);
-          $.each(data.users[0],function(key,val){
-            its_you = val.id == current_user_id ? true : false;
-            name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-            avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-            row = ++rowIndex;
-            person = new Person(name,avatar,its_you,ToPersian(row));
-            people.push(person);
-          });
-          people.valueHasMutated();
+          if(data.users[0][0]){
+            $('#auction_current_winner').html(data.users[0][0].username);
+            $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0])
+            rowIndex = 0;
+            people([]);
+            $.each(data.users[0],function(key,val){
+              its_you = val.id == current_user_id ? true : false;
+              name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+              avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+              row = ++rowIndex;
+              person = new Person(name,avatar,its_you,ToPersian(row));
+              people.push(person);
+            });
+            people.valueHasMutated();
+          }
           break;
+
         case 'auction_done':
           alert('برنده حراجی :'+ data.winner[0].username);
           break;
@@ -234,7 +237,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   data = data.auction[0]
 
   var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
-  auction_deadline = Date.parse(deadline);
+  auction_deadline = new Date(deadline);
 
   var event = new Date(Date.parse(deadline));
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
@@ -262,22 +265,23 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   });
   images[0].active=true;
 
-  var participants = data.participants
-
-  rowIndex = 1;
-  $.each(participants, function(key,val) {
-    its_you = val.id == current_user_id ? true : false;
-    name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-    avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-    person = new Person(name,avatar,its_you,ToPersian(rowIndex++));
-    people.push(person);
-  });
+  // var participants = data.participants
+  //
+  // rowIndex = 1;
+  // $.each(participants, function(key,val) {
+  //   its_you = val.id == current_user_id ? true : false;
+  //   name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+  //   avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+  //   person = new Person(name,avatar,its_you,ToPersian(rowIndex++));
+  //   people.push(person);
+  // });
 
   function MyViewModel() {
       this.participant_count = participant_count;
       this.max_members = max_members;
       this.images = images;
       this.active_image = images[0].url;
+      this.auction = data
       this.auction_title = data.title;
       this.auction_item_price = ToPersian(formatCurrency(data.item.price));
       this.auction_register_price = ToPersian(formatCurrency(data.base_price));
@@ -286,11 +290,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
       this.auction_end_date = end_date_date;
       this.auction_end_time = end_date_time;
       this.now_date = now_date_date;
-
-      this.new_offer = function() {
-        timer.current += MAXTIMERSET * 1000;
-        console.log(timer.current);
-      }
   }
   ko.applyBindings(new MyViewModel());
 
@@ -321,13 +320,13 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
     });
   }
 
-  sleep(1000);
-
   today = new Date();
   console.log(today);
   console.log(auction_deadline);
 
   var milliseconds = auction_deadline - today;
+  console.log(milliseconds);
+
   if (milliseconds < 0){
     alert('حراجی به اتمام رسیده است');
     return;

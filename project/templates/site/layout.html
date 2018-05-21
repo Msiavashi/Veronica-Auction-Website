@@ -406,54 +406,13 @@
               <div class="wrap-item" data-bind="foreach:viewed" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <h3 class="product-title"><a data-bind="text:item.product.title , attr:{ href : 'view/auction/'+id} "></a></h3>
                     <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" data-bind="attr:{href : 'instantview/'+id}" class="quickview-link fancybox.iframe shopnow"><span>مشاهده</span></a></div>
                 </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-
+                <!-- ko text: triggerSlider($($element.parentElement)) -->
+                <!-- /ko -->
               </div>
             </div>
             {% endif %}
@@ -629,11 +588,14 @@
   	});
   });
 
+  var viewed = ko.observable();
+
   $.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
-    OnDataReady(data[0]);
-  })
-  function OnDataReady(data) {
-    ko.applyBindings({ viewed : data});
+     OnDataReady(data[0]);
+  });
+
+  function OnDataReady(data){
+    viewed = data;
   }
 
   </script>

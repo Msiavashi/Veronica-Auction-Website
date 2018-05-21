@@ -13,9 +13,9 @@ class PaymentsInfo(Resource):
     # @login_required
     def get(self):
         current_user = User.query.filter_by(username="mohammad").first()
-        pagenum = int(request.args.get('pagenum')) 
+        pagenum = int(request.args.get('pagenum'))
         pagesize = int(request.args.get('pagesize'))
-        
+
         payments = Payment.query.filter_by(user_id=current_user.id).paginate(pagenum, pagesize, True).items
         paymentSchema = PaymentSchema(many=True)
         return make_response(jsonify(paymentSchema.dump(payments)),200)
@@ -30,7 +30,7 @@ class DashBoard(Resource):
         enrolled_auctions = UserAuctionParticipation.query.filter_by(user_id=current_user.id).count()
         invitations = User.query.filter_by(invitor=current_user.username).count()
 
-        bought_items = [item for order in Order.query.filter_by(user_id = current_user.id, status=PaymentStatus.paid).all() for item in order.items]
+        bought_items = [item for order in Order.query.filter_by(user_id = current_user.id, status=1).all() for item in order.items]
 
         won_offers = Offer.query.filter_by(win=True).join(UserPlan).filter_by(user_id = current_user.id).all()
 
@@ -55,4 +55,3 @@ class DashBoard(Resource):
         }
         print info
         return make_response(jsonify(info),200)
-

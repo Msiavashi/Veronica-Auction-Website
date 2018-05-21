@@ -352,12 +352,13 @@ function dealModel() {
 	});
 
 	$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
+		console.log(data);
 		$.each(data[0],function(key,val){
 			auction =
 			{
 				title : val.title ,
 				description : val.description ,
-				deadline : new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
+				deadline : new Date(val.start_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
 				participant_count :ToPersian(val.participants.length),
 				max_members :ToPersian(val.max_members),
 				base_price : ToPersian(formatCurrency(val.base_price)),
