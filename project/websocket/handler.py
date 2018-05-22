@@ -118,8 +118,8 @@ def auction_done(data):
             db.session.commit()
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
-            return '{"token": "'+data['token']+'","success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
+            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
         else:
-            return '{"token": "'+data['token']+'","success":"false","handler":"auction_done" , "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"}'
+            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","handler":"auction_done" , "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"}'
     except Exception as e:
         return "{'error':"+str(e)+"}"
