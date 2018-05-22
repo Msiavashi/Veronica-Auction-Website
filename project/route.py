@@ -76,7 +76,9 @@ class Route():
     @app.route("/instantview/<int:aid>")
     # @login_required
     def instantview(aid):
-        return render_template('site/iframes/quickview.html',auction_id=aid)
+        if(current_user and not current_user.has_auction(aid)):
+            return render_template('site/iframes/quickview.html',auction_id=aid)
+        return render_template('site/iframes/quickview-guest.html',auction_id=aid)
 
     @app.route("/view/auction/<int:aid>")
     @login_required

@@ -101,7 +101,8 @@
 												<div class="countdown-label" data-bind="text:now_date"></div>
 											</div>
 
-											<a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count" data-bind="text:ToPersian(offer_bid_count)"></div></a>
+											
+											<a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count" data-bind="text: offer_bid_count ? ToPersian(offer_bid_count) : ToPersian(0)"></div></a>
 
 										</div>
 										<div class="detail-countdowns"><span data-bind="text : before_start"></span>

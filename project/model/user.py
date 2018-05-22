@@ -25,7 +25,7 @@ class User(Base,UserMixin):
     password = db.Column(db.String(length=100), nullable=False)
 
     #please check for dafault avatar address from config file
-    avatar = db.Column(db.String(length=300))
+    avatar = db.Column(db.String(length=300),default="['005.png']")
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)

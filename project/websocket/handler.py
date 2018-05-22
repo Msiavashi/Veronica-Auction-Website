@@ -32,7 +32,7 @@ def offer_bid(data):
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
-        if(remained > 60 * 50):
+        if(remained > 60):
             return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد","user_id":"'+str(user_id)+'"}'
 
 
