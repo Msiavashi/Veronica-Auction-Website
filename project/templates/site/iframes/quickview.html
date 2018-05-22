@@ -137,6 +137,7 @@ var before_start_text = ko.observable();
 
 var current_user_id = '{{current_user.id}}';
 
+
 function Person(name,avatar,its_me,row) {
     var self = this;
     self.name = ko.observable(name);
@@ -155,7 +156,15 @@ if (window.location.protocol == "https:") {
 
 var inbox = new ReconnectingWebSocket(SERVERSOCKET_RECEIVE);
 var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
+var rand = function() {
+    return Math.random().toString(18).substr(2); // remove `0.`
+};
 
+var token = function() {
+    return rand() + rand(); // to make it longer
+};
+var client_token = token();
+console.log(client_token);
 
   inbox.onopen = function(){
       console.log('inbox opened');
@@ -163,54 +172,24 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
 
   outbox.onopen = function(){
       console.log('outbox opened');
-      outbox.send(JSON.stringify({handler:'loadview',auction_id: auction_id }));
+      outbox.send(JSON.stringify({token:client_token,handler:'loadview',auction_id: auction_id }));
   };
 
   inbox.onmessage = function(message) {
     console.log(message);
     var data = JSON.parse(message.data);
-    if((data.auction_id && data.auction_id!=auction_id) || (data.user_id && data.user_id!='{{current_user.id}}'))
-      return;
+
     if(data.success=='true'){
       switch (data.handler) {
         case 'offer':
-          if(data.user_id =='{{current_user.id}}'){
+          if(data.token == client_token){
             $('#offer_count').html(ToPersian(formatCurrency(data.current_bids)));
           }
-          $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
-          $('#auction_current_winner').html(data.users[0][0].username);
-          $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
-          rowIndex = 0;
-          people([]);
-          $.each(data.users[0],function(key,val){
-            its_you = val.id == current_user_id ? true : false;
-            name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-            avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-            row = ++rowIndex;
-            person = new Person(name,avatar,its_you,ToPersian(row));
-            people.push(person);
-          })
-          people.valueHasMutated();
-          remained = (target_date - Date.now())/1000;
-          if( remained < 10){
-            target_date = new Date().getTime() + (11 * 1000);
-            time_limit = (11 * 1000);
-            getCountdown();
-          }
-          break;
-        case 'loadview':
-          if(auction_id!=data.auction_id){
-            return;
-          }
-           $.each(data.users[0],function(key,user){
-             if(user.id =='{{current_user.id}}'){
-               $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
-             }
-           });
-          $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
-          if(data.users[0][0]){
+          console.log("auction_id :"+auction_id);
+          if(data.auction_id == auction_id){
+            $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
             $('#auction_current_winner').html(data.users[0][0].username);
-            $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0])
+            $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
             rowIndex = 0;
             people([]);
             $.each(data.users[0],function(key,val){
@@ -220,26 +199,59 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
               row = ++rowIndex;
               person = new Person(name,avatar,its_you,ToPersian(row));
               people.push(person);
-            });
+            })
             people.valueHasMutated();
+            remained = (target_date - Date.now())/1000;
+            if( remained < 10){
+              target_date = Date.now() + (11 * 1000);
+              time_limit = (11 * 1000);
+            }
+          }
+          break;
+        case 'loadview':
+          if(data.auction_id && data.auction_id == auction_id){
+            console.log(data.users[0]);
+             $.each(data.users[0],function(key,user){
+               if(user.id =='{{current_user.id}}'){
+                 console.log(user.current_bids);
+                 if(user.current_bids)
+                  $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
+               }
+             });
+
+             $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+            if(data.users[0][0]){
+              $('#auction_current_winner').html(data.users[0][0].username);
+              $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0])
+              rowIndex = 0;
+              people([]);
+              $.each(data.users[0],function(key,val){
+                its_you = val.id == current_user_id ? true : false;
+                name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+                avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+                row = ++rowIndex;
+                person = new Person(name,avatar,its_you,ToPersian(row));
+                people.push(person);
+              });
+              people.valueHasMutated();
+            }
           }
           break;
 
         case 'auction_done':
-          if(data.user_id =='{{current_user.id}}'){
+          if(data.auction_id && data.auction_id == auction_id && data.token == client_token ){
             alert('حراجی این محصول به پایان رسیده است');
             $('#offer').html(data.winner[0].username);
           }
-
           break;
         default:
       }
     }
     else {
-      if(data.user_id =='{{current_user.id}}'){
+      if(data.token == client_token){
         alert(data.reason);
+        console.log(data.reason);
       }
-      console.log(data.reason);
     }
   };
 
@@ -288,16 +300,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   });
   images[0].active=true;
 
-  // var participants = data.participants
-  //
-  // rowIndex = 1;
-  // $.each(participants, function(key,val) {
-  //   its_you = val.id == current_user_id ? true : false;
-  //   name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-  //   avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-  //   person = new Person(name,avatar,its_you,ToPersian(rowIndex++));
-  //   people.push(person);
-  // });
   offer_bid_count = plan.max_offers ;
  var mvvm = function MyViewModel() {
       this.participant_count = participant_count;
@@ -371,7 +373,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
     // find the amount of "seconds" between now and target
     var current_date = new Date().getTime();
     var seconds_left = (target_date - current_date) / 1000;
-    console.log(time_limit);
 
     if ( seconds_left >= 0 ) {
 
@@ -409,7 +410,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
     else {
       alert('زمان حراجی به اتمام رسید');
       clearInterval(timer);
-      outbox.send(JSON.stringify({handler:'auction_done', auction_id: auction_id }));
+      outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
     }
   }
 
@@ -421,7 +422,14 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
 $("#offer").on("click", function(event) {
   event.preventDefault();
-  outbox.send(JSON.stringify({handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
+  outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
+});
+
+$(document).on('click','.addcart-link2',function(e) {
+  target_date = Date.now() + 10 * 1000;
+  time_limit = 10 * 1000;
+  console.log(target_date);
+  console.log(time_limit);
 });
 
 </script>

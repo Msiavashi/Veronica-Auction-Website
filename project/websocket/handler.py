@@ -16,9 +16,6 @@ from flask_login import LoginManager, UserMixin,login_required, login_user, logo
 @login_required
 def offer_bid(data):
     try:
-        # if(not current_user.is_authenticated):
-        #     return '{"success":"false","reason":"لطفا قبل از ارسال پیشنهاد به سایت وارد شوید"}'
-        #
         auction_id = data['auction_id']
         user_id = data['user_id']
         auction = Auction.query.get(auction_id)
@@ -31,19 +28,19 @@ def offer_bid(data):
         if(last_offer and last_offer.win):
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
-            return '{"success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
+            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
-        if(remained > 60):
-            return '{"success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد","user_id":"'+str(user_id)+'"}'
+        if(remained > 60 * 50):
+            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد","user_id":"'+str(user_id)+'"}'
 
 
-        user_plan = UserPlan.query.filter_by(user_id=user_id,auction_id=auction_id).first()
-        my_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
+        user_plan = UserPlan.query.filter_by(user_id=user_id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
+        my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
 
         if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
-            return '{"success":"false","reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید","user_id":"'+user_id+'"}'
+            return '{"auction_id":"'+ auction_id +'","token":"'+ data['token'] +'","success":"false","reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید","user_id":"'+user_id+'"}'
 
         offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
 
@@ -56,7 +53,7 @@ def offer_bid(data):
                 offer.total_price = auction.base_price + offer_count * (BASE_BID_PRICE * auction.ratio)
                 offer.current_bids = my_last_offer.current_bids - 1
             else:
-                return '{"success":"false","reason":"پیشنهادات شما به پایان رسید"}'
+                return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","reason":"پیشنهادات شما به پایان رسید"}'
         else:
             offer.total_price = auction.base_price + (BASE_BID_PRICE * auction.ratio)
             offer.current_bids = user_plan.auction_plan.max_offers - 1
@@ -72,7 +69,7 @@ def offer_bid(data):
         if(remained < 10):
             remained_time = 10 * 1000
 
-        return '{"handler":"offer","success":"true","current_bids":"'+str(offer.current_bids)+'","auction_id":"'+str(auction_id)+'","user_id":"'+str(user_id)+'","remained_time":'+str(remained_time)+',"total_price":'+str(offer.total_price)+',"users":'+json.dumps(user_schema.dump(users))+'}'
+        return '{"auction_id":"'+auction_id+'","handler":"offer","token": "'+data['token']+'","success":"true","current_bids":"'+str(offer.current_bids)+'","user_id":"'+str(user_id)+'","remained_time":'+str(remained_time)+',"total_price":'+str(offer.total_price)+',"users":'+json.dumps(user_schema.dump(users))+'}'
 
     except Exception as e:
         return "{'error':"+str(e)+"}"
@@ -91,9 +88,9 @@ def loadview(data):
 
         user_schema = UserSchema(many=True)
         if(last_offer):
-            return '{"success":"true","handler":"loadview","current_offer_price":"'+ str(last_offer.total_price) +'","auction_id":"'+str(auction_id)+'","users":'+json.dumps(user_schema.dump(users))+',"remained_time":'+str(remained_time)+'}'
+            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"loadview","current_offer_price":"'+ str(last_offer.total_price) +'","users":'+json.dumps(user_schema.dump(users))+',"remained_time":'+str(remained_time)+'}'
         else:
-            return '{"success":"true","handler":"loadview","current_offer_price":"0" ,"users":'+json.dumps(user_schema.dump(users))+', "remained_time":'+str(remained_time)+'}'
+            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"loadview","current_offer_price":"0" ,"users":'+json.dumps(user_schema.dump(users))+', "remained_time":'+str(remained_time)+'}'
 
     except Exception as e:
         return "{'error':"+str(e)+"}"
@@ -109,8 +106,8 @@ def auction_done(data):
             db.session.commit()
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
-            return '{"success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
+            return '{"token": "'+data['token']+'","success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
         else:
-            return '{"success":"false","handler":"auction_done" , "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"}'
+            return '{"token": "'+data['token']+'","success":"false","handler":"auction_done" , "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"}'
     except Exception as e:
         return "{'error':"+str(e)+"}"
