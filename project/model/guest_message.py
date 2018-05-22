@@ -17,7 +17,7 @@ class GuestMessage(Base):
 
     website = db.Column(db.String(256), nullable=True)
 
-    message = db.Column(db.String(1024), required=True)
+    message = db.Column(db.String(1024), nullable=False)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 

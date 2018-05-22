@@ -8,7 +8,7 @@ from flask import Flask , session
 from datetime import timedelta
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_jwt_extended import JWTManager
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, CSRFError
 # from flask_caching import Cache
 from flask_sockets import Sockets
 import redis
@@ -22,7 +22,7 @@ app.config.from_pyfile('config.py')
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)
-# csrf = CSRFProtect(app)
+csrf = CSRFProtect(app)
 
 sockets = Sockets(app)
 
@@ -36,6 +36,11 @@ from websocket import broker
 from .route import route
 from .controllers import *
 from flask_restful import Api
+
+
+# @app.errorhandler(CSRFError)
+# def handle_csrf_error(e):
+#     return render_template('csrf_error.html', reason=e.description), 400
 
 api = Api(app,'/api')
 

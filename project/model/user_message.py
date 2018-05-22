@@ -18,9 +18,9 @@ class UserMessage(Base):
 
     user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"))
 
-    message = db.Column(db.String(1024), required=True)
+    message = db.Column(db.String(1024), nullable=True)
 
-    title = db.Column(db.String(128), required=True)
+    title = db.Column(db.String(128), nullable=True)
 
     subject = db.Column(db.Enum(Subjects), default=Subjects.subject1, nullable=False)
 

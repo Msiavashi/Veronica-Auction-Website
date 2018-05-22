@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from flask_restful import Resource, reqparse
 from ..model import *
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash
@@ -7,7 +12,7 @@ from datetime import datetime
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 import os
-from model.guest_message import GuestMessage
+from ..model.guest_message import GuestMessage
 
 
 class SiteCategoryMenuItems(Resource):
@@ -89,5 +94,3 @@ class UserContactUs(Resource):
 
         flash("پیام با موفقیت ارسال شد")
         return redirect(url_for('index'))
-        
-        

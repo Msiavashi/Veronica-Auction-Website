@@ -30,22 +30,25 @@ class User(Base,UserMixin):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
-
+    alias_name = db.Column(db.BigInteger, nullable = True)
     invitor = db.Column(db.String(length=255))
 
     credit = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
 
     address_id = db.Column(db.BigInteger, db.ForeignKey('addresses.id'))
+    address = db.relationship('Address', uselist=False, back_populates='users')
 
     comments = db.relationship('Comment')
 
     address = db.relationship('Address')
 
+    avatar = db.Column(db.BigInteger, ) #avatar path
+
     user_plans = db.relationship('UserPlan')
 
     payments = db.relationship('Payment')
 
-    messages = db.relationship('Message')
+    messages = db.relationship('UserMessage')
 
     orders = db.relationship('Order')
 

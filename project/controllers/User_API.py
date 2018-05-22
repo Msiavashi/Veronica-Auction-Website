@@ -1,16 +1,22 @@
-from flask_restful import Resource, reqparse
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
+from flask_restful import Resource, reqparse, abort
 import os
 from ..model import *
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash
 import json
 from project import app
 from datetime import datetime
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.order import PaymentStatus
 from ..model.user_message import UserMessage
 import definitions 
 from werkzeug.utils import secure_filename
+
+
 
 
 class PaymentsInfo(Resource):
@@ -90,5 +96,47 @@ class UserContactUs(Resource):
 
         flash("پیام با موفقیت ارسال شد")
         return redirect(url_for('profile'))
+    
+    @login_required
+    def editInforamtion(self):
+        if not request.is_json:
+            return jsonify({"success": False, "msg": "no json input"}), 400
         
+        # json_data = request.get_json(force=True)
+        current_user.alias_name = request.form.get('alias_name')
+        current_user.first_name = request.form.get('first_name')
+        current_user.last_name = request.form.get('last_name')
+        current_user.work_place = request.form.get('work_place')
+        current_user.mobile = request.form.get('mobile')
+        current_user.email = request.form.get('email')
+
+        address = Address()
+        address.city = request.form.get('city')
+        address.address = request.form.get('address')
+        address.state = request.form.get('state')
+        address.postal_code = request.form.get('postal_code')
+        address.country = "iran"
+
+        db.session.add(address)
+        db.session.commit()
+
+        current_user.address = address
+        current_user.invitor = request.form.get('invitor_code')
+        current_user.avatar_index = request.form.get('avatar_index')
+
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+        repeat_password = request.form.get('repeat_password')
+
+        if sha256.hash(old_password) != current_user.password:
+            return jsonify({"msg": "پسوورد اشتباه است"}), 403
         
+        if new_password != repeat_password:
+            return jsonify({"msg": "رمز جدید با تکرار رمز همخوانی ندارد"}), 403
+        
+        current_user.password = new_password
+        db.session.add(current_user)
+        db.session.commit()
+        
+
+

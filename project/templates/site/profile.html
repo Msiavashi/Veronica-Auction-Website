@@ -153,9 +153,10 @@
 					<section id="content2" class="tab-content">
 						<h3>ویرایش اطلاعات</h3>
 						<form class="form-my-account">
-						<div class="row">
-							<div class="col-md-6 col-sm-6 col-ms-12">
-								<div class="check-billing">
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+							<div class="row">
+								<div class="col-md-6 col-sm-6 col-ms-12">
+									<div class="check-billing">
 
 										<p><input type="text" value="نام مستعار" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
 										<p class="clearfix box-col2">
@@ -435,7 +436,7 @@
 {% block scripts %}
 {{ super() }}
 <script>
-$.getJSON("{{url_for('dashboard')}}", function(data){
+$.getJSON("{{url_for(odashboard')}}", function(data){
 	function dashboardViewModel(){
 		self = this;
 		self.userInfo = ko.observable();
