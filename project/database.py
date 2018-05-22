@@ -14,14 +14,16 @@ def init_db():
     db.create_all()
 
 # print "initing..."
-# init_db()
+#init_db()
 # print "done"
 
 def migrate():
     migrate = Migrate(app, db)
     manager = Manager(app)
     manager.add_command('db', MigrateCommand)
+    from . import model
+    manager.run()
 
 # print "migrating ... "
-# migrate()
+#migrate()
 # print "migration done..!"

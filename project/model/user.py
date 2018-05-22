@@ -45,7 +45,7 @@ class User(Base,UserMixin):
 
     payments = db.relationship('Payment')
 
-    messages = db.relationship('Message')
+    messages = db.relationship('UserMessage')
 
     orders = db.relationship('Order')
 
@@ -106,6 +106,7 @@ class UserSchema(Schema):
     credit = fields.Str()
     address_id = fields.Int()
     avatar = fields.Str()
+    current_bids = fields.Str()
 
     comments = fields.Nested('CommentSchema', many=True,exclude=('user',))
     payments = fields.Nested('PaymentSchema', many=True,exclude=('users',))

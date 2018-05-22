@@ -54,6 +54,7 @@ class AuctionSchema(Schema):
     max_price = fields.Int()
     max_members = fields.Int()
     ratio = fields.Int()
+    remained_time = fields.Str()
 
     item = fields.Nested('ItemSchema')
     participants = fields.Nested('UserSchema',many=True,exclude=('auctions',))

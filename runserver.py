@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 from project import app
-from project.database import init_db
+from project.database import *
 from project.admin import admin
 import definitions
 

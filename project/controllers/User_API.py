@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from flask_restful import Resource, reqparse
 import os
 from ..model import *
@@ -7,7 +12,6 @@ from project import app
 from datetime import datetime
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
-from ..model.order import PaymentStatus
 from ..model.user_message import UserMessage
 import definitions
 from werkzeug.utils import secure_filename

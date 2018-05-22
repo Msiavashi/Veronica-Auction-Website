@@ -21,8 +21,8 @@
 									<td class="product-name">
 										<ul id="shipping_method" class="list-none">
 											<li>
-												<input type="radio" data-bind="attr:{id : title } ,click : applyPrice(id,price) " name="plan">
-												<label data-bind="text: title,attr:{for: title}"></label>
+												<input type="radio" data-bind="attr:{id : plan.title } ,click : applyPrice(id,price),test" name="plan">
+												<label data-bind="text: plan.title,attr:{for: plan.title}"></label>
 											</li>
 										</ul>
 									</td>
@@ -33,33 +33,42 @@
 								<!-- ko text: triggerSelect() -->
 								<!-- /ko -->
 							</tbody>
+
 							<tfoot>
 								<tr class="cart-subtotal">
 									<th>هزینه بسته انتخابی</th>
 									<td><strong class="amount"><span id="selected_plan_price"></span>تومان</strong></td>
 								</tr>
+
+								<tr class="order-total">
+									<th>موجودی حساب شما</th>
+									<td><strong><span class="amount"><span data-bind="text:ToPersian(formatCurrency(credit))"></span> تومان </span></strong> </td>
+								</tr>
+
 								<tr class="cart-subtotal">
 									<th class="text-orange">کسر موجودی</th>
-									<td><strong class="amount text-orange">۰</strong></td>
+									<td><strong class="amount text-orange" id="credit_fraction">۰</strong></td>
 								</tr>
+
 								<tr class="order-total">
 									<th>مبلغ پرداختی نهایی</th>
 									<td><strong><span class="amount"><span id="total_plan_price"></span> تومان </span></strong> </td>
 								</tr>
+
 							</tfoot>
 						</table>
 					</div>
 					<div class="woocommerce-checkout-payment" id="payment">
-						<ul class="payment_methods methods list-none">
-							<li class="payment_method_bacs">
-								<input type="radio" data-order_button_text="" value="bacs" name="payment_method" class="input-radio" id="payment_method_bacs" checked="checked">
-								<label for="payment_method_bacs">پرداخت از بانک</label>
-							</li>
+
+						<ul class="payment_methods methods list-none" data-bind="foreach:payment_methods">
 							<li class="payment_method_cheque">
-								<input type="radio" data-order_button_text="" value="cheque" name="payment_method" class="input-radio" id="payment_method_cheque">
-								<label for="payment_method_cheque"> پرداخت از موجودی حساب  (<span data-bind="text:ToPersian(formatCurrency(credit))"></span>) </label>
+								<input type="radio" data-order_button_text="" data-bind="click : select_method(id)" name="method" class="input-radio">
+								<label data-bind="text: title,attr:{for: title}">(<span data-bind="text:ToPersian(formatCurrency(credit))"></span>) </label>
 							</li>
+							<!-- ko text: triggerSelect() -->
+							<!-- /ko -->
 						</ul>
+
 						<div class="form-row place-order">
 							<input type="submit" value="تایید پرداختی" id="place_order" name="woocommerce_checkout_place_order" class="button alt">
 						</div>
@@ -74,50 +83,72 @@
 {{ super() }}
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script>
-var plan_id = 0;
 var auction_id = $('#auction_id').val();
-var method_id = 0;
-var total_price = 0;
-
-function applyPrice(id,price){
-	$('#selected_plan_price').html(ToPersian(formatCurrency(price)));
-	$('#total_plan_price').html(ToPersian(formatCurrency(price)));
-	plan_id = id;
-	total_price = price;
-}
+var plan_id = ko.observable();
+var payment_method_id = ko.observable();
+var payment_methods = ko.observableArray([]);
+var plans = ko.observableArray([]);
+var price = ko.observable();
+var amount = ko.observable();
 
 function MyViewModel() {
-	var self = this;
-	var plans = []
+	self = this;
+	self.plan_id = ko.observable();
+	self.payment_method_id = ko.observable();
+	self.payment_methods = ko.observableArray([]);
 	self.plans = ko.observableArray([]);
-	self.credit = {{current_user.credit}};
-	$.getJSON( "/api/auction/get/plans/"+auction_id, function( data ) {
-		$.each(data[0],function(key,val) {
-			p = { id : val.id , title : val.plan.title , price : val.price , max_offers : val.max_offers };
-			plans.push(p);
-		})
-		self.plans(plans);
-	});
+	self.price = ko.observable();
+	self.amount = ko.observable();
+	self.credit = '{{current_user.credit}}';
 }
-ko.applyBindings(new MyViewModel());
+var avm = new MyViewModel();
+ko.applyBindings(avm);
+
+$.getJSON( "/api/auction/get/plans/"+auction_id, function( data ) {
+		console.log(data);
+		avm.plans(data.plans[0]);
+		avm.payment_methods(data.methods[0])
+	});
+
+function applyPrice(id,selected_price){
+	$('#selected_plan_price').html(ToPersian(formatCurrency(selected_price)));
+	total_price = selected_price - avm.credit;
+	if(total_price < 0){
+		$('#total_plan_price').html(ToPersian(formatCurrency(0)));
+	}
+	else {
+		$('#total_plan_price').html(ToPersian(formatCurrency(selected_price - avm.credit)));
+	}
+	$('#credit_fraction').html(ToPersian(formatCurrency(avm.credit - selected_price)));
+
+	plan_id = id;
+	price = selected_price;
+}
+
+function select_method(method_id) {
+	payment_method_id = method_id;
+}
 
 function triggerSelect() {
 	$("input:radio[name=plan]:first").click();
+	$("input:radio[name=method]:first").click();
 }
 
 $('#place_order').on('click',function(){
 
-	if (total_price > {{current_user.credit}} && $("#payment_method_cheque").is(':checked') ){
+	if (amount > avm.credit && $("#payment_method_cheque").is(':checked') ){
 		alert('مبلغ حساب شما برای پرداخت کافی نمیباشد. لطفا حساب خود را شارژ کنید');
 		return;
 	}
+
 	$.ajax({
     url: "{{url_for('auctionuserparticipation')}}",
     type: 'post',
     data: {
 				plan_id:plan_id,
-				auction_id:$('#auction_id').val(),
-				method_id:method_id
+				auction_id:auction_id,
+				method_id:payment_method_id,
+				amount:price
     },
     dataType: 'application/json',
     success: function (data) {

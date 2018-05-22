@@ -5,7 +5,7 @@
 
 
 class Config:
-    database
+    engine = "postgres"
     port = "5432"
     host_name = "localhost"
     db_name = "bidbazi_db"

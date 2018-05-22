@@ -90,10 +90,10 @@
                   <div class="countdown-label" data-bind="text:now_date"></div>
                 </div>
 
-                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count"></div></a>
+                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count" data-bind="text:ToPersian(offer_bid_count)"></div></a>
 
               </div>
-              <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span>
+              <div class="detail-countdowns"><span data-bind="text : before_start"></span>
                 <span data-bind="text:auction_end_date"></span>
                 <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
               </div>
@@ -128,9 +128,12 @@
 var auction_id = $('#auction').val();
 var images_path = '../../static/images/products/';
 var avatar_path = '../../static/images/avatars/';
-var auction_deadline = null;
+var auction_deadline = 0;
 var people = ko.observableArray([]);
 var target_date = ko.observable();
+var time_limit = ko.observable();
+var offer_bid_count = ko.observable();
+var before_start_text = ko.observable();
 
 var current_user_id = '{{current_user.id}}';
 
@@ -166,10 +169,14 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
   inbox.onmessage = function(message) {
     console.log(message);
     var data = JSON.parse(message.data);
+    if((data.auction_id && data.auction_id!=auction_id) || (data.user_id && data.user_id!='{{current_user.id}}'))
+      return;
     if(data.success=='true'){
       switch (data.handler) {
         case 'offer':
-          $('#offer_count').html(ToPersian(data.total_bids));
+          if(data.user_id =='{{current_user.id}}'){
+            $('#offer_count').html(ToPersian(formatCurrency(data.current_bids)));
+          }
           $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
           $('#auction_current_winner').html(data.users[0][0].username);
           $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
@@ -184,15 +191,22 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
             people.push(person);
           })
           people.valueHasMutated();
-          remained = target_date - Date.now();
-          console.log(remained);
+          remained = (target_date - Date.now())/1000;
           if( remained < 10){
-                target_date += (10 * 1000);
+            target_date = new Date().getTime() + (11 * 1000);
+            time_limit = (11 * 1000);
+            getCountdown();
           }
           break;
         case 'loadview':
-
-          $('#offer_count').html(ToPersian(data.total_bids));
+          if(auction_id!=data.auction_id){
+            return;
+          }
+           $.each(data.users[0],function(key,user){
+             if(user.id =='{{current_user.id}}'){
+               $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
+             }
+           });
           $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
           if(data.users[0][0]){
             $('#auction_current_winner').html(data.users[0][0].username);
@@ -212,13 +226,20 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
           break;
 
         case 'auction_done':
-          alert('برنده حراجی :'+ data.winner[0].username);
+          if(data.user_id =='{{current_user.id}}'){
+            alert('حراجی این محصول به پایان رسیده است');
+            $('#offer').html(data.winner[0].username);
+          }
+
           break;
         default:
       }
     }
     else {
-      alert(data.reason)
+      if(data.user_id =='{{current_user.id}}'){
+        alert(data.reason);
+      }
+      console.log(data.reason);
     }
   };
 
@@ -233,12 +254,14 @@ var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
   };
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
+  console.log(data);
   product = data.product[0]
+  plan = data.plan[0]
   data = data.auction[0]
 
   var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
-  auction_deadline = new Date(deadline);
-
+  auction_deadline= parseInt(data.remained_time)
+  before_start_text = "تاریخ شروع حراجی : ";
   var event = new Date(Date.parse(deadline));
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
   var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
@@ -275,8 +298,8 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   //   person = new Person(name,avatar,its_you,ToPersian(rowIndex++));
   //   people.push(person);
   // });
-
-  function MyViewModel() {
+  offer_bid_count = plan.max_offers ;
+ var mvvm = function MyViewModel() {
       this.participant_count = participant_count;
       this.max_members = max_members;
       this.images = images;
@@ -290,8 +313,9 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
       this.auction_end_date = end_date_date;
       this.auction_end_time = end_date_time;
       this.now_date = now_date_date;
+      this.before_start = before_start_text;
   }
-  ko.applyBindings(new MyViewModel());
+  ko.applyBindings(mvvm);
 
   if($('.detail-gallery').length>0){
     $('.detail-gallery').each(function(){
@@ -324,7 +348,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   console.log(today);
   console.log(auction_deadline);
 
-  var milliseconds = auction_deadline - today;
+  var milliseconds = auction_deadline;
   console.log(milliseconds);
 
   if (milliseconds < 0){

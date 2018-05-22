@@ -20,28 +20,30 @@ def offer_bid(data):
         #     return '{"success":"false","reason":"لطفا قبل از ارسال پیشنهاد به سایت وارد شوید"}'
         #
         auction_id = data['auction_id']
+        user_id = data['user_id']
         auction = Auction.query.get(auction_id)
+        user = User.query.get(user_id)
 
         # check for one minutes remained for starting auction
-        now = datetime.now()
-        remained = (auction.start_date - now).seconds
-        if(remained > 60):
-            return '{"success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"}'
 
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
+
         if(last_offer and last_offer.win):
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
             return '{"success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
 
-        user_id = data['user_id']
-        user = User.query.get(user_id)
+        now = datetime.now()
+        remained = (auction.start_date - now).seconds
+        if(remained > 60):
+            return '{"success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد","user_id":"'+str(user_id)+'"}'
+
 
         user_plan = UserPlan.query.filter_by(user_id=user_id,auction_id=auction_id).first()
         my_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
 
-        if(last_offer and my_last_offer and my_last_offer.total_price==last_offer.total_price):
-            return '{"success":"false","reason":"آخرین پیشنهاد دهنده خود شما هستید"}'
+        if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
+            return '{"success":"false","reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید","user_id":"'+user_id+'"}'
 
         offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
 
@@ -59,13 +61,18 @@ def offer_bid(data):
             offer.total_price = auction.base_price + (BASE_BID_PRICE * auction.ratio)
             offer.current_bids = user_plan.auction_plan.max_offers - 1
 
+
         db.session.add(offer)
         db.session.commit()
 
-        all_bids = Offer.query.filter_by(auction_id=auction.id).count()
         users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
         user_schema = UserSchema(many=True)
-        return '{"handler":"offer","success":"true","total_price":'+str(offer.total_price)+',"users":'+json.dumps(user_schema.dump(users))+',"total_bids":'+str(all_bids)+'}'
+        remained = (auction.start_date - now).seconds
+        remained_time = (auction.start_date - datetime.now()).seconds * 1000
+        if(remained < 10):
+            remained_time = 10 * 1000
+
+        return '{"handler":"offer","success":"true","current_bids":"'+str(offer.current_bids)+'","auction_id":"'+str(auction_id)+'","user_id":"'+str(user_id)+'","remained_time":'+str(remained_time)+',"total_price":'+str(offer.total_price)+',"users":'+json.dumps(user_schema.dump(users))+'}'
 
     except Exception as e:
         return "{'error':"+str(e)+"}"
@@ -73,14 +80,20 @@ def offer_bid(data):
 def loadview(data):
     try:
         auction_id = data['auction_id']
-        total_bids = Offer.query.filter_by(auction_id=auction_id).count()
+        auction = Auction.query.get(auction_id)
+        remained_time = (auction.start_date - datetime.now()).seconds * 1000
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
         users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
+        for user in users:
+            user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
+            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
+            user.current_bids = user_last_offer.current_bids
+
         user_schema = UserSchema(many=True)
         if(last_offer):
-            return '{"success":"true","handler":"loadview","total_bids": "'+ str(total_bids) +'","current_offer_price":"'+ str(last_offer.total_price) +'" ,"users":'+json.dumps(user_schema.dump(users))+'}'
+            return '{"success":"true","handler":"loadview","current_offer_price":"'+ str(last_offer.total_price) +'","auction_id":"'+str(auction_id)+'","users":'+json.dumps(user_schema.dump(users))+',"remained_time":'+str(remained_time)+'}'
         else:
-            return '{"success":"true","handler":"loadview","total_bids": "0","current_offer_price":"0" ,"users":'+json.dumps(user_schema.dump(users))+'}'
+            return '{"success":"true","handler":"loadview","current_offer_price":"0" ,"users":'+json.dumps(user_schema.dump(users))+', "remained_time":'+str(remained_time)+'}'
 
     except Exception as e:
         return "{'error':"+str(e)+"}"

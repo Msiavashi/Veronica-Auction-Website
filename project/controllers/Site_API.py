@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 from flask_restful import Resource, reqparse
 from ..model import *
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash
@@ -7,7 +12,6 @@ from datetime import datetime
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 import os
-from model.guest_message import GuestMessage
 
 
 class SiteCategoryMenuItems(Resource):
@@ -43,8 +47,29 @@ class SiteTodayEvents(Resource):
 
 class SiteTodayAuctions(Resource):
     def get(self):
-        today = datetime.today()
-        auctions = Auction.query.filter(Auction.start_date <= today ,Auction.end_date >= today).all()
+        # This should find all the events in June, 2012.
+        # import datetime
+        # import calendar
+        #
+        # year = 2012
+        # month = 6
+        #
+        # num_days = calendar.monthrange(year, month)[1]
+        # start_date = datetime.date(year, month, 1)
+        # end_date = datetime.date(year, month, num_days)
+        #
+        # results = session.query(Event).filter(
+        # and_(Event.date >= start_date, Event.date <= end_date)).all()
+
+
+        results = db.session.query(Auction).all()
+        auctions=[]
+        for auction in results:
+            now = datetime.now()
+            remained = (auction.start_date - now).days
+            if(remained==0):
+                auctions.append(auction)
+
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
@@ -75,7 +100,7 @@ class UserContactUs(Resource):
             filename.rsplit('.', 1)[1].lower() in definitions.ALLOWED_EXTENTIONS
 
     @login_required
-    def post(self): 
+    def post(self):
 
         new_message = GuestMessage()
 
@@ -89,5 +114,3 @@ class UserContactUs(Resource):
 
         flash("پیام با موفقیت ارسال شد")
         return redirect(url_for('index'))
-        
-        
