@@ -54,6 +54,9 @@ def offer_bid(data):
                 offer.current_bids = my_last_offer.current_bids - 1
             else:
                 return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","reason":"پیشنهادات شما به پایان رسید"}'
+        elif(last_offer):
+            offer.total_price = last_offer.total_price + (BASE_BID_PRICE * auction.ratio)
+            offer.current_bids = user_plan.auction_plan.max_offers - 1
         else:
             offer.total_price = auction.base_price + (BASE_BID_PRICE * auction.ratio)
             offer.current_bids = user_plan.auction_plan.max_offers - 1

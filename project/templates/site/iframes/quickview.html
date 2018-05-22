@@ -202,10 +202,12 @@ console.log(client_token);
             })
             people.valueHasMutated();
             remained = (target_date - Date.now())/1000;
+
             if( remained < 10){
               target_date = Date.now() + (11 * 1000);
               time_limit = (11 * 1000);
             }
+
           }
           break;
         case 'loadview':
@@ -347,9 +349,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   }
 
   today = new Date();
-  console.log(today);
-  console.log(auction_deadline);
-
   var milliseconds = auction_deadline;
   console.log(milliseconds);
 
@@ -358,8 +357,8 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
     return;
   }
 
-  target_date = new Date().getTime() + milliseconds; // set the countdown date
-  time_limit = milliseconds;
+  target_date = new Date().getTime() + milliseconds + 10 *1000; // set the countdown date
+  time_limit = milliseconds + 10 * 1000;
 
   var days, hours, minutes, seconds; // variables for time units
 
@@ -371,8 +370,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
   function getCountdown(){
     // find the amount of "seconds" between now and target
-    var current_date = new Date().getTime();
-    var seconds_left = (target_date - current_date) / 1000;
+    seconds_left = (target_date - Date.now())/1000;
 
     if ( seconds_left >= 0 ) {
 
