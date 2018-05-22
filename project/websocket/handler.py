@@ -10,7 +10,7 @@ from definitions import BASE_BID_PRICE
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 import json
 from project import app
-from datetime import datetime
+from datetime import datetime , timedelta
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 
 @login_required
@@ -34,7 +34,9 @@ def offer_bid(data):
         remained = (auction.start_date - now).seconds
         if(remained > 60):
             return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد","user_id":"'+str(user_id)+'"}'
-
+        if(remained < 10):
+            auction.start_date = now + timedelta(seconds=10)
+            db.session.add(auction)
 
         user_plan = UserPlan.query.filter_by(user_id=user_id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
         my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
@@ -66,6 +68,12 @@ def offer_bid(data):
         db.session.commit()
 
         users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
+        for user in users:
+            user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
+            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
+            user.current_bids = user_last_offer.current_bids
+            user.current_offer_price = user_last_offer.total_price
+
         user_schema = UserSchema(many=True)
         remained = (auction.start_date - now).seconds
         remained_time = (auction.start_date - datetime.now()).seconds * 1000
@@ -88,6 +96,7 @@ def loadview(data):
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
             user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
             user.current_bids = user_last_offer.current_bids
+            user.current_offer_price = user_last_offer.total_price
 
         user_schema = UserSchema(many=True)
         if(last_offer):

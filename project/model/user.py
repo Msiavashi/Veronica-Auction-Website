@@ -107,6 +107,7 @@ class UserSchema(Schema):
     address_id = fields.Int()
     avatar = fields.Str()
     current_bids = fields.Str()
+    current_offer_price = fields.Str()
 
     comments = fields.Nested('CommentSchema', many=True,exclude=('user',))
     payments = fields.Nested('PaymentSchema', many=True,exclude=('users',))

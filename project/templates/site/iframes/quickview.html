@@ -133,11 +133,8 @@ var images_path = '../../static/images/products/';
 var avatar_path = '../../static/images/avatars/';
 var auction_deadline = 0;
 var people = ko.observableArray([]);
-var target_date = ko.observable();
-var time_limit = ko.observable();
 var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
-
 var current_user_id = '{{current_user.id}}';
 
 
@@ -181,14 +178,14 @@ console.log(client_token);
   inbox.onmessage = function(message) {
     console.log(message);
     var data = JSON.parse(message.data);
-
     if(data.success=='true'){
       switch (data.handler) {
+
         case 'offer':
           if(data.token == client_token){
             $('#offer_count').html(ToPersian(formatCurrency(data.current_bids)));
           }
-          console.log("auction_id :"+auction_id);
+
           if(data.auction_id == auction_id){
             $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
             $('#auction_current_winner').html(data.users[0][0].username);
@@ -205,12 +202,9 @@ console.log(client_token);
             })
             people.valueHasMutated();
             remained = (target_date - Date.now())/1000;
-
             if( remained < 10){
-              target_date = Date.now() + (11 * 1000);
-              time_limit = (11 * 1000);
+              resetTimer();
             }
-
           }
           break;
         case 'loadview':
@@ -242,7 +236,6 @@ console.log(client_token);
             }
           }
           break;
-
         case 'auction_done':
           if(data.auction_id && data.auction_id == auction_id){
             alert('حراجی این محصول به پایان رسیده است');
@@ -303,6 +296,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
       images.push({url:images_path+val.trim(),active:false});
     });
   });
+
   images[0].active=true;
   if(plan){
     offer_bid_count = plan.max_offers ;
@@ -310,6 +304,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   else {
     offer_bid_count = 0;
   }
+
  var mvvm = function MyViewModel() {
       this.participant_count = participant_count;
       this.max_members = max_members;
@@ -356,86 +351,93 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   }
 
   today = new Date();
+
   var milliseconds = auction_deadline;
   console.log(milliseconds);
 
   if (milliseconds < 0){
     alert('حراجی به اتمام رسیده است');
-    return;
   }
 
-  target_date = new Date().getTime() + milliseconds + 10 *1000; // set the countdown date
-  time_limit = milliseconds + 10 * 1000;
+  target_date = new Date().getTime() + milliseconds ; // set the countdown date
+  time_limit = milliseconds ;
 
   var days, hours, minutes, seconds; // variables for time units
 
-  var countdown = document.getElementById("tiles"); // get tag element
-
-  getCountdown();
-
-  var timer = setInterval(function () { getCountdown(); }, 1000);
-
-  function getCountdown(){
-    // find the amount of "seconds" between now and target
-    seconds_left = (target_date - Date.now())/1000;
-
-    if ( seconds_left >= 0 ) {
-
-     if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
-     {
-       $( '#tiles' ).removeClass('color-full');
-       $( '#tiles' ).addClass('color-half');
-     }
-     else {
-       $( '#tiles' ).addClass('color-full');
-       $( '#tiles' ).removeClass('color-half');
-     }
-
-     if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
-      {
-        $( '#tiles' ).removeClass('color-half');
-        $( '#tiles' ).addClass('color-empty');
-      }else {
-        $( '#tiles' ).addClass('color-half');
-        $( '#tiles' ).removeClass('color-empty');
-      }
-
-    days = pad( parseInt(seconds_left / 86400) );
-    seconds_left = seconds_left % 86400;
-
-    hours = pad( parseInt(seconds_left / 3600) );
-    seconds_left = seconds_left % 3600;
-
-    minutes = pad( parseInt(seconds_left / 60) );
-    seconds = pad( parseInt( seconds_left % 60 ) );
-
-    // format countdown string + set tag value
-    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-    }
-    else {
-      alert('زمان حراجی به اتمام رسید');
-      clearInterval(timer);
-      outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
-    }
-  }
-
-  function pad(n) {
-    return (n < 10 ? '0' : '') + n;
-  }
+  getCountdown(target_date);
 
 });
+
+var countdown = document.getElementById("tiles"); // get tag element
+
+var timer = setInterval(function () { getCountdown(target_date); }, 1000);
+
+function getCountdown(target_date){
+  // find the amount of "seconds" between now and target
+  seconds_left = (target_date - Date.now())/1000;
+
+  if ( seconds_left >= 0 ) {
+
+   if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
+   {
+     $( '#tiles' ).removeClass('color-full');
+     $( '#tiles' ).addClass('color-half');
+   }
+   else {
+     $( '#tiles' ).addClass('color-full');
+     $( '#tiles' ).removeClass('color-half');
+   }
+
+   if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
+    {
+      $( '#tiles' ).removeClass('color-half');
+      $( '#tiles' ).addClass('color-empty');
+    }else {
+      $( '#tiles' ).addClass('color-half');
+      $( '#tiles' ).removeClass('color-empty');
+    }
+
+  days = pad( parseInt(seconds_left / 86400) );
+  seconds_left = seconds_left % 86400;
+
+  hours = pad( parseInt(seconds_left / 3600) );
+  seconds_left = seconds_left % 3600;
+
+  minutes = pad( parseInt(seconds_left / 60) );
+  seconds = pad( parseInt( seconds_left % 60 ) );
+
+  // format countdown string + set tag value
+  countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+  }
+  else {
+    alert('زمان حراجی به اتمام رسید');
+    clearInterval(timer);
+    outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
+  }
+}
+
+function pad(n) {
+  return (n < 10 ? '0' : '') + n;
+}
+
 
 $("#offer").on("click", function(event) {
   event.preventDefault();
   outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
 });
 
-$(document).on('click','.addcart-link2',function(e) {
-  target_date = Date.now() + 10 * 1000;
-  time_limit = 10 * 1000;
-  console.log(target_date);
-  console.log(time_limit);
+$("#add_to_bag").on("click", function(event) {
+  resetTimer();
 });
+
+function resetTimer() {
+  target_date = Date.now() + (10 * 1000);
+  time_limit = (10 * 1000);
+  clearInterval(timer);
+  timer = setInterval(function () { getCountdown(target_date); }, 1000);
+  getCountdown(target_date);
+}
+
 
 </script>
 
