@@ -1,10 +1,11 @@
 {% extends 'site/layout.html' %}
 {% block title %} بیدبازی | درباره ما {% endblock %}
 {% block content %}
+<input type="hidden" id="auction" value="{{auction_id}}">
 <div class="content-page">
 	<div class="container">
 		<div class="bread-crumb radius">
-			<a href="#">خانه</a> <span>نام محصول</span>
+			<a href="#">خانه</a> <span data-bind="text: auction.item.title">نام محصول</span>
 		</div>
 		<!-- End Bread Crumb -->
 		<div class="row">
@@ -15,23 +16,18 @@
 						<div class="row">
 							<div class="col-md-4 col-sm-12 col-xs-12">
 								<div class="product-extra-link2 rightList">
-									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times"></i>ضریب ۴</a>
-									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i>۲۲ از ۴۰</a>
-								</div>
+									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times" data-bind="text:auction_rate">ضریب</i></a>
+			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span  data-bind="text: participant_count"></span> از <span data-bind="text: max_members"></span></a>
+			          </div>
 								<div class="detail-gallery">
 									<div class="mid">
-										<img src="images/photos/homeware/3.jpg" alt=""/>
+										<img data-bind="attr:{src: active_image}" alt=""/>
 									</div>
 									<div class="gallery-control">
 										<a href="#" class="prev"><i class="fa fa-angle-left"></i></a>
 										<div class="carousel">
-											<ul>
-												<li><a href="#" class="active"><img src="images/photos/homeware/3.jpg" alt=""/></a></li>
-												<li><a href="#"><img src="images/photos/homeware/2.jpg" alt=""/></a></li>
-												<li><a href="#"><img src="images/photos/homeware/1.jpg" alt=""/></a></li>
-												<li><a href="#"><img src="images/photos/homeware/2.jpg" alt=""/></a></li>
-												<li><a href="#"><img src="images/photos/homeware/3.jpg" alt=""/></a></li>
-												<li><a href="#"><img src="images/photos/homeware/1.jpg" alt=""/></a></li>
+											<ul data-bind="foreach: images">
+												<li><a href="#"><img data-bind="attr:{src: url}" alt=""/></a></li>
 											</ul>
 										</div>
 										<a href="#" class="next"><i class="fa fa-angle-right"></i></a>
@@ -65,21 +61,25 @@
 							</div>
 							<div class="col-md-8 col-sm-12 col-xs-12">
 								<div class="detail-info">
-									<h2 class="title-detail">نام محصول حراجی شده</h2>
+									<h2 class="title-detail" data-bind="text: auction.title + ' '+auction.item.title"></h2>
 									<div class="product-price">
 										<!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
 										<div class="textboX">
-											<div class="textboXX"><p>قیمت محصول : ۶،۷۰۰،۰۰۰ تومان</p></div>
+											<div class="textboXX"><p id="auction_item_price"> قیمت محصول : <span data-bind="text:ToPersian(formatCurrency(auction.item.price))"></span> تومان <div> &nbsp  </div></p></div>
 											<div class="upArrow"></div>
 										</div>
 										<div class="textboX">
-											<div class="textboXX"><p>شروع حراجی : ۱،۳۰۰،۰۰۰ تومان</p></div>
+											<div class="textboXX">
+												<p id="auction_register_price">شروع حراجی : <span data-bind="text: ToPersian(formatCurrency(auction.base_price))"></span> تومان
+												<div>  سقف حراجی : <span data-bind="text: ToPersian(formatCurrency(auction.max_price))"></span> تومان </p></div>
+											</div>
 											<div class="upArrow"></div>
 										</div>
 									</div>
 									<div class="detail-extralink">
-										<div class="list-member-bid">
-											<p class="item-Bid"><img src="images/theme/005.png"/><br class="resWd"/>احسان امینی<span>۱</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+										<div class="list-member-bid" data-bind="foreach: people">
+											<p class="item-Bid" data-bind="css: { 'YOU' : its_me  }"><img data-bind="attr:{src: avatar}"/><br class="resWd"/><span data-bind="text:name"></span><span data-bind="text:row"></span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+											<!-- <p class="item-Bid"><img src="images/theme/005.png"/><br class="resWd"/>احسان امینی<span>۱</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
 											<p class="item-Bid"><img src="images/theme/004.png"/><br class="resWd"/>امیرحسین امینی<span>۲</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
 											<p class="item-Bid"><img src="images/theme/005.png"/><br class="resWd"/>پوریا نصیری پور<span>۳</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
 											<p class="item-Bid"><img src="images/theme/005.png"/><br class="resWd"/>امید ابراهیمی<span>۴</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
@@ -87,25 +87,27 @@
 											<p class="item-Bid YOU"><img src="images/theme/005.png"/><br class="resWd"/>سید حسین حسینی<span>۶</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
 											<p class="item-Bid"><img src="images/theme/004.png"/><br class="resWd"/>سید مهدی رحمتی<span>۷</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
 											<p class="item-Bid"><img src="images/theme/005.png"/><br class="resWd"/>روزبه چشمی<span>۸</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
-											<p class="item-Bid"><img src="images/theme/004.png"/><br class="resWd"/>فرمانده<span>۹</span><b>۱،۵۶۷،۰۰۰ تومان</b></p>
+											<p class="item-Bid"><img src="images/theme/004.png"/><br class="resWd"/>فرمانده<span>۹</span><b>۱،۵۶۷،۰۰۰ تومان</b></p> -->
 										</div>
 										<div class="product-extra-link2 resWi">
 											<div class="last-Bid-user">
-												<p class="img-price-Bid"><img src="images/theme/005.png"/></p>
-												<p class="price-Bid">۱،۳۴۲،۰۰۰ تومان</p>
-												<p class="name-price-Bid">احسان امینی</p>
+												<p class="img-price-Bid"><img id="auction_current_winner_image"/></p>
+												<p class="price-Bid"><span id="auction_current_offer"></span> تومان</p>
+												<p class="name-price-Bid" id="auction_current_winner"></p>
 											</div>
 											<input type="hidden" id="set-time" value="1"/>
 											<div id="countdown">
 												<div id='tiles' class="color-full"></div>
-												<div class="countdown-label">دو شنبه ۱۳ فروردین ساعت ۱۴</div>
+												<div class="countdown-label" data-bind="text:now_date"></div>
 											</div>
-											<a class="addcart-link" href="#">پیشنهاد <div class="detail-qty border radius">۱۲۲</div></a>
+
+											<a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count" data-bind="text:ToPersian(offer_bid_count)"></div></a>
+
 										</div>
-										<div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span>
-												سه شنبه ۷فروردین ۱۳۹۷
-											<i aria-hidden="true" class="fa fa-clock-o"></i> ساعت: ۲۰:۲۵:۱۲
-										</div>
+										<div class="detail-countdowns"><span data-bind="text : before_start"></span>
+			                <span data-bind="text:auction_end_date"></span>
+			                <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
+			              </div>
 									</div>
 									<div class="detail-extralink mt-0">
 										<div class="product-extra-link2">
@@ -139,9 +141,6 @@
 											<p class="desc"> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد. </p>
 											<ul>
 												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
 											</ul>
 										</div>
 									</div>
@@ -153,9 +152,6 @@
 										<div class="detail-tab-info">
 											<p class="desc"> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد. </p>
 											<ul>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
 												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
 											</ul>
 										</div>
@@ -177,51 +173,7 @@
 									</div>
 								</div>
 							</div>
-							<div id="hoz4" class="tab-pane">
-								<div class="hoz-tab-content">
-									<div class="content-detail-tab">
-										<div class="detail-tab-info">
-											<p class="desc"> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد. </p>
-											<ul>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-											</ul>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div id="hoz5" class="tab-pane">
-								<div class="hoz-tab-content">
-									<div class="content-detail-tab">
-										<div class="detail-tab-info">
-											<p class="desc"> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد. </p>
-											<ul>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-											</ul>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div id="hoz6" class="tab-pane">
-								<div class="hoz-tab-content">
-									<div class="content-detail-tab">
-										<div class="detail-tab-info">
-											<p class="desc"> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بیدبازی مبلغ پرداخت شده شما را بازپرداخت خواهد کرد. </p>
-											<ul>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بیدبازی نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-											</ul>
-										</div>
-									</div>
-								</div>
-							</div>
+
 						</div>
 					</div>
 
@@ -230,13 +182,13 @@
 				<div class="sidebar">
 					<div class="list-detail-adv">
 						<div class="detail-adv">
-							<a href="#"><img class="radius wobble-horizontal" alt="" src="images/theme/pro-adv1.jpg"></a>
+							<a href="#"><img class="radius wobble-horizontal" alt="" src="static/images/theme/pro-adv1.jpg"></a>
 						</div>
 						<div class="detail-adv">
-							<a href="#"><img class="radius wobble-horizontal" alt="" src="images/theme/pro-adv2.jpg"></a>
+							<a href="#"><img class="radius wobble-horizontal" alt="" src="static/images/theme/pro-adv2.jpg"></a>
 						</div>
 						<div class="detail-adv">
-							<a href="#"><img class="radius wobble-horizontal" alt="" src="images/theme/pro-adv3.jpg"></a>
+							<a href="#"><img class="radius wobble-horizontal" alt="" src="static/images/theme/pro-adv3.jpg"></a>
 						</div>
 					</div>
 				</div>
@@ -250,4 +202,318 @@
 {% block scripts %}
 {{ super() }}
 
+<script type="text/javascript" src=" {{ url_for('static',filename='js/libs/owl.carousel.js')}} "></script>
+<script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.jcarousellite.js')}} "></script>
+<script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.elevatezoom.js')}} "></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static',filename='js/socket/reconnecting-websocket.min.js')}}"></script>
+<script>
+
+var auction_id = $('#auction').val();
+var images_path = '../../static/images/products/';
+var avatar_path = '../../static/images/avatars/';
+var auction_deadline = 0;
+var people = ko.observableArray([]);
+var target_date = ko.observable();
+var time_limit = ko.observable();
+var offer_bid_count = ko.observable();
+var before_start_text = ko.observable();
+
+var current_user_id = '{{current_user.id}}';
+
+
+function Person(name,avatar,its_me,row) {
+    var self = this;
+    self.name = ko.observable(name);
+    self.avatar = ko.observable(avatar);
+    self.its_me = ko.observable(its_me);
+    self.row = ko.observable(row);
+}
+
+if (window.location.protocol == "https:") {
+    var ws_scheme = "wss://";
+    }
+  else {
+    var ws_scheme = "ws://"
+};
+
+
+var inbox = new ReconnectingWebSocket(SERVERSOCKET_RECEIVE);
+var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
+var rand = function() {
+    return Math.random().toString(18).substr(2); // remove `0.`
+};
+
+var token = function() {
+    return rand() + rand(); // to make it longer
+};
+var client_token = token();
+console.log(client_token);
+
+  inbox.onopen = function(){
+      console.log('inbox opened');
+  };
+
+  outbox.onopen = function(){
+      console.log('outbox opened');
+      outbox.send(JSON.stringify({token:client_token,handler:'loadview',auction_id: auction_id }));
+  };
+
+  inbox.onmessage = function(message) {
+    console.log(message);
+    var data = JSON.parse(message.data);
+
+    if(data.success=='true'){
+      switch (data.handler) {
+        case 'offer':
+          if(data.token == client_token){
+            $('#offer_count').html(ToPersian(formatCurrency(data.current_bids)));
+          }
+          console.log("auction_id :"+auction_id);
+          if(data.auction_id == auction_id){
+            $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
+            $('#auction_current_winner').html(data.users[0][0].username);
+            $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+            rowIndex = 0;
+            people([]);
+            $.each(data.users[0],function(key,val){
+              its_you = val.id == current_user_id ? true : false;
+              name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+              avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+              row = ++rowIndex;
+              person = new Person(name,avatar,its_you,ToPersian(row));
+              people.push(person);
+            })
+            people.valueHasMutated();
+            remained = (target_date - Date.now())/1000;
+
+            if( remained < 10){
+              target_date = Date.now() + (11 * 1000);
+              time_limit = (11 * 1000);
+            }
+
+          }
+          break;
+        case 'loadview':
+          if(data.auction_id && data.auction_id == auction_id){
+            console.log(data.users[0]);
+             $.each(data.users[0],function(key,user){
+               if(user.id =='{{current_user.id}}'){
+                 console.log(user.current_bids);
+                 if(user.current_bids)
+                  $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
+               }
+             });
+
+             $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+            if(data.users[0][0]){
+              $('#auction_current_winner').html(data.users[0][0].username);
+              $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0])
+              rowIndex = 0;
+              people([]);
+              $.each(data.users[0],function(key,val){
+                its_you = val.id == current_user_id ? true : false;
+                name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+                avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+                row = ++rowIndex;
+                person = new Person(name,avatar,its_you,ToPersian(row));
+                people.push(person);
+              });
+              people.valueHasMutated();
+            }
+          }
+          break;
+
+        case 'auction_done':
+          if(data.auction_id && data.auction_id == auction_id && data.token == client_token ){
+            alert('حراجی این محصول به پایان رسیده است');
+            $('#offer').html(data.winner[0].username);
+          }
+          break;
+        default:
+      }
+    }
+    else {
+      if(data.token == client_token){
+        alert(data.reason);
+        console.log(data.reason);
+      }
+    }
+  };
+
+  inbox.onclose = function(){
+      console.log('inbox closed');
+      this.inbox = new WebSocket(inbox.url);
+  };
+
+  outbox.onclose = function(){
+      console.log('outbox closed');
+      this.outbox = new WebSocket(outbox.url);
+  };
+
+$.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
+  console.log(data);
+  product = data.product[0]
+  plan = data.plan[0]
+  data = data.auction[0]
+
+  var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
+  auction_deadline= parseInt(data.remained_time)
+  before_start_text = "تاریخ شروع حراجی : ";
+  var event = new Date(Date.parse(deadline));
+  var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
+  var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
+  var end_month = event.toLocaleDateString('fa-IR', {month:'long'});
+  var end_date_time =  " ساعت  " + event.toLocaleTimeString('fa-IR');
+  var end_date_date = end_weekday + " " + end_day +" "+ end_month;
+
+  var event = new Date(Date.now());
+  var now_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
+  var now_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
+  var now_month = event.toLocaleDateString('fa-IR', {month:'long'});
+  var now_date_time = event.toLocaleTimeString('fa-IR');
+  var now_date_date = now_weekday + " " + now_day +" "+ now_month;
+
+  var participant_count = ToPersian(data.participants.length);
+  var max_members = ToPersian(data.max_members);
+  var images_temp = ClearifyNames(data.item.images);
+  var images = [];
+
+  $.each(product.items,function(key,item) {
+    $.each(ClearifyNames(item.images),function(key1,val) {
+      images.push({url:images_path+val.trim(),active:false});
+    });
+  });
+  images[0].active=true;
+
+  offer_bid_count = plan.max_offers ;
+ var mvvm = function MyViewModel() {
+      this.participant_count = participant_count;
+      this.max_members = max_members;
+      this.images = images;
+      this.active_image = images[0].url;
+      this.auction = data
+      this.auction_title = data.title;
+      this.auction_item_price = ToPersian(formatCurrency(data.item.price));
+      this.auction_register_price = ToPersian(formatCurrency(data.base_price));
+      this.people = people;
+      this.auction_rate = ToPersian(data.ratio);
+      this.auction_end_date = end_date_date;
+      this.auction_end_time = end_date_time;
+      this.now_date = now_date_date;
+      this.before_start = before_start_text;
+  }
+  ko.applyBindings(mvvm);
+
+  if($('.detail-gallery').length>0){
+    $('.detail-gallery').each(function(){
+      $(this).find(".carousel").jCarouselLite({
+        btnNext: $(this).find(".gallery-control .next"),
+        btnPrev: $(this).find(".gallery-control .prev"),
+        speed: 800,
+        visible:3,
+      });
+      //Elevate Zoom
+      $(this).find('.mid img').elevateZoom({
+        zoomType: "inner",
+        cursor: "crosshair",
+        zoomWindowFadeIn: 500,
+        zoomWindowFadeOut: 750
+      });
+
+      $(this).find(".carousel a").on('click',function(event) {
+        event.preventDefault();
+        $(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
+        $(this).addClass('active');
+        $(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
+        var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
+        $('.zoomWindow').css('background-image','url("'+z_url+'")');
+      });
+    });
+  }
+
+  today = new Date();
+  var milliseconds = auction_deadline;
+  console.log(milliseconds);
+
+  if (milliseconds < 0){
+    alert('حراجی به اتمام رسیده است');
+    return;
+  }
+
+  target_date = new Date().getTime() + milliseconds + 10 *1000; // set the countdown date
+  time_limit = milliseconds + 10 * 1000;
+
+  var days, hours, minutes, seconds; // variables for time units
+
+  var countdown = document.getElementById("tiles"); // get tag element
+
+  getCountdown();
+
+  var timer = setInterval(function () { getCountdown(); }, 1000);
+
+  function getCountdown(){
+    // find the amount of "seconds" between now and target
+    seconds_left = (target_date - Date.now())/1000;
+
+    if ( seconds_left >= 0 ) {
+
+     if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
+     {
+       $( '#tiles' ).removeClass('color-full');
+       $( '#tiles' ).addClass('color-half');
+     }
+     else {
+       $( '#tiles' ).addClass('color-full');
+       $( '#tiles' ).removeClass('color-half');
+     }
+
+     if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
+      {
+        $( '#tiles' ).removeClass('color-half');
+        $( '#tiles' ).addClass('color-empty');
+      }else {
+        $( '#tiles' ).addClass('color-half');
+        $( '#tiles' ).removeClass('color-empty');
+      }
+
+    days = pad( parseInt(seconds_left / 86400) );
+    seconds_left = seconds_left % 86400;
+
+    hours = pad( parseInt(seconds_left / 3600) );
+    seconds_left = seconds_left % 3600;
+
+    minutes = pad( parseInt(seconds_left / 60) );
+    seconds = pad( parseInt( seconds_left % 60 ) );
+
+    // format countdown string + set tag value
+    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+    }
+    else {
+      alert('زمان حراجی به اتمام رسید');
+      clearInterval(timer);
+      outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
+    }
+  }
+
+  function pad(n) {
+    return (n < 10 ? '0' : '') + n;
+  }
+
+});
+
+$("#offer").on("click", function(event) {
+  event.preventDefault();
+  outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
+});
+
+$(document).on('click','.addcart-link2',function(e) {
+  target_date = Date.now() + 10 * 1000;
+  time_limit = 10 * 1000;
+  console.log(target_date);
+  console.log(time_limit);
+});
+
+</script>
 {% endblock scripts %}

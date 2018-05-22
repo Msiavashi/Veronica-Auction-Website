@@ -68,7 +68,7 @@
 			<div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="banner-flash">
 					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img data-bind="attr:{src : image}" alt="" /></a>
+						<a data-bind="attr:{href : 'view/auction/'+id}" class="thumb-zoom"><img data-bind="attr:{src : image}" alt="" /></a>
 						<div class="flash-label">
 							<span class="text-uppercase white"><span data-bind="text:participant_count"></span> از <span data-bind="text:max_members"></span> </span>
 						</div>
@@ -356,6 +356,7 @@ function dealModel() {
 		$.each(data[0],function(key,val){
 			auction =
 			{
+				id : val.id,
 				title : val.title ,
 				description : val.description ,
 				deadline : new Date(val.start_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
