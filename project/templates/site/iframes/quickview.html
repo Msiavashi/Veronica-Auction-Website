@@ -277,10 +277,19 @@ console.log(client_token);
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   console.log(data);
+  console.log("server time is :"+ data.server_time);
+  server_time = data.server_time;
+  localtime = new Date();
+  difference = server_time - localtime ;
+
+  console.log("server time is :"+ server_time );
+  console.log('localtime time is :'+ localtime );
+  console.log('difference time is :'+ difference /1000 +"seconds");
+
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
-  console.log(Date.now());
+
 
   var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
   auction_deadline= parseInt(data.remained_time)

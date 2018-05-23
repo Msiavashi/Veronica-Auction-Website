@@ -9,6 +9,7 @@ from flask import url_for, redirect, render_template, request, abort, make_respo
 import json
 from project import app
 from datetime import datetime
+import time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from decimal import Decimal
@@ -28,7 +29,7 @@ class AuctionUserParticipation(Resource):
 
         auction = Auction.query.get(auction_id)
 
-        now = datetime.now()
+        now = time()
         remained = (auction.start_date - now).seconds
         if(remained < 60):
             return make_response(jsonify({'success':False,"reason":"حداکثر تا یک دقیقه قبل از حراجی برای ثبت نام فرصت دارید"}),400)
