@@ -5,7 +5,7 @@
 <div class="content-page">
 	<div class="container">
 		<div class="bread-crumb radius">
-			<a href="#">خانه</a> <span data-bind="text: auction.item.title">نام محصول</span>
+			<a href="/">خانه</a> <span data-bind="text: auction.item.title">نام محصول</span>
 		</div>
 		<!-- End Bread Crumb -->
 		<div class="row">
@@ -333,7 +333,7 @@ console.log(client_token);
             $(".error_alert").addClass('hide');
         		$(".success_alert").removeClass('hide');
         		$(".success_container").html('حراجی این محصول به پایان رسیده است')
-            $('#offer').html('برنده :'+data.winner[0].username);
+            $('#offer').html(data.winner[0].username);
           }
           break;
         default:
