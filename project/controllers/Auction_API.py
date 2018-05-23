@@ -55,13 +55,14 @@ class AuctionInstanceView(Resource):
         product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
         product_schema = ProductSchema()
         auction.remained_time = (auction.start_date - datetime.now()).seconds * 1000
+        now = datetime.now()
 
         if(current_user.is_authenticated):
             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()
             auction_plan_schema = AuctionPlanSchema()
-            return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
+            return make_response(jsonify({"server_time":now,"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
 
-        return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
+        return make_response(jsonify({"server_time":now,"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
 class AuctionGetPlans(Resource):
     def get(self,aid):
         auction=Auction.query.get(aid)

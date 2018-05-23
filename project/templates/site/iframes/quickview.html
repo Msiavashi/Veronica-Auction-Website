@@ -78,6 +78,14 @@
                     <span data-bind="text:row"></span>
                   </p>
               </div>
+              <div class="alert alert-danger error_alert hide">
+                <a href="#" class="close" aria-label="close">×</a>
+                <div class="error_container"></div>
+              </div>
+              <div class="alert alert-success alert-dismissable success_alert hide">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                <div class="success_container"></div>
+              </div>
               <div class="product-extra-link2">
                 <div class="last-Bid-user">
                   <p class="img-price-Bid"><img id="auction_current_winner_image"/></p>
@@ -96,10 +104,12 @@
                 <a class="addcart-link" href="/login"> ورود </a>
                 {% endif %}
               </div>
+
               <div class="detail-countdowns"><span data-bind="text : before_start"></span>
                 <span data-bind="text:auction_end_date"></span>
                 <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
               </div>
+
             </div>
             <div class="detail-extralink mt-0">
               <div class="product-extra-link2">
@@ -136,7 +146,7 @@ var people = ko.observableArray([]);
 var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
 var current_user_id = '{{current_user.id}}';
-
+var target_date = ko.observable();
 
 function Person(name,avatar,its_me,row) {
     var self = this;
@@ -238,8 +248,10 @@ console.log(client_token);
           break;
         case 'auction_done':
           if(data.auction_id && data.auction_id == auction_id){
-            alert('حراجی این محصول به پایان رسیده است');
-            $('#offer').html(data.winner[0].username);
+            $(".error_alert").addClass('hide');
+        		$(".success_alert").removeClass('hide');
+        		$(".success_container").html('حراجی این محصول به پایان رسیده است')
+            $('#offer').html('برنده :'+data.winner[0].username);
           }
           break;
         default:
@@ -247,8 +259,8 @@ console.log(client_token);
     }
     else {
       if(data.token == client_token){
-        alert(data.reason);
-        console.log(data.reason);
+        $(".error_alert").removeClass('hide');
+  			$(".error_container").html(data.reason);
       }
     }
   };
@@ -268,6 +280,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
+  console.log(Date.now());
 
   var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
   auction_deadline= parseInt(data.remained_time)
