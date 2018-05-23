@@ -31,8 +31,7 @@ class PaymentsInfo(Resource):
         return make_response(jsonify(paymentSchema.dump(payments)),200)
 
 
-
-class DashBoard(Resource):
+class UserInformation(Resource):
     @login_required
     def get(self):
 
@@ -66,67 +65,34 @@ class DashBoard(Resource):
         print info
         return make_response(jsonify(info),200)
 
-
-class UserContactUs(Resource):
-
-    def _allowed_file(self, filename):
-        return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in definitions.ALLOWED_EXTENTIONS
-
     @login_required
-    def post(self): 
-
-        new_message = UserMessage()
-
-        new_message.title = request.get.json('title', None)
-        new_message.subject = request.get.json('subject', None)
-        new_message.message = request.get.json('message', None)
-
-        if 'file' in request.files:
-            file = request.files['file']
-            if file and self._allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(path)
-
-                new_message.file = path 
-
-        db.session.add(new_message)
-        db.session.commit()
-
-        flash("پیام با موفقیت ارسال شد")
-        return redirect(url_for('profile'))
-    
-    @login_required
-    def editInforamtion(self):
-        if not request.is_json:
-            return jsonify({"success": False, "msg": "no json input"}), 400
-        
+    def post(self):
         # json_data = request.get_json(force=True)
-        current_user.alias_name = request.form.get('alias_name')
-        current_user.first_name = request.form.get('first_name')
-        current_user.last_name = request.form.get('last_name')
-        current_user.work_place = request.form.get('work_place')
+        print request.form
+        current_user.alias_name = request.form.get('alias-name')
+        current_user.first_name = request.form.get('first-name')
+        current_user.last_name = request.form.get('last-name')
+        current_user.work_place = request.form.get('work-place')
         current_user.mobile = request.form.get('mobile')
         current_user.email = request.form.get('email')
 
         address = Address()
-        address.city = request.form.get('city')
-        address.address = request.form.get('address')
-        address.state = request.form.get('state')
-        address.postal_code = request.form.get('postal_code')
+        address.city = request.form.get('city', None)
+        address.address = request.form.get('address', None)
+        address.state = request.form.get('state', None)
+        address.postal_code = request.form.get('postal-code', None)
         address.country = "iran"
 
         db.session.add(address)
         db.session.commit()
 
         current_user.address = address
-        current_user.invitor = request.form.get('invitor_code')
+        current_user.invitor = request.form.get('invitor-code')
         current_user.avatar_index = request.form.get('avatar_index')
 
-        old_password = request.form.get('old_password')
-        new_password = request.form.get('new_password')
-        repeat_password = request.form.get('repeat_password')
+        old_password = request.form.get('current-password')
+        new_password = request.form.get('new-password')
+        repeat_password = request.form.get('confirm-password')
 
         if sha256.hash(old_password) != current_user.password:
             return jsonify({"msg": "پسوورد اشتباه است"}), 403
@@ -137,6 +103,36 @@ class UserContactUs(Resource):
         current_user.password = new_password
         db.session.add(current_user)
         db.session.commit()
+
+        return 200
         
 
+class UserContactUs(Resource):
+
+    def _allowed_file(self, filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in definitions.ALLOWED_EXTENTIONS
+
+    @login_required
+    def post(self): 
+        new_message = UserMessage()
+
+        new_message.title = request.form.get('title', None)
+        new_message.subject = request.form.get('subject', None)
+        new_message.message = request.form.get('message', None)
+
+        if 'file' in request.files:
+            file = request.files['file']
+            if file and self._allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(path)
+
+                new_message.file = path
+
+        db.session.add(new_message)
+        db.session.commit()
+        flash("پیام با موفقیت ارسال شد")
+        return redirect(url_for('profile'))
+    
 

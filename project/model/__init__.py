@@ -31,3 +31,5 @@ from  .user_gift import *
 from  .user_plan import *
 from  .user_role import *
 from  .user import *
+from .user_message import *
+from .guest_message import *

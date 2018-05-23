@@ -8,9 +8,6 @@ from marshmallow import Schema, fields
 import datetime
 import enum
 
-class Subjects(enum.Enum):
-    subject1 = "first"
-    subject2 = "second"
 
 class UserMessage(Base):
     __tablename__ = 'user_messages'
@@ -22,7 +19,7 @@ class UserMessage(Base):
 
     title = db.Column(db.String(128), nullable=True)
 
-    subject = db.Column(db.Enum(Subjects), default=Subjects.subject1, nullable=False)
+    subject = db.Column(db.String(512), nullable=False)
 
     file = db.Column(db.String(1024), nullable=True)
 

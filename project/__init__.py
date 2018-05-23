@@ -63,5 +63,6 @@ api.add_resource(Auction_API.AuctionUserParticipation, '/auction/user/participat
 api.add_resource(Auction_API.AuctionUserViewed, '/auction/user/viewed')
 
 
-api.add_resource(User_API.DashBoard, '/user/profile/info')
 api.add_resource(User_API.PaymentsInfo, '/user/payments/info')
+api.add_resource(User_API.UserInformation, '/user/information')
+api.add_resource(User_API.UserContactUs, '/user/contactus')
