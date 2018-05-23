@@ -51,10 +51,10 @@
       						<div class="col-md-12 col-sm-12 col-xs-12">
       							<div class="account-login">
                       {% if current_user.is_authenticated %}
-      								<a href="{{ ('\profile') }}">پنل کاربری</a>
+      								<a href="/profile">پنل کاربری</a>
                       {% else %}
-      								<a href="{{ ('\login') }}">ورود</a>
-      								<a href="{{ ('\\register') }}">ثبت نام</a>
+      								<a href="/login">ورود</a>
+      								<a href="/register">ثبت نام</a>
                       {% endif %}
       							</div>
       						</div>
@@ -406,54 +406,13 @@
               <div class="wrap-item" data-bind="foreach:viewed" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
                 <div class="item-hot-cat">
                   <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
+                    <h3 class="product-title"><a data-bind="text:item.product.title , attr:{ href : 'view/auction/'+id} "></a></h3>
                     <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
                   </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
+                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" data-bind="attr:{href : 'instantview/'+id}" class="quickview-link fancybox.iframe shopnow"><span>مشاهده</span></a></div>
                 </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-                <div class="item-hot-cat">
-                  <div class="hot-cat-info">
-                    <h3 class="product-title"><a href="#" data-bind="text:item.product.title"></a></h3>
-                    <p class="price-from">شروع<span data-bind="text: ToPersian(formatCurrency(base_price))"></span></p>
-                  </div>
-                  <div class="hot-cat-thumb"><img data-bind="attr:{ src : product_image_path+ClearifyNames(item.images)[0] }" alt="" /><a href="#" class="shopnow"><span>مشاهده</span></a></div>
-                </div>
-
+                <!-- ko text: triggerSlider($($element.parentElement)) -->
+                <!-- /ko -->
               </div>
             </div>
             {% endif %}
@@ -608,6 +567,7 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/flipclock.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/theme.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/site.js')}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.jcarousellite.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.elevatezoom.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
@@ -628,15 +588,14 @@
   	});
   });
 
+  var viewed = ko.observable();
 
   $.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
-    OnDataReady(data[0]);
-	});
+     OnDataReady(data[0]);
+  });
 
-	var viewed = ko.observable();
-  function OnDataReady(data) {
-		viewed(data);
-    ko.applyBindings(viewed);
+  function OnDataReady(data){
+    viewed = data;
   }
   </script>
   {% endblock scripts %}

@@ -3,7 +3,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-from flask_restful import Resource, reqparse, abort
+
+from flask_restful import Resource, reqparse
 import os
 from ..model import *
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash
@@ -11,9 +12,8 @@ import json
 from project import app
 from datetime import datetime
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
-from ..model.order import PaymentStatus
 from ..model.user_message import UserMessage
-import definitions 
+import definitions
 from werkzeug.utils import secure_filename
 
 
@@ -23,9 +23,9 @@ class PaymentsInfo(Resource):
     @login_required
     def get(self):
         current_user = User.query.filter_by(username="mohammad").first()
-        pagenum = int(request.args.get('pagenum')) 
+        pagenum = int(request.args.get('pagenum'))
         pagesize = int(request.args.get('pagesize'))
-        
+
         payments = Payment.query.filter_by(user_id=current_user.id).paginate(pagenum, pagesize, True).items
         paymentSchema = PaymentSchema(many=True)
         return make_response(jsonify(paymentSchema.dump(payments)),200)
@@ -39,7 +39,7 @@ class UserInformation(Resource):
         enrolled_auctions = UserAuctionParticipation.query.filter_by(user_id=current_user.id).count()
         invitations = User.query.filter_by(invitor=current_user.username).count()
 
-        bought_items = [item for order in Order.query.filter_by(user_id = current_user.id, status=PaymentStatus.paid).all() for item in order.items]
+        bought_items = [item for order in Order.query.filter_by(user_id = current_user.id, status=1).all() for item in order.items]
 
         won_offers = Offer.query.filter_by(win=True).join(UserPlan).filter_by(user_id = current_user.id).all()
 
@@ -156,5 +156,3 @@ class UserContactUs(Resource):
         db.session.commit()
         flash("پیام با موفقیت ارسال شد")
         return redirect(url_for('profile'))
-    
-

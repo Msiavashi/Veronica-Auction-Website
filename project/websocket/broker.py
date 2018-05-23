@@ -18,7 +18,15 @@ class SocketBroker():
             gevent.sleep(0.1)
             message = ws.receive()
             data = ast.literal_eval(message)
-            message = offer_bid(data)
+            handler = data['handler']
+            if handler == 'offer':
+                message = offer_bid(data)
+            elif handler == 'loadview':
+                message = loadview(data)
+            elif handler == 'auction_done':
+                message = auction_done(data)
+            else:
+                pass
 
             if message:
                 app.logger.info(u'Inserting message: {}'.format(message))

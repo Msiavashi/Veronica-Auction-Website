@@ -4220,6 +4220,17 @@ margin-bottom: 0;
 	padding: 10px;
 	color: #fff;
 }
+.detail-warning {
+	background: #e75630;
+	border-radius: 4px;
+	margin: 20px 0;
+	max-width: 100%;
+	text-align: right;
+	width: 100%;
+	display: inline-table;
+	padding: 10px;
+	color: #fff;
+}
 .config-detail .detail-countdowns span {
 	color: #fff;
 	margin-left: 10px;

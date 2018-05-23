@@ -4,14 +4,13 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 import gevent
-from flask import url_for, redirect, render_template, request, abort ,redirect, session
+from flask import url_for, redirect, render_template, request, abort ,redirect, session,jsonify
 from datetime import timedelta
-from flask import render_template, jsonify
 from flask_login import current_user,login_required,logout_user,LoginManager
 from .model import *
 from . import app
 from definitions import SESSION_EXPIRE_TIME
-
+from urlparse import urlparse, urljoin
 
 class Route():
 
@@ -68,24 +67,28 @@ class Route():
         return render_template('site/profile.html')
 
     @app.route("/participate/<int:aid>")
-    # @login_required
+    @login_required
     def participate(aid):
-        return render_template('site/iframes/package.html',auction_id=aid)
+        if(not current_user.has_auction(aid)):
+            return render_template('site/iframes/package.html',auction_id=aid)
+        return redirect(url_for('instantview',aid=aid))
 
     @app.route("/instantview/<int:aid>")
-    @login_required
+    #@login_required
     def instantview(aid):
         return render_template('site/iframes/quickview.html',auction_id=aid)
+        # if(current_user.is_authenticated and not current_user.has_auction(aid)):
+        # return render_template('site/iframes/quickview-guest.html',auction_id=aid)
 
     @app.route("/view/auction/<int:aid>")
-    # @login_required
+    @login_required
     def viewAuction(aid):
         return render_template('site/auction.html',auction_id=aid)
 
-
     @login_manager.unauthorized_handler
     def unauthorized():
-        return render_template('site/401.html'), 401
+         next=url_for(request.endpoint,**request.view_args)
+         return render_template('site/401.html',next=next), 401
 
     @app.errorhandler(404)
     def page_not_found(e):
@@ -110,5 +113,10 @@ class Route():
     @app.route('/socket')
     def socket():
         return render_template('/socket.html')
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
 route = Route()

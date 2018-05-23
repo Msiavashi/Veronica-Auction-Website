@@ -15,6 +15,7 @@ class UserMessage(Base):
 
     user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"))
 
+
     message = db.Column(db.String(1024), nullable=True)
 
     title = db.Column(db.String(128), nullable=True)
@@ -24,6 +25,7 @@ class UserMessage(Base):
     file = db.Column(db.String(1024), nullable=True)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
         return " ارسال توسط :" + str(User.query.filter_by(id=self.user_id)) + " درتاریخ " + self.created_at

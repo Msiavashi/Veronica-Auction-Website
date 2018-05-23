@@ -25,7 +25,7 @@ class User(Base,UserMixin):
     password = db.Column(db.String(length=100), nullable=False)
 
     #please check for dafault avatar address from config file
-    avatar = db.Column(db.String(length=300))
+    avatar = db.Column(db.String(length=300),default="['005.png']")
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
@@ -110,6 +110,8 @@ class UserSchema(Schema):
     credit = fields.Str()
     address_id = fields.Int()
     avatar = fields.Str()
+    current_bids = fields.Str()
+    current_offer_price = fields.Str()
 
     comments = fields.Nested('CommentSchema', many=True,exclude=('user',))
     payments = fields.Nested('PaymentSchema', many=True,exclude=('users',))

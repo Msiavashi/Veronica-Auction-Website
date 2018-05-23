@@ -55,10 +55,6 @@
 			<h2 class="title30"> ٪<strong class="color" data-bind="text: discount "></strong> <span data-bind="text:description"></span> <span class="color"> محدود </span></h2>
 			<div class="deals-cowndown" data-bind="attr:{ 'data-date' : deadline}"></div>
 		</div>
-		<div class="intro-countdown">
-			<h2 class="title30"> ٪<strong class="color" data-bind="text: discount "></strong> <span data-bind="text:description"></span> <span class="color"> محدود </span></h2>
-			<div class="deals-cowndown" data-bind="attr:{ 'data-date' : deadline}"></div>
-		</div>
 		<!-- ko text: triggerBigTimer () -->
 		<!-- /ko -->
 		<!-- End Intro Countown -->
@@ -72,7 +68,7 @@
 			<div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="banner-flash">
 					<div class="banner-zoom">
-						<a href="#" class="thumb-zoom"><img data-bind="attr:{src : image}" alt="" /></a>
+						<a data-bind="attr:{href : 'view/auction/'+id}" class="thumb-zoom"><img data-bind="attr:{src : image}" alt="" /></a>
 						<div class="flash-label">
 							<span class="text-uppercase white"><span data-bind="text:participant_count"></span> از <span data-bind="text:max_members"></span> </span>
 						</div>
@@ -89,11 +85,11 @@
 							</li>
 							<li>
 								<div class="flash-timer">
-									{% if current_user.is_authenticated %}
+
 									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-									{% else %}
-									<a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
-									{% endif %}
+
+									<!-- <a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a> -->
+
 								</div>
 							</li>
 							<li>
@@ -266,7 +262,7 @@
 								<img data-bind="attr:{src: product_image_path+'/'+ClearifyNames(item.images)[0] }" alt="">
 								<img data-bind="attr:{src: product_image_path+'/'+ClearifyNames(item.images)[0] }" alt="">
 							</a>
-							<a href="quick-view.html" class="quickview-link plus pos-middle fancybox.iframe">مشاهده سریع</a>
+							<a data-bind="attr:{href : '/instantview/'+id}" class="quickview-link plus pos-middle fancybox.iframe">مشاهده سریع</a>
 						</div>
 						<h2 class="title14"><a href="#" data-bind="text:title" ></a></h2>
 						<div class="product-info">
@@ -356,12 +352,14 @@ function dealModel() {
 	});
 
 	$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
+		console.log(data);
 		$.each(data[0],function(key,val){
 			auction =
 			{
+				id : val.id,
 				title : val.title ,
 				description : val.description ,
-				deadline : new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
+				deadline : new Date(val.start_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
 				participant_count :ToPersian(val.participants.length),
 				max_members :ToPersian(val.max_members),
 				base_price : ToPersian(formatCurrency(val.base_price)),

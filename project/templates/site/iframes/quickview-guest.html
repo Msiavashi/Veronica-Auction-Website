@@ -78,14 +78,6 @@
                     <span data-bind="text:row"></span>
                   </p>
               </div>
-              <div class="alert alert-danger error_alert hide">
-                <a href="#" class="close" aria-label="close">×</a>
-                <div class="error_container"></div>
-              </div>
-              <div class="alert alert-success alert-dismissable success_alert hide">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-                <div class="success_container"></div>
-              </div>
               <div class="product-extra-link2">
                 <div class="last-Bid-user">
                   <p class="img-price-Bid"><img id="auction_current_winner_image"/></p>
@@ -98,24 +90,12 @@
                   <div class="countdown-label" data-bind="text:now_date"></div>
                 </div>
 
-                {% if current_user.is_authenticated %}
-                <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count" data-bind="text: offer_bid_count ? ToPersian(offer_bid_count) :ToPersian(0)"></div></a>
-                {%  else %}
                 <a class="addcart-link" href="/login"> ورود </a>
-                {% endif %}
+              
               </div>
-
               <div class="detail-countdowns"><span data-bind="text : before_start"></span>
                 <span data-bind="text:auction_end_date"></span>
                 <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
-              </div>
-
-            </div>
-            <div class="detail-extralink mt-0">
-              <div class="product-extra-link2">
-                <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"></i> اضافه به سبد</a>
-                <a class="wishlist-link2" href="#" id="like_auction"><i aria-hidden="true" class="fa fa-heart"></i></a>
-                <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i>۲،۴۵۰،۰۰۰ تومان</a>
               </div>
             </div>
           </div>
@@ -143,10 +123,13 @@ var images_path = '../../static/images/products/';
 var avatar_path = '../../static/images/avatars/';
 var auction_deadline = 0;
 var people = ko.observableArray([]);
+var target_date = ko.observable();
+var time_limit = ko.observable();
 var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
+
 var current_user_id = '{{current_user.id}}';
-var target_date = ko.observable();
+
 
 function Person(name,avatar,its_me,row) {
     var self = this;
@@ -188,14 +171,14 @@ console.log(client_token);
   inbox.onmessage = function(message) {
     console.log(message);
     var data = JSON.parse(message.data);
+
     if(data.success=='true'){
       switch (data.handler) {
-
         case 'offer':
           if(data.token == client_token){
             $('#offer_count').html(ToPersian(formatCurrency(data.current_bids)));
           }
-
+          console.log("auction_id :"+auction_id);
           if(data.auction_id == auction_id){
             $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
             $('#auction_current_winner').html(data.users[0][0].username);
@@ -212,9 +195,12 @@ console.log(client_token);
             })
             people.valueHasMutated();
             remained = (target_date - Date.now())/1000;
+
             if( remained < 10){
-              resetTimer();
+              target_date = Date.now() + (11 * 1000);
+              time_limit = (11 * 1000);
             }
+
           }
           break;
         case 'loadview':
@@ -246,11 +232,10 @@ console.log(client_token);
             }
           }
           break;
+
         case 'auction_done':
           if(data.auction_id && data.auction_id == auction_id){
-            $(".error_alert").addClass('hide');
-        		$(".success_alert").removeClass('hide');
-        		$(".success_container").html('حراجی این محصول به پایان رسیده است')
+            alert('حراجی این محصول به پایان رسیده است');
             $('#offer').html(data.winner[0].username);
           }
           break;
@@ -259,8 +244,8 @@ console.log(client_token);
     }
     else {
       if(data.token == client_token){
-        $(".error_alert").removeClass('hide');
-  			$(".error_container").html(data.reason);
+        alert(data.reason);
+        console.log(data.reason);
       }
     }
   };
@@ -280,7 +265,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
-  console.log(Date.now());
 
   var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
   auction_deadline= parseInt(data.remained_time)
@@ -309,7 +293,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
       images.push({url:images_path+val.trim(),active:false});
     });
   });
-
   images[0].active=true;
   if(plan){
     offer_bid_count = plan.max_offers ;
@@ -317,7 +300,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   else {
     offer_bid_count = 0;
   }
-
  var mvvm = function MyViewModel() {
       this.participant_count = participant_count;
       this.max_members = max_members;
@@ -364,93 +346,86 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   }
 
   today = new Date();
-
   var milliseconds = auction_deadline;
   console.log(milliseconds);
 
   if (milliseconds < 0){
     alert('حراجی به اتمام رسیده است');
+    return;
   }
 
-  target_date = new Date().getTime() + milliseconds ; // set the countdown date
-  time_limit = milliseconds ;
+  target_date = new Date().getTime() + milliseconds + 10 *1000; // set the countdown date
+  time_limit = milliseconds + 10 * 1000;
 
   var days, hours, minutes, seconds; // variables for time units
 
-  getCountdown(target_date);
+  var countdown = document.getElementById("tiles"); // get tag element
+
+  getCountdown();
+
+  var timer = setInterval(function () { getCountdown(); }, 1000);
+
+  function getCountdown(){
+    // find the amount of "seconds" between now and target
+    seconds_left = (target_date - Date.now())/1000;
+
+    if ( seconds_left >= 0 ) {
+
+     if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
+     {
+       $( '#tiles' ).removeClass('color-full');
+       $( '#tiles' ).addClass('color-half');
+     }
+     else {
+       $( '#tiles' ).addClass('color-full');
+       $( '#tiles' ).removeClass('color-half');
+     }
+
+     if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
+      {
+        $( '#tiles' ).removeClass('color-half');
+        $( '#tiles' ).addClass('color-empty');
+      }else {
+        $( '#tiles' ).addClass('color-half');
+        $( '#tiles' ).removeClass('color-empty');
+      }
+
+    days = pad( parseInt(seconds_left / 86400) );
+    seconds_left = seconds_left % 86400;
+
+    hours = pad( parseInt(seconds_left / 3600) );
+    seconds_left = seconds_left % 3600;
+
+    minutes = pad( parseInt(seconds_left / 60) );
+    seconds = pad( parseInt( seconds_left % 60 ) );
+
+    // format countdown string + set tag value
+    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+    }
+    else {
+      alert('زمان حراجی به اتمام رسید');
+      clearInterval(timer);
+      outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
+    }
+  }
+
+  function pad(n) {
+    return (n < 10 ? '0' : '') + n;
+  }
 
 });
-
-var countdown = document.getElementById("tiles"); // get tag element
-
-var timer = setInterval(function () { getCountdown(target_date); }, 1000);
-
-function getCountdown(target_date){
-  // find the amount of "seconds" between now and target
-  seconds_left = (target_date - Date.now())/1000;
-
-  if ( seconds_left >= 0 ) {
-
-   if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
-   {
-     $( '#tiles' ).removeClass('color-full');
-     $( '#tiles' ).addClass('color-half');
-   }
-   else {
-     $( '#tiles' ).addClass('color-full');
-     $( '#tiles' ).removeClass('color-half');
-   }
-
-   if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
-    {
-      $( '#tiles' ).removeClass('color-half');
-      $( '#tiles' ).addClass('color-empty');
-    }else {
-      $( '#tiles' ).addClass('color-half');
-      $( '#tiles' ).removeClass('color-empty');
-    }
-
-  days = pad( parseInt(seconds_left / 86400) );
-  seconds_left = seconds_left % 86400;
-
-  hours = pad( parseInt(seconds_left / 3600) );
-  seconds_left = seconds_left % 3600;
-
-  minutes = pad( parseInt(seconds_left / 60) );
-  seconds = pad( parseInt( seconds_left % 60 ) );
-
-  // format countdown string + set tag value
-  countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-  }
-  else {
-    alert('زمان حراجی به اتمام رسید');
-    clearInterval(timer);
-    outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
-  }
-}
-
-function pad(n) {
-  return (n < 10 ? '0' : '') + n;
-}
-
 
 $("#offer").on("click", function(event) {
   event.preventDefault();
   outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
 });
 
-$("#add_to_bag").on("click", function(event) {
-  resetTimer();
+$(document).on('click','.addcart-link2',function(e) {
+  target_date = Date.now() + 10 * 1000;
+  time_limit = 10 * 1000;
+  console.log(target_date);
+  console.log(time_limit);
 });
-
-function resetTimer() {
-  target_date = Date.now() + (10 * 1000);
-  time_limit = (10 * 1000);
-  clearInterval(timer);
-  timer = setInterval(function () { getCountdown(target_date); }, 1000);
-  getCountdown(target_date);
-}
-
 
 </script>
 
