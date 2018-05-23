@@ -31,6 +31,7 @@ class User(Base,UserMixin):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     alias_name = db.Column(db.String(128), nullable = True)
+
     invitor = db.Column(db.String(length=255))
 
     credit = db.Column(db.DECIMAL(precision=20, scale=4), default=0)

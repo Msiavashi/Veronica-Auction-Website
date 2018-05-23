@@ -83,28 +83,51 @@ class UserInformation(Resource):
         address.postal_code = request.form.get('postal-code', None)
         address.country = "iran"
 
-        db.session.add(address)
-        db.session.commit()
+        try:
+            db.session.add(address)
+            db.session.commit()
+        except Exception as e:
+            return jsonify({"msg": "could not save changes"}), 500
 
         current_user.address = address
         current_user.invitor = request.form.get('invitor-code')
-        current_user.avatar_index = request.form.get('avatar_index')
+        current_user.avatar_index = request.form.get('avatar-index')
 
         old_password = request.form.get('current-password')
         new_password = request.form.get('new-password')
         repeat_password = request.form.get('confirm-password')
-
-        if sha256.hash(old_password) != current_user.password:
+        if not User.verify_hash(old_password, current_user.password):
             return jsonify({"msg": "پسوورد اشتباه است"}), 403
         
         if new_password != repeat_password:
             return jsonify({"msg": "رمز جدید با تکرار رمز همخوانی ندارد"}), 403
         
-        current_user.password = new_password
-        db.session.add(current_user)
-        db.session.commit()
+        current_user.password = User.generate_hash(new_password)
 
-        return 200
+        #verifying invitor code
+        if User.query.filter_by(invitor=current_user.invitor).exists():
+            return jsonify({"msg": "کد دعوت قبلا استفاده شده است"}), 400
+
+        #TODO: check this with MohammadReza
+        elif User.query.filter_by(username=current_user.invitor).exists():
+            #TODO: check the gift values and create a table to store these kind of values
+            current_user.credit += 10000
+            invitor = User.query.filter_by(username=current_user.invitor).first()
+            invitor.credit += 20000
+            db.session.add(invitor)
+            db.session.commit()
+        else:
+            return jsonify({"msg": "کد دعوت وارد شده صحیح نمیباشد"}), 400
+
+        try:
+            db.session.add(current_user)
+            db.session.commit()
+            flash("تغییرات با موفقیت ذخیره شد")
+            return redirect(url_for('profile'))
+        except Exception as e:
+            return jsonify({"msg": "could not save changes"}), 500
+
+
         
 
 class UserContactUs(Resource):
@@ -127,7 +150,6 @@ class UserContactUs(Resource):
                 filename = secure_filename(file.filename)
                 path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(path)
-
                 new_message.file = path
 
         db.session.add(new_message)
