@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import sys
+from importlib import reload
 reload(sys)
-sys.setdefaultencoding("utf-8")
+# sys.setdefaultencoding("utf-8")
+
 
 from flask_restful import Resource, reqparse
 import os
@@ -10,11 +12,12 @@ from flask import url_for, redirect, render_template, request, abort, make_respo
 import json
 from project import app
 from datetime import datetime
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.user_message import UserMessage
 import definitions
 from werkzeug.utils import secure_filename
+
+
 
 
 class PaymentsInfo(Resource):
@@ -29,8 +32,7 @@ class PaymentsInfo(Resource):
         return make_response(jsonify(paymentSchema.dump(payments)),200)
 
 
-
-class DashBoard(Resource):
+class UserInformation(Resource):
     @login_required
     def get(self):
 
@@ -61,9 +63,73 @@ class DashBoard(Resource):
             "total_invitations": invitations,
             "invitation_code": current_user.username
         }
-        print info
+        # print info
         return make_response(jsonify(info),200)
 
+    @login_required
+    def post(self):
+        # json_data = request.get_json(force=True)
+        # print request.form
+        current_user.alias_name = request.form.get('alias-name')
+        current_user.first_name = request.form.get('first-name')
+        current_user.last_name = request.form.get('last-name')
+        current_user.work_place = request.form.get('work-place')
+        current_user.mobile = request.form.get('mobile')
+        current_user.email = request.form.get('email')
+
+        address = Address()
+        address.city = request.form.get('city', None)
+        address.address = request.form.get('address', None)
+        address.state = request.form.get('state', None)
+        address.postal_code = request.form.get('postal-code', None)
+        address.country = "iran"
+
+        try:
+            db.session.add(address)
+            db.session.commit()
+        except Exception as e:
+            return jsonify({"msg": "could not save changes"}), 500
+
+        current_user.address = address
+        current_user.invitor = request.form.get('invitor-code')
+        current_user.avatar_index = request.form.get('avatar-index')
+
+        old_password = request.form.get('current-password')
+        new_password = request.form.get('new-password')
+        repeat_password = request.form.get('confirm-password')
+        if not User.verify_hash(old_password, current_user.password):
+            return jsonify({"msg": "پسوورد اشتباه است"}), 403
+        
+        if new_password != repeat_password:
+            return jsonify({"msg": "رمز جدید با تکرار رمز همخوانی ندارد"}), 403
+        
+        current_user.password = User.generate_hash(new_password)
+
+        #verifying invitor code
+        if User.query.filter_by(invitor=current_user.invitor).exists():
+            return jsonify({"msg": "کد دعوت قبلا استفاده شده است"}), 400
+
+        #TODO: check this with MohammadReza
+        elif User.query.filter_by(username=current_user.invitor).exists():
+            #TODO: check the gift values and create a table to store these kind of values
+            current_user.credit += 10000
+            invitor = User.query.filter_by(username=current_user.invitor).first()
+            invitor.credit += 20000
+            db.session.add(invitor)
+            db.session.commit()
+        else:
+            return jsonify({"msg": "کد دعوت وارد شده صحیح نمیباشد"}), 400
+
+        try:
+            db.session.add(current_user)
+            db.session.commit()
+            flash("تغییرات با موفقیت ذخیره شد")
+            return redirect(url_for('profile'))
+        except Exception as e:
+            return jsonify({"msg": "could not save changes"}), 500
+
+
+        
 
 class UserContactUs(Resource):
 
@@ -72,13 +138,12 @@ class UserContactUs(Resource):
             filename.rsplit('.', 1)[1].lower() in definitions.ALLOWED_EXTENTIONS
 
     @login_required
-    def post(self):
-
+    def post(self): 
         new_message = UserMessage()
 
-        new_message.title = request.get.json('title', None)
-        new_message.subject = request.get.json('subject', None)
-        new_message.message = request.get.json('message', None)
+        new_message.title = request.form.get('title', None)
+        new_message.subject = request.form.get('subject', None)
+        new_message.message = request.form.get('message', None)
 
         if 'file' in request.files:
             file = request.files['file']
@@ -86,11 +151,9 @@ class UserContactUs(Resource):
                 filename = secure_filename(file.filename)
                 path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(path)
-
                 new_message.file = path
 
         db.session.add(new_message)
         db.session.commit()
-
         flash("پیام با موفقیت ارسال شد")
         return redirect(url_for('profile'))

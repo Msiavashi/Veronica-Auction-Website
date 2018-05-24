@@ -11,7 +11,7 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_DATABASE_URI = Config.engine + '://' + Config.username + ':' + Config.password + '@' + Config.host_name + ':' + Config.port + '/' + Config.db_name
-SQLALCHEMY_ECHO = True
+SQLALCHEMY_ECHO = False 
 
 JWT_BLACKLIST_ENABLED = True
 JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
