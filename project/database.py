@@ -10,7 +10,7 @@ Base = db.Model
 
 def init_db():
     from . import model
-    db.drop_all()
+    # db.drop_all()
     db.create_all()
 
 # print "initing..."

@@ -12,11 +12,35 @@ import json
 from project import app
 from datetime import datetime , timedelta
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
+
 from project.websocket.Timer import timer
 import time
+from project import socketio
+from flask_socketio import emit, join_room, leave_room
 
-@login_required
-def offer_bid(data):
+
+# REDIS_URL = "redis://localhost:6379/0"
+# REDIS_CHAN = 'auction'
+
+@socketio.on('join')
+def join(data):
+    print "***************** joined **************"
+    room = data['auction_id']
+    join_room(room)
+    emit("join", {"msg": "new client joined auction"}, room=room)
+
+@socketio.on('leave')
+def leave(data):
+    room = data['room']
+    leave_room(room)
+    emit("leave", {"msg": "client left room"}, room=room)
+
+#authenticated users only
+@socketio.on('bid')
+def handle_bid(data):
+    if not current_user.is_authenticated:
+        emit('unauthorized', {"msg": "login required"})
+        return 401
     try:
         auction_id = data['auction_id']
         user_id = data['user_id']
@@ -31,14 +55,16 @@ def offer_bid(data):
         if(last_offer and last_offer.win):
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
-            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
+            emit("win", {"success": True, "handler":"auction_done", "winner": json.dumps(user_schema.dump(winner))}, room=auction_id)
+            return 200
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
-        if(remained > 60 * 10):
-            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد","user_id":"'+str(user_id)+'"}'
-        if(remained < 10 * 58):
-            auction.start_date = datetime.now() + timedelta(seconds=10)
+        if(remained > 60):
+            emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد","user_id":current_user.id})
+            return 400
+        if(remained < 10):
+            auction.start_date = now + timedelta(seconds=10)
             db.session.add(auction)
             db.session.commit()
 
@@ -46,7 +72,8 @@ def offer_bid(data):
         my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
 
         if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
-            return '{"auction_id":"'+ auction_id +'","token":"'+ data['token'] +'","success":"false","reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید","user_id":"'+user_id+'"}'
+            emit("failed", {"success":False, "reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید","user_id": current_user.id})
+            return 400
 
         offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
 
@@ -59,7 +86,7 @@ def offer_bid(data):
                 offer.total_price = auction.base_price + offer_count * (BASE_BID_PRICE * auction.ratio)
                 offer.current_bids = my_last_offer.current_bids - 1
             else:
-                return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","reason":"پیشنهادات شما به پایان رسید"}'
+                emit("failed", {"success":False,"reason":"پیشنهادات شما به پایان رسید"})
         elif(last_offer):
             offer.total_price = last_offer.total_price + (BASE_BID_PRICE * auction.ratio)
             offer.current_bids = user_plan.auction_plan.max_offers - 1
@@ -84,10 +111,11 @@ def offer_bid(data):
         if(remained < 10):
             remained_time = 10 * 1000
 
-        return '{"auction_id":"'+auction_id+'","handler":"offer","token": "'+data['token']+'","success":"true","current_bids":"'+str(offer.current_bids)+'","user_id":"'+str(user_id)+'","remained_time":'+str(remained_time)+',"total_price":'+str(offer.total_price)+',"users":'+json.dumps(user_schema.dump(users))+'}'
+        emit("accepted", {"handler":"offer", "success": True, "current_bids":str(offer.current_bids), "user_id":str(user_id), "remained_time": str(remained_time),"total_price": str(offer.total_price) ,"users":json.dumps(user_schema.dump(users))})
+        return 200
 
     except Exception as e:
-        return "{'error':"+str(e)+"}"
+        emit("error", {"msg": str(e.message)})
 
 def loadview(data):
     try:

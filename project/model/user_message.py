@@ -6,6 +6,8 @@ sys.setdefaultencoding("utf-8")
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
+import enum
+
 
 class UserMessage(Base):
     __tablename__ = 'user_messages'
@@ -13,12 +15,12 @@ class UserMessage(Base):
 
     user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"))
 
-    title = db.Column(db.String(128), nullable=False)
 
-    # 0 for first and 1 for second
-    subject = db.Column(db.Integer, default=0, nullable=False)
+    message = db.Column(db.String(1024), nullable=True)
 
-    message = db.Column(db.Text, nullable=False)
+    title = db.Column(db.String(128), nullable=True)
+
+    subject = db.Column(db.String(512), nullable=False)
 
     file = db.Column(db.String(1024), nullable=True)
 

@@ -13,6 +13,9 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 import os
 
+from ..model.guest_message import GuestMessage
+
+
 
 class SiteCategoryMenuItems(Resource):
     def get(self):
@@ -113,4 +116,6 @@ class UserContactUs(Resource):
         db.session.commit()
 
         flash("پیام با موفقیت ارسال شد")
+
         return redirect(url_for('index'))
+

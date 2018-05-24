@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-from project import app
+from project import app, socketio
 from project.database import *
 from project.admin import admin
 import definitions
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))
-    app.run('0.0.0.0', port=port)
+    # app.run('0.0.0.0', port=port)
+    socketio.run(app)

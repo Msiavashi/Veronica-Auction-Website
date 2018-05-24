@@ -10,6 +10,8 @@ import datetime
 class Address(Base):
     __tablename__ = 'addresses'
     id = db.Column(db.BigInteger, primary_key=True)
+    user = db.relationship('User', uselist=False, back_populates='address')
+    # user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     country = db.Column(db.String(length=50),nullable=False,default="ایران")
     state = db.Column(db.String(length=50), nullable=False)
     city = db.Column(db.String(length=50), nullable=False)
