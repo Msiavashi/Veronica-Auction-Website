@@ -136,4 +136,7 @@ def get_time(data):
     server_time = datetime.now()
     auction_schema = AuctionSchema()
     deadline = auction.start_date
-    return '{"auction_deadline":"'+str(deadline)+'","auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"get_time","server_time":"'+str(server_time)+'","pretty_time":"'+pretty_time+'"}'
+    now = datetime.now()
+    remained = (auction.start_date - now)
+
+    return '{"auction_deadline":"'+str(remained)+'","auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"get_time","server_time":"'+str(server_time)+'","pretty_time":"'+pretty_time+'"}'
