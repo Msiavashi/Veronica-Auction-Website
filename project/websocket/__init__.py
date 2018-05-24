@@ -2,7 +2,7 @@
 # from .. import app
 # from .. import redis
 # from flask_restful import Resource
-
+from . import handler
 # REDIS_URL = "redis://localhost:6379/0"
 # REDIS_CHAN = 'auction'
 

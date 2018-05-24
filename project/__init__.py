@@ -38,7 +38,7 @@ csrf = CSRFProtect(app)
 from .route import route
 from .controllers import *
 from flask_restful import Api
-
+from .websocket import handler
 
 # @app.errorhandler(CSRFError)
 # def handle_csrf_error(e):
