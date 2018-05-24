@@ -5,9 +5,9 @@
 
 
 class Config:
-    engine = "postgres"
-    port = "5432"
+    engine = "mysql"
+    port = "3306"
     host_name = "localhost"
-    db_name = "bidbazi_db"
-    password = "12345"
-    username = "bidbazi"
+    db_name = "haraj"
+    password = "root"
+    username = "root"

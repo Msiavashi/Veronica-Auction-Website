@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
+from importlib import reload
 reload(sys)
-sys.setdefaultencoding("utf-8")
+# sys.setdefaultencoding("utf-8")
 
 from flask_restful import Resource, reqparse
 from project.model.user import *

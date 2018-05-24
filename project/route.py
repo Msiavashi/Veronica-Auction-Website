@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
+from importlib import reload
 reload(sys)
-sys.setdefaultencoding("utf-8")
+# sys.setdefaultencoding("utf-8")
 
 import gevent
 from flask import url_for, redirect, render_template, request, abort ,redirect, session,jsonify
@@ -10,7 +11,7 @@ from flask_login import current_user,login_required,logout_user,LoginManager
 from .model import *
 from . import app
 from definitions import SESSION_EXPIRE_TIME
-from urlparse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin
 
 class Route():
 

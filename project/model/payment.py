@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
+from importlib import reload
 reload(sys)
-sys.setdefaultencoding("utf-8")
+# sys.setdefaultencoding("utf-8")
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
