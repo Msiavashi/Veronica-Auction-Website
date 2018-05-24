@@ -20,11 +20,45 @@ from flask_socketio import emit, join_room, leave_room
 # REDIS_CHAN = 'auction'
 
 
+def get_remained_time(auction_id):
+    auction = Auction.query.get(auction_id)
+
+    server_time = datetime.now()
+    remained_time = auction.start_date - server_time
+
+    return remained_time 
+
+    
+
+def loadview(data):
+    try:
+        auction_id = data['auction_id']
+        auction = Auction.query.get(auction_id)
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
+        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
+        for user in users:
+            user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
+            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
+            user.current_bids = user_last_offer.current_bids
+            user.current_offer_price = user_last_offer.total_price
+
+        user_schema = UserSchema(many=True)
+        if(last_offer):
+            emit("update_view", {"success":True, "current_offer_price": last_offer.total_price,"users": json.dumps(user_schema.dump(users))}) 
+            return 200
+        else:
+            emit("update_view", {"success":True , "current_offer_price": 0,"users": json.dumps(user_schema.dump(users))})
+            return 200
+
+    except Exception as e:
+        emit("failed", {"reason": e.message})
+        return 500
 
 @socketio.on('join')
 def join(data):
     room = data['auction_id']
     join_room(room)
+    loadview(data)
     emit("join", {"msg": "new client joined auction"}, room=room)
 
 @socketio.on('leave')
@@ -108,27 +142,7 @@ def handle_bid(data):
         emit("error", {"msg": e.message})
 
 
-def loadview(data):
-    try:
-        auction_id = data['auction_id']
-        auction = Auction.query.get(auction_id)
-        remained_time = (auction.start_date - datetime.now()).seconds * 1000
-        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
-        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
-        for user in users:
-            user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
-            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
-            user.current_bids = user_last_offer.current_bids
-            user.current_offer_price = user_last_offer.total_price
 
-        user_schema = UserSchema(many=True)
-        if(last_offer):
-            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"loadview","current_offer_price":"'+ str(last_offer.total_price) +'","users":'+json.dumps(user_schema.dump(users))+',"remained_time":'+str(remained_time)+'}'
-        else:
-            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"loadview","current_offer_price":"0" ,"users":'+json.dumps(user_schema.dump(users))+', "remained_time":'+str(remained_time)+'}'
-
-    except Exception as e:
-        return "{'error':"+str(e)+"}"
 
 def auction_done(data):
     try:
@@ -141,8 +155,20 @@ def auction_done(data):
             db.session.commit()
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
-            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"auction_done","winner":'+json.dumps(user_schema.dump(winner))+'}'
+            emit("auction_done", {"success":True, "winner": json.dumps(user_schema.dump(winner))})
+            return 200
         else:
-            return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","handler":"auction_done" , "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"}'
+            emit("failed", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"})
+            return 400
     except Exception as e:
-        return "{'error':"+str(e)+"}"
+        emit("failed", {"reason": e.message})
+        return 500
+
+@socketio.on('status')
+def get_acution_status(data):
+    auction_id = data['auction_id']
+    auction = Auction.query.get(auction_id)
+    if (auction.start_date - datetime.now()) <=0:
+        auction_done(data)
+    else:
+        emit("auction_status", {"status": "running"})
