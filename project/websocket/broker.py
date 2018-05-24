@@ -19,12 +19,15 @@ class SocketBroker():
             message = ws.receive()
             data = ast.literal_eval(message)
             handler = data['handler']
+
             if handler == 'offer':
                 message = offer_bid(data)
             elif handler == 'loadview':
                 message = loadview(data)
             elif handler == 'auction_done':
                 message = auction_done(data)
+            elif handler == 'get_time':
+                message = get_time(data)
             else:
                 pass
 

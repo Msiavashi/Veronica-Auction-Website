@@ -12,12 +12,15 @@ import json
 from project import app
 from datetime import datetime , timedelta
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
+from project.websocket.Timer import timer
+import time
 
 @login_required
 def offer_bid(data):
     try:
         auction_id = data['auction_id']
         user_id = data['user_id']
+        difference = int(data['difference'])
         auction = Auction.query.get(auction_id)
         user = User.query.get(user_id)
 
@@ -32,11 +35,12 @@ def offer_bid(data):
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
-        if(remained > 60):
+        if(remained > 60 * 10):
             return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد","user_id":"'+str(user_id)+'"}'
-        if(remained < 10):
-            auction.start_date = now + timedelta(seconds=10)
+        if(remained < 10 * 58):
+            auction.start_date = datetime.now() + timedelta(seconds=10)
             db.session.add(auction)
+            db.session.commit()
 
         user_plan = UserPlan.query.filter_by(user_id=user_id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
         my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
@@ -123,3 +127,13 @@ def auction_done(data):
             return '{"auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"false","handler":"auction_done" , "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"}'
     except Exception as e:
         return "{'error':"+str(e)+"}"
+
+def get_time(data):
+    auction_id=data['auction_id']
+    auction = Auction.query.get(auction_id)
+    # pretty_time = timer.getCurrentTimerTime(str(auction.start_date))
+    pretty_time = " "
+    server_time = datetime.now()
+    auction_schema = AuctionSchema()
+    deadline = auction.start_date
+    return '{"auction_deadline":"'+str(deadline)+'","auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"get_time","server_time":"'+str(server_time)+'","pretty_time":"'+pretty_time+'"}'

@@ -29,7 +29,7 @@ class AuctionUserParticipation(Resource):
 
         auction = Auction.query.get(auction_id)
 
-        now = time()
+        now = datetime.now()
         remained = (auction.start_date - now).seconds
         if(remained < 60):
             return make_response(jsonify({'success':False,"reason":"حداکثر تا یک دقیقه قبل از حراجی برای ثبت نام فرصت دارید"}),400)
@@ -56,14 +56,19 @@ class AuctionInstanceView(Resource):
         product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
         product_schema = ProductSchema()
         auction.remained_time = (auction.start_date - datetime.now()).seconds * 1000
-        now = datetime.now()
+
+        print '****************'+ str(datetime.now())+'******************'
+
+        now_milliseconds = int(round(time.time() * 1000))
+        now_date = datetime.now()
+
 
         if(current_user.is_authenticated):
             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()
             auction_plan_schema = AuctionPlanSchema()
-            return make_response(jsonify({"server_time":now,"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
+            return make_response(jsonify({"server_now_date":now_date,"server_time_mili":now_milliseconds,"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
 
-        return make_response(jsonify({"server_time":now,"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
+        return make_response(jsonify({"server_now_date":now_date,"server_time_mili":now_milliseconds,"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
 class AuctionGetPlans(Resource):
     def get(self,aid):
         auction=Auction.query.get(aid)

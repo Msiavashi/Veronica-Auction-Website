@@ -135,6 +135,7 @@
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.elevatezoom.js')}} "></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static',filename='js/socket/reconnecting-websocket.min.js')}}"></script>
 <script>
 
@@ -147,6 +148,7 @@ var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
 var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
+var time_difference = ko.observable();
 
 function Person(name,avatar,its_me,row) {
     var self = this;
@@ -177,13 +179,20 @@ var client_token = token();
 console.log(client_token);
 
   inbox.onopen = function(){
-      console.log('inbox opened');
+    console.log('inbox opened');
+
   };
 
   outbox.onopen = function(){
       console.log('outbox opened');
       outbox.send(JSON.stringify({token:client_token,handler:'loadview',auction_id: auction_id }));
   };
+  var timer = setInterval(sendTimerRequest,1000);
+
+  function sendTimerRequest(){
+    outbox.send(JSON.stringify({token:client_token,handler:'get_time',auction_id: auction_id }));
+  };
+  var difference = ko.observable();
 
   inbox.onmessage = function(message) {
     console.log(message);
@@ -211,10 +220,10 @@ console.log(client_token);
               people.push(person);
             })
             people.valueHasMutated();
-            remained = (target_date - Date.now())/1000;
-            if( remained < 10){
-              resetTimer();
-            }
+            // remained = (target_date - Date.now())/1000;
+            // if( remained < 10){
+            //   resetTimer();
+            // }
           }
           break;
         case 'loadview':
@@ -254,6 +263,68 @@ console.log(client_token);
             $('#offer').html(data.winner[0].username);
           }
           break;
+        case 'get_time':
+          if(data.token == client_token && data.auction_id && data.auction_id == auction_id){
+            server_time = new Date(data.server_time).getTime();
+            client_time = new Date().getTime();
+            difference = client_time - server_time;
+            auction_time = new Date(data.auction_deadline).getTime() - difference;
+
+
+            var countdown = document.getElementById("tiles"); // get tag element
+            getCountdown(server_time,auction_time);
+
+            function getCountdown(server_time,auction_time){
+              // find the amount of "seconds" between now and target
+              seconds_left = (auction_time - server_time);
+
+
+              if ( seconds_left >= 0 ) {
+
+               if ( (seconds_left ) < ( auction_time / 2 ))
+               {
+                 $( '#tiles' ).removeClass('color-full');
+                 $( '#tiles' ).addClass('color-half');
+               }
+               else {
+                 $( '#tiles' ).addClass('color-full');
+                 $( '#tiles' ).removeClass('color-half');
+               }
+
+               if ( (seconds_left ) < ( auction_time / 6 ))
+                {
+                  $( '#tiles' ).removeClass('color-half');
+                  $( '#tiles' ).addClass('color-empty');
+                }else {
+                  $( '#tiles' ).addClass('color-half');
+                  $( '#tiles' ).removeClass('color-empty');
+                }
+
+              seconds_left/=1000;
+
+              days = pad( parseInt(seconds_left / 86400) );
+              seconds_left = seconds_left % 86400;
+
+              hours = pad( parseInt(seconds_left / 3600) );
+              seconds_left = seconds_left % 3600;
+
+              minutes = pad( parseInt(seconds_left / 60) );
+              seconds = pad( parseInt( seconds_left % 60 ) );
+
+              // format countdown string + set tag value
+              countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+              }
+              else {
+                clearInterval(timer);
+                outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
+              }
+            }
+
+            function pad(n) {
+              return (n < 10 ? '0' : '') + n;
+            }
+          }
+          break;
         default:
       }
     }
@@ -277,22 +348,14 @@ console.log(client_token);
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   console.log(data);
-  console.log("server time is :"+ data.server_time);
-  server_time = data.server_time;
-  localtime = new Date();
-  difference = server_time - localtime ;
-
-  console.log("server time is :"+ server_time );
-  console.log('localtime time is :'+ localtime );
-  console.log('difference time is :'+ difference /1000 +"seconds");
-
+  RenewClock(data.server_time_mili);
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
 
-
   var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
-  auction_deadline= parseInt(data.remained_time)
+  auction_deadline= parseInt(data.remained_time) + time_difference;
+
   before_start_text = "تاریخ شروع حراجی : ";
   var event = new Date(Date.parse(deadline));
   var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
@@ -372,80 +435,87 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
     });
   }
 
-  today = new Date();
-
-  var milliseconds = auction_deadline;
-  console.log(milliseconds);
-
-  if (milliseconds < 0){
-    alert('حراجی به اتمام رسیده است');
-  }
-
-  target_date = new Date().getTime() + milliseconds ; // set the countdown date
-  time_limit = milliseconds ;
-
-  var days, hours, minutes, seconds; // variables for time units
-
-  getCountdown(target_date);
+  // today = new Date();
+  //
+  // var milliseconds = auction_deadline;
+  // console.log(milliseconds);
+  //
+  // if (milliseconds < 0){
+  //   alert('حراجی به اتمام رسیده است');
+  // }
+  //
+  // target_date = new Date().getTime() + milliseconds ; // set the countdown date
+  // time_limit = milliseconds ;
+  //
+  // var days, hours, minutes, seconds; // variables for time units
+  //
+  // getCountdown(target_date);
 
 });
 
-var countdown = document.getElementById("tiles"); // get tag element
+function RenewClock(server_time) {
+  server = new Date(new Date(server_time).getTime());
 
-var timer = setInterval(function () { getCountdown(target_date); }, 1000);
+  client = new Date().getTime();
 
-function getCountdown(target_date){
-  // find the amount of "seconds" between now and target
-  seconds_left = (target_date - Date.now())/1000;
-
-  if ( seconds_left >= 0 ) {
-
-   if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
-   {
-     $( '#tiles' ).removeClass('color-full');
-     $( '#tiles' ).addClass('color-half');
-   }
-   else {
-     $( '#tiles' ).addClass('color-full');
-     $( '#tiles' ).removeClass('color-half');
-   }
-
-   if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
-    {
-      $( '#tiles' ).removeClass('color-half');
-      $( '#tiles' ).addClass('color-empty');
-    }else {
-      $( '#tiles' ).addClass('color-half');
-      $( '#tiles' ).removeClass('color-empty');
-    }
-
-  days = pad( parseInt(seconds_left / 86400) );
-  seconds_left = seconds_left % 86400;
-
-  hours = pad( parseInt(seconds_left / 3600) );
-  seconds_left = seconds_left % 3600;
-
-  minutes = pad( parseInt(seconds_left / 60) );
-  seconds = pad( parseInt( seconds_left % 60 ) );
-
-  // format countdown string + set tag value
-  countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-  }
-  else {
-    alert('زمان حراجی به اتمام رسید');
-    clearInterval(timer);
-    outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
-  }
+  time_difference = client - server;
 }
-
-function pad(n) {
-  return (n < 10 ? '0' : '') + n;
-}
+// var countdown = document.getElementById("tiles"); // get tag element
+//
+// var timer = setInterval(function () { getCountdown(target_date); }, 1000);
+//
+// function getCountdown(target_date){
+//   // find the amount of "seconds" between now and target
+//   seconds_left = (target_date - Date.now())/1000;
+//
+//   if ( seconds_left >= 0 ) {
+//
+//    if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
+//    {
+//      $( '#tiles' ).removeClass('color-full');
+//      $( '#tiles' ).addClass('color-half');
+//    }
+//    else {
+//      $( '#tiles' ).addClass('color-full');
+//      $( '#tiles' ).removeClass('color-half');
+//    }
+//
+//    if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
+//     {
+//       $( '#tiles' ).removeClass('color-half');
+//       $( '#tiles' ).addClass('color-empty');
+//     }else {
+//       $( '#tiles' ).addClass('color-half');
+//       $( '#tiles' ).removeClass('color-empty');
+//     }
+//
+//   days = pad( parseInt(seconds_left / 86400) );
+//   seconds_left = seconds_left % 86400;
+//
+//   hours = pad( parseInt(seconds_left / 3600) );
+//   seconds_left = seconds_left % 3600;
+//
+//   minutes = pad( parseInt(seconds_left / 60) );
+//   seconds = pad( parseInt( seconds_left % 60 ) );
+//
+//   // format countdown string + set tag value
+//   countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+//   }
+//   else {
+//     alert('زمان حراجی به اتمام رسید');
+//     clearInterval(timer);
+//     outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
+//   }
+// }
+//
+// function pad(n) {
+//   return (n < 10 ? '0' : '') + n;
+// }
 
 
 $("#offer").on("click", function(event) {
   event.preventDefault();
-  outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id }));
+  outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id ,difference : difference}));
 });
 
 $("#add_to_bag").on("click", function(event) {
