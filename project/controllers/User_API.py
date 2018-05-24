@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
+from importlib import reload
 reload(sys)
-sys.setdefaultencoding("utf-8")
+# sys.setdefaultencoding("utf-8")
 
 
 from flask_restful import Resource, reqparse
@@ -62,13 +63,13 @@ class UserInformation(Resource):
             "total_invitations": invitations,
             "invitation_code": current_user.username
         }
-        print info
+        # print info
         return make_response(jsonify(info),200)
 
     @login_required
     def post(self):
         # json_data = request.get_json(force=True)
-        print request.form
+        # print request.form
         current_user.alias_name = request.form.get('alias-name')
         current_user.first_name = request.form.get('first-name')
         current_user.last_name = request.form.get('last-name')

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
+from importlib import reload
 reload(sys)
-sys.setdefaultencoding("utf-8")
+# sys.setdefaultencoding("utf-8")
 
 __version__ = '0.1'
 from flask import Flask , session
@@ -18,7 +19,7 @@ REDIS_URL = "redis://localhost:6379/0"
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-socketio = SocketIO(async_mode='eventlet')
+socketio = SocketIO()
 socketio.init_app(app, message_queue=REDIS_URL)
 jwt = JWTManager(app)
 app.debug = True
