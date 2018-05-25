@@ -13,14 +13,23 @@ import json
 from project import app
 from datetime import datetime , timedelta
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
+<<<<<<< HEAD
+=======
+
+>>>>>>> 481f01c
 from project.websocket.Timer import timer
 import time
 from project import socketio
 from flask_socketio import emit, join_room, leave_room
+<<<<<<< HEAD
+=======
+
+>>>>>>> 481f01c
 
 # REDIS_URL = "redis://localhost:6379/0"
 # REDIS_CHAN = 'auction'
 
+<<<<<<< HEAD
 
 def get_remained_time(auction_id):
     auction = Auction.query.get(auction_id)
@@ -56,8 +65,11 @@ def loadview(data):
         emit("failed", {"reason": e.message})
         return 500
 
+=======
+>>>>>>> 481f01c
 @socketio.on('join')
 def join(data):
+    print "***************** joined **************"
     room = data['auction_id']
     join_room(room)
     loadview(data)
@@ -79,7 +91,12 @@ def handle_bid(data):
         # is_registered
     try:
         auction_id = data['auction_id']
+<<<<<<< HEAD
         user_id = current_user.id
+=======
+        user_id = data['user_id']
+        difference = int(data['difference'])
+>>>>>>> 481f01c
         auction = Auction.query.get(auction_id)
         user = current_user
         # check for one minutes remained for starting auction
