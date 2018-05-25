@@ -73,6 +73,7 @@ def loadview(data):
 #authenticated users only
 @socketio.on('bid')
 def handle_bid(data):
+    room=data['auction_id']
     if not current_user.is_authenticated:
         emit('unauthorized', {"msg": "login required"})
         return 401
@@ -88,14 +89,12 @@ def handle_bid(data):
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
 
         if(last_offer and last_offer.win):
-            winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
-            user_schema = UserSchema()
-            emit("win", {"success": True, "winner": json.dumps(user_schema.dump(winner))}, room=auction_id)
+            auction_done(data)
             return 200
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
-        if(remained > 60):
+        if(remained > 600):
             emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
             return 400
         if(remained < 10):
@@ -116,16 +115,19 @@ def handle_bid(data):
         offer.user_plan=user_plan
         offer.auction=auction
 
-        if(my_last_offer.current_bids == 0):
-            emit("failed", {"success":False,"reason":"پیشنهادات شما به پایان رسید"})
-            return 400
-
-        if(last_offer):
+        if(my_last_offer):
+            if(my_last_offer.current_bids > 0):
+                offer.total_price = auction.base_price + offer_count * (BASE_BID_PRICE * auction.ratio)
+                offer.current_bids = my_last_offer.current_bids - 1
+            else:
+                emit("failed", {"success":False,"reason":"پیشنهادات شما به پایان رسید"})
+                return 400
+        elif(last_offer):
             offer.total_price = last_offer.total_price + (BASE_BID_PRICE * auction.ratio)
+            offer.current_bids = user_plan.auction_plan.max_offers - 1
         else:
             offer.total_price = auction.base_price + (BASE_BID_PRICE * auction.ratio)
-
-        offer.current_bids = user_plan.auction_plan.max_offers - 1
+            offer.current_bids = user_plan.auction_plan.max_offers - 1
 
         db.session.add(offer)
         db.session.commit()
@@ -138,16 +140,15 @@ def handle_bid(data):
             user.current_offer_price = user_last_offer.total_price
 
         user_schema = UserSchema(many=True)
-        emit("accepted", {"success": True, "current_bids": offer.current_bids, "total_price": str(offer.total_price) ,"users":json.dumps(user_schema.dump(users))})
+        emit("accepted", {"success": True, "current_bids": offer.current_bids, "total_price": str(offer.total_price) ,"users":user_schema.dump(users)},room=room)
         return 200
 
     except Exception as e:
-        emit("error", {"msg": e.message})
-
-
+        emit("failed", {"success":False,"reason": e.message})
 
 
 def auction_done(data):
+    room=data['auction_id']
     try:
         auction_id = data['auction_id']
         total_bids = Offer.query.filter_by(auction_id=auction_id).count()
@@ -158,10 +159,10 @@ def auction_done(data):
             db.session.commit()
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
-            emit("auction_done", {"success":True, "winner": json.dumps(user_schema.dump(winner))})
+            emit("auction_done", {"success":True, "winner": json.dumps(user_schema.dump(winner))},room=room)
             return 200
         else:
-            emit("failed", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"})
+            emit("failed", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
             return 400
     except Exception as e:
         return "{'error':"+str(e)+"}"
@@ -169,13 +170,17 @@ def auction_done(data):
 
 @socketio.on('status')
 def get_acution_status(data):
+    room=data['auction_id']
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
     remained = (auction.start_date - datetime.now()).seconds
+    server_time = datetime.now()
+    auction_time = auction.start_date
+
     if (remained <=0):
         auction_done(data)
     else:
-        emit("auction_status", {"status": "running","remained":remained})
+        emit("auction_status", {"status": "running","remained":remained,"server_time":str(server_time),"auction_time":str(auction_time)},room=room)
 
         # def get_time(data):
         #     auction_id=data['auction_id']

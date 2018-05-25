@@ -256,49 +256,57 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('connect', function() {
 		 console.log('connected');
      socket.emit('join', {'auction_id':auction_id});
-
-
  });
- var timer = setInterval(getStatus,1000);
+
+ var timer = setInterval(getStatus,500);
 
  function getStatus() {
    socket.emit('status',{'auction_id':auction_id});
-   console.log(time_left);
  }
 
- socket.on('auction_status', function(data) {
-  console.log(data);
-  // server_time = new Date(data.server_time).getTime();
-  // client_time = new Date().getTime();
-  // difference = client_time - server_time;
-  // auction_time = new Date(data.auction_deadline).getTime() - difference;
+var client_time = Date.now();
+var server_time = Date.now();
+var difference = 0;
+var auction_time = Date.now()+10*1000;
 
-  var countdown = document.getElementById("tiles"); // get tag element
+socket.on('auction_status',function(data) {
 
-  getCountdown(data.remained);
+  server_time = new Date(data.server_time).getTime();
+  client_time = new Date().getTime();
+  difference = client_time - server_time;
+  auction_time = new Date(data.auction_time).getTime() - difference;
 
-  function getCountdown(seconds_left){
+  var countdown = document.getElementById("tiles");
+
+  getCountdown(server_time,auction_time);
+
+  function getCountdown(server_time,auction_time){
+    // find the amount of "seconds" between now and target
+    seconds_left = (auction_time - server_time);
+    console.log(seconds_left);
 
     if ( seconds_left >= 0 ) {
 
-    if ( seconds_left < ( time_left / 2))
-    {
-      $( '#tiles' ).removeClass('color-full');
-      $( '#tiles' ).addClass('color-half');
-    }
-    else {
-      $( '#tiles' ).addClass('color-full');
-      $( '#tiles' ).removeClass('color-half');
-    }
-    if ( seconds_left < 60 )
-    {
-      $( '#tiles' ).removeClass('color-half');
-      $( '#tiles' ).addClass('color-empty');
-    }
-    if( seconds_left < 10 ) {
-      $( '#tiles' ).addClass('color-half');
-      $( '#tiles' ).removeClass('color-empty');
-    }
+     if ( (seconds_left ) < ( time_left / 2 ))
+     {
+       $( '#tiles' ).removeClass('color-full');
+       $( '#tiles' ).addClass('color-half');
+     }
+     else {
+       $( '#tiles' ).addClass('color-full');
+       $( '#tiles' ).removeClass('color-half');
+     }
+
+     if ( (seconds_left ) < ( time_left / 6 ))
+      {
+        $( '#tiles' ).removeClass('color-half');
+        $( '#tiles' ).addClass('color-empty');
+      }else {
+        $( '#tiles' ).addClass('color-half');
+        $( '#tiles' ).removeClass('color-empty');
+      }
+
+    seconds_left/=1000;
 
     days = pad( parseInt(seconds_left / 86400) );
     seconds_left = seconds_left % 86400;
@@ -313,12 +321,12 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
     countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
     }
   }
+});
 
-  function pad(n) {
-    return (n < 10 ? '0' : '') + n;
-  }
 
- });
+ function pad(n) {
+   return (n < 10 ? '0' : '') + n;
+ }
 
  socket.on('join', function(data) {
    console.log(data);
@@ -329,8 +337,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
    users = data.users[0];
    active_user = users[0];
-   console.log(users);
-   console.log(active_user);
+
     $.each(users,function(key,user){
       if(user.id =='{{current_user.id}}'){
         if(user.current_bids)
@@ -361,9 +368,55 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  });
 
- socket.on('failed', function(data) {
-   console.log(data.reason);
+ socket.on('accepted', function(data) {
+   users = data.users[0];
+   winner_user = users[0];
+
+   console.log(data);
+   $.each(users,function(key,user){
+     if(user.id =='{{current_user.id}}'){
+       if(user.current_bids)
+         $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
+     }
+   });
+
+   $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
+   if(winner_user){
+     $('#auction_current_winner').html(data.users[0][0].username);
+     $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+   }
+   if(users){
+     rowIndex = 0;
+     people([]);
+     $.each(data.users[0],function(key,val){
+       its_you = val.id == current_user_id ? true : false;
+       name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+       avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+       row = ++rowIndex;
+       person = new Person(name,avatar,its_you,ToPersian(row));
+       people.push(person);
+     });
+     people.valueHasMutated();
+   }
  });
+
+ socket.on('auction_done', function(data) {
+    clearInterval(timer);
+    $(".error_alert").addClass('hide');
+    $(".success_alert").removeClass('hide');
+    $(".success_container").html('حراجی این محصول به پایان رسیده است')
+    $('#offer').html(data.winner[0].username);
+ });
+
+ socket.on('failed', function(data) {
+   $(".error_alert").removeClass('hide');
+   $(".error_container").html(data.reason);
+ });
+
+ $("#offer").on("click", function(event) {
+   socket.emit('bid', {'auction_id':auction_id});
+ });
+
 
 
 
@@ -618,10 +671,6 @@ function RenewClock(server_time) {
 // // }
 //
 //
-// $("#offer").on("click", function(event) {
-//   event.preventDefault();
-//   outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id ,difference : difference}));
-// });
 //
 // $("#add_to_bag").on("click", function(event) {
 //   resetTimer();

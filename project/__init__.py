@@ -8,12 +8,13 @@ from flask import Flask , session
 from datetime import timedelta
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_jwt_extended import JWTManager
-from flask_wtf.csrf import CSRFProtect, CSRFError
+# from flask_wtf.csrf import CSRFProtect, CSRFError
 from flask_socketio import SocketIO
 import websocket
 import eventlet
 eventlet.monkey_patch(socket=True)
 import redis
+
 REDIS_URL = "redis://localhost:6379/0"
 
 app = Flask(__name__)
@@ -23,7 +24,7 @@ socketio.init_app(app, message_queue=REDIS_URL)
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 
 # sockets = Sockets(app)
 
