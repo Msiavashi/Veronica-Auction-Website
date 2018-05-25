@@ -94,11 +94,11 @@ def handle_bid(data):
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
-        if(remained > 600):
+        if(remained > 60):
             emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
             return 400
         if(remained < 10):
-            auction.start_date = now + timedelta(seconds=10)
+            auction.start_date = now + timedelta(seconds=11)
             db.session.add(auction)
             db.session.commit()
 
@@ -170,14 +170,13 @@ def auction_done(data):
 
 @socketio.on('status')
 def get_acution_status(data):
-    room=data['auction_id']
+    room = data['auction_id']
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
     remained = (auction.start_date - datetime.now()).seconds
     server_time = datetime.now()
     auction_time = auction.start_date
-
-    if (remained <=0):
+    if (remained <= 0):
         auction_done(data)
     else:
         emit("auction_status", {"status": "running","remained":remained,"server_time":str(server_time),"auction_time":str(auction_time)},room=room)
