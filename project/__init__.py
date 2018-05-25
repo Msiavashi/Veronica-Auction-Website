@@ -18,8 +18,8 @@ REDIS_URL = "redis://localhost:6379/0"
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-socketio = SocketIO(async_mode='eventlet')
-socketio.init_app(app)
+socketio = SocketIO()
+socketio.init_app(app, message_queue=REDIS_URL)
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)

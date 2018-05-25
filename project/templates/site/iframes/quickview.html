@@ -136,7 +136,8 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static',filename='js/socket/reconnecting-websocket.min.js')}}"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
 <script>
 
 var auction_id = $('#auction').val();
@@ -148,203 +149,18 @@ var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
 var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
+var time_left = ko.observable();
 var time_difference = ko.observable();
 
-function Person(name,avatar,its_me,row) {
+
+function Person(name,avatar,its_me,row,price) {
     var self = this;
     self.name = ko.observable(name);
     self.avatar = ko.observable(avatar);
     self.its_me = ko.observable(its_me);
     self.row = ko.observable(row);
+    self.offer_price = ko.observable(price);
 }
-
-if (window.location.protocol == "https:") {
-    var ws_scheme = "wss://";
-    }
-  else {
-    var ws_scheme = "ws://"
-};
-
-
-var inbox = new ReconnectingWebSocket(SERVERSOCKET_RECEIVE);
-var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
-var rand = function() {
-    return Math.random().toString(18).substr(2); // remove `0.`
-};
-
-var token = function() {
-    return rand() + rand(); // to make it longer
-};
-var client_token = token();
-console.log(client_token);
-
-  inbox.onopen = function(){
-    console.log('inbox opened');
-  };
-
-  outbox.onopen = function(){
-      console.log('outbox opened');
-      outbox.send(JSON.stringify({token:client_token,handler:'loadview',auction_id: auction_id }));
-  };
-  var timer = setInterval(sendTimerRequest,1000);
-
-  function sendTimerRequest(){
-    outbox.send(JSON.stringify({token:client_token,handler:'get_time',auction_id: auction_id }));
-  };
-  var difference = ko.observable();
-
-  inbox.onmessage = function(message) {
-    console.log(message);
-    var data = JSON.parse(message.data);
-    if(data.success=='true'){
-      switch (data.handler) {
-
-        case 'offer':
-          if(data.token == client_token){
-            $('#offer_count').html(ToPersian(formatCurrency(data.current_bids)));
-          }
-
-          if(data.auction_id == auction_id){
-            $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
-            $('#auction_current_winner').html(data.users[0][0].username);
-            $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
-            rowIndex = 0;
-            people([]);
-            $.each(data.users[0],function(key,val){
-              its_you = val.id == current_user_id ? true : false;
-              name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-              avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-              row = ++rowIndex;
-              person = new Person(name,avatar,its_you,ToPersian(row));
-              people.push(person);
-            })
-            people.valueHasMutated();
-            // remained = (target_date - Date.now())/1000;
-            // if( remained < 10){
-            //   resetTimer();
-            // }
-          }
-          break;
-        case 'loadview':
-          if(data.auction_id && data.auction_id == auction_id){
-            console.log(data.users[0]);
-             $.each(data.users[0],function(key,user){
-               if(user.id =='{{current_user.id}}'){
-                 console.log(user.current_bids);
-                 if(user.current_bids)
-                  $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
-               }
-             });
-
-             $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
-            if(data.users[0][0]){
-              $('#auction_current_winner').html(data.users[0][0].username);
-              $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0])
-              rowIndex = 0;
-              people([]);
-              $.each(data.users[0],function(key,val){
-                its_you = val.id == current_user_id ? true : false;
-                name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
-                avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-                row = ++rowIndex;
-                person = new Person(name,avatar,its_you,ToPersian(row));
-                people.push(person);
-              });
-              people.valueHasMutated();
-            }
-          }
-          break;
-        case 'auction_done':
-          if(data.auction_id && data.auction_id == auction_id){
-            $(".error_alert").addClass('hide');
-        		$(".success_alert").removeClass('hide');
-        		$(".success_container").html('حراجی این محصول به پایان رسیده است')
-            $('#offer').html(data.winner[0].username);
-          }
-          break;
-        case 'get_time':
-          if(data.token == client_token && data.auction_id && data.auction_id == auction_id){
-            server_time = new Date(data.server_time).getTime();
-            client_time = new Date().getTime();
-            difference = client_time - server_time;
-            auction_time = new Date(data.auction_deadline).getTime() - difference;
-
-
-            var countdown = document.getElementById("tiles"); // get tag element
-            getCountdown(server_time,auction_time);
-
-            function getCountdown(server_time,auction_time){
-              // find the amount of "seconds" between now and target
-              seconds_left = (auction_time - server_time);
-
-
-              if ( seconds_left >= 0 ) {
-
-               if ( (seconds_left ) < ( auction_time / 2 ))
-               {
-                 $( '#tiles' ).removeClass('color-full');
-                 $( '#tiles' ).addClass('color-half');
-               }
-               else {
-                 $( '#tiles' ).addClass('color-full');
-                 $( '#tiles' ).removeClass('color-half');
-               }
-
-               if ( (seconds_left ) < ( auction_time / 6 ))
-                {
-                  $( '#tiles' ).removeClass('color-half');
-                  $( '#tiles' ).addClass('color-empty');
-                }else {
-                  $( '#tiles' ).addClass('color-half');
-                  $( '#tiles' ).removeClass('color-empty');
-                }
-
-              seconds_left/=1000;
-
-              days = pad( parseInt(seconds_left / 86400) );
-              seconds_left = seconds_left % 86400;
-
-              hours = pad( parseInt(seconds_left / 3600) );
-              seconds_left = seconds_left % 3600;
-
-              minutes = pad( parseInt(seconds_left / 60) );
-              seconds = pad( parseInt( seconds_left % 60 ) );
-
-              // format countdown string + set tag value
-              countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-              }
-              else {
-                clearInterval(timer);
-                outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
-              }
-            }
-
-            function pad(n) {
-              return (n < 10 ? '0' : '') + n;
-            }
-          }
-          break;
-        default:
-      }
-    }
-    else {
-      if(data.token == client_token){
-        $(".error_alert").removeClass('hide');
-  			$(".error_container").html(data.reason);
-      }
-    }
-  };
-
-  inbox.onclose = function(){
-      console.log('inbox closed');
-      this.inbox = new WebSocket(inbox.url);
-  };
-
-  outbox.onclose = function(){
-      console.log('outbox closed');
-      this.outbox = new WebSocket(outbox.url);
-  };
-
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   console.log(data);
   RenewClock(data.server_time_mili);
@@ -433,25 +249,315 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
       });
     });
   }
-
-  // today = new Date();
-  //
-  // var milliseconds = auction_deadline;
-  // console.log(milliseconds);
-  //
-  // if (milliseconds < 0){
-  //   alert('حراجی به اتمام رسیده است');
-  // }
-  //
-  // target_date = new Date().getTime() + milliseconds ; // set the countdown date
-  // time_limit = milliseconds ;
-  //
-  // var days, hours, minutes, seconds; // variables for time units
-  //
-  // getCountdown(target_date);
-
 });
 
+var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+ socket.on('connect', function() {
+		 console.log('connected');
+     socket.emit('join', {'auction_id':auction_id});
+
+
+ });
+ var timer = setInterval(getStatus,1000);
+
+ function getStatus() {
+   socket.emit('status',{'auction_id':auction_id});
+   console.log(time_left);
+ }
+
+ socket.on('auction_status', function(data) {
+  console.log(data);
+  // server_time = new Date(data.server_time).getTime();
+  // client_time = new Date().getTime();
+  // difference = client_time - server_time;
+  // auction_time = new Date(data.auction_deadline).getTime() - difference;
+
+  var countdown = document.getElementById("tiles"); // get tag element
+
+  getCountdown(data.remained);
+
+  function getCountdown(seconds_left){
+
+    if ( seconds_left >= 0 ) {
+
+    if ( seconds_left < ( time_left / 2))
+    {
+      $( '#tiles' ).removeClass('color-full');
+      $( '#tiles' ).addClass('color-half');
+    }
+    else {
+      $( '#tiles' ).addClass('color-full');
+      $( '#tiles' ).removeClass('color-half');
+    }
+    if ( seconds_left < 60 )
+    {
+      $( '#tiles' ).removeClass('color-half');
+      $( '#tiles' ).addClass('color-empty');
+    }
+    if( seconds_left < 10 ) {
+      $( '#tiles' ).addClass('color-half');
+      $( '#tiles' ).removeClass('color-empty');
+    }
+
+    days = pad( parseInt(seconds_left / 86400) );
+    seconds_left = seconds_left % 86400;
+
+    hours = pad( parseInt(seconds_left / 3600) );
+    seconds_left = seconds_left % 3600;
+
+    minutes = pad( parseInt(seconds_left / 60) );
+    seconds = pad( parseInt( seconds_left % 60 ) );
+
+    // format countdown string + set tag value
+    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+    }
+  }
+
+  function pad(n) {
+    return (n < 10 ? '0' : '') + n;
+  }
+
+ });
+
+ socket.on('join', function(data) {
+   console.log(data);
+   time_left = data.deadline;
+ });
+
+ socket.on('update_view', function(data) {
+
+   users = data.users[0];
+   active_user = users[0];
+   console.log(users);
+   console.log(active_user);
+    $.each(users,function(key,user){
+      if(user.id =='{{current_user.id}}'){
+        if(user.current_bids)
+          $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
+          return;
+      }
+    });
+
+    $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+    if(active_user){
+      $('#auction_current_winner').html(active_user.username);
+      $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(active_user.avatar)[0])
+    }
+   if(users){
+     rowIndex = 0;
+     people([]);
+     $.each(users,function(key,val){
+       its_you = val.id == current_user_id ? true : false;
+       name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+       avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+       row = ToPersian(++rowIndex);
+       price = val.current_offer_price ? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
+       person = new Person(name,avatar,its_you,row,price);
+       people.push(person);
+     });
+     people.valueHasMutated();
+   }
+
+ });
+
+ socket.on('failed', function(data) {
+   console.log(data.reason);
+ });
+
+
+
+
+//
+// if (window.location.protocol == "https:") {
+//     var ws_scheme = "wss://";
+//     }
+//   else {
+//     var ws_scheme = "ws://"
+// };
+//
+//
+// var inbox = new ReconnectingWebSocket(SERVERSOCKET_RECEIVE);
+// var outbox = new ReconnectingWebSocket(SERVERSOCKET_SUBMIT);
+// var rand = function() {
+//     return Math.random().toString(18).substr(2); // remove `0.`
+// };
+//
+// var token = function() {
+//     return rand() + rand(); // to make it longer
+// };
+// var client_token = token();
+// console.log(client_token);
+//
+//   inbox.onopen = function(){
+//     console.log('inbox opened');
+//   };
+//
+//   outbox.onopen = function(){
+//       console.log('outbox opened');
+//       outbox.send(JSON.stringify({token:client_token,handler:'loadview',auction_id: auction_id }));
+//   };
+//   var timer = setInterval(sendTimerRequest,1000);
+//
+//   function sendTimerRequest(){
+//     outbox.send(JSON.stringify({token:client_token,handler:'get_time',auction_id: auction_id }));
+//   };
+//   var difference = ko.observable();
+//
+//   inbox.onmessage = function(message) {
+//     console.log(message);
+//     var data = JSON.parse(message.data);
+//     if(data.success=='true'){
+//       switch (data.handler) {
+//
+//         case 'offer':
+//           if(data.token == client_token){
+//             $('#offer_count').html(ToPersian(formatCurrency(data.current_bids)));
+//           }
+//
+//           if(data.auction_id == auction_id){
+//             $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
+//             $('#auction_current_winner').html(data.users[0][0].username);
+//             $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+//             rowIndex = 0;
+//             people([]);
+//             $.each(data.users[0],function(key,val){
+//               its_you = val.id == current_user_id ? true : false;
+//               name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+//               avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+//               row = ++rowIndex;
+//               person = new Person(name,avatar,its_you,ToPersian(row));
+//               people.push(person);
+//             })
+//             people.valueHasMutated();
+//             // remained = (target_date - Date.now())/1000;
+//             // if( remained < 10){
+//             //   resetTimer();
+//             // }
+//           }
+//           break;
+//         case 'loadview':
+//           if(data.auction_id && data.auction_id == auction_id){
+//             console.log(data.users[0]);
+//              $.each(data.users[0],function(key,user){
+//                if(user.id =='{{current_user.id}}'){
+//                  console.log(user.current_bids);
+//                  if(user.current_bids)
+//                   $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
+//                }
+//              });
+//
+//              $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+//             if(data.users[0][0]){
+//               $('#auction_current_winner').html(data.users[0][0].username);
+//               $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0])
+//               rowIndex = 0;
+//               people([]);
+//               $.each(data.users[0],function(key,val){
+//                 its_you = val.id == current_user_id ? true : false;
+//                 name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+//                 avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+//                 row = ++rowIndex;
+//                 person = new Person(name,avatar,its_you,ToPersian(row));
+//                 people.push(person);
+//               });
+//               people.valueHasMutated();
+//             }
+//           }
+//           break;
+//         case 'auction_done':
+//           if(data.auction_id && data.auction_id == auction_id){
+//             $(".error_alert").addClass('hide');
+//         		$(".success_alert").removeClass('hide');
+//         		$(".success_container").html('حراجی این محصول به پایان رسیده است')
+//             $('#offer').html(data.winner[0].username);
+//           }
+//           break;
+//         case 'get_time':
+//           if(data.token == client_token && data.auction_id && data.auction_id == auction_id){
+//             server_time = new Date(data.server_time).getTime();
+//             client_time = new Date().getTime();
+//             difference = client_time - server_time;
+//             auction_time = new Date(data.auction_deadline).getTime() - difference;
+//
+//
+//             var countdown = document.getElementById("tiles"); // get tag element
+//             getCountdown(server_time,auction_time);
+//
+//             function getCountdown(server_time,auction_time){
+//               // find the amount of "seconds" between now and target
+//               seconds_left = (auction_time - server_time);
+//
+//
+//               if ( seconds_left >= 0 ) {
+//
+//                if ( (seconds_left ) < ( auction_time / 2 ))
+//                {
+//                  $( '#tiles' ).removeClass('color-full');
+//                  $( '#tiles' ).addClass('color-half');
+//                }
+//                else {
+//                  $( '#tiles' ).addClass('color-full');
+//                  $( '#tiles' ).removeClass('color-half');
+//                }
+//
+//                if ( (seconds_left ) < ( auction_time / 6 ))
+//                 {
+//                   $( '#tiles' ).removeClass('color-half');
+//                   $( '#tiles' ).addClass('color-empty');
+//                 }else {
+//                   $( '#tiles' ).addClass('color-half');
+//                   $( '#tiles' ).removeClass('color-empty');
+//                 }
+//
+//               seconds_left/=1000;
+//
+//               days = pad( parseInt(seconds_left / 86400) );
+//               seconds_left = seconds_left % 86400;
+//
+//               hours = pad( parseInt(seconds_left / 3600) );
+//               seconds_left = seconds_left % 3600;
+//
+//               minutes = pad( parseInt(seconds_left / 60) );
+//               seconds = pad( parseInt( seconds_left % 60 ) );
+//
+//               // format countdown string + set tag value
+//               countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+//               }
+//               else {
+//                 clearInterval(timer);
+//                 outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
+//               }
+//             }
+//
+//             function pad(n) {
+//               return (n < 10 ? '0' : '') + n;
+//             }
+//           }
+//           break;
+//         default:
+//       }
+//     }
+//     else {
+//       if(data.token == client_token){
+//         $(".error_alert").removeClass('hide');
+//   			$(".error_container").html(data.reason);
+//       }
+//     }
+//   };
+//
+//   inbox.onclose = function(){
+//       console.log('inbox closed');
+//       this.inbox = new WebSocket(inbox.url);
+//   };
+//
+//   outbox.onclose = function(){
+//       console.log('outbox closed');
+//       this.outbox = new WebSocket(outbox.url);
+//   };
+//
+//
+//
 function RenewClock(server_time) {
   server = new Date(new Date(server_time).getTime());
 
@@ -459,75 +565,75 @@ function RenewClock(server_time) {
 
   time_difference = client - server;
 }
-// var countdown = document.getElementById("tiles"); // get tag element
+// // var countdown = document.getElementById("tiles"); // get tag element
+// //
+// // var timer = setInterval(function () { getCountdown(target_date); }, 1000);
+// //
+// // function getCountdown(target_date){
+// //   // find the amount of "seconds" between now and target
+// //   seconds_left = (target_date - Date.now())/1000;
+// //
+// //   if ( seconds_left >= 0 ) {
+// //
+// //    if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
+// //    {
+// //      $( '#tiles' ).removeClass('color-full');
+// //      $( '#tiles' ).addClass('color-half');
+// //    }
+// //    else {
+// //      $( '#tiles' ).addClass('color-full');
+// //      $( '#tiles' ).removeClass('color-half');
+// //    }
+// //
+// //    if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
+// //     {
+// //       $( '#tiles' ).removeClass('color-half');
+// //       $( '#tiles' ).addClass('color-empty');
+// //     }else {
+// //       $( '#tiles' ).addClass('color-half');
+// //       $( '#tiles' ).removeClass('color-empty');
+// //     }
+// //
+// //   days = pad( parseInt(seconds_left / 86400) );
+// //   seconds_left = seconds_left % 86400;
+// //
+// //   hours = pad( parseInt(seconds_left / 3600) );
+// //   seconds_left = seconds_left % 3600;
+// //
+// //   minutes = pad( parseInt(seconds_left / 60) );
+// //   seconds = pad( parseInt( seconds_left % 60 ) );
+// //
+// //   // format countdown string + set tag value
+// //   countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+// //   }
+// //   else {
+// //     alert('زمان حراجی به اتمام رسید');
+// //     clearInterval(timer);
+// //     outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
+// //   }
+// // }
+// //
+// // function pad(n) {
+// //   return (n < 10 ? '0' : '') + n;
+// // }
 //
-// var timer = setInterval(function () { getCountdown(target_date); }, 1000);
 //
-// function getCountdown(target_date){
-//   // find the amount of "seconds" between now and target
-//   seconds_left = (target_date - Date.now())/1000;
+// $("#offer").on("click", function(event) {
+//   event.preventDefault();
+//   outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id ,difference : difference}));
+// });
 //
-//   if ( seconds_left >= 0 ) {
+// $("#add_to_bag").on("click", function(event) {
+//   resetTimer();
+// });
 //
-//    if ( (seconds_left * 1000 ) < ( time_limit / 1 ))
-//    {
-//      $( '#tiles' ).removeClass('color-full');
-//      $( '#tiles' ).addClass('color-half');
-//    }
-//    else {
-//      $( '#tiles' ).addClass('color-full');
-//      $( '#tiles' ).removeClass('color-half');
-//    }
-//
-//    if ( (seconds_left * 1000 ) < ( time_limit / 6 ))
-//     {
-//       $( '#tiles' ).removeClass('color-half');
-//       $( '#tiles' ).addClass('color-empty');
-//     }else {
-//       $( '#tiles' ).addClass('color-half');
-//       $( '#tiles' ).removeClass('color-empty');
-//     }
-//
-//   days = pad( parseInt(seconds_left / 86400) );
-//   seconds_left = seconds_left % 86400;
-//
-//   hours = pad( parseInt(seconds_left / 3600) );
-//   seconds_left = seconds_left % 3600;
-//
-//   minutes = pad( parseInt(seconds_left / 60) );
-//   seconds = pad( parseInt( seconds_left % 60 ) );
-//
-//   // format countdown string + set tag value
-//   countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-//   }
-//   else {
-//     alert('زمان حراجی به اتمام رسید');
-//     clearInterval(timer);
-//     outbox.send(JSON.stringify({token:client_token,handler:'auction_done', auction_id: auction_id }));
-//   }
+// function resetTimer() {
+//   target_date = Date.now() + (10 * 1000);
+//   time_limit = (10 * 1000);
+//   clearInterval(timer);
+//   timer = setInterval(function () { getCountdown(target_date); }, 1000);
+//   getCountdown(target_date);
 // }
-//
-// function pad(n) {
-//   return (n < 10 ? '0' : '') + n;
-// }
-
-
-$("#offer").on("click", function(event) {
-  event.preventDefault();
-  outbox.send(JSON.stringify({token:client_token,handler:'offer', user_id: '{{current_user.id}}', auction_id: auction_id ,difference : difference}));
-});
-
-$("#add_to_bag").on("click", function(event) {
-  resetTimer();
-});
-
-function resetTimer() {
-  target_date = Date.now() + (10 * 1000);
-  time_limit = (10 * 1000);
-  clearInterval(timer);
-  timer = setInterval(function () { getCountdown(target_date); }, 1000);
-  getCountdown(target_date);
-}
 
 
 </script>
