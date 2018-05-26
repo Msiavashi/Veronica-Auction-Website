@@ -157,7 +157,7 @@ $('#place_order').on('click',function(){
     },
 		error:function(data) {
 			result = JSON.parse(data.responseText)
-			console.log(result.reason);
+			alert(result.reason);
 			window.parent.location.reload();
 		}
 

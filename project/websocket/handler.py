@@ -16,18 +16,18 @@ import time
 from project import socketio
 from flask_socketio import emit, join_room, leave_room
 
-# REDIS_URL = "redis://localhost:6379/0"
-# REDIS_CHAN = 'auction'
 
-
-def get_remained_time(auction_id):
-    auction = Auction.query.get(auction_id)
-
-    server_time = datetime.now()
-    remained_time = auction.start_date - server_time
-
-    return remained_time
-
+@socketio.on('sync_timers')
+def sync_timers():
+    room = 'index'
+    join_room(room)
+    now = datetime.now()
+    auctions = Auction.query.filter(Auction.start_date >= now).order_by('start_date')
+    result = []
+    for auction in auctions:
+        keyValue = {"auction_id":auction.id,"remained_time":(auction.start_date - now).seconds}
+        result.append(keyValue)
+    emit("sync_timers",{"timers": result} , room=room)
 
 @socketio.on('join')
 def join(data):
@@ -60,7 +60,6 @@ def loadview(data):
         user_schema = UserSchema(many=True)
 
         if(last_offer):
-            print "here i am last_offer"
             emit("update_view", {"success":True, "current_offer_price": str(last_offer.total_price),"users": user_schema.dump(users)})
         else:
             print "here i am no last_offer"
@@ -83,7 +82,12 @@ def handle_bid(data):
         auction_id = data['auction_id']
         user_id = current_user.id
         auction = Auction.query.get(auction_id)
-        user = current_user
+        user = User.query.get(user_id)
+        user_plan = UserPlan.query.filter_by(user_id=user_id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
+        auc_part = UserAuctionParticipation.query.filter_by(auction_id=auction_id,user_id=user_id).first()
+        if(not (user_plan and auc_part)):
+            emit('failed',{"success":False,"reason":"شما در این حراجی شرکت نکرده اید و مجوز ارسال پیشنهاد ندارید"})
+            return 400
         # check for one minutes remained for starting auction
 
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
@@ -97,12 +101,7 @@ def handle_bid(data):
         if(remained > 60):
             emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
             return 400
-        if(remained < 10):
-            auction.start_date = now + timedelta(seconds=11)
-            db.session.add(auction)
-            db.session.commit()
 
-        user_plan = UserPlan.query.filter_by(user_id=user_id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
         my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
 
         if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
@@ -132,6 +131,11 @@ def handle_bid(data):
         db.session.add(offer)
         db.session.commit()
 
+        if(remained < 10):
+            auction.start_date = now + timedelta(seconds=11)
+            db.session.add(auction)
+            db.session.commit()
+
         users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
         for user in users:
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
@@ -151,6 +155,9 @@ def auction_done(data):
     room=data['auction_id']
     try:
         auction_id = data['auction_id']
+        auction = Auction.query.get(auction_id)
+        price = auction.item.price
+
         total_bids = Offer.query.filter_by(auction_id=auction_id).count()
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
         if(last_offer):
@@ -159,10 +166,11 @@ def auction_done(data):
             db.session.commit()
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
-            emit("auction_done", {"success":True, "winner": json.dumps(user_schema.dump(winner))},room=room)
+            price -= last_offer.total_price
+            emit("auction_done", {"success":True, "winner": json.dumps(user_schema.dump(winner)),"discount":str(price)},room=room)
             return 200
         else:
-            emit("failed", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
+            emit("auction_done", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
             return 400
     except Exception as e:
         return "{'error':"+str(e)+"}"
@@ -176,22 +184,7 @@ def get_acution_status(data):
     remained = (auction.start_date - datetime.now()).seconds
     server_time = datetime.now()
     auction_time = auction.start_date
-    if (remained <= 0):
+    if (int(auction.start_date < datetime.now()) ):
         auction_done(data)
     else:
         emit("auction_status", {"status": "running","remained":remained,"server_time":str(server_time),"auction_time":str(auction_time)},room=room)
-
-        # def get_time(data):
-        #     auction_id=data['auction_id']
-        #     auction = Auction.query.get(auction_id)
-        #     # pretty_time = timer.getCurrentTimerTime(str(auction.start_date))
-        #     pretty_time = " "
-        #     server_time = datetime.now()
-        #     auction_schema = AuctionSchema()
-        #     deadline = auction.start_date
-        #     now = datetime.now()
-        #     remained = (auction.start_date - now)
-        #
-        #     return '{"auction_deadline":"'+str(remained)+'","auction_id":"'+auction_id+'","token": "'+data['token']+'","success":"true","handler":"get_time","server_time":"'+str(server_time)+'","pretty_time":"'+pretty_time+'"}'
-        #         emit("failed", {"reason": e.message})
-        #         return 500

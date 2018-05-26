@@ -115,7 +115,7 @@
               <div class="product-extra-link2">
                 <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"></i> اضافه به سبد</a>
                 <a class="wishlist-link2" href="#" id="like_auction"><i aria-hidden="true" class="fa fa-heart"></i></a>
-                <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i>۲،۴۵۰،۰۰۰ تومان</a>
+                <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span>تومان</a>
               </div>
             </div>
           </div>
@@ -162,7 +162,6 @@ function Person(name,avatar,its_me,row,price) {
 }
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   console.log(data);
-  RenewClock(data.server_time_mili);
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
@@ -263,16 +262,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
    socket.emit('status',{'auction_id':auction_id});
  }
 
-var client_time = Date.now();
-var server_time = Date.now();
-var difference = 0;
-var auction_time = Date.now() + 10 * 1000;
-
-socket.on('auction_status',function(data) {
-  console.log(data.remained);
-  server_time = new Date(data.server_time).getTime();
-  client_time = new Date().getTime();
-  difference = client_time - server_time;
+ socket.on('auction_status',function(data) {
 
   var countdown = document.getElementById("tiles");
 
@@ -282,7 +272,7 @@ socket.on('auction_status',function(data) {
 
     if ( seconds_left >= 0 ) {
 
-     if ( (seconds_left ) < ( time_left / 2 ))
+     if ( seconds_left  <  60 )
      {
        $( '#tiles' ).removeClass('color-full');
        $( '#tiles' ).addClass('color-half');
@@ -292,7 +282,7 @@ socket.on('auction_status',function(data) {
        $( '#tiles' ).removeClass('color-half');
      }
 
-     if ( (seconds_left ) < 10 )
+     if ( seconds_left  < 10 )
       {
         $( '#tiles' ).removeClass('color-half');
         $( '#tiles' ).addClass('color-empty');
@@ -376,7 +366,7 @@ socket.on('auction_status',function(data) {
    $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
    if(winner_user){
      $('#auction_current_winner').html(data.users[0][0].username);
-     $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+     $('#auction_current_winner_image').attr('src',data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#");
    }
    if(users){
      rowIndex = 0;
@@ -395,10 +385,17 @@ socket.on('auction_status',function(data) {
 
  socket.on('auction_done', function(data) {
     clearInterval(timer);
-    $(".error_alert").addClass('hide');
-    $(".success_alert").removeClass('hide');
-    $(".success_container").html('حراجی این محصول به پایان رسیده است')
-    $('#offer').html(data.winner[0].username);
+    if(data.success){
+      $(".error_alert").addClass('hide');
+      $(".success_alert").removeClass('hide');
+      $(".success_container").html('حراجی این محصول به پایان رسیده است')
+      $('#offer').html(data.winner[0].username);
+      $('#discount').html(ToPersian(formatCurrency(data.discount)))
+    }else {
+      $(".error_alert").removeClass('hide');
+      $(".error_container").html(data.reason);
+    }
+
  });
 
  socket.on('failed', function(data) {

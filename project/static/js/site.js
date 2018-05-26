@@ -23,7 +23,8 @@ function getFormData($form){
 }
 
 function ClearifyNames(ugly_text) {
-	return ugly_text.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',');
+	if(ugly_text)
+		return ugly_text.replace(/'/g, '').replace('[','').replace(']','').replace(' ','').split(',');
 }
 
 Date.prototype.format = function (format, utc){
@@ -227,7 +228,7 @@ var product_image_path = '../../static/images/products/';
 
 function triggerSlider(element){
 	var data = element.data();
-	
+
 	setTimeout(function() {
 
 		element.owlCarousel({
