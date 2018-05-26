@@ -1,3 +1,6 @@
+var images_path = '../../static/images/products/';
+var avatar_path = '../../static/images/avatars/';
+
 $('.close').on('click',function(){
 	$(this).parent().removeClass('show').addClass('hide')
 });

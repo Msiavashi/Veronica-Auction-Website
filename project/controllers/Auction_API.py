@@ -20,6 +20,21 @@ class AuctionUserViewed(Resource):
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
+class AuctionViewFinished(Resource):
+    def get(self):
+        offers = Offer.query.filter_by(win=True).all()
+        for offer in offers:
+            user = User.query.join(UserPlan).join(Offer).filter_by(id=offer.id).first()
+            user_schema = UserSchema()
+
+            if(user.first_name):
+                offer.winner = user.first_name + ' ' + user.last_name
+            else:
+                offer.winner = user.username
+
+        offer_schema = OfferSchema(many=True)
+        return make_response(jsonify(offer_schema.dump(offers)),200)
+
 class AuctionUserParticipation(Resource):
     def post(self):
         plan_id = request.form.get('plan_id')

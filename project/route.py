@@ -85,6 +85,10 @@ class Route():
     def viewAuction(aid):
         return render_template('site/auction.html',auction_id=aid)
 
+    @app.route("/view/auctions")
+    def viewAuctions():
+        return render_template('site/held.html')
+
     @login_manager.unauthorized_handler
     def unauthorized():
          next=url_for(request.endpoint,**request.view_args)

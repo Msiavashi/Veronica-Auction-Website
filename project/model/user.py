@@ -43,7 +43,7 @@ class User(Base,UserMixin):
 
     address = db.relationship('Address')
 
-    avatar = db.Column(db.BigInteger, ) #avatar path
+    avatar = db.Column(db.Text,default='[001.jpg]') #avatar path
 
     user_plans = db.relationship('UserPlan')
 
