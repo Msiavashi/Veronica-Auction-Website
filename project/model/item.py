@@ -13,7 +13,7 @@ class Item(Base):
     title = db.Column(db.String(length=100), nullable=False)
     description = db.Column(db.Text(),nullable=False)
     price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
-    discount = db.Column(db.Integer())
+    discount = db.Column(db.DECIMAL(precision=20, scale=4), nullable=True, default=0)
     details = db.Column(db.Text())
     images = db.Column(db.Text, nullable=False)
 

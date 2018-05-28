@@ -1,4 +1,4 @@
-from  .address import *
+from  .address import Address
 from  .advertisement import *
 from  .auction_plan import *
 from  .auction import *

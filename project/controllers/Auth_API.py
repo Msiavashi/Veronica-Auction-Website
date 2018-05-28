@@ -7,6 +7,7 @@ from flask_restful import Resource, reqparse
 from project.model.user import *
 from flask_jwt_extended import (create_access_token,create_refresh_token,set_access_cookies,set_refresh_cookies)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
+from ..model import Order, Item, Payment
 import json
 from project import app
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
@@ -67,6 +68,17 @@ class UserLogin(Resource):
                 'access_token': access_token,
                 'refresh_token': refresh_token,
                 'next':next})
+
+
+            #create order
+            if "items" in session:
+                new_order = Order()
+                new_order.user_id = current_user.id
+                items = [Item.query.get(item_id) for item_id in session['items']]
+                new_order.items = items
+                new_order.total_cost += sum([item.price for item in items])
+                db.session.add(new_order)
+                db.session.commit()
 
             set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)
