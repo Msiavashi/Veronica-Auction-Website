@@ -24,9 +24,8 @@ def role_admin(f):
 
 def has_role(user,name):
     found = False
-    if(user.is_authenticated):
-        for role in user.roles:
-            if( role.name == "admin" ):
-                found = True
-                break
+    for role in user.roles:
+        if( role.name == name ):
+            found = True
+            break
     return found

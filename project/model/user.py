@@ -54,7 +54,7 @@ class User(Base,UserMixin):
 
     # offers = db.relationship('Offer')
 
-    roles = db.relationship('Role' , secondary = 'user_roles', backref=db.backref('roles', lazy='dynamic'))
+    roles = db.relationship('Role' , secondary = 'user_roles', back_populates='users')
 
     gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users')
 
@@ -93,7 +93,12 @@ class User(Base,UserMixin):
         except Exception as e:
             return None
 
-
+    def has_role(self,name):
+        try:
+            return next(a for a in self.roles if a.name == name),None
+        except Exception as e:
+            return None
+        
     def save_to_db(self):
         #add default role to created user
         role = Role.query.get(2)
