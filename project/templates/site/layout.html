@@ -590,11 +590,12 @@
   var viewed = ko.observable();
 
   $.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
-     OnDataReady(data[0]);
+    if(data)
+      OnDataReady(data[0]);
   });
 
   function OnDataReady(data){
-    viewed = data;
+    viewed(data);
   }
   </script>
   {% endblock scripts %}

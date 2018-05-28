@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 __version__ = '0.1'
-from flask import Flask , session
+from flask import Flask , session , Response , render_template
 from datetime import timedelta
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_jwt_extended import JWTManager
@@ -19,6 +19,7 @@ REDIS_URL = "redis://localhost:6379/0"
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+
 socketio = SocketIO()
 socketio.init_app(app, message_queue=REDIS_URL)
 jwt = JWTManager(app)
@@ -40,6 +41,10 @@ from .websocket import handler
 from .controllers import *
 from flask_restful import Api
 
+@app.errorhandler(400)
+def custom_401(error):
+    return render_template('site/400.html'), 400
+    # return Response('دسترسی شما به آدرس مورد نظر ممکن نیست', 401, {'WWWAuthenticate':'Basic realm="Login Required"'})
 
 # @app.errorhandler(CSRFError)
 # def handle_csrf_error(e):

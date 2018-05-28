@@ -5,6 +5,7 @@ sys.setdefaultencoding("utf-8")
 
 from ..database import db
 from .. import app
+from .classes import *
 from ..model import *
 from .upload import *
 from flask_admin import Admin
@@ -12,10 +13,7 @@ from flask_admin.contrib.sqla import ModelView
 
 # Create admin
 admin = Admin(
-    app,
-    " بید بازی ",
-    base_template='admin.html',
-    template_mode='bootstrap3',
+    app," بید بازی ",index_view=MyAdminIndexView(),base_template='admin.html',template_mode='bootstrap3',
 )
 #admin.add_view(MyView(name='My View', menu_icon_type='glyph', menu_icon_value='glyphicon-home'))
 admin.add_view(AvatarUpload(User, db.session,name='کاربران',menu_icon_type='fa', menu_icon_value='fa fa-user'))

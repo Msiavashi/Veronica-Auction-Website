@@ -11,14 +11,15 @@ from project import app
 from datetime import datetime
 import time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
-from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
+from flask_login import login_required ,current_user
 from decimal import Decimal
 
 class AuctionUserViewed(Resource):
     def get(self):
-        auctions = Auction.query.join(user_auction_views).filter_by(user_id=current_user.id)
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+        if(current_user.is_authenticated):
+            auctions = Auction.query.join(user_auction_views).filter_by(user_id=current_user.id)
+            auction_schema = AuctionSchema(many=True)
+            return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class AuctionViewFinished(Resource):
     def get(self):
