@@ -430,11 +430,6 @@ function dealModel() {
 		});
 		self.views(views)
 	});
-
-	self.viewed = ko.observableArray([]);
-	$.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
-		self.viewed(data[0]);
-	})
 }
 
 ko.applyBindings(new dealModel());

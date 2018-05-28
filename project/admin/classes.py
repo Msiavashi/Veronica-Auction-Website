@@ -1,14 +1,30 @@
 from markupsafe import Markup
+from flask import url_for,render_template,abort,session,redirect
+from flask_admin import AdminIndexView
+from flask_admin import expose,form
+from functools import wraps
+from ..middleware import has_role
+from flask_security import current_user
+from flask_admin.contrib.sqla import ModelView
+from .utils import MultipleImageUploadField
 from . import app
 from PIL import Image
 import ast
-from flask import url_for
-from flask_admin import form
-from flask_admin.contrib.sqla import ModelView
-from .utils import MultipleImageUploadField
 
 
-class AvatarUpload(ModelView):
+class MyAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+    @expose('/')
+    def index(self):
+        return super(MyAdminIndexView, self).index()
+
+class UserAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+    column_exclude_list = list = ('password',)
+
     def _list_thumbnail(view, context, model, name):
         if not model.avatar:
             return None
@@ -26,7 +42,10 @@ class AvatarUpload(ModelView):
                                                             url_relative_path="images/avatars/",
                                                             thumbnail_size=(64, 64, 1))}
 
-class ItemImageUpload(ModelView):
+class ItemAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
     def _list_thumbnail(view, context, model, name):
         if not model.images:
             return None
@@ -44,7 +63,9 @@ class ItemImageUpload(ModelView):
                                                             url_relative_path="images/products/",
                                                             thumbnail_size=(64, 64, 1))}
 
-class AdvertisementUpload(ModelView):
+class AdvertisementAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
 
     def _list_thumbnail(view, context, model, name):
         if not model.images:
@@ -63,7 +84,9 @@ class AdvertisementUpload(ModelView):
                                                             url_relative_path="images/ads/",
                                                             thumbnail_size=(64, 64, 1))}
 
-class CategoryUpload(ModelView):
+class CategoryAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
 
     def _list_thumbnail(view, context, model, name):
         if not model.icon:
@@ -81,3 +104,75 @@ class CategoryUpload(ModelView):
                                                             base_path="project/static/images/icons/category",
                                                             url_relative_path="images/icons/category/",
                                                             thumbnail_size=(64, 64, 1))}
+
+class RoleAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class ProductAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class AuctionAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class AddressAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class GiftAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class InsuranceAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class GarantyAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class InventoryAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class ManufactureAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class OfferAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class EventAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class PaymentMethodAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class PlanAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class UserPlanAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class AuctionPlanAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class UserAuctionParticipationAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class UserMessageAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class GuestMessageAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')

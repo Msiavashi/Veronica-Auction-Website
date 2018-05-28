@@ -23,9 +23,8 @@ class User(Base,UserMixin):
     mobile = db.Column(db.String(length=15), nullable=False)
     email = db.Column(db.String(length=255))
     password = db.Column(db.String(length=100), nullable=False)
-
     #please check for dafault avatar address from config file
-    avatar = db.Column(db.String(length=300),default="['005.png']")
+    avatar = db.Column(db.String(length=300))
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
@@ -55,7 +54,7 @@ class User(Base,UserMixin):
 
     # offers = db.relationship('Offer')
 
-    roles = db.relationship('Role' , secondary = 'user_roles', back_populates='users' )
+    roles = db.relationship('Role' , secondary = 'user_roles', back_populates='users')
 
     gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users')
 
@@ -81,8 +80,12 @@ class User(Base,UserMixin):
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
 
-    def has_role(self, name):
-        return next(r for r in self.roles if r.name == name),None
+    def is_admin(self):
+        admin = False
+        for role in self.roles:
+            if( role.name == 'admin' ):
+                admin = True
+        return admin
 
     def has_auction(self,id):
         try:
@@ -90,7 +93,12 @@ class User(Base,UserMixin):
         except Exception as e:
             return None
 
-
+    def has_role(self,name):
+        try:
+            return next(a for a in self.roles if a.name == name),None
+        except Exception as e:
+            return None
+        
     def save_to_db(self):
         #add default role to created user
         role = Role.query.get(2)

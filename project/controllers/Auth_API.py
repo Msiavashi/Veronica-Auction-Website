@@ -22,6 +22,10 @@ parser_login = reqparse.RequestParser()
 parser_login.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
 parser_login.add_argument('password', help = 'ورود رمز عبور ضروری است', required = True)
 
+def can_access(f):
+    if not hasattr(f, 'access_control'):
+        return True
+    return _eval_access(**f.access_control) == AccessResult.ALLOWED
 
 class UserRegistration(Resource):
     def post(self):

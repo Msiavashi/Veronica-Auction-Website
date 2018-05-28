@@ -6,26 +6,12 @@ sys.setdefaultencoding("utf-8")
 import gevent
 from flask import url_for, redirect, render_template, request, abort ,redirect, session,jsonify
 from datetime import timedelta
-from flask_login import current_user,login_required,logout_user,LoginManager
+from flask_login import current_user,login_required,logout_user
 from .model import *
-from . import app
-from definitions import SESSION_EXPIRE_TIME
+from . import app,login_manager
 from urlparse import urlparse, urljoin
 
 class Route():
-
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(user_id)
-
-    @app.before_request
-    def make_session_permanent():
-        session.permanent = True
-        permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
-        session.modified = True
 
     @app.route('/')
     def site():
@@ -97,6 +83,10 @@ class Route():
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('site/404.html'), 404
+
+    @app.errorhandler(403)
+    def page_not_found(e):
+        return render_template('site/403.html'), 403
 
     @app.route('/about')
     def about():
