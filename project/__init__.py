@@ -14,6 +14,7 @@ import websocket
 import eventlet
 eventlet.monkey_patch(socket=True)
 import redis
+from middleware import *
 
 REDIS_URL = "redis://localhost:6379/0"
 
@@ -25,6 +26,9 @@ socketio.init_app(app, message_queue=REDIS_URL)
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)
+
+app.jinja_env.globals.update(has_role=has_role)
+
 # csrf = CSRFProtect(app)
 
 # sockets = Sockets(app)

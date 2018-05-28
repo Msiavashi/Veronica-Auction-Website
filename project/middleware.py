@@ -17,3 +17,12 @@ def role_admin(f):
             # return render_template('site/401.html'), 401
         return f(*args, **kwargs)
     return decorated_function
+
+def has_role(user,name):
+    found = False
+    if(user.is_authenticated):
+        for role in user.roles:
+            if( role.name == 'admin' ):
+                found = True
+                break
+    return found

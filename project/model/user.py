@@ -25,7 +25,7 @@ class User(Base,UserMixin):
     password = db.Column(db.String(length=100), nullable=False)
 
     #please check for dafault avatar address from config file
-    avatar = db.Column(db.String(length=300),default="['005.png']")
+    avatar = db.Column(db.String(length=300))
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
@@ -83,6 +83,13 @@ class User(Base,UserMixin):
 
     def has_role(self, name):
         return next(r for r in self.roles if r.name == name),None
+
+    def is_admin(self):
+        admin = False
+        for role in self.roles:
+            if( role.name == 'admin' ):
+                admin = True
+        return admin
 
     def has_auction(self,id):
         try:
