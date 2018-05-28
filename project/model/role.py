@@ -1,8 +1,9 @@
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
+from flask_login import RoleMixin
 
-class Role(Base):
+class Role(Base,RoleMixin):
     __tablename__ = 'roles'
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(255), nullable=False)

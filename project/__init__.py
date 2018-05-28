@@ -14,19 +14,38 @@ import websocket
 import eventlet
 eventlet.monkey_patch(socket=True)
 import redis
-from middleware import *
+from flask_login import current_user,LoginManager
+from definitions import SESSION_EXPIRE_TIME
 
 REDIS_URL = "redis://localhost:6379/0"
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-
 socketio = SocketIO()
 socketio.init_app(app, message_queue=REDIS_URL)
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)
 
+#login manager
+
+login_manager = LoginManager(app)
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'site.login'
+
+from model.user import User
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
+    session.modified = True
+
+from project.middleware import *
 app.jinja_env.globals.update(has_role=has_role)
 
 # csrf = CSRFProtect(app)

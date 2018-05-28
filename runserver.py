@@ -4,7 +4,6 @@ import os
 from project import app, socketio
 from project.database import *
 from project.admin import admin
-import definitions
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))

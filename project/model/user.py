@@ -23,7 +23,6 @@ class User(Base,UserMixin):
     mobile = db.Column(db.String(length=15), nullable=False)
     email = db.Column(db.String(length=255))
     password = db.Column(db.String(length=100), nullable=False)
-
     #please check for dafault avatar address from config file
     avatar = db.Column(db.String(length=300))
 
@@ -55,7 +54,7 @@ class User(Base,UserMixin):
 
     # offers = db.relationship('Offer')
 
-    roles = db.relationship('Role' , secondary = 'user_roles', back_populates='users' )
+    roles = db.relationship('Role' , secondary = 'user_roles', backref=db.backref('roles', lazy='dynamic'))
 
     gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users')
 
@@ -80,9 +79,6 @@ class User(Base,UserMixin):
     @staticmethod
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
-
-    def has_role(self, name):
-        return next(r for r in self.roles if r.name == name),None
 
     def is_admin(self):
         admin = False
