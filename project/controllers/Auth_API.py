@@ -9,7 +9,7 @@ from flask_jwt_extended import (create_access_token,create_refresh_token,set_acc
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 from ..model import Order, Item, Payment
 import json
-from database import db
+from ..database import db
 from project import app
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 
