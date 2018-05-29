@@ -277,110 +277,98 @@
 						<table class="fold-table">
 								<thead>
 									<tr>
-									<th>فاکتور / کد حراجی</th>
-									<th>مبلغ</th>
-									<th>تاریخ</th>
+										<th>فاکتور / کد حراجی</th>
+										<th>مبلغ</th>
+										<th>تاریخ</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody data-bind="foreach:paymentsinfo">
 									<tr class="view">
-									<td>۲۲۲۳-۳۳۳۳۳</td>
-									<td>۳،۷۰۰،۰۰۰ تومان</td>
-									<td>۱۳۹۷/۰۳/۲۲</td>
+										<td data-bind="text:ToPersian(id+payment_method.id+'-'+user.id)"></td>
+										<td><span data-bind="text:ToPersian(formatCurrency(amount))" ></span> تومان  </td>
+										<td data-bind="text : new Date(created_at).toLocaleDateString('fa-IR')"></td>
 									</tr>
 									<tr class="fold">
-									<td colspan="7">
-										<div class="fold-content">
-										<h4>فاکتور خرید ۲۲۲۳-۳۳۳۳۳</h4>
-										<p>پیغامی از طرف بیدبازی اگر لازم شد پیامی برای این سفارش داده شود.</p>
-										<table class="small-friendly">
-											<thead>
-											<tr>
-												<th>محصول</th>
-												<th>تعداد</th>
-												<th>مبلغ واحد</th>
-												<th>مبلغ کل</th>
-												<th>تخفیف</th>
-												<th>مبلغ پرداختی</th>
-											</tr>
-											</thead>
-											<tbody>
-											<tr>
-												<td>گوشی سونی</td>
-												<td>۱</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۴۵۰،۰۰۰</td>
-												<td>۱،۴۵۰،۰۰۰</td>
-											</tr>
-											<tr>
-												<td>گوشی سامسونگ</td>
-												<td>۲</td>
-												<td>۳،۸۰۰،۰۰۰</td>
-												<td>۶،۸۰۰،۰۰۰</td>
-												<td>۷۵۰،۰۰۰</td>
-												<td>۵،۴۵۰،۰۰۰</td>
-											</tr>
-											<tr>
-												<td>گوشی سونی</td>
-												<td>۱</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۴۵۰،۰۰۰</td>
-												<td>۱،۴۵۰،۰۰۰</td>
-											</tr>
-											</tbody>
-										</table>
-										<div class="checkout-wrap">
-												<ul class="checkout-bar">
-													<li class="visited first">سفارش</li>
-													<li class="previous visited">تایید سفارش</li>
-													<li class="active">انبارداری</li>
-													<li class="next">تحویل پست</li>
-													<li class="">خریدار</li>
-												</ul>
+										<td colspan="7">
+											<div class="fold-content">
+												<h4> فاکتور خرید : <span data-bind="text:ToPersian(id+payment_method.id+'-'+user.id)"></span></h4>
+												<div data-bind="foreach:messages">
+													<p data-bind="text:title +' : '+ message"></p>
+												</div>
+												<table class="small-friendly">
+													<thead>
+														<tr>
+														<th>محصول</th>
+														<th>تعداد</th>
+														<th>مبلغ واحد</th>
+														<th>مبلغ کل</th>
+														<th>تخفیف</th>
+														<th>مبلغ پرداختی</th>
+													</tr>
+													</thead>
+													<tbody data-bind="foreach:orders">
+														<tr>
+															<td data-bind="text:item.product.title +' '+item.title"></td>
+															<td data-bind="text:ToPersian(total)"></td>
+															<td data-bind="text:ToPersian(formatCurrency(item.price))"></td>
+															<td data-bind="text:ToPersian(formatCurrency(item.price * total))"></td>
+															<td data-bind="text:ToPersian(formatCurrency(total_discount))"></td>
+															<td data-bind="text:ToPersian(formatCurrency(item.price * total - total_discount))"></td>
+														</tr>
+													</tbody>
+												</table>
+												<div class="checkout-wrap" data-bind="if:status==1">
+														<ul class="checkout-bar">
+															<li class="active">سفارش</li>
+															<li class="next">تایید سفارش</li>
+															<li class="">انبارداری</li>
+															<li class="">تحویل پست</li>
+															<li class="">خریدار</li>
+														</ul>
+												</div>
+												<div class="checkout-wrap" data-bind="if:status==2">
+														<ul class="checkout-bar">
+															<li class="visited first">سفارش</li>
+															<li class="active">تایید سفارش</li>
+															<li class="next">انبارداری</li>
+															<li class="">تحویل پست</li>
+															<li class="">خریدار</li>
+														</ul>
+												</div>
+												<div class="checkout-wrap" data-bind="if:status==3">
+														<ul class="checkout-bar">
+															<li class="visited first">سفارش</li>
+															<li class="previous visited">تایید سفارش</li>
+															<li class="active">انبارداری</li>
+															<li class="next">تحویل پست</li>
+															<li class="">خریدار</li>
+														</ul>
+												</div>
+												<div class="checkout-wrap" data-bind="if:status==4">
+														<ul class="checkout-bar">
+															<li class="visited first">سفارش</li>
+															<li class="previous visited">تایید سفارش</li>
+															<li class="previous visited">انبارداری</li>
+															<li class="active">تحویل پست</li>
+															<li class="next">خریدار</li>
+														</ul>
+												</div>
+												<div class="checkout-wrap" data-bind="if:status==5">
+														<ul class="checkout-bar">
+															<li class="visited first">سفارش</li>
+															<li class="previous visited">تایید سفارش</li>
+															<li class="previous visited">انبارداری</li>
+															<li class="previous visited">تحویل پست</li>
+															<li class="active">خریدار</li>
+
+														</ul>
+												</div>
 											</div>
-										</div>
-									</td>
+										</td>
 									</tr>
-									<!-- Row -->
-									<tr class="view">
-									<td>۳۴۶۴۳۶۶</td>
-									<td>۲،۳۰۰،۰۰۰ تومان</td>
-									<td>۱۳۹۷/۰۳/۲۲</td>
-									</tr>
-									<tr class="fold">
-									<td colspan="7">
-										<div class="fold-content">
-										<h4>کد حراجی ۳۴۶۴۳۶۶</h4>
-										<p>پیغامی از طرف بیدبازی اگر لازم شد پیامی برای این سفارش داده شود.</p>
-										<table class="small-friendly">
-											<thead>
-											<tr>
-												<th>محصول</th>
-												<th>تعداد</th>
-												<th>مبلغ واحد</th>
-												<th>مبلغ کل</th>
-												<th>تخفیف</th>
-												<th>مبلغ پرداختی</th>
-											</tr>
-											</thead>
-											<tbody>
-											<tr>
-												<td>گوشی سونی</td>
-												<td>۱</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۴۵۰،۰۰۰</td>
-												<td>۱،۴۵۰،۰۰۰</td>
-											</tr>
-											</tbody>
-										</table>
-										</div>
-									</td>
-									</tr>
-									<!-- Row -->
 								</tbody>
+								<!-- ko text: triggerPaymentTable() -->
+								<!-- /ko -->
 								</table>
 					</section>
 
@@ -394,14 +382,13 @@
 						<h3>شارژ موجودی</h3>
 						<p>شما می توانید به هر اندازه که می خواهید موجودی حسابتان را شارژ کنید.</p>
 						<form method="post">
-
 							<table cellspacing="0" class="shop_table cart table">
 								<tbody>
 									<tr>
 										<td class="actions" colspan="6">
 											<div class="coupon">
 												<label for="coupon_code">افزایش اعتبار : </label>
-												<input type="text" placeholder="مبلغ را به ریال وارد کنید" value="" id="coupon_code" class="input-text" name="coupon_code">
+												<input type="text" placeholder="مبلغ..." value="" id="coupon_code" class="input-text" name="coupon_code">
 												<input type="submit" value="پرداخت" name="apply_coupon" class="button">
 											</div>
 										</td>
@@ -432,7 +419,8 @@ $.getJSON("{{url_for('userinformation')}}", function(data){
 });
 
 $.getJSON("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}", function(data){
-	paymentsinfo = data;
+	paymentsinfo = data[0];
+	console.log(paymentsinfo);
 	ko.applyBindings();
 });
 

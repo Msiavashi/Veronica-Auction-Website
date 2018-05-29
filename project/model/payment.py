@@ -17,8 +17,10 @@ class Payment(Base):
     payment_method_id = db.Column(db.BigInteger,db.ForeignKey('payment_methods.id'),nullable=False)
     payment_method = db.relationship('PaymentMethod')
 
-    order_id = db.Column(db.BigInteger,db.ForeignKey('orders.id'),nullable=False)
-    order = db.relationship('Order')
+    # order_id = db.Column(db.BigInteger,db.ForeignKey('orders.id'),nullable=False)
+    # order = db.relationship('Order')
+
+    orders = db.relationship('Order' , secondary = 'payment_orders', back_populates='payments')
 
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     user = db.relationship('User')
@@ -37,12 +39,12 @@ class Payment(Base):
 class PaymentSchema(Schema):
     id = fields.Int(dump_only=True)
     amount = fields.Str()
-    guid = fields.Str()
-    date = fields.DateTime()
-    method = fields.Raw()
+    GUID = fields.Str()
+    status = fields.Int()
+    created_at = fields.Str()
     details = fields.Raw()
     payment_method = fields.Nested('PaymentMethodSchema')
-    order = fields.Nested('OrderSchema')
+    orders = fields.Nested('OrderSchema',many=True,exclude=('payments',))
     user = fields.Nested('UserSchema',exclude=('payments',))
     shipment = fields.Nested('ShipmentSchema',exclude=('payment',))
     messages = fields.Nested('PaymentMessageSchema',many=True,exclude=('payments',))

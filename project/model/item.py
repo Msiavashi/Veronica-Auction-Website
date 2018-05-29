@@ -20,7 +20,7 @@ class Item(Base):
     product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
     product = db.relationship('Product')
 
-    orders = db.relationship('Order',secondary='order_items',back_populates='items')
+    orders = db.relationship('Order')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
@@ -38,5 +38,4 @@ class ItemSchema(Schema):
     product = fields.Nested('ProductSchema',exclude=('items',))
     inventories = fields.Nested('InventorySchema', many=True,exclude=('items',))
     insurances = fields.Nested('InsuranceSchema',many=True,exclude=('items',))
-    payments = fields.Nested('PaymentSchema',many=True,exclude=('items',))
-    orders = fields.Nested('OrderSchema',many=True,exclude=('items',))
+    orders = fields.Nested('OrderSchema',many=True,exclude=('item',))
