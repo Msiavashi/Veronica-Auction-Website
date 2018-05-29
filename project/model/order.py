@@ -18,6 +18,7 @@ class Order(Base):
 
     items = db.relationship('Item',secondary='order_items',back_populates='orders')
 
+    payment_id = db.Column(db.BigInteger, db.ForeignKey('payments.id'))
     payment = db.relationship('Payment')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)

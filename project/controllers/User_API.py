@@ -201,5 +201,58 @@ class CartOrder(Resource):
             return make_response(jsonify({"msg": "آیتم انتخاب شده به سبد خرید اضافه شد", "items": session['items']}), 200)
 
 
+
+
                 
 
+#TODO: *strict validation*
+class Checkout(Resource):
+
+    @login_required
+    def post(self):
+        data = request.get_json(force=True)
+        order_id = data['order_id']
+        order = Order.query.get(order_id)
+        if not order or not order.user_id == current_user.id:
+            return make_response(jsonify({"msg": "سبد خرید مورد نظر یافت نشد"}) , 400)
+
+        payment = Payment()
+        payment.amount = order.total_cost
+        payment.order_id = order_id
+        payment.user_id = current_user.id
+
+        payment_method = PaymentMethod()
+        payment_method.title = data['payment_method']       #TODO: validation with enum
+
+        db.session.add(payment_method)
+        db.session.add.commit()
+
+        payment.payment_method_id = payment_method.id
+
+        db.session.add(payment)
+        db.session.commit()
+
+        shipment = Shipment()
+        shipment.order_id = order.id
+        shipment.payment_id = payment.id
+
+
+        shipment_method = ShipmentMethod()
+        shipment_method.title = data['shipment_method']
+        shipment_method.price = data['shipmet_price']
+
+        db.session.add(shipment_method)
+        db.session.commit()
+
+        shipment.shipment_method_id = shipment_method.id
+
+        db.session.add(shipment)
+        db.session.commit()
+
+        order.total_cost += shipment_method.price
+        order.payment_id = payment.id
+
+        db.session.add(order)
+        db.session.commit()
+
+        return make_response(jsonify({'success': True}, 200))

@@ -17,7 +17,7 @@ class Payment(Base):
     payment_method_id = db.Column(db.BigInteger,db.ForeignKey('payment_methods.id'),nullable=False)
     payment_method = db.relationship('PaymentMethod')
 
-    order_id = db.Column(db.BigInteger,db.ForeignKey('orders.id'),nullable=False)
+    # order_id = db.Column(db.BigInteger,db.ForeignKey('orders.id'),nullable=False)
     order = db.relationship('Order')
 
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))

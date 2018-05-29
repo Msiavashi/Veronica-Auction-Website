@@ -7,6 +7,7 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
+
 class ShipmentMethod(Base):
     __tablename__ = 'shipment_methods'
     id = db.Column(db.BigInteger, primary_key=True)
@@ -16,6 +17,7 @@ class ShipmentMethod(Base):
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+
 
     def __str__(self):
         return self.title
