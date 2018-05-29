@@ -14,7 +14,7 @@ class UserMessage(Base):
     id = db.Column(db.BigInteger, primary_key=True)
 
     user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"))
-
+    user = db.relationship('User')
 
     message = db.Column(db.String(1024), nullable=True)
 

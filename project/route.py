@@ -13,6 +13,10 @@ from urlparse import urlparse, urljoin
 
 class Route():
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
+
     @app.route('/')
     def site():
         return render_template('site/index.html')

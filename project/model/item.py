@@ -35,7 +35,6 @@ class ItemSchema(Schema):
     discount = fields.Int()
     details = fields.Str()
     images = fields.Str()
-
     product = fields.Nested('ProductSchema',exclude=('items',))
     inventories = fields.Nested('InventorySchema', many=True,exclude=('items',))
     insurances = fields.Nested('InsuranceSchema',many=True,exclude=('items',))

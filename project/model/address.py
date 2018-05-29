@@ -9,6 +9,8 @@ import datetime
 
 class Address(Base):
     __tablename__ = 'addresses'
+    __table_args__ = (db.UniqueConstraint('postal_code', name='address_postal_code_uc'),)
+
     id = db.Column(db.BigInteger, primary_key=True)
     user = db.relationship('User', uselist=False, back_populates='address')
     # user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))

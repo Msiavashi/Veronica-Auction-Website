@@ -282,3 +282,13 @@ function animated(){
 		}
 	});
 }
+
+function triggerAvatars() {
+	$('.avatarUser img').click( function(){
+	    if ( $(this).hasClass('current') ) {
+	    } else {
+	        $('img.current').removeClass('current');
+	        $(this).addClass('current');
+	    }
+	});
+}

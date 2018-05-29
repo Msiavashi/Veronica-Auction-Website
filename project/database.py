@@ -14,7 +14,7 @@ def init_db():
     db.create_all()
 
 # print "initing..."
-#init_db()
+# init_db()
 # print "done"
 
 def migrate():

@@ -33,12 +33,6 @@ login_manager = LoginManager(app)
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'site.login'
 
-from model.user import User
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
-
 @app.before_request
 def make_session_permanent():
     session.permanent = True
@@ -95,7 +89,7 @@ api.add_resource(Auction_API.AuctionUserViewed, '/auction/user/viewed')
 api.add_resource(Auction_API.AuctionViewFinished, '/auction/view/finished')
 
 
-api.add_resource(User_API.PaymentsInfo, '/user/payments/info')
+api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:pagesize>')
 api.add_resource(User_API.UserInformation, '/user/information')
 api.add_resource(User_API.UserContactUs, '/user/contactus')
 # api.add_resource(websocket.Join, '/join/<int:auction_id')

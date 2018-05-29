@@ -15,13 +15,17 @@ class Order(Base):
 
     items = db.relationship('Item',secondary='order_items',back_populates='orders')
 
-    payment = db.relationship('Payment')
+    # payment_id = db.Column(db.BigInteger,db.ForeignKey('payments.id','orders.id'))
+    # payment = db.relationship('Payment')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return str(self)
+        res = str(self.user)
+        for item in self.items:
+            res +=" "+str(item)
+        return res
 
 class OrderSchema(Schema):
     id = fields.Int()
@@ -31,6 +35,6 @@ class OrderSchema(Schema):
     total_cost = fields.Str()
     create_at = fields.DateTime()
     updated_at = fields.DateTime()
-    user = fields.Nested('UserSchema')
-    payment = fields.Nested('PaymentSchema',many=True,exclude=('order',))
+    # user = fields.Nested('UserSchema',exclude=('orders',))
+    # payment = fields.Nested('PaymentSchema',exclude=('order',))
     items = fields.Nested('ItemSchema',many=True,exclude=('orders',))

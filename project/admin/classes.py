@@ -21,7 +21,7 @@ class MyAdminIndexView(AdminIndexView):
 
 class UserAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        return current_user.has_role('regular')
 
     column_exclude_list = list = ('password',)
 
@@ -153,6 +153,22 @@ class PaymentMethodAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
 
+class ShipmentMethodAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class OrderAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class PaymentAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class ShipmentAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
 class PlanAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
@@ -174,5 +190,9 @@ class UserMessageAdmin(ModelView):
         return current_user.has_role('admin')
 
 class GuestMessageAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class PaymentMessageAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
