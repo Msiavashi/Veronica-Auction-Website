@@ -2,6 +2,13 @@
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> d978a1039ded42960e24b5f68ce12a6be5fb4c5a
+>>>>>>> master
 from flask_restful import Resource, reqparse
 import os
 from os import listdir
@@ -16,9 +23,22 @@ from ..model.user_message import UserMessage
 from ..model.order import OrderStatus
 import definitions
 from werkzeug.utils import secure_filename
+<<<<<<< HEAD
 from ..utils import PythonObjectEncoder
 from definitions import AVATAR_DIR
 from definitions import MESSAGE_SUBJECTS
+=======
+<<<<<<< HEAD
+from ..utils import PythonObjectEncoder
+from definitions import AVATAR_DIR
+from definitions import MESSAGE_SUBJECTS
+=======
+from ..model import Order
+from ..model import Item
+
+
+>>>>>>> d978a1039ded42960e24b5f68ce12a6be5fb4c5a
+>>>>>>> master
 
 
 class PaymentsInfo(Resource):
@@ -211,6 +231,8 @@ class UserContactUs(Resource):
         db.session.commit()
         msg ="پیام شما با موفقیت ارسال شد. در اولین فرصت جهت پیگیری با شما تماس خواهیم گرفت"
         return make_response(jsonify({"message":{"success":msg}}),200)
+        # flash("پیام با موفقیت ارسال شد")
+        # return redirect(url_for('profile'))
 
 class CartOrder(Resource):
 
@@ -245,6 +267,7 @@ class CartOrder(Resource):
             return make_response(jsonify({"message": {"success": "به سبک خرید اضافه شد"}, "unpaid_orders": jsonify(order_schema.dump( Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID ).all() ))}), 200)
 
         else:
+<<<<<<< HEAD
             if not "orders" in session:
                 session['orders'] = list()
             new_order = Order()
@@ -311,3 +334,9 @@ class Checkout(Resource):
         db.session.commit()
 
         return make_response(jsonify({'success': True}, 200))
+=======
+            if not "items" in session:
+                session['items'] = list()
+            session['items'].append(data['item_id'])
+            return make_response(jsonify({"msg": "آیتم انتخاب شده به سبد خرید اضافه شد", "items": session['items']}), 200)
+>>>>>>> master
