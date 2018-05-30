@@ -17,19 +17,17 @@ class User(Base,UserMixin):
 
     id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.String(length=255), nullable=False)
+    alias_name = db.Column(db.String(128), nullable = True)
     first_name = db.Column(db.String(length=100))
     last_name = db.Column(db.String(length=100))
     work_place = db.Column(db.String(length=100))
     mobile = db.Column(db.String(length=15), nullable=False)
     email = db.Column(db.String(length=255))
     password = db.Column(db.String(length=100), nullable=False)
-    #please check for dafault avatar address from config file
-    avatar = db.Column(db.String(length=300))
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
-    alias_name = db.Column(db.String(128), nullable = True)
 
     invitor = db.Column(db.String(length=255))
 
@@ -40,9 +38,7 @@ class User(Base,UserMixin):
 
     comments = db.relationship('Comment')
 
-    address = db.relationship('Address')
-
-    avatar = db.Column(db.Text,default='[001.jpg]') #avatar path
+    avatar = db.Column(db.Text,default="['001.png']") #avatar path
 
     user_plans = db.relationship('UserPlan')
 
@@ -56,7 +52,7 @@ class User(Base,UserMixin):
 
     roles = db.relationship('Role' , secondary = 'user_roles', back_populates='users')
 
-    gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users')
+    gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users',lazy='dynamic')
 
     auctions = db.relationship('Auction', lazy='dynamic', secondary='user_auction_participations',back_populates='participants')
 
@@ -64,8 +60,10 @@ class User(Base,UserMixin):
     auction_likes = db.relationship('Auction', secondary ='user_auction_likes', back_populates='likes')
 
     def __str__(self):
-        if(self.first_name):
-            return self.first_name + " " + self.last_name
+        if(self.first_name and self.last_name):
+            return str(self.first_name) + " " + str(self.last_name)
+        elif (self.alias_name):
+            return str(self.alias_name)
         else: return self.username
 
     @classmethod
@@ -98,17 +96,19 @@ class User(Base,UserMixin):
             return next(a for a in self.roles if a.name == name),None
         except Exception as e:
             return None
-        
+
     def save_to_db(self):
         #add default role to created user
-        role = Role.query.get(2)
-        self.roles.append(role)
-        db.session.add(self)
-        db.session.commit()
+        role = Role.query.filter_by(name='regular').first()
+        if(role):
+            self.roles.append(role)
+            db.session.add(self)
+            db.session.commit()
 
 class UserSchema(Schema):
     id = fields.Int()
     username = fields.Str()
+    alias_name = fields.Str()
     # password = fields.Str()
     first_name = fields.Str()
     last_name = fields.Str()
@@ -116,13 +116,14 @@ class UserSchema(Schema):
     mobile = fields.Str()
     email = fields.Email()
     credit = fields.Str()
-    address_id = fields.Int()
     avatar = fields.Str()
+    invitor = fields.Str()
     current_bids = fields.Str()
     current_offer_price = fields.Str()
 
+    address = fields.Nested('AddressSchema')
     comments = fields.Nested('CommentSchema', many=True,exclude=('user',))
-    payments = fields.Nested('PaymentSchema', many=True,exclude=('users',))
+    payments = fields.Nested('PaymentSchema', many=True,exclude=('user',))
     offers = fields.Nested('OfferSchema', many=True,exclude=('user',))
     orders = fields.Nested('OrderSchema', many=True,exclude=('user',))
     roles = fields.Nested('RoleSchema',many=True,exclude=('users',))

@@ -11,17 +11,16 @@ from . import app
 from PIL import Image
 import ast
 
-
 class MyAdminIndexView(AdminIndexView):
-    def is_accessible(self):
-        return current_user.has_role('admin')
+    # def is_accessible(self):
+    #     return current_user.has_role('admin')
     @expose('/')
     def index(self):
         return super(MyAdminIndexView, self).index()
 
 class UserAdmin(ModelView):
-    def is_accessible(self):
-        return current_user.has_role('admin')
+    # def is_accessible(self):
+    #     return current_user.has_role('admin')
 
     column_exclude_list = list = ('password',)
 
@@ -41,6 +40,11 @@ class UserAdmin(ModelView):
                                                             base_path="project/static/images/avatars",
                                                             url_relative_path="images/avatars/",
                                                             thumbnail_size=(64, 64, 1))}
+
+class RoleAdmin(ModelView):
+    def is_accessible(self):
+        return True
+        # return current_user.has_role('admin')
 
 class ItemAdmin(ModelView):
     def is_accessible(self):
@@ -105,10 +109,6 @@ class CategoryAdmin(ModelView):
                                                             url_relative_path="images/icons/category/",
                                                             thumbnail_size=(64, 64, 1))}
 
-class RoleAdmin(ModelView):
-    def is_accessible(self):
-        return current_user.has_role('admin')
-
 class ProductAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
@@ -118,6 +118,10 @@ class AuctionAdmin(ModelView):
         return current_user.has_role('admin')
 
 class AddressAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class StateAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
 
@@ -153,6 +157,22 @@ class PaymentMethodAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
 
+class ShipmentMethodAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class OrderAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class PaymentAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class ShipmentAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
 class PlanAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
@@ -174,5 +194,9 @@ class UserMessageAdmin(ModelView):
         return current_user.has_role('admin')
 
 class GuestMessageAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class PaymentMessageAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')

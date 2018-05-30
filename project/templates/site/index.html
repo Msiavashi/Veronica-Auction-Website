@@ -22,7 +22,7 @@
 									<h2 class="title30" data-bind="text: advertisement.title"></h2>
 									<h2 class="title30 color">تخفیف: <span>تا </span> <span data-bind="text:ToPersian(advertisement.discount)"></span>% <span> قیمت</span></h2>
 									<p data-bind="text: advertisement.description"></p>
-									<a href="#" data-bind="attr:{href : 'view/auction/'+id}" class="shopnow"><span data-bind="text: advertisement.link_title"></span></a>
+									<a data-bind="attr:{href : 'view/auction/'+id}" class="shopnow"><span data-bind="text: advertisement.link_title"></span></a>
 								</div>
 							</div>
 							<!-- ko text: triggerSlider($($element.parentElement)) -->
@@ -220,32 +220,32 @@
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for1.png" alt="" /></a>
 						<h2 class="title14">شرکت کنید</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p> شما میتوانید با شرکت در حراجی های بردیتو کالای مورد نظر خود را تا ۷۰ درصد تخفیف خریداری کنید </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for2.png" alt="" /></a>
 						<h2 class="title14">تحویل ۲۴ ساعته</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p> در هر ساعتی از شبانه روز میتوانید کالای برنده شده یا خریداری شده خود را تحویل بگیرید. </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for3.png" alt="" /></a>
 						<h2 class="title14">پرداخت امن</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p> با درگاه های فعال در بردیتو امن ترین نوع پرداخت را تجربه کنید </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for4.png" alt="" /></a>
 						<h2 class="title14">فروشگاهی با اعتبار</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p> بردیتو فروشگاهی با اعتبار است که برای شما تجربه یک حراجی و خرید امن را فراهم می آورد </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for5.png" alt="" /></a>
 						<h2 class="title14">پشتیبانی ۲۴ ساعته</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p>شما به صورت شبانه روزی می توانید در سامانه بردیتو ثبت نام کنید</p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for6.png" alt="" /></a>
 						<h2 class="title14">اپلیکیشن موبایل</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p>بزودی پلتفرم بردیتو در دو نسخه اندروید و ios عرضه خواهد شد.</p>
 					</div>
 				</div>
 			</div>
@@ -369,7 +369,7 @@ function dealModel() {
 	});
 
 	$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
-		console.log(data);
+
 		$.each(data[0],function(key,val){
 			auction = new Auction(
 				val.id,
@@ -438,10 +438,14 @@ $(document).ready(function(){
 	sleep(1000);
 });
 
+<<<<<<< HEAD
+</script>
+=======
 var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
  socket.on('connect', function() {
 		 console.log('connected');
+>>>>>>> master
 
  });
  var timer = setInterval(function () {

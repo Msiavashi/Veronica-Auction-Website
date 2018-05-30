@@ -1,5 +1,8 @@
-var images_path = '../../static/images/products/';
-var avatar_path = '../../static/images/avatars/';
+var images_path = '/static/images/products/';
+var avatar_path = '/static/images/avatars/';
+var category_icon = '/static/images/icons/category/';
+var ad_image_path = '/static/images/ads/';
+var product_image_path = '/static/images/products/';
 
 $('.close').on('click',function(){
 	$(this).parent().removeClass('show').addClass('hide')
@@ -113,6 +116,7 @@ function formatDate(date, format, utc){
     };
 
 function ToPersian( num, dontTrim ) {
+	if(!num) return ;
 
 	    var i = 0,
 
@@ -226,8 +230,6 @@ function triggerFlashTimer() {
 		});
 	}
 }
-var ad_image_path = '../../static/images/ads/';
-var product_image_path = '../../static/images/products/';
 
 function triggerSlider(element){
 	var data = element.data();
@@ -279,6 +281,27 @@ function animated(){
 				var anime = $(this).attr('data-animated');
 				$(this).removeClass(anime);
 			});
+		}
+	});
+}
+
+function triggerAvatars() {
+	$('.avatarUser img').click( function(){
+	    if ( $(this).hasClass('current') ) {
+	    } else {
+	        $('img.current').removeClass('current');
+	        $(this).addClass('current');
+	    }
+	});
+}
+
+function triggerPaymentTable() {
+	$(".fold-table tr.view").on("click", function(){
+		if($(this).hasClass("open")) {
+		$(this).removeClass("open").next(".fold").removeClass("open");
+		} else {
+		$(".fold-table tr.view").removeClass("open").next(".fold").removeClass("open");
+		$(this).addClass("open").next(".fold").addClass("open");
 		}
 	});
 }

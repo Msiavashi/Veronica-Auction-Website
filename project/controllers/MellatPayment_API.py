@@ -1,3 +1,5 @@
+
+'''
 from PyMellat.PyMellat import BMLPaymentAPI
 
 # Request Payment Token:
@@ -14,3 +16,4 @@ verify_res = bml.verify_payment(long(SaleOrderId), long(SaleReferenceId))
 # Settle Request: 
 # If every thing was OK and verify_res[0] == '0' : 
 bml.settle_payment(long(SaleOrderId), SaleReferenceId) 
+'''

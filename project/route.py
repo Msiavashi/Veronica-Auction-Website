@@ -7,11 +7,15 @@ import gevent
 from flask import url_for, redirect, render_template, request, abort ,redirect, session,jsonify
 from datetime import timedelta
 from flask_login import current_user,login_required,logout_user
-from .model import *
+# from .model import *
 from . import app,login_manager
 from urlparse import urlparse, urljoin
 
 class Route():
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
 
     @app.route('/')
     def site():
@@ -71,6 +75,10 @@ class Route():
     def viewAuction(aid):
         return render_template('site/auction.html',auction_id=aid)
 
+    @app.route("/view/category/<int:cid>/products")
+    def viewProducts(cid):
+        return render_template('site/products.html',category_id=cid)
+
     @app.route("/view/auctions")
     def viewAuctions():
         return render_template('site/held.html')
@@ -95,6 +103,18 @@ class Route():
     @app.route('/faq')
     def faq():
         return render_template('site/faq.html')
+
+    @app.route('/roles')
+    def roles():
+        return render_template('site/roles.html')
+
+    @app.route('/help')
+    def help():
+        return render_template('site/help.html')
+
+    @app.route('/private')
+    def private():
+        return render_template('site/private.html')
 
     @app.route('/contact')
     def contact():

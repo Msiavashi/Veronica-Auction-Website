@@ -15,7 +15,7 @@ class Insurance(Base):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
-        return self.company_name
+        return self.company
 
 class InsuranceSchema(Schema):
     id = fields.Int()

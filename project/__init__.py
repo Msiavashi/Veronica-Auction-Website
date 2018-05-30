@@ -33,12 +33,6 @@ login_manager = LoginManager(app)
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'site.login'
 
-from model.user import User
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
-
 @app.before_request
 def make_session_permanent():
     session.permanent = True
@@ -81,6 +75,7 @@ api.add_resource(Auth_API.UserLogin, '/login')
 
 api.add_resource(Site_API.SiteCategoryMenuItems, '/site/category/menu/items')
 api.add_resource(Site_API.SiteCategoryAuctions, '/site/category/<int:cid>/auctions/')
+api.add_resource(Site_API.SiteCategoryProducts, '/site/category/<int:cid>/products/')
 api.add_resource(Site_API.SiteAuctionCarouselAds, '/site/auction/carousel/ads')
 api.add_resource(Site_API.SiteProductCarouselAds, '/site/product/carousel/ads')
 api.add_resource(Site_API.SiteTodayEvents, '/site/today/events')
@@ -95,7 +90,7 @@ api.add_resource(Auction_API.AuctionUserViewed, '/auction/user/viewed')
 api.add_resource(Auction_API.AuctionViewFinished, '/auction/view/finished')
 
 
-api.add_resource(User_API.PaymentsInfo, '/user/payments/info')
+api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:pagesize>')
 api.add_resource(User_API.UserInformation, '/user/information')
 api.add_resource(User_API.UserContactUs, '/user/contactus')
 api.add_resource(User_API.CartOrder, '/cart/order')
