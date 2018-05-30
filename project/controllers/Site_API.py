@@ -89,7 +89,7 @@ class SiteTodayAuctions(Resource):
 class SiteMostpopularAuctions(Resource):
     def get(self):
         today = datetime.today()
-        result = db.session.query(Auction.id, db.func.count(user_auction_likes.c.user_id).label('total')).join(user_auction_likes).group_by(Auction.id).having(Auction.end_date >= today).order_by('total DESC')
+        result = db.session.query(Auction.id, db.func.count(user_auction_likes.c.user_id).label('total')).join(user_auction_likes).group_by(Auction.id).having(Auction.start_date >= today).order_by('total DESC')
         auctions =[]
         for a in result:
             auction = Auction.query.get(a.id)
@@ -101,7 +101,7 @@ class SiteMostpopularAuctions(Resource):
 class SiteMostviewedAuctions(Resource):
     def get(self):
         today = datetime.today()
-        result = db.session.query(Auction.id, db.func.count(user_auction_views.c.user_id).label('total')).join(user_auction_views).group_by(Auction.id).having(Auction.end_date >= today).order_by('total DESC')
+        result = db.session.query(Auction.id, db.func.count(user_auction_views.c.user_id).label('total')).join(user_auction_views).group_by(Auction.id).having(Auction.start_date >= today).order_by('total DESC')
         auctions =[]
         for a in result:
             auction = Auction.query.get(a.id)

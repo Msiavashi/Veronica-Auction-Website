@@ -11,17 +11,16 @@ from . import app
 from PIL import Image
 import ast
 
-
 class MyAdminIndexView(AdminIndexView):
-    def is_accessible(self):
-        return current_user.has_role('admin')
+    # def is_accessible(self):
+    #     return current_user.has_role('admin')
     @expose('/')
     def index(self):
         return super(MyAdminIndexView, self).index()
 
 class UserAdmin(ModelView):
-    def is_accessible(self):
-        return current_user.has_role('admin')
+    # def is_accessible(self):
+    #     return current_user.has_role('admin')
 
     column_exclude_list = list = ('password',)
 
@@ -44,7 +43,8 @@ class UserAdmin(ModelView):
 
 class RoleAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        return True
+        # return current_user.has_role('admin')
 
 class ItemAdmin(ModelView):
     def is_accessible(self):
@@ -118,6 +118,10 @@ class AuctionAdmin(ModelView):
         return current_user.has_role('admin')
 
 class AddressAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class StateAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
 

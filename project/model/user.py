@@ -99,10 +99,11 @@ class User(Base,UserMixin):
 
     def save_to_db(self):
         #add default role to created user
-        role = Role.query.get(2)
-        self.roles.append(role)
-        db.session.add(self)
-        db.session.commit()
+        role = Role.query.filter_by(name='regular').first()
+        if(role):
+            self.roles.append(role)
+            db.session.add(self)
+            db.session.commit()
 
 class UserSchema(Schema):
     id = fields.Int()
