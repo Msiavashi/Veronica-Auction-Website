@@ -74,16 +74,17 @@ class UserLogin(Resource):
                 'refresh_token': refresh_token,
                 'next':next})
 
-
-            #create order
-            if "items" in session:
-                new_order = Order()
-                new_order.user_id = current_user.id
-                items = [Item.query.get(item_id) for item_id in session['items']]
-                new_order.items = items
-                new_order.total_cost += sum([item.price for item in items])
-                db.session.add(new_order)
-                db.session.commit()
+            '''
+                TODO: FIX THIS
+            '''
+            # create order on registeration
+            if "orders" in session:
+                for new_order in session['orders']:
+                    new_order.user_id = current_user.id
+                    new_order.id = None
+                    db.session.add(new_order)
+                    db.session.commit()
+                session.pop('orders')       # clearing the session
 
             set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)

@@ -314,14 +314,8 @@ class Checkout(Resource):
         payment.amount = order.total_cost
         payment.order_id = order_id
         payment.user_id = current_user.id
-
-        payment_method = PaymentMethod()
-        payment_method.title = data['payment_method']       #TODO: validation with enum
-
-        db.session.add(payment_method)
-        db.session.add.commit()
-
-        payment.payment_method_id = payment_method.id
+        payment.payment_method = PaymentMethod.query.get(data['payment_method'])
+        payment.payment_method_id = payment.payment_method.id
 
         db.session.add(payment)
         db.session.commit()
@@ -330,13 +324,9 @@ class Checkout(Resource):
         shipment.order_id = order.id
         shipment.payment_id = payment.id
 
-        shipment_method = ShipmentMethod()
-        shipment_method.title = data['shipment_method']
-        shipment_method.price = data['shipmet_price']
+        shipment_method = ShipmentMethod.query.get(data['shipment_method'])
 
-        db.session.add(shipment_method)
-        db.session.commit()
-
+        shipment.shipment_method = shipment_method
         shipment.shipment_method_id = shipment_method.id
 
         db.session.add(shipment)
