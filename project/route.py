@@ -75,6 +75,10 @@ class Route():
     def viewAuction(aid):
         return render_template('site/auction.html',auction_id=aid)
 
+    @app.route("/view/category/<int:cid>/products")
+    def viewProducts(cid):
+        return render_template('site/products.html',category_id=cid)
+
     @app.route("/view/auctions")
     def viewAuctions():
         return render_template('site/held.html')
@@ -99,6 +103,18 @@ class Route():
     @app.route('/faq')
     def faq():
         return render_template('site/faq.html')
+
+    @app.route('/roles')
+    def roles():
+        return render_template('site/roles.html')
+
+    @app.route('/help')
+    def help():
+        return render_template('site/help.html')
+
+    @app.route('/private')
+    def private():
+        return render_template('site/private.html')
 
     @app.route('/contact')
     def contact():

@@ -16,7 +16,7 @@ from  .manufacture_product import *
 from  .manufacture import *
 from  .offer import *
 from  .order import *
-from  .order_item import *
+from  .payment_order import *
 from  .payment_method import *
 from  .payment import *
 from  .payment_message import *

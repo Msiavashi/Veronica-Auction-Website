@@ -75,6 +75,7 @@ api.add_resource(Auth_API.UserLogin, '/login')
 
 api.add_resource(Site_API.SiteCategoryMenuItems, '/site/category/menu/items')
 api.add_resource(Site_API.SiteCategoryAuctions, '/site/category/<int:cid>/auctions/')
+api.add_resource(Site_API.SiteCategoryProducts, '/site/category/<int:cid>/products/')
 api.add_resource(Site_API.SiteAuctionCarouselAds, '/site/auction/carousel/ads')
 api.add_resource(Site_API.SiteProductCarouselAds, '/site/product/carousel/ads')
 api.add_resource(Site_API.SiteTodayEvents, '/site/today/events')

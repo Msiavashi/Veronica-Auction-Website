@@ -412,15 +412,12 @@ var paymentsinfo = ko.observable();
 var states = ko.observable([]);
 
 $.getJSON("{{url_for('userinformation')}}", function(data){
-	console.log(data);
 	userInfo = data;
 	states = data.states[0];
-	console.log(userInfo.info[0]);
 });
 
 $.getJSON("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}", function(data){
 	paymentsinfo = data[0];
-	console.log(paymentsinfo);
 	ko.applyBindings();
 });
 
@@ -443,7 +440,6 @@ $(document).on('submit','#profile_form',function(event) {
    });
  		posting.fail(function(xhr, status, error) {
  		obj = JSON.parse(xhr.responseText);
-		console.log(obj);
  		$.each(obj.message, function (key, item) {
  			$(".error_alert").removeClass('hide');
  			$(".error_container").html(item)
@@ -467,8 +463,6 @@ $(document).on('submit','#message_form',function(event) {
 
 		posting.fail(function(xhr, status, error) {
 		obj = JSON.parse(xhr.responseText);
-
- 		console.log(obj);
   		$.each(obj.message, function (key, item) {
   			$(".sendmessage_error").removeClass('hide');
   			$(".sendmessage_error_container").html(item)

@@ -31,8 +31,27 @@ class SiteCategoryAuctions(Resource):
             auction = Auction.query.get(a.id)
             auction.remained_time = (auction.start_date - now).seconds
             auctions.append(auction)
+        category = Category.query.get(cid)
         auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+        category_schema = CategorySchema()
+        result ={'category':category_schema.dump(category),'auctions':auction_schema.dump(auctions)}
+        return make_response(jsonify(result),200)
+
+class SiteCategoryProducts(Resource):
+    def get(self,cid):
+        now = datetime.now()
+        result = Auction.query.filter(Auction.start_date >= now).join(Item).join(Product).join(Category).filter_by(id = cid)
+        auctions=[]
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - now).seconds
+            auctions.append(auction)
+        category = Category.query.get(cid)
+        auction_schema = AuctionSchema(many=True)
+        category_schema = CategorySchema()
+        result ={'category':category_schema.dump(category),'auctions':auction_schema.dump(auctions)}
+        return make_response(jsonify(result),200)
+
 
 class SiteAuctionCarouselAds(Resource):
     def get(self):
