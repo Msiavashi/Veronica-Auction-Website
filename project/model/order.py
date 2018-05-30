@@ -8,7 +8,7 @@ from marshmallow import Schema, fields
 import datetime
 import enum
 
-class OrderStatus(enum.Enum):
+class OrderStatus():
     UNPAID = 0
     PAID = 1
     PAYING = 2

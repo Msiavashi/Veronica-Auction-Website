@@ -258,7 +258,7 @@ class CartOrder(Resource):
 
 
 
-                
+
 
 #TODO: *strict validation*
 class Checkout(Resource):
