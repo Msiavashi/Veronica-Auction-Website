@@ -21,7 +21,7 @@ class Payment(Base):
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     user = db.relationship('User')
 
-    shipment = db.relationship('Shipment')
+    # shipment = db.relationship('Shipment')
 
     messages = db.relationship('PaymentMessage' , secondary = 'payment_message_payments', back_populates='payments')
 

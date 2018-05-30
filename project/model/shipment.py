@@ -22,8 +22,8 @@ class Shipment(Base):
 
     status = db.Column(db.String(255), default="ارسال نشده")
 
-    payment_id = db.Column(db.BigInteger, db.ForeignKey('payments.id'))
-    payment = db.relationship('Payment')
+    order_id = db.Column(db.BigInteger, db.ForeignKey('orders.id'))
+    # payment = db.relationship('Payment')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)

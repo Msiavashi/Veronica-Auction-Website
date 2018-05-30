@@ -228,8 +228,8 @@ class CartOrder(Resource):
     def post(self, data):
         order_schema = OrderSchema()
         data = data.get_json(force=True)
+        item = Item.query.filter_by(id=data['item_id']).first()
         if current_user.is_authenticated:
-            item = Item.query.filter_by(id=data['item_id']).first()
             quantity = data['quantity']
             if quantity > item.quantity:
                 return make_response(jsonify({"message": {"error": "تعداد درخواست شده موجود نیست"}}), 400)
@@ -248,20 +248,59 @@ class CartOrder(Resource):
             if not "orders" in session:
                 session['orders'] = list()
             new_order = Order()
+            new_order.id = len(session['orders'])
             new_order.item_id = item.id
+            new_order.item = item
             new_order.total = quantity
-            new_order.total_cost = ( quantity * item.price ) - item.discount
+            new_order.total_cost = ( quantity * (item.price - item.discount) )
             new_order.user = current_user.id
             session['orders'].append(new_order)
             return make_response(jsonify({"message": {"success": "به سبک خرید اضافه شد"}, "unpaid_orders": jsonify(OrderSchema.dump(session['orders']))}), 200)
 
+    def patch(self, data):
+        data = data.get_json(force=True)
+        if current_user.is_authenticated:
+            order = Order.query.get(data['order_id'])
+            order.total = data['quantity']
+            order.total_cost = (order.total * (order.item.price - order.item.discount))
+            db.session.add(order)
+            db.session.commit()
+        else:
+            orders = session['orders']
+            order = filter(lambda order: order.id == data['order_id'], orders)
+            order.total = data['quantity']
+            order.total_cost = (order.total * (order.item.price - order.item.discount))
 
 
+        return make_response(jsonify({"message": {"success": "تغییرات اعمال شد"}}), 200)
 
-                
+
+    def delete(self, data):
+        data = data.json(force=True)
+
+        if current_user.is_authenticated:
+            db.session.delete(Order.query.get(data['order_id']))
+        else:
+            session['orders'] = filter(lambda order: order.id != data['order_id'], session['orders'])
+
+        return make_response(jsonify({"message": {"success": "محصول مورد نظر از سبد خرید حذف شد"}}), 200)
+
 
 #TODO: *strict validation*
 class Checkout(Resource):
+
+
+    def get(self):
+        '''
+
+            @returns: only returns payments and shipmets information
+
+        '''
+        payment_methods = PaymentMethod.query.all()
+        payment_methods_schema = PaymentMethodSchema()
+        shipment_methods = ShipmentMethod.query.all()
+        shipment_methods_schema = ShipmentMethodSchema
+        return make_response(jsonify({"payment_methods": jsonify(payment_methods_schema.dump(payment_methods)), "shipment_methods": jsonify(shipment_methods_schema.dump(shipment_methods))}), 200)
 
     @login_required
     def post(self):
@@ -290,7 +329,6 @@ class Checkout(Resource):
         shipment = Shipment()
         shipment.order_id = order.id
         shipment.payment_id = payment.id
-
 
         shipment_method = ShipmentMethod()
         shipment_method.title = data['shipment_method']
