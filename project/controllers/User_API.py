@@ -291,16 +291,16 @@ class Checkout(Resource):
 
 
     def get(self):
-        '''
-
-            @returns: only returns payments and shipmets information
-
-        '''
         payment_methods = PaymentMethod.query.all()
-        payment_methods_schema = PaymentMethodSchema()
+        payment_methods_schema = PaymentMethodSchema(many=True)
         shipment_methods = ShipmentMethod.query.all()
-        shipment_methods_schema = ShipmentMethodSchema
-        return make_response(jsonify({"payment_methods": jsonify(payment_methods_schema.dump(payment_methods)), "shipment_methods": jsonify(shipment_methods_schema.dump(shipment_methods))}), 200)
+        shipment_methods_schema = ShipmentMethodSchema(many=True)
+        order_schema = OrderSchema(many=True)
+        if current_user.is_authenticated:
+            return make_response(jsonify({"payment_methods": jsonify(payment_methods_schema.dump(payment_methods)), "shipment_methods": jsonify(shipment_methods_schema.dump(shipment_methods)), "orders": jsonify(order_schema.dump(Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID)))}), 200)
+        else:
+            return make_response(jsonify({"payment_methods": jsonify(payment_methods_schema.dump(payment_methods)), "shipment_methods": jsonify(shipment_methods_schema.dump(shipment_methods)), "orders": jsonify(order_schema.dump(session['orders']))}), 200)
+
 
     @login_required
     def post(self):
