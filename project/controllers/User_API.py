@@ -63,8 +63,8 @@ class UserInformation(Resource):
             item = Item.query.filter_by(id = auction.item_id).first()
             offer = Offer.query.filter_by(auction_id = auction.id, win=True).first()
             total_discount += item.price - offer.total_price
-        states = db.session.query(Address.state).order_by('state DESC').distinct()
-        address_schema = AddressSchema(many=True)
+        states = State.query.order_by('title DESC').distinct().all()
+        state_schema = StateSchema(many=True)
 
         avatars = []
         for root, dirs, files in os.walk(AVATAR_DIR):
@@ -79,7 +79,7 @@ class UserInformation(Resource):
             "total_enrolled_auctions": enrolled_auctions,
             "total_invitations": invitations,
             "invitation_code": current_user.username,
-            "states":address_schema.dump(states),
+            "states":state_schema.dump(states),
             "info":UserSchema().dump(current_user),
             "avatars":avatars,
             "subjects":MESSAGE_SUBJECTS
@@ -106,7 +106,7 @@ class UserInformation(Resource):
             address = Address()
             address.city = address_data['city']
             address.address = address_data['address']
-            address.state = address_data['state']
+            address.state = State.query.get(address_data['state'])
             address.postal_code = address_data['postal_code']
             address.country = "iran"
             current_user.address = address
@@ -118,7 +118,7 @@ class UserInformation(Resource):
         else:
             current_user.address.city = address_data['city']
             current_user.address.address = address_data['address']
-            current_user.address.state = address_data['state']
+            current_user.address.state = State.query.get(address_data['state'])
             current_user.address.postal_code = address_data['postal_code']
             current_user.address.country = "iran"
 

@@ -7,10 +7,5 @@ from project.admin import admin
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))
-<<<<<<< HEAD
     # app.run('0.0.0.0', port=port, threaded=True)
-    socketio.run(app, port=port, debug=True)
-=======
-    # app.run('0.0.0.0', port=port)
     socketio.run(app,port=8000,debug=True)
->>>>>>> master

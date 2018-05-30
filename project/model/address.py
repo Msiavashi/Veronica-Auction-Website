@@ -31,7 +31,7 @@ class Address(Base):
 class AddressSchema(Schema):
     id = fields.Str()
     country = fields.Str()
-    state = fields.Str()
     city = fields.Str()
     address = fields.Str()
     postal_code = fields.Str()
+    state = fields.Nested('StateSchema')
