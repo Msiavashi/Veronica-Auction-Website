@@ -14,9 +14,9 @@
   <li class="user-header">
     <i class="fa fa-user-circle" style="color: white; font-size: 7em;"></i>
     <p>
-      Mr_asadi
-      Web Developer
-      <small>Member since Nov. 2012</small>
+      {{current_user.username}}
+      Admin
+      <small>Member since {{current_user.created_at}}</small>
    </p>
 </li>
 <!-- Menu Body -->
@@ -29,7 +29,7 @@
     <a href="#" class="btn btn-default btn-flat">Profile</a>
 </div> -->
 <div class="pull-right">
-<a href="#" class="btn btn-default btn-flat">خروج</a>
+<a href="/logout" class="btn btn-default btn-flat">خروج</a>
 </div>
 </li>
 </ul>

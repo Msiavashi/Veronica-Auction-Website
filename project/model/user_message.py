@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-from importlib import reload
 reload(sys)
-# sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding("utf-8")
 
 from project.database import db, Base
 from marshmallow import Schema, fields
@@ -15,7 +14,7 @@ class UserMessage(Base):
     id = db.Column(db.BigInteger, primary_key=True)
 
     user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"))
-
+    user = db.relationship('User')
 
     message = db.Column(db.String(1024), nullable=True)
 

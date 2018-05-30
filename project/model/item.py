@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-from importlib import reload
 reload(sys)
-# sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding("utf-8")
 
 from project.database import db, Base
 from marshmallow import Schema, fields
@@ -14,6 +13,7 @@ class Item(Base):
     title = db.Column(db.String(length=100), nullable=False)
     description = db.Column(db.Text(),nullable=False)
     price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    quantity = db.Column(db.Integer())
     discount = db.Column(db.Integer())
     details = db.Column(db.Text())
     images = db.Column(db.Text, nullable=False)
@@ -21,7 +21,7 @@ class Item(Base):
     product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
     product = db.relationship('Product')
 
-    orders = db.relationship('Order',secondary='order_items',back_populates='items')
+    orders = db.relationship('Order')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
@@ -33,12 +33,11 @@ class ItemSchema(Schema):
     title = fields.Str()
     desciption = fields.Str()
     price = fields.Int()
+    quantity = fields.Int()
     discount = fields.Int()
     details = fields.Str()
     images = fields.Str()
-
     product = fields.Nested('ProductSchema',exclude=('items',))
     inventories = fields.Nested('InventorySchema', many=True,exclude=('items',))
     insurances = fields.Nested('InsuranceSchema',many=True,exclude=('items',))
-    payments = fields.Nested('PaymentSchema',many=True,exclude=('items',))
-    orders = fields.Nested('OrderSchema',many=True,exclude=('items',))
+    orders = fields.Nested('OrderSchema',many=True,exclude=('item',))

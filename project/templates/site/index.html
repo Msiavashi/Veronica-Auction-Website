@@ -22,7 +22,7 @@
 									<h2 class="title30" data-bind="text: advertisement.title"></h2>
 									<h2 class="title30 color">تخفیف: <span>تا </span> <span data-bind="text:ToPersian(advertisement.discount)"></span>% <span> قیمت</span></h2>
 									<p data-bind="text: advertisement.description"></p>
-									<a href="#" data-bind="attr:{href : 'view/auction/'+id}" class="shopnow"><span data-bind="text: advertisement.link_title"></span></a>
+									<a data-bind="attr:{href : 'view/auction/'+id}" class="shopnow"><span data-bind="text: advertisement.link_title"></span></a>
 								</div>
 							</div>
 							<!-- ko text: triggerSlider($($element.parentElement)) -->
@@ -53,7 +53,7 @@
 	<div class="events_container" data-bind="foreach:events">
 		<div class="intro-countdown">
 			<h2 class="title30"> ٪<strong class="color" data-bind="text: discount "></strong> <span data-bind="text:description"></span> <span class="color"> محدود </span></h2>
-			<div class="deals-cowndown" data-bind="attr:{ 'data-date' : deadline}"></div>
+			<div class="deals-cowndown timer" data-bind="attr:{ 'data-timer' : deadline}"></div>
 		</div>
 		<!-- ko text: triggerBigTimer () -->
 		<!-- /ko -->
@@ -73,7 +73,7 @@
 							<span class="text-uppercase white"><span data-bind="text:participant_count"></span> از <span data-bind="text:max_members"></span> </span>
 						</div>
 						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown" data-bind = "attr:{'data-date':deadline}" ></div></span>
+							<span class="text-uppercase white"><div class="flash-countdown timer" data-bind = "attr:{'data-timer':deadline}" ></div></span>
 						</div>
 					</div>
 					<div class="flash-info">
@@ -220,32 +220,32 @@
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for1.png" alt="" /></a>
 						<h2 class="title14">شرکت کنید</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p> شما میتوانید با شرکت در حراجی های بردیتو کالای مورد نظر خود را تا ۷۰ درصد تخفیف خریداری کنید </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for2.png" alt="" /></a>
 						<h2 class="title14">تحویل ۲۴ ساعته</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p> در هر ساعتی از شبانه روز میتوانید کالای برنده شده یا خریداری شده خود را تحویل بگیرید. </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for3.png" alt="" /></a>
 						<h2 class="title14">پرداخت امن</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p> با درگاه های فعال در بردیتو امن ترین نوع پرداخت را تجربه کنید </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for4.png" alt="" /></a>
 						<h2 class="title14">فروشگاهی با اعتبار</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p> بردیتو فروشگاهی با اعتبار است که برای شما تجربه یک حراجی و خرید امن را فراهم می آورد </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for5.png" alt="" /></a>
 						<h2 class="title14">پشتیبانی ۲۴ ساعته</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p>شما به صورت شبانه روزی می توانید در سامانه بردیتو ثبت نام کنید</p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for6.png" alt="" /></a>
 						<h2 class="title14">اپلیکیشن موبایل</h2>
-						<p>مورد نظر در اینجا نوشته شود مورد نظر در اینجا نوشته شود مورد نظر در </p>
+						<p>بزودی پلتفرم بردیتو در دو نسخه اندروید و ios عرضه خواهد شد.</p>
 					</div>
 				</div>
 			</div>
@@ -258,7 +258,7 @@
 				<div class="wrap-item" data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
 					<div class="deal-pro18">
 						<div class="product-thumb">
-							<a href="#" class="product-thumb-link zoomout-thumb">
+							<a data-bind="attr:{href : '/instantview/'+id}" class="quickview-link fancybox.iframe product-thumb-link zoomout-thumb">
 								<img data-bind="attr:{src: product_image_path+'/'+ClearifyNames(item.images)[0] }" alt="">
 								<img data-bind="attr:{src: product_image_path+'/'+ClearifyNames(item.images)[0] }" alt="">
 							</a>
@@ -276,7 +276,7 @@
 							</div>
 						</div>
 						<div class="deal-timer18 poly-box">
-							<div class="flash-countdown" data-bind='attr:{"data-date" : new Date(end_date).format("yyyy-M-d hh:mm:ss TT","UTC") }'></div>
+							<div class="flash-countdown timer" data-bind='attr:{"data-timer" : remained_time }'></div>
 						</div>
 					</div>
 					<!-- ko text: triggerSlider($($element.parentElement)) -->
@@ -293,17 +293,34 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
 <script>
 
-var today_auctions = []
-var best_auctions = []
-var ads = []
-var events = []
-var auctions = []
-var populars = []
-var views = []
-var categories = []
+var today_auctions = ko.observableArray([]);
+var best_auctions = [];
+var ads = [];
+var events = [];
+var auctions = [];
+var populars = [];
+var views = [];
+var categories = [];
 var alldatareveived = false;
+
+function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link) {
+    var self = this;
+		self.id = id;
+		self.title = ko.observable(title);
+		self.description = ko.observable(description);
+		self.deadline = ko.observable(deadline);
+		self.participant_count = ko.observable(participant_count);
+		self.max_members = ko.observable(max_members);
+		self.base_price = ko.observable(base_price);
+		self.max_price = ko.observable(max_price);
+		self.price = ko.observable(price);
+		self.image = ko.observable(images);
+		self.link = ko.observable(link)
+}
 
 function Category(title,auctions) {
 	this.title = title;
@@ -316,7 +333,7 @@ function dealModel() {
 	self.ads = ko.observableArray([]);
 	self.productAds = ko.observableArray([]);
 	self.events = ko.observableArray([]);
-	self.auctions = ko.observableArray([]);
+	self.auctions =ko.observableArray(auctions);
 	self.populars = ko.observableArray([]);
 	self.views = ko.observableArray([]);
 	self.categories = ko.observableArray([]);
@@ -352,25 +369,24 @@ function dealModel() {
 	});
 
 	$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
-		console.log(data);
+
 		$.each(data[0],function(key,val){
-			auction =
-			{
-				id : val.id,
-				title : val.title ,
-				description : val.description ,
-				deadline : new Date(val.start_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
-				participant_count :ToPersian(val.participants.length),
-				max_members :ToPersian(val.max_members),
-				base_price : ToPersian(formatCurrency(val.base_price)),
-				max_price : ToPersian(formatCurrency(val.max_price)),
-				price : ToPersian(formatCurrency(val.item.price)),
-				image : product_image_path + ClearifyNames(val.item.images)[0],
-				link : "/participate/"+ val.id
-			};
+			auction = new Auction(
+				val.id,
+				val.title ,
+				val.description ,
+				val.remained_time,
+				ToPersian(val.participants.length),
+			  ToPersian(val.max_members),
+				ToPersian(formatCurrency(val.base_price)),
+				ToPersian(formatCurrency(val.max_price)),
+				ToPersian(formatCurrency(val.item.price)),
+				product_image_path + ClearifyNames(val.item.images)[0],
+				"/participate/"+ val.id
+			);
 			auctions.push(auction);
 		});
-		self.auctions(auctions)
+		self.auctions(auctions);
 	});
 
 	$.getJSON( "{{url_for('sitemostpopularauctions')}}", function( data ) {
@@ -379,7 +395,7 @@ function dealModel() {
 			{
 				title : val.title ,
 				description : val.description ,
-				deadline : new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
+				deadline : val.remained_time,
 				participant_count :ToPersian(val.participants.length),
 				max_members :ToPersian(val.max_members),
 				base_price : ToPersian(formatCurrency(val.base_price)),
@@ -400,7 +416,7 @@ function dealModel() {
 			{
 				title : val.title ,
 				description : val.description ,
-				deadline : new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC"),
+				deadline : val.remained_time,
 				participant_count :ToPersian(val.participants.length),
 				max_members :ToPersian(val.max_members),
 				base_price : ToPersian(formatCurrency(val.base_price)),
@@ -414,11 +430,6 @@ function dealModel() {
 		});
 		self.views(views)
 	});
-
-	self.viewed = ko.observableArray([]);
-	$.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
-		self.viewed(data[0]);
-	})
 }
 
 ko.applyBindings(new dealModel());
@@ -427,7 +438,32 @@ $(document).ready(function(){
 	sleep(1000);
 });
 
+<<<<<<< HEAD
 </script>
+=======
+var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
+ socket.on('connect', function() {
+		 console.log('connected');
+>>>>>>> master
 
+ });
+ var timer = setInterval(function () {
+ 	socket.emit('sync_timers');
+ },10000);
+
+ socket.on('sync_timers',function(data){
+	// $.each(data.timers,function(key,timer) {
+	// 	$.each(auctions,function(key,auction) {
+	// 		if(auction.id == timer.auction_id)
+	// 		{
+	// 			auction.deadline(timer.remained);
+	// 			// triggerFlashTimer();
+	// 		}
+	// 	});
+	// })
+
+ });
+
+</script>
 {% endblock scripts %}

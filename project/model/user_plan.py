@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-from importlib import reload
 reload(sys)
-# sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding("utf-8")
 
 from project.database import db, Base
 from marshmallow import Schema, fields
@@ -23,6 +22,8 @@ class UserPlan(Base):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
-        return    " پلن : " + self.auction_plan.plan.title +" "+ self.user.username + " "
+        if(self.user):
+            return    " پلن : " + self.auction_plan.plan.title +" "+ self.user.username + " "
+        return self.auction_plan.plan.title
 class UserPlanSchema(Schema):
     user = fields.Nested('UserSchema',exclude=('user_plans',))

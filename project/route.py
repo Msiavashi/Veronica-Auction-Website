@@ -1,32 +1,21 @@
 # -*- coding: utf-8 -*-
 import sys
-from importlib import reload
 reload(sys)
-# sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding("utf-8")
 
 import gevent
 from flask import url_for, redirect, render_template, request, abort ,redirect, session,jsonify
 from datetime import timedelta
-from flask_login import current_user,login_required,logout_user,LoginManager
-from .model import *
-from . import app
-from definitions import SESSION_EXPIRE_TIME
-from urllib.parse import urlparse, urljoin
+from flask_login import current_user,login_required,logout_user
+# from .model import *
+from . import app,login_manager
+from urlparse import urlparse, urljoin
 
 class Route():
-
-    login_manager = LoginManager()
-    login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(user_id)
-
-    @app.before_request
-    def make_session_permanent():
-        session.permanent = True
-        permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
-        session.modified = True
 
     @app.route('/')
     def site():
@@ -86,6 +75,14 @@ class Route():
     def viewAuction(aid):
         return render_template('site/auction.html',auction_id=aid)
 
+    @app.route("/view/category/<int:cid>/products")
+    def viewProducts(cid):
+        return render_template('site/products.html',category_id=cid)
+
+    @app.route("/view/auctions")
+    def viewAuctions():
+        return render_template('site/held.html')
+
     @login_manager.unauthorized_handler
     def unauthorized():
          next=url_for(request.endpoint,**request.view_args)
@@ -95,6 +92,10 @@ class Route():
     def page_not_found(e):
         return render_template('site/404.html'), 404
 
+    @app.errorhandler(403)
+    def page_not_found(e):
+        return render_template('site/403.html'), 403
+
     @app.route('/about')
     def about():
         return render_template('site/about.html')
@@ -102,6 +103,18 @@ class Route():
     @app.route('/faq')
     def faq():
         return render_template('site/faq.html')
+
+    @app.route('/roles')
+    def roles():
+        return render_template('site/roles.html')
+
+    @app.route('/help')
+    def help():
+        return render_template('site/help.html')
+
+    @app.route('/private')
+    def private():
+        return render_template('site/private.html')
 
     @app.route('/contact')
     def contact():

@@ -115,7 +115,7 @@
               <div class="product-extra-link2">
                 <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"></i> اضافه به سبد</a>
                 <a class="wishlist-link2" href="#" id="like_auction"><i aria-hidden="true" class="fa fa-heart"></i></a>
-                <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i>۲،۴۵۰،۰۰۰ تومان</a>
+                <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span>تومان</a>
               </div>
             </div>
           </div>
@@ -136,29 +136,34 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
+<<<<<<< HEAD
 <script type="text/javascript" src="{{url_for('static',filename='js/socket/reconnecting-websocket.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+=======
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+>>>>>>> master
 
 <script>
 
 var auction_id = $('#auction').val();
-var images_path = '../../static/images/products/';
-var avatar_path = '../../static/images/avatars/';
 var auction_deadline = 0;
 var people = ko.observableArray([]);
 var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
 var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
+var time_left = ko.observable();
 var time_difference = ko.observable();
 
-function Person(name,avatar,its_me,row) {
+function Person(name,avatar,its_me,row,price) {
     var self = this;
     self.name = ko.observable(name);
     self.avatar = ko.observable(avatar);
     self.its_me = ko.observable(its_me);
     self.row = ko.observable(row);
+    self.offer_price = ko.observable(price);
 }
+<<<<<<< HEAD
 
 
 if (window.location.protocol == "https:") {
@@ -473,6 +478,254 @@ socket.on('join', function(data){
 //   getCountdown(target_date);
 // }
 
+=======
+$.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
+  console.log(data);
+  product = data.product[0]
+  plan = data.plan[0]
+  data = data.auction[0]
+
+  var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
+  auction_deadline= parseInt(data.remained_time) + time_difference;
+
+  before_start_text = "تاریخ شروع حراجی : ";
+  var event = new Date(Date.parse(deadline));
+  var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
+  var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
+  var end_month = event.toLocaleDateString('fa-IR', {month:'long'});
+  var end_date_time =  " ساعت  " + event.toLocaleTimeString('fa-IR');
+  var end_date_date = end_weekday + " " + end_day +" "+ end_month;
+
+  var event = new Date(Date.now());
+  var now_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
+  var now_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
+  var now_month = event.toLocaleDateString('fa-IR', {month:'long'});
+  var now_date_time = event.toLocaleTimeString('fa-IR');
+  var now_date_date = now_weekday + " " + now_day +" "+ now_month;
+
+  var participant_count = ToPersian(data.participants.length);
+  var max_members = ToPersian(data.max_members);
+  var images_temp = ClearifyNames(data.item.images);
+  var images = [];
+
+  $.each(product.items,function(key,item) {
+    $.each(ClearifyNames(item.images),function(key1,val) {
+      images.push({url:images_path+val.trim(),active:false});
+    });
+  });
+
+  images[0].active=true;
+  if(plan){
+    offer_bid_count = plan.max_offers ;
+  }
+  else {
+    offer_bid_count = 0;
+  }
+
+ var mvvm = function MyViewModel() {
+      this.participant_count = participant_count;
+      this.max_members = max_members;
+      this.images = images;
+      this.active_image = images[0].url;
+      this.auction = data
+      this.auction_title = data.title;
+      this.auction_item_price = ToPersian(formatCurrency(data.item.price));
+      this.auction_register_price = ToPersian(formatCurrency(data.base_price));
+      this.people = people;
+      this.auction_rate = ToPersian(data.ratio);
+      this.auction_end_date = end_date_date;
+      this.auction_end_time = end_date_time;
+      this.now_date = now_date_date;
+      this.before_start = before_start_text;
+  }
+  ko.applyBindings(mvvm);
+
+  if($('.detail-gallery').length>0){
+    $('.detail-gallery').each(function(){
+      $(this).find(".carousel").jCarouselLite({
+        btnNext: $(this).find(".gallery-control .next"),
+        btnPrev: $(this).find(".gallery-control .prev"),
+        speed: 800,
+        visible:3,
+      });
+      //Elevate Zoom
+      $(this).find('.mid img').elevateZoom({
+        zoomType: "inner",
+        cursor: "crosshair",
+        zoomWindowFadeIn: 500,
+        zoomWindowFadeOut: 750
+      });
+
+      $(this).find(".carousel a").on('click',function(event) {
+        event.preventDefault();
+        $(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
+        $(this).addClass('active');
+        $(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
+        var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
+        $('.zoomWindow').css('background-image','url("'+z_url+'")');
+      });
+    });
+  }
+});
+
+var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+ socket.on('connect', function() {
+		 console.log('connected');
+     socket.emit('join', {'auction_id':auction_id});
+ });
+
+ var timer = setInterval(getStatus,1000);
+
+ function getStatus() {
+   socket.emit('status',{'auction_id':auction_id});
+ }
+
+ socket.on('auction_status',function(data) {
+
+  var countdown = document.getElementById("tiles");
+
+  getCountdown(data.remained);
+
+  function getCountdown(seconds_left){
+
+    if ( seconds_left >= 0 ) {
+
+     if ( seconds_left  <  60 )
+     {
+       $( '#tiles' ).removeClass('color-full');
+       $( '#tiles' ).addClass('color-half');
+     }
+     else {
+       $( '#tiles' ).addClass('color-full');
+       $( '#tiles' ).removeClass('color-half');
+     }
+
+     if ( seconds_left  < 10 )
+      {
+        $( '#tiles' ).removeClass('color-half');
+        $( '#tiles' ).addClass('color-empty');
+      }else {
+        $( '#tiles' ).addClass('color-half');
+        $( '#tiles' ).removeClass('color-empty');
+      }
+
+    days = pad( parseInt(seconds_left / 86400) );
+    seconds_left = seconds_left % 86400;
+
+    hours = pad( parseInt(seconds_left / 3600) );
+    seconds_left = seconds_left % 3600;
+
+    minutes = pad( parseInt(seconds_left / 60) );
+
+    seconds = pad( parseInt( seconds_left % 60 ) );
+
+    // format countdown string + set tag value
+    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+    }
+  }
+});
+
+ function pad(n) {
+   return (n < 10 ? '0' : '') + n;
+ }
+
+ socket.on('join', function(data) {
+   console.log(data);
+   time_left = data.deadline;
+ });
+
+ socket.on('update_view', function(data) {
+
+   users = data.users[0];
+   active_user = users[0];
+
+    $.each(users,function(key,user){
+      if(user.id =='{{current_user.id}}'){
+        if(user.current_bids)
+          $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
+          return;
+      }
+    });
+
+    $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
+    if(active_user){
+      $('#auction_current_winner').html(active_user.username);
+      $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(active_user.avatar)[0])
+    }
+   if(users){
+     rowIndex = 0;
+     people([]);
+     $.each(users,function(key,val){
+       its_you = val.id == current_user_id ? true : false;
+       name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+       avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+       row = ToPersian(++rowIndex);
+       price = val.current_offer_price ? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
+       person = new Person(name,avatar,its_you,row,price);
+       people.push(person);
+     });
+     people.valueHasMutated();
+   }
+
+ });
+
+ socket.on('accepted', function(data) {
+   users = data.users[0];
+   winner_user = users[0];
+
+   console.log(data);
+   $.each(users,function(key,user){
+     if(user.id =='{{current_user.id}}'){
+       if(user.current_bids)
+         $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
+     }
+   });
+
+   $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
+   if(winner_user){
+     $('#auction_current_winner').html(data.users[0][0].username);
+     $('#auction_current_winner_image').attr('src',data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#");
+   }
+   if(users){
+     rowIndex = 0;
+     people([]);
+     $.each(data.users[0],function(key,val){
+       its_you = val.id == current_user_id ? true : false;
+       name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+       avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
+       row = ++rowIndex;
+       person = new Person(name,avatar,its_you,ToPersian(row));
+       people.push(person);
+     });
+     people.valueHasMutated();
+   }
+ });
+
+ socket.on('auction_done', function(data) {
+    clearInterval(timer);
+    if(data.success){
+      $(".error_alert").addClass('hide');
+      $(".success_alert").removeClass('hide');
+      $(".success_container").html('حراجی این محصول به پایان رسیده است')
+      $('#offer').html(data.winner[0].username);
+      $('#discount').html(ToPersian(formatCurrency(data.discount)))
+    }else {
+      $(".error_alert").removeClass('hide');
+      $(".error_container").html(data.reason);
+    }
+
+ });
+
+ socket.on('failed', function(data) {
+   $(".error_alert").removeClass('hide');
+   $(".error_container").html(data.reason);
+ });
+
+ $("#offer").on("click", function(event) {
+   socket.emit('bid', {'auction_id':auction_id});
+ });
+>>>>>>> master
 
 </script>
 

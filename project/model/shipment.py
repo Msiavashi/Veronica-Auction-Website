@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-from importlib import reload
 reload(sys)
-# sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding("utf-8")
 
 from project.database import db, Base
 from marshmallow import Schema, fields
@@ -30,7 +29,11 @@ class Shipment(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return " ارسال توسط :" + str(self.company) + " درتاریخ " + self.send_date + " با قیمت " + self.price + " باوضعیت " + self.status
+        if(self.status):
+            status = "ارسال موفقیت آمیز"
+        else:
+            status = "عدم ارسال موفقیت آمیز"
+        return "روش ارسال :" + str(self.shipment_method) + " - تاریخ :" + str(self.send_date) + " - هزینه ارسال :" + str(self.shipment_method.price) + " - وضعیت :" + status
 
 class ShipmentSchema(Schema):
     id = fields.Int()
@@ -40,5 +43,5 @@ class ShipmentSchema(Schema):
     recieve_date = fields.DateTime()
     price = fields.Str()
     status = fields.Boolean()
-    insurance = fields.Nested('InsuranceSchema',exclude=('shipment',))
+    # insurance = fields.Nested('InsuranceSchema',exclude=('shipment',))
     payment = fields.Nested('OrderSchema',exclude=('shipment',))

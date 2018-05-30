@@ -8,7 +8,6 @@ class Product(Base):
     id = db.Column(db.BigInteger, primary_key=True)
     title = db.Column(db.String(length=255), nullable=False)
     desciption = db.Column(db.Text,nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
     details = db.Column(db.Text)
 
     category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'))

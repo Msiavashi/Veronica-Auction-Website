@@ -1,0 +1,65 @@
+{% extends 'site/layout.html' %}
+{% block title %} بید بازی | برندگان گذشته {% endblock %}
+{% block content %}
+<div class="content-page">
+	<div class="container">
+		<div class="top-selling15">
+				<div class="container">
+					<div class="text-center title-box15 wow zoomIn">
+						<h2 class="title30 color">حراجی های برگزار شده </h2>
+						<p class="desc wow zoomIn">لیست مشاهده برندگان گذشته در بیدبازی</p>
+					</div>
+					<div class="list-topsale15">
+						<div class="row" data-bind="foreach:offers">
+							<div class="col-md-6 col-sm-6 col-xs-12">
+								<div class="item-product15 wow slideInUp">
+									<div class="row">
+										<div class="col-md-6 col-sm-12 col-xs-6">
+											<div class="product-thumb">
+												<a data-bind="attr:{href: '/view/auction/'+auction.id}" class="product-thumb-link">
+													<img data-bind="attr:{src : images_path+ClearifyNames(auction.item.images)[0]}" alt="">
+												</a>
+											</div>
+										</div>
+										<div class="col-md-6 col-sm-12 col-xs-6">
+											<div class="product-info">
+												<h3 class="product-title"><a data-bind="attr:{href: '/view/auction/'+auction.id},text:auction.title +' '+auction.item.title">نام محصول حراجی</a></h3>
+												<div class="product-price">
+													<ins><span data-bind="text: ToPersian(formatCurrency(total_price))"></span>تومان</ins>
+													<del><span data-bind="text : ToPersian(formatCurrency(auction.item.price))"></span>تومان</del>
+												</div>
+												<p class="desc">تاریخ برگزاری : <span data-bind = "text : new Date(auction.start_date).toLocaleDateString('fa-IR')"></span></p>
+												<p class="desc">تخفیف محصول :<span data-bind="text : ToPersian(formatCurrency(auction.item.price - total_price))"></span></p>
+												<div class="product-extra-link5">
+													<a class="addcart-link" href="#">نام برنده :<span data-bind="text: winner"></span></a>
+													<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-user"></i><span data-bind=" text:ToPersian(auction.participants.length)"></span></a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<a href="#" class="radius scroll-top"><i class="fa fa-angle-up" aria-hidden="true"></i></a>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{url_for('static',filename='js/libs/masonry.pkgd.min.js')}}"></script>
+<script>
+
+var offers = ko.observableArray([]);
+$.getJSON("{{url_for('auctionviewfinished')}}", function(data){
+	console.log(data);
+	offers(data[0]);
+});
+ko.applyBindings();
+
+
+
+</script>
+{% endblock scripts %}

@@ -18,15 +18,12 @@ class Offer(Base):
     auction = db.relationship('Auction')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-
+    
 class OfferSchema(Schema):
     id = fields.Int()
-    offer_price = fields.Str()
+    total_price = fields.Str()
     status = fields.Int()
     win = fields.Boolean()
     created_at = fields.DateTime()
-
-    user = fields.Nested('UserSchema',exclude=('offers',))
+    winner = fields.Str()
     auction = fields.Nested('AuctionSchema',exclude=('offers',))
-    plan = fields.Nested('PlanSchema',exclude=('offers',))

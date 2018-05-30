@@ -35,7 +35,7 @@
 											<i class="fa fa-usd fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge"><h2 data-bind="text: ToPersian(formatCurrency(userInfo.credit))" >test</h2> تومان</div>
+											<div class="huge"><span data-bind="text: ToPersian(formatCurrency(userInfo.credit))" ></span> تومان</div>
 											<div>موجودی</div>
 										</div>
 										</div>
@@ -55,7 +55,7 @@
 											<i class="fa fa-percent fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">۹،۳۰۰،۰۰۰ تومان</div>
+											<div class="huge"><span data-bind="text:ToPersian(formatCurrency(userInfo.total_discount))"></span>تومان</div>
 											<div>تخفیف</div>
 										</div>
 										</div>
@@ -75,7 +75,7 @@
 											<i class="fa fa-trophy fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">۸</div>
+											<div class="huge" data-bind="text:ToPersian(userInfo.won_auctions)"></div>
 											<div>برنده</div>
 										</div>
 										</div>
@@ -95,8 +95,8 @@
 											<i class="fa fa-shopping-cart fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">۴</div>
-											<div>خریدها</div>
+											<div class="huge" data-bind="text : ToPersian(userInfo.total_boughts)"></div>
+											<div>خرید</div>
 										</div>
 										</div>
 									</div>
@@ -115,7 +115,7 @@
 											<i class="fa fa-gavel fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">۱۶</div>
+											<div class="huge" data-bind="text:ToPersian(userInfo.total_enrolled_auctions)"></div>
 											<div>حراجی ها</div>
 										</div>
 										</div>
@@ -135,7 +135,7 @@
 											<i class="fa fa-street-view fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">۱۶</div>
+											<div class="huge" data-bind="text:ToPersian(userInfo.total_invitations)"></div>
 											<div>دعوت شدگان</div>
 										</div>
 										</div>
@@ -152,35 +152,31 @@
 
 					<section id="content2" class="tab-content">
 						<h3>ویرایش اطلاعات</h3>
-						<form class="form-my-account" method="POST" action="{{url_for('userinformation')}}">
-							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+						<form class="form-my-account" id="profile_form">
+
 							<div class="row">
 								<div class="col-md-6 col-sm-6 col-ms-12">
 									<div class="check-billing">
 
-										<p><input name="alias-name" type="text" value="نام مستعار" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
+										<p><input name="alias-name" data-bind="attr:{value: userInfo.info[0].alias_name}" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام مستعار" /></p>
 										<p class="clearfix box-col2">
-											<input name="last-name" type="text" value="امینی" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام خانوادگی *"/>
-											<input name="first-name" type="text" value="احسان" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام *"/>
+											<input name="last-name"  data-bind="attr:{value: userInfo.info[0].last_name}" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام خانوادگی"/>
+											<input name="first-name" data-bind="attr:{value: userInfo.info[0].first_name}" type="text"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام"/>
 										</p>
-										<p><input name="work-place" type="text" value="شرکت فلان" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام محل کار"/></p>
+										<p><input name="work-place" data-bind="attr:{value: userInfo.info[0].work_place}" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام محل کار"/></p>
 										<p class="clearfix box-col2">
-											<input name="email" type="text" value="aminyehsan@gmail.com" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="ایمیل *"/>
-											<input name="mobile" type="text" value="09123384444" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شماره تلفن *"/>
+											<input name="email" data-bind="attr:{value: userInfo.info[0].email}" type="text"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="ایمیل"/>
+											<input name="mobile" data-bind="attr:{value: userInfo.info[0].mobile}" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شماره تلفن *"/>
 										</p>
 										<p>
-											<select name="state" id="country">
-												<option value="">استان *</option>
-												<option value="" selected>تهران</option>
-												<option value="">قم</option>
-												<option value="">رشت</option>
-												<option value="">لرستان</option>
+											<select name="state" id="state" data-bind="foreach:states">
+												<option value="" data-bind="text:state , attr:{value:state, selected: {if :userInfo.info[0].address &&  state == userInfo.info[0].address.state}}"></option>
 											</select>
 										</p>
-										<p><input name="address" type="text" value="تهران خیابان ستارخان" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
+										<p><input name="address" type="text"  data-bind="attr:{value: userInfo.info[0].address ?  userInfo.info[0].address.address : ''}"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
 										<p class="clearfix box-col2">
-											<input name="postal-code" type="text" value="۳۳۳۴۴-۴۴۴۴۴" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="کدپستی *"/>
-											<input name="city" type="text" value="تهران" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام شهر *"/>
+											<input name="postal_code" type="text"  data-bind="attr:{value: userInfo.info[0].address ? userInfo.info[0].address.postal_code : ''}" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="کدپستی *"/>
+											<input name="city" type="text" data-bind="attr:{value: userInfo.info[0].address ? userInfo.info[0].address.city : ''}"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام شهر *"/>
 										</p>
 
 								</div>
@@ -190,15 +186,15 @@
 									<div class="form-my-account">
 										<p>
 											<label for="current-password">گذرواژه فعلی (اگر نیاز به تغییر ندارید خالی بگذارید)</label>
-											<input type="text" name="current-password" />
+											<input type="password" name="current-password" />
 										</p>
 										<p>
-											<label for="new-password">رمز عبور جدید (اگر نیاز به تغییر ندارید خالی بگذارید)</label>
-											<input type="text" name="new-password" />
+											<label for="password">رمز عبور جدید (اگر نیاز به تغییر ندارید خالی بگذارید)</label>
+											<input type="password" name="password" />
 										</p>
 										<p>
 											<label for="confirm-password">رمز عبور جدید را تأیید کنید</label>
-											<input type="text" name="confirm-password" />
+											<input type="password" name="c_password" />
 										</p>
 									</div>
 								</div>
@@ -209,7 +205,7 @@
 							<div class="col-md-6 col-sm-6 col-ms-12">
 								<div class="">
 
-										<p><input name="invitor-code" type="text" value="کد معرف" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
+										<p><input name="invitor-code" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
 
 									<p class="pText">
 										این قسمت فقط یک بار قابل استفاده است و بعد از زدن کد، شما و معرف شما ۲۰ هزار تومان هدیه دریافت خواهید کرد.
@@ -218,73 +214,59 @@
 							</div>
 						</div>
 						<h3>انتخاب آواتار</h3>
+						<input type="hidden" id="avatar_index" name="avatar-index" value="">
 						<div class="avatarUser">
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
-							<img src="images/theme/004.png" />
-							<img src="images/theme/005.png" />
+							<div data-bind="foreach:userInfo.avatars">
+								<img data-bind="attr:{src: avatar_path + name},css: { 'current' : name==ClearifyNames(userInfo.info[0].avatar)[0]  }"/>
+							</div>
+							<!-- ko text: triggerAvatars() -->
+							<!-- /ko -->
 						</div>
 						<div class="my-profile-box register-content-box">
 							<input type="submit" class="register-button save-change" name="register" value="ذخیره تغییرات">
 						</div>
 					</form>
+					<div class="alert alert-danger error_alert hide">
+						<a href="#" class="close" aria-label="close">×</a>
+						<div class="error_container"></div>
+					</div>
+					<div class="alert alert-success alert-dismissable success_alert hide">
+						<a href="#" class="close" aria-label="close">×</a>
+						<div class="success_container"></div>
+					</div>
 					</section>
 
 					<section id="content3" class="tab-content">
 						<h3>ارسال پیام</h3>
 						<div class="form-contact">
-							<form class="form-my-account" method="POST" action="{{url_for('usercontactus')}}">
-								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+							<form class="form-my-account" id="message_form" enctype="multipart/form-data">
+
 								<div class="row">
 									<div class="col-md-6 col-sm-4 col-xs-12">
-										<input type="text" name="title" value="عنوان مطلب" onfocus="if (this.value==this.defaultValue) this.value = ''" onblur="if (this.value=='') this.value = this.defaultValue">
+										<input type="text" name="title" onfocus="if (this.value==this.defaultValue) this.value = ''" onblur="if (this.value=='') this.value = this.defaultValue" placeholder="عنوان پیام">
 									</div>
+
 									<div class="col-md-3 col-sm-4 col-xs-12">
-										<select name="subject" id="country">
-											<option value="subject">موضوع پیام</option>
-											<option value="subject1">عنوان موضوع پیام در اینجا</option>
-											<option value="subject2">عنوان موضوع پیام در اینجا</option>
-											<option value="sibject3">عنوان موضوع پیام در اینجا</option>
+										<select name="subject" id="subjects" data-bind="foreach:userInfo.subjects">
+											<option data-bind="attr:{value:type},text:title"></option>
 										</select>
 									</div>
+
 									<div class="col-md-9 col-sm-9 col-xs-12">
-										<textarea name="message" cols="30" rows="8" onfocus="if (this.value==this.defaultValue) this.value = ''" onblur="if (this.value=='') this.value = this.defaultValue">پیام خود را بنویسید...</textarea>
+										<textarea name="message" cols="30" rows="8" onfocus="if (this.value==this.defaultValue) this.value = ''" onblur="if (this.value=='') this.value = this.defaultValue" placeholder="متن پیام خود را بنویسید ..."></textarea>
 										<input type="submit" value="ارسال پیام" />
-										<input type="file" name="file" id="file" class="inputfile" data-multiple-caption="{count} files selected" multiple />
-										<label for="file"><i class="fa fa-upload"></i><span>بارگزاری فایل ضمیمه</span></label>
+										<!-- <input type="file" name="file" id="file" class="inputfile" data-multiple-caption="{count} files selected" multiple />
+										<label for="file"><i class="fa fa-upload"></i><span>بارگزاری فایل ضمیمه</span></label> -->
 									</div>
+
+								</div>
+								<div class="alert alert-danger error_alert hide sendmessage_error">
+									<a href="#" class="close" aria-label="close">×</a>
+									<div class="sendmessage_error_container"></div>
+								</div>
+								<div class="alert alert-success alert-dismissable success_alert hide sendmessage_success">
+									<a href="#" class="close" aria-label="close">×</a>
+									<div class="sendmessage_success_container"></div>
 								</div>
 							</form>
 						</div>
@@ -295,131 +277,118 @@
 						<table class="fold-table">
 								<thead>
 									<tr>
-									<th>فاکتور / کد حراجی</th>
-									<th>مبلغ</th>
-									<th>تاریخ</th>
+										<th>فاکتور / کد حراجی</th>
+										<th>مبلغ</th>
+										<th>تاریخ</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody data-bind="foreach:paymentsinfo">
 									<tr class="view">
-									<td>۲۲۲۳-۳۳۳۳۳</td>
-									<td>۳،۷۰۰،۰۰۰ تومان</td>
-									<td>۱۳۹۷/۰۳/۲۲</td>
+										<td data-bind="text:ToPersian(id+payment_method.id+'-'+user.id)"></td>
+										<td><span data-bind="text:ToPersian(formatCurrency(amount))" ></span> تومان  </td>
+										<td data-bind="text : new Date(created_at).toLocaleDateString('fa-IR')"></td>
 									</tr>
 									<tr class="fold">
-									<td colspan="7">
-										<div class="fold-content">
-										<h4>فاکتور خرید ۲۲۲۳-۳۳۳۳۳</h4>
-										<p>پیغامی از طرف بیدبازی اگر لازم شد پیامی برای این سفارش داده شود.</p>
-										<table class="small-friendly">
-											<thead>
-											<tr>
-												<th>محصول</th>
-												<th>تعداد</th>
-												<th>مبلغ واحد</th>
-												<th>مبلغ کل</th>
-												<th>تخفیف</th>
-												<th>مبلغ پرداختی</th>
-											</tr>
-											</thead>
-											<tbody>
-											<tr>
-												<td>گوشی سونی</td>
-												<td>۱</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۴۵۰،۰۰۰</td>
-												<td>۱،۴۵۰،۰۰۰</td>
-											</tr>
-											<tr>
-												<td>گوشی سامسونگ</td>
-												<td>۲</td>
-												<td>۳،۸۰۰،۰۰۰</td>
-												<td>۶،۸۰۰،۰۰۰</td>
-												<td>۷۵۰،۰۰۰</td>
-												<td>۵،۴۵۰،۰۰۰</td>
-											</tr>
-											<tr>
-												<td>گوشی سونی</td>
-												<td>۱</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۴۵۰،۰۰۰</td>
-												<td>۱،۴۵۰،۰۰۰</td>
-											</tr>
-											</tbody>
-										</table>
-										<div class="checkout-wrap">
-												<ul class="checkout-bar">
-													<li class="visited first">سفارش</li>
-													<li class="previous visited">تایید سفارش</li>
-													<li class="active">انبارداری</li>
-													<li class="next">تحویل پست</li>
-													<li class="">خریدار</li>
-												</ul>
+										<td colspan="7">
+											<div class="fold-content">
+												<h4> فاکتور خرید : <span data-bind="text:ToPersian(id+payment_method.id+'-'+user.id)"></span></h4>
+												<div data-bind="foreach:messages">
+													<p data-bind="text:title +' : '+ message"></p>
+												</div>
+												<table class="small-friendly">
+													<thead>
+														<tr>
+														<th>محصول</th>
+														<th>تعداد</th>
+														<th>مبلغ واحد</th>
+														<th>مبلغ کل</th>
+														<th>تخفیف</th>
+														<th>مبلغ پرداختی</th>
+													</tr>
+													</thead>
+													<tbody data-bind="foreach:orders">
+														<tr>
+															<td data-bind="text:item.product.title +' '+item.title"></td>
+															<td data-bind="text:ToPersian(total)"></td>
+															<td data-bind="text:ToPersian(formatCurrency(item.price))"></td>
+															<td data-bind="text:ToPersian(formatCurrency(item.price * total))"></td>
+															<td data-bind="text:ToPersian(formatCurrency(total_discount))"></td>
+															<td data-bind="text:ToPersian(formatCurrency(item.price * total - total_discount))"></td>
+														</tr>
+													</tbody>
+												</table>
+												<div class="checkout-wrap" data-bind="if:status==1">
+														<ul class="checkout-bar">
+															<li class="active">سفارش</li>
+															<li class="next">تایید سفارش</li>
+															<li class="">انبارداری</li>
+															<li class="">تحویل پست</li>
+															<li class="">خریدار</li>
+														</ul>
+												</div>
+												<div class="checkout-wrap" data-bind="if:status==2">
+														<ul class="checkout-bar">
+															<li class="visited first">سفارش</li>
+															<li class="active">تایید سفارش</li>
+															<li class="next">انبارداری</li>
+															<li class="">تحویل پست</li>
+															<li class="">خریدار</li>
+														</ul>
+												</div>
+												<div class="checkout-wrap" data-bind="if:status==3">
+														<ul class="checkout-bar">
+															<li class="visited first">سفارش</li>
+															<li class="previous visited">تایید سفارش</li>
+															<li class="active">انبارداری</li>
+															<li class="next">تحویل پست</li>
+															<li class="">خریدار</li>
+														</ul>
+												</div>
+												<div class="checkout-wrap" data-bind="if:status==4">
+														<ul class="checkout-bar">
+															<li class="visited first">سفارش</li>
+															<li class="previous visited">تایید سفارش</li>
+															<li class="previous visited">انبارداری</li>
+															<li class="active">تحویل پست</li>
+															<li class="next">خریدار</li>
+														</ul>
+												</div>
+												<div class="checkout-wrap" data-bind="if:status==5">
+														<ul class="checkout-bar">
+															<li class="visited first">سفارش</li>
+															<li class="previous visited">تایید سفارش</li>
+															<li class="previous visited">انبارداری</li>
+															<li class="previous visited">تحویل پست</li>
+															<li class="active">خریدار</li>
+
+														</ul>
+												</div>
 											</div>
-										</div>
-									</td>
+										</td>
 									</tr>
-									<!-- Row -->
-									<tr class="view">
-									<td>۳۴۶۴۳۶۶</td>
-									<td>۲،۳۰۰،۰۰۰ تومان</td>
-									<td>۱۳۹۷/۰۳/۲۲</td>
-									</tr>
-									<tr class="fold">
-									<td colspan="7">
-										<div class="fold-content">
-										<h4>کد حراجی ۳۴۶۴۳۶۶</h4>
-										<p>پیغامی از طرف بیدبازی اگر لازم شد پیامی برای این سفارش داده شود.</p>
-										<table class="small-friendly">
-											<thead>
-											<tr>
-												<th>محصول</th>
-												<th>تعداد</th>
-												<th>مبلغ واحد</th>
-												<th>مبلغ کل</th>
-												<th>تخفیف</th>
-												<th>مبلغ پرداختی</th>
-											</tr>
-											</thead>
-											<tbody>
-											<tr>
-												<td>گوشی سونی</td>
-												<td>۱</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۱،۸۰۰،۰۰۰</td>
-												<td>۴۵۰،۰۰۰</td>
-												<td>۱،۴۵۰،۰۰۰</td>
-											</tr>
-											</tbody>
-										</table>
-										</div>
-									</td>
-									</tr>
-									<!-- Row -->
 								</tbody>
+								<!-- ko text: triggerPaymentTable() -->
+								<!-- /ko -->
 								</table>
 					</section>
 
 					<section id="content5" class="tab-content">
-						<h3>کد معرف</h3>
+						<h3>کد معرفی</h3>
 						<p>با دعوت از دوستان و آشنایان خود به بید بازی از طریق کد معرف خود، ۲۰ هزار تومان هدیه دو طرف از ما دریافت کنید! </p>
 						<p>هدیه کد معرف، پس از اولین شرکت در حراجی توسط شخصی که معرفی شده اعمال میشود.</p>
-						<div class="CodeM">کد معرف: ۹۹۳۴۳۲۵</div>
+						<div class="CodeM">کد معرف : <span data-bind="text:userInfo.info[0].username"></span></div>
 					</section>
 					<section id="content6" class="tab-content">
 						<h3>شارژ موجودی</h3>
 						<p>شما می توانید به هر اندازه که می خواهید موجودی حسابتان را شارژ کنید.</p>
 						<form method="post">
-							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 							<table cellspacing="0" class="shop_table cart table">
 								<tbody>
 									<tr>
 										<td class="actions" colspan="6">
 											<div class="coupon">
 												<label for="coupon_code">افزایش اعتبار : </label>
-												<input type="text" placeholder="مبلغ را به ریال وارد کنید" value="" id="coupon_code" class="input-text" name="coupon_code">
+												<input type="text" placeholder="مبلغ..." value="" id="coupon_code" class="input-text" name="coupon_code">
 												<input type="submit" value="پرداخت" name="apply_coupon" class="button">
 											</div>
 										</td>
@@ -438,31 +407,68 @@
 {% block scripts %}
 {{ super() }}
 <script>
+var userInfo = ko.observable();
+var paymentsinfo = ko.observable();
+var states = ko.observable([]);
+
 $.getJSON("{{url_for('userinformation')}}", function(data){
-	function dashboardViewModel(){
-		self = this;
-		self.userInfo = ko.observable();
-		self.paymentsInfo = ko.observable();
-		self.userInfo(data);
-		console.log(data);
-	}
-	ko.applyBindings(new dashboardViewModel());
-	console.log(userInfo);
+	userInfo = data;
+	states = data.states[0];
 });
 
-	$.getJSON("{{url_for('paymentsinfo')}}", function(data){
-	  self.paymentsInfo(data);
-	 	console.log(data);
-	 });
+$.getJSON("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}", function(data){
+	paymentsinfo = data[0];
+	ko.applyBindings();
+});
 
+$(document).on('submit','#profile_form',function(event) {
+   event.preventDefault();
+	 selected_avatar = ($($('.current')).attr('src'));
+	 if(selected_avatar){
+		 selected_avatar = selected_avatar.split('/')
+		 avatar = selected_avatar[selected_avatar.length-1];
+		 $('#avatar_index').val(avatar)
+	 }
+   var $form = $( this );
+   var data = getFormData($form);
+	 var url = "{{url_for('userinformation')}}";
+   var posting = $.post( url, data);
+   posting.done(function( data ) {
+ 		$(".error_alert").addClass('hide');
+ 		$(".success_alert").removeClass('hide');
+ 		$(".success_container").html('اطلاعات شما با موفقیت ثبت شد')
+   });
+ 		posting.fail(function(xhr, status, error) {
+ 		obj = JSON.parse(xhr.responseText);
+ 		$.each(obj.message, function (key, item) {
+ 			$(".error_alert").removeClass('hide');
+ 			$(".error_container").html(item)
+ 			});
+     });
+ });
 
-		userInfo = data;
-		function dashboardViewModel() {
-		    var self = this;
-				self.userInfo = userInfo;
-				// self.paymentsInfo = ;
-		}
-		ko.applyBindings(new dashboardViewModel());
-	});
+$(document).on('submit','#message_form',function(event) {
+    event.preventDefault();
+    var $form = $( this );
+    var data = getFormData($form);
+
+ 	  var url = "{{url_for('usercontactus')}}";
+    var posting = $.post( url, data);
+
+    posting.done(function( data ) {
+  		$(".sendmessage_error").addClass('hide');
+  		$(".sendmessage_success").removeClass('hide');
+			$(".sendmessage_success_container").html(data.message.success)
+    });
+
+		posting.fail(function(xhr, status, error) {
+		obj = JSON.parse(xhr.responseText);
+  		$.each(obj.message, function (key, item) {
+  			$(".sendmessage_error").removeClass('hide');
+  			$(".sendmessage_error_container").html(item)
+  			});
+      });
+  });
+
 </script>
 {% endblock scripts %}

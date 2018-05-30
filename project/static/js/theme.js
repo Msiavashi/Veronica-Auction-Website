@@ -553,6 +553,7 @@ $(".open").click(function() {
 
 // avatar
 $('.avatarUser img').click( function(){
+	  alert('clicked')
     if ( $(this).hasClass('current') ) {
     } else {
         $('img.current').removeClass('current');

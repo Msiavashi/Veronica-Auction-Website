@@ -12,6 +12,25 @@ REDIS_URL = "redis://localhost:6379/0"
 REDIS_CHAN = 'auction'
 
 
+    @sockets.route('/submit')
+    def inbox(ws):
+        while not ws.closed:
+            # Sleep to prevent *constant* context-switches.
+            gevent.sleep(0.1)
+            message = ws.receive()
+            data = ast.literal_eval(message)
+            handler = data['handler']
+
+            if handler == 'offer':
+                message = offer_bid(data)
+            elif handler == 'loadview':
+                message = loadview(data)
+            elif handler == 'auction_done':
+                message = auction_done(data)
+            elif handler == 'get_time':
+                message = get_time(data)
+            else:
+                pass
 
 # @socketio.on('submit', '/submit')
 # def inbox(json):

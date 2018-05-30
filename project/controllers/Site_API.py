@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-from importlib import reload
 reload(sys)
-# sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding("utf-8")
 
 from flask_restful import Resource, reqparse
 from ..model import *
@@ -17,7 +16,6 @@ import os
 from ..model.guest_message import GuestMessage
 
 
-
 class SiteCategoryMenuItems(Resource):
     def get(self):
         categories = Category.query.all()
@@ -26,9 +24,34 @@ class SiteCategoryMenuItems(Resource):
 
 class SiteCategoryAuctions(Resource):
     def get(self,cid):
-        auctions = Auction.query.join(Item).join(Product).join(Category).filter_by(id = cid)
+        now = datetime.now()
+        result = Auction.query.filter(Auction.start_date >= now).join(Item).join(Product).join(Category).filter_by(id = cid)
+        auctions=[]
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - now).seconds
+            auctions.append(auction)
+        category = Category.query.get(cid)
         auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+        category_schema = CategorySchema()
+        result ={'category':category_schema.dump(category),'auctions':auction_schema.dump(auctions)}
+        return make_response(jsonify(result),200)
+
+class SiteCategoryProducts(Resource):
+    def get(self,cid):
+        now = datetime.now()
+        result = Auction.query.filter(Auction.start_date >= now).join(Item).join(Product).join(Category).filter_by(id = cid)
+        auctions=[]
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - now).seconds
+            auctions.append(auction)
+        category = Category.query.get(cid)
+        auction_schema = AuctionSchema(many=True)
+        category_schema = CategorySchema()
+        result ={'category':category_schema.dump(category),'auctions':auction_schema.dump(auctions)}
+        return make_response(jsonify(result),200)
+
 
 class SiteAuctionCarouselAds(Resource):
     def get(self):
@@ -51,27 +74,13 @@ class SiteTodayEvents(Resource):
 
 class SiteTodayAuctions(Resource):
     def get(self):
-        # This should find all the events in June, 2012.
-        # import datetime
-        # import calendar
-        #
-        # year = 2012
-        # month = 6
-        #
-        # num_days = calendar.monthrange(year, month)[1]
-        # start_date = datetime.date(year, month, 1)
-        # end_date = datetime.date(year, month, num_days)
-        #
-        # results = session.query(Event).filter(
-        # and_(Event.date >= start_date, Event.date <= end_date)).all()
-
-
         results = db.session.query(Auction).all()
         auctions=[]
         for auction in results:
             now = datetime.now()
             remained = (auction.start_date - now).days
             if(remained==0):
+                auction.remained_time = (auction.start_date - now).seconds
                 auctions.append(auction)
 
         auction_schema = AuctionSchema(many=True)
@@ -80,20 +89,24 @@ class SiteTodayAuctions(Resource):
 class SiteMostpopularAuctions(Resource):
     def get(self):
         today = datetime.today()
-        result = db.session.query(Auction.id, db.func.count(user_auction_likes.c.user_id).label('total')).join(user_auction_likes).group_by(Auction.id).having(Auction.end_date >= today).order_by('total DESC')
+        result = db.session.query(Auction.id, db.func.count(user_auction_likes.c.user_id).label('total')).join(user_auction_likes).group_by(Auction.id).having(Auction.start_date >= today).order_by('total DESC')
         auctions =[]
-        for auction in result:
-            auctions.append(Auction.query.get(auction.id))
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - datetime.now()).seconds
+            auctions.append(auction)
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class SiteMostviewedAuctions(Resource):
     def get(self):
         today = datetime.today()
-        result = db.session.query(Auction.id, db.func.count(user_auction_views.c.user_id).label('total')).join(user_auction_views).group_by(Auction.id).having(Auction.end_date >= today).order_by('total DESC')
+        result = db.session.query(Auction.id, db.func.count(user_auction_views.c.user_id).label('total')).join(user_auction_views).group_by(Auction.id).having(Auction.start_date >= today).order_by('total DESC')
         auctions =[]
-        for auction in result:
-            auctions.append(Auction.query.get(auction.id))
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - datetime.now()).seconds
+            auctions.append(auction)
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
@@ -119,4 +132,3 @@ class UserContactUs(Resource):
         flash("پیام با موفقیت ارسال شد")
 
         return redirect(url_for('index'))
-

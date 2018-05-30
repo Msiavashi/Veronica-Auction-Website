@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-from importlib import reload
 reload(sys)
-# sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding("utf-8")
 
 from flask_restful import Resource, reqparse
 from ..model import *
@@ -12,14 +11,30 @@ from project import app
 from datetime import datetime
 import time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
-from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
+from flask_login import login_required ,current_user
 from decimal import Decimal
 
 class AuctionUserViewed(Resource):
     def get(self):
-        auctions = Auction.query.join(user_auction_views).filter_by(user_id=current_user.id)
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+        if(current_user.is_authenticated):
+            auctions = Auction.query.join(user_auction_views).filter_by(user_id=current_user.id)
+            auction_schema = AuctionSchema(many=True)
+            return make_response(jsonify(auction_schema.dump(auctions)),200)
+
+class AuctionViewFinished(Resource):
+    def get(self):
+        offers = Offer.query.filter_by(win=True).all()
+        for offer in offers:
+            user = User.query.join(UserPlan).join(Offer).filter_by(id=offer.id).first()
+            user_schema = UserSchema()
+
+            if(user.first_name):
+                offer.winner = user.first_name + ' ' + user.last_name
+            else:
+                offer.winner = user.username
+
+        offer_schema = OfferSchema(many=True)
+        return make_response(jsonify(offer_schema.dump(offers)),200)
 
 class AuctionUserParticipation(Resource):
     def post(self):
@@ -57,12 +72,8 @@ class AuctionInstanceView(Resource):
         product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
         product_schema = ProductSchema()
         auction.remained_time = (auction.start_date - datetime.now()).seconds * 1000
-
-        print '****************'+ str(datetime.now())+'******************'
-
         now_milliseconds = int(round(time.time() * 1000))
         now_date = datetime.now()
-
 
         if(current_user.is_authenticated):
             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-from importlib import reload
 reload(sys)
-# sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding("utf-8")
 
 from project.database import db, Base
 from marshmallow import Schema, fields
@@ -15,7 +14,6 @@ class Auction(Base):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
     start_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    end_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     base_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     max_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     max_members = db.Column(db.BigInteger,default=40,nullable=False)
@@ -50,7 +48,6 @@ class AuctionSchema(Schema):
     title = fields.Str()
     description = fields.Str()
     start_date = fields.DateTime()
-    end_date = fields.DateTime()
     base_price = fields.Int()
     max_price = fields.Int()
     max_members = fields.Int()
