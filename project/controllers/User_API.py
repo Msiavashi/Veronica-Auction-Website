@@ -7,12 +7,13 @@ import os
 from os import listdir
 from os.path import isfile, join
 from ..model import *
-from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash
+from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash, session
 import json
 from project import app
 from datetime import datetime
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.user_message import UserMessage
+from ..model.order import OrderStatus
 import definitions
 from werkzeug.utils import secure_filename
 from ..utils import PythonObjectEncoder
@@ -210,3 +211,103 @@ class UserContactUs(Resource):
         db.session.commit()
         msg ="پیام شما با موفقیت ارسال شد. در اولین فرصت جهت پیگیری با شما تماس خواهیم گرفت"
         return make_response(jsonify({"message":{"success":msg}}),200)
+
+class CartOrder(Resource):
+
+    def get(self):
+        if current_user.is_authenticated:
+            orders = Order.query.filter_by(status=OrderStatus.UNPAID, user_id=current_user.id).all()
+            order_schema = OrderSchema()
+            return make_response(jsonify(order_schema.dump(orders), 200))
+
+        else:
+            orders = session['orders']
+            order_schema = OrderSchema()
+            return make_response(jsonify(order_schema.dump(orders)), 200)
+
+    def post(self, data):
+        order_schema = OrderSchema()
+        data = data.get_json(force=True)
+        if current_user.is_authenticated:
+            item = Item.query.filter_by(id=data['item_id']).first()
+            quantity = data['quantity']
+            if quantity > item.quantity:
+                return make_response(jsonify({"message": {"error": "تعداد درخواست شده موجود نیست"}}), 400)
+
+            new_order = Order()
+            new_order.item_id = item.id
+            new_order.total = quantity
+            new_order.total_cost = ( quantity * item.price ) - item.discount
+            new_order.user = current_user.id
+
+            db.session.add(new_order)
+            db.session.commit()
+            return make_response(jsonify({"message": {"success": "به سبک خرید اضافه شد"}, "unpaid_orders": jsonify(order_schema.dump( Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID ).all() ))}), 200)
+
+        else:
+            if not "orders" in session:
+                session['orders'] = list()
+            new_order = Order()
+            new_order.item_id = item.id
+            new_order.total = quantity
+            new_order.total_cost = ( quantity * item.price ) - item.discount
+            new_order.user = current_user.id
+            session['orders'].append(new_order)
+            return make_response(jsonify({"message": {"success": "به سبک خرید اضافه شد"}, "unpaid_orders": jsonify(OrderSchema.dump(session['orders']))}), 200)
+
+
+
+
+                
+
+#TODO: *strict validation*
+class Checkout(Resource):
+
+    @login_required
+    def post(self):
+        data = request.get_json(force=True)
+        order_id = data['order_id']
+        order = Order.query.get(order_id)
+        if not order or not order.user_id == current_user.id:
+            return make_response(jsonify({"msg": "سبد خرید مورد نظر یافت نشد"}) , 400)
+
+        payment = Payment()
+        payment.amount = order.total_cost
+        payment.order_id = order_id
+        payment.user_id = current_user.id
+
+        payment_method = PaymentMethod()
+        payment_method.title = data['payment_method']       #TODO: validation with enum
+
+        db.session.add(payment_method)
+        db.session.add.commit()
+
+        payment.payment_method_id = payment_method.id
+
+        db.session.add(payment)
+        db.session.commit()
+
+        shipment = Shipment()
+        shipment.order_id = order.id
+        shipment.payment_id = payment.id
+
+
+        shipment_method = ShipmentMethod()
+        shipment_method.title = data['shipment_method']
+        shipment_method.price = data['shipmet_price']
+
+        db.session.add(shipment_method)
+        db.session.commit()
+
+        shipment.shipment_method_id = shipment_method.id
+
+        db.session.add(shipment)
+        db.session.commit()
+
+        order.total_cost += shipment_method.price
+        order.payment_id = payment.id
+
+        db.session.add(order)
+        db.session.commit()
+
+        return make_response(jsonify({'success': True}, 200))

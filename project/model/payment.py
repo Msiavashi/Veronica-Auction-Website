@@ -16,7 +16,6 @@ class Payment(Base):
 
     payment_method_id = db.Column(db.BigInteger,db.ForeignKey('payment_methods.id'),nullable=False)
     payment_method = db.relationship('PaymentMethod')
-
     orders = db.relationship('Order' , secondary = 'payment_orders', back_populates='payments')
 
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))

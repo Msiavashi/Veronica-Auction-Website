@@ -128,6 +128,14 @@ class Route():
     def socket():
         return render_template('/socket.html')
 
+    @app.route('/checkout')
+    def checkout():
+        return render_template('/checkout.html')
+
+    @app.route('/cart')
+    def cart():
+        return render_template('/cart.html')
+
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
