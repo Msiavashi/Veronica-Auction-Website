@@ -6,7 +6,12 @@ sys.setdefaultencoding("utf-8")
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
+import enum
 
+class OrderStatus(enum.Enum):
+    UNPAID = 0
+    PAID = 1
+    PAYING = 2
 
 
 

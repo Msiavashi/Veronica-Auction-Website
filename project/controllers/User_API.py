@@ -13,6 +13,7 @@ from project import app
 from datetime import datetime
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.user_message import UserMessage
+from ..model.order import OrderStatus
 import definitions
 from werkzeug.utils import secure_filename
 from ..utils import PythonObjectEncoder
@@ -212,46 +213,47 @@ class UserContactUs(Resource):
         return make_response(jsonify({"message":{"success":msg}}),200)
 
 class CartOrder(Resource):
+
     def get(self):
         if current_user.is_authenticated:
-            orders = Order.query.all()
+            orders = Order.query.filter_by(status=OrderStatus.UNPAID, user_id=current_user.id).all()
             order_schema = OrderSchema()
             return make_response(jsonify(order_schema.dump(orders), 200))
 
         else:
-            order = Order()
-            order.items = [Item.query.get(item_id) for item_id in session['items']]
-            order.total_cost += sum([item.price for item in order.items])
+            orders = session['orders']
             order_schema = OrderSchema()
-            return make_response(jsonify(order_schema.dump(order)), 200)
+            return make_response(jsonify(order_schema.dump(orders)), 200)
 
     def post(self, data):
+        order_schema = OrderSchema()
         data = data.get_json(force=True)
         if current_user.is_authenticated:
-            last_order = Order.query.order_by('created_at DESC').limit(1).first()
             item = Item.query.filter_by(id=data['item_id']).first()
-            if last_order.status == 0: #if unpaid
-                last_order.append(item)
-                last_order.total_cost += item.price
-                db.session.add(last_order)
-                db.session.commit()
-                return make_response(jsonify({"msg": "آیتم انتخاب شده به سبد خرید اضافه شد", "items": [item.id for item in last_order.items]}), 200)
+            quantity = data['quantity']
+            if quantity > item.quantity:
+                return make_response(jsonify({"message": {"error": "تعداد درخواست شده موجود نیست"}}), 400)
 
-            else:
-                new_order = Order()
-                new_order.user_id = current_user.id
-                new_order.items.append(item)
-                new_order.total_cost += item.price
-                new_order.register_user = True
-                db.session.add(new_order)
-                db.session.commit()
-                return make_response( jsonify({"msg": "آیتم انتخاب شده به سبد خرید اضافه شد", "items": [item.id]}), 200)
+            new_order = Order()
+            new_order.item_id = item.id
+            new_order.total = quantity
+            new_order.total_cost = ( quantity * item.price ) - item.discount
+            new_order.user = current_user.id
+
+            db.session.add(new_order)
+            db.session.commit()
+            return make_response(jsonify({"message": {"success": "به سبک خرید اضافه شد"}, "unpaid_orders": jsonify(order_schema.dump( Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID ).all() ))}), 200)
 
         else:
-            if not "items" in session:
-                session['items'] = list()
-            session['items'].append(data['item_id'])
-            return make_response(jsonify({"msg": "آیتم انتخاب شده به سبد خرید اضافه شد", "items": session['items']}), 200)
+            if not "orders" in session:
+                session['orders'] = list()
+            new_order = Order()
+            new_order.item_id = item.id
+            new_order.total = quantity
+            new_order.total_cost = ( quantity * item.price ) - item.discount
+            new_order.user = current_user.id
+            session['orders'].append(new_order)
+            return make_response(jsonify({"message": {"success": "به سبک خرید اضافه شد"}, "unpaid_orders": jsonify(OrderSchema.dump(session['orders']))}), 200)
 
 
 
