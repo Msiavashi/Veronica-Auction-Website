@@ -7,6 +7,9 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
+
+
+
 class Order(Base):
     __tablename__ = 'orders'
     id = db.Column(db.BigInteger, primary_key=True)
