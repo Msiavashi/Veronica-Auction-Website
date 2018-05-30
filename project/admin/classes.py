@@ -21,7 +21,7 @@ class MyAdminIndexView(AdminIndexView):
 
 class UserAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('regular')
+        return current_user.has_role('admin')
 
     column_exclude_list = list = ('password',)
 
@@ -41,6 +41,10 @@ class UserAdmin(ModelView):
                                                             base_path="project/static/images/avatars",
                                                             url_relative_path="images/avatars/",
                                                             thumbnail_size=(64, 64, 1))}
+
+class RoleAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
 
 class ItemAdmin(ModelView):
     def is_accessible(self):
@@ -104,10 +108,6 @@ class CategoryAdmin(ModelView):
                                                             base_path="project/static/images/icons/category",
                                                             url_relative_path="images/icons/category/",
                                                             thumbnail_size=(64, 64, 1))}
-
-class RoleAdmin(ModelView):
-    def is_accessible(self):
-        return current_user.has_role('admin')
 
 class ProductAdmin(ModelView):
     def is_accessible(self):

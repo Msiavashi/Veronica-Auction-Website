@@ -18,8 +18,7 @@ class Offer(Base):
     auction = db.relationship('Auction')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-
+    
 class OfferSchema(Schema):
     id = fields.Int()
     total_price = fields.Str()

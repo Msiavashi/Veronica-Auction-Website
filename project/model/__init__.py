@@ -1,4 +1,5 @@
 from  .address import *
+from  .state import *
 from  .advertisement import *
 from  .auction_plan import *
 from  .auction import *

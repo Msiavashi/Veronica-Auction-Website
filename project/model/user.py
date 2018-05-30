@@ -17,19 +17,17 @@ class User(Base,UserMixin):
 
     id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.String(length=255), nullable=False)
+    alias_name = db.Column(db.String(128), nullable = True)
     first_name = db.Column(db.String(length=100))
     last_name = db.Column(db.String(length=100))
     work_place = db.Column(db.String(length=100))
     mobile = db.Column(db.String(length=15), nullable=False)
     email = db.Column(db.String(length=255))
     password = db.Column(db.String(length=100), nullable=False)
-    #please check for dafault avatar address from config file
-    avatar = db.Column(db.String(length=300))
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
-    alias_name = db.Column(db.String(128), nullable = True)
 
     invitor = db.Column(db.String(length=255))
 

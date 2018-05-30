@@ -1,7 +1,7 @@
 from flask_login import current_user,login_required
 from functools import wraps
 from flask import render_template,abort
-from model.user import User
+# from model.user import User
 
 def role_admin(f):
     @wraps(f)
@@ -23,7 +23,7 @@ def role_admin(f):
     return decorated_function
 
 def has_role(user,name):
-    found = False
+    found = True
     for role in user.roles:
         if( role.name == name ):
             found = True
