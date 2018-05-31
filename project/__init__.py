@@ -94,3 +94,5 @@ api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:
 api.add_resource(User_API.UserInformation, '/user/information')
 api.add_resource(User_API.UserContactUs, '/user/contactus')
 api.add_resource(User_API.CartOrder, '/cart/order')
+api.add_resource(MellatPayment_API.MellatGateway, '/user/<int:uid>/payment/<int:pid>')
+api.add_resource(MellatPayment_API.MellatGateWayCallBack, '/mellat/callback/')
