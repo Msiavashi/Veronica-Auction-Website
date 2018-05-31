@@ -6,6 +6,11 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
+class PaymentStatus:
+    PAID = 1
+    UNPAID = 0
+
+
 class Payment(Base):
     __tablename__ = 'payments'
     id = db.Column(db.Integer, primary_key=True)
@@ -17,6 +22,10 @@ class Payment(Base):
     payment_method_id = db.Column(db.BigInteger,db.ForeignKey('payment_methods.id'),nullable=False)
     payment_method = db.relationship('PaymentMethod')
     orders = db.relationship('Order' , secondary = 'payment_orders', back_populates='payments')
+    
+    ref_id = db.Column(db.Integer)
+    sale_order_id = db.Column(db.Integer)
+    sale_refrence_id = db.Column(db.Integer)
 
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     user = db.relationship('User')
