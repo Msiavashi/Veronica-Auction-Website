@@ -14,3 +14,4 @@ flask_restful
 flask_security
 flask_admin
 psycopg2
+suds

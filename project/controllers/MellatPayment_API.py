@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 from flask_restful import Resource
 from PyMellat.PyMellat import BMLPaymentAPI
 from flask_login import login_required, current_user
@@ -26,7 +30,7 @@ bml.settle_payment(long(SaleOrderId), SaleReferenceId)
 
 class MellatGatewayCallBack(Resource):
 
-    def post(self):
+    def post(self, uid, pid):
         data = request.data.get_json(force=True)
         ref_id = data['RefId']
         res_code = data['ResCode']
