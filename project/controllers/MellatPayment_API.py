@@ -40,7 +40,7 @@ class MellatGatewayCallBack(Resource):
         verify_res = bml.verify_payment(long(sale_order_id), long(sale_refrence_id)) 
 
         if verify_res[0] == '0':
-            payment = Payment.query.get(request.args.get('pid'))
+            payment = Payment.query.get(request.args.get(pid))
             payment.status = PaymentStatus.PAID
             payment.ref_id = ref_id
             payment.sale_order_id = sale_order_id
