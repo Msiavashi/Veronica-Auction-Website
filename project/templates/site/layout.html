@@ -150,7 +150,7 @@
       											<li>
       												<div class="mini-cart-edit">
       													<a class="delete-mini-cart-item" href="#"><input type="hidden" data-bind="attr:{value:item.id}"><i class="fa fa-trash-o"></i></a>
-      													<a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a>
+      													<!-- <a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a> -->
       												</div>
       												<div class="mini-cart-thumb">
       													<a href="#"><img data-bind="attr:{src: product_image_path + ClearifyNames(item.images)[0] }"></a>
@@ -163,7 +163,7 @@
       													</div>
       													<div class="qty-product">
       														<span class="qty-down">-</span>
-      														<span class="qty-num">1</span>
+      														<span class="qty-num" data-bind="text:total"></span>
       														<span class="qty-up">+</span>
       													</div>
       												</div>
@@ -178,7 +178,7 @@
       											<span><span data-bind="text:cart_final_price"></span>تومان</span>
       										</div>
       										<div class="mini-cart-button">
-      											<a class="mini-cart-view" href="#">مشاهده سبد خرید</a>
+      											<a class="mini-cart-view" href="/cart">مشاهده سبد خرید</a>
       											<a class="mini-cart-checkout" href="#">پرداخت</a>
       										</div>
       									</div>
@@ -191,7 +191,7 @@
       								<div class="checkout-box">
       									<a href="#" class="checkout-link"><i class="fa fa-lock" aria-hidden="true"></i></a>
       									<ul class="list-checkout list-unstyled">
-                          {% if has_role(current_user,'admin') %}
+                          {% if current_user.has_role('admin') %}
                           <li><a href="/admin"><i class="fa fa-cog"></i> پنل مدیریت </a></li>
                           {% endif %}
                           {% if not current_user.is_authenticated %}
@@ -527,7 +527,6 @@
       $('.mini-cart-number').html(value);
   });
 
-
   $.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
     if(data)
     OnDataReady(data[0]);
@@ -537,10 +536,8 @@
     console.log(data);
     carts = []
     $.each(data,function(key,val) {
-      console.log(val[0]);
       carts.push(val[0]);
     });
-    console.log(carts);
     mycart(carts);
     total_carts(ToPersian(carts.length));
   });
@@ -555,7 +552,7 @@
     var xhr = new XMLHttpRequest();
   	xhr.withCredentials = true;
 
-  	xhr.open("patch", "{{url_for('usercartorder')}}");
+  	xhr.open("post", "{{url_for('usercartorderdelete')}}");
   	xhr.setRequestHeader("Content-Type", "application/json");
   	xhr.setRequestHeader("Cache-Control", "no-cache");
   	xhr.send(data);

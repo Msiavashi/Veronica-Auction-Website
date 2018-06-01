@@ -94,3 +94,4 @@ api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:
 api.add_resource(User_API.UserInformation, '/user/information')
 api.add_resource(User_API.UserContactUs, '/user/contactus')
 api.add_resource(User_API.UserCartOrder, '/user/cart/order')
+api.add_resource(User_API.UserCartOrderDelete, '/user/cart/order/delete')

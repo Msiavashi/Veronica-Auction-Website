@@ -289,7 +289,8 @@ class UserCartOrder(Resource):
             else:
                 return make_response(jsonify({"reason": "حداکثر تعداد سبد خرید شما پر شده است"}), 400)
 
-    def patch(self):
+class UserCartOrderDelete(Resource):
+    def post(self):
         order_schema = OrderSchema(many=True)
         item_id = request.get_json('item_id')['item_id']
         item = Item.query.get(item_id)
