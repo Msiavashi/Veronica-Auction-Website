@@ -69,9 +69,8 @@
 							<a data-bind="attr:{href:link}" class="quickview-link plus fancybox.iframe"><span>مشاهده سریع</span></a>
 
 							<div class="product-extra-link">
-								<a class="addcart-link" href="#"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
+								<a class="addcart-link" href="#"><input type="hidden" data-bind="attr:{value : item_id}"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
 								<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
-
 							</div>
 						</div>
 						<div class="product-info">
@@ -118,7 +117,7 @@ var auctions = [];
 var category_title = ko.observable('دسته بندی');
 
 
-function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,showlink) {
+function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,showlink,item_id) {
     var self = this;
 		self.id = id;
 		self.title = ko.observable(title);
@@ -132,6 +131,7 @@ function Auction(id,title,description,deadline,participant_count,max_members,bas
 		self.image = ko.observable(images);
 		self.link = ko.observable(link);
 		self.showlink = ko.observable(showlink);
+		self.item_id = ko.observable(item_id);
 }
 
 function dealModel() {
@@ -161,6 +161,7 @@ function dealModel() {
 				product_image_path + ClearifyNames(val.item.images)[0],
 				"/instantview/"+ val.id,
 				"/view/auction/"+ val.id,
+				val.item.id,
 			);
 			auctions.push(auction);
 		});
@@ -168,8 +169,28 @@ function dealModel() {
 		self.auctions(auctions);
 	});
 }
+
 ko.applyBindings(new dealModel());
 
+$(document).on('click','.addcart-link',function(event) {
+	self = $(this);
+	item_id = self.find('input').val();
+	data={'item_id':item_id}
+
+	var data = JSON.stringify({
+  	"item_id": item_id
+	});
+
+	var xhr = new XMLHttpRequest();
+	xhr.withCredentials = true;
+
+	xhr.open("POST", "{{url_for('usercartorder')}}");
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.setRequestHeader("Cache-Control", "no-cache");
+	xhr.send(data);
+		console.log(data[0][0]);
+		mycart(data[0][0]);
+	});
 
 </script>
 {% endblock scripts %}

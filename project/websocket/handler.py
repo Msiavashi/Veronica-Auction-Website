@@ -132,7 +132,7 @@ def handle_bid(data):
         db.session.commit()
 
         if(remained < 10):
-            auction.start_date = now + timedelta(seconds=11)
+            auction.start_date = now + timedelta(seconds=12)
             db.session.add(auction)
             db.session.commit()
 
@@ -160,6 +160,7 @@ def auction_done(data):
 
         total_bids = Offer.query.filter_by(auction_id=auction_id).count()
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
+
         if(last_offer):
             last_offer.win = True
             db.session.add(last_offer)
@@ -184,7 +185,7 @@ def get_acution_status(data):
     remained = (auction.start_date - datetime.now()).seconds
     server_time = datetime.now()
     auction_time = auction.start_date
-    if (int(auction.start_date < datetime.now()) ):
+    if (auction.start_date < datetime.now()):
         auction_done(data)
     else:
         emit("auction_status", {"status": "running","remained":remained,"server_time":str(server_time),"auction_time":str(auction_time)},room=room)

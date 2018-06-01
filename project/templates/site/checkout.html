@@ -1,0 +1,171 @@
+{% extends 'site/layout.html' %}
+{% block title %} بید بازی | برندگان گذشته {% endblock %}
+{% block content %}
+<div class="content-page woocommerce">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h2 class="title-shop-page">ثبت نام</h2>
+        <div class="row">
+          <div class="col-md-6 col-sm-6 col-ms-12">
+            <div class="check-billing">
+              <form class="form-my-account">
+                <h2 class="title18">وارد کردن اطلاعات</h2>
+                <p class="clearfix box-col2">
+                  <input type="text" value="نام خانوادگی *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" value="نام *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                </p>
+                <p><input type="text" value="نام محل کار" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
+                <p class="clearfix box-col2">
+                  <input type="text" value="ایمیل *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" value="تلفن *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                </p>
+                <p>
+                  <select name="country" id="country">
+                    <option value="">استان *</option>
+                    <option value="">تهران</option>
+                    <option value="">قم</option>
+                    <option value="">رشت</option>
+                    <option value="">لرستان</option>
+                  </select>
+                </p>
+                <p><input type="text" value="آدرس *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
+                <p class="clearfix box-col2">
+                  <input type="text" value="کد پستی" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" value="شهر / روستا *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                </p>
+                <p>
+                  <input type="checkbox"  id="remember" /> <label for="remember">ایجاد یک حساب کاربری؟</label>
+                </p>
+              </form>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-6 col-ms-12">
+            <div class="check-address">
+              <form class="form-my-account">
+                <h2 class="title18">اطلاعات بیشتر</h2>
+                <p>
+                  <textarea cols="30" rows="13" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''">توضیحات بیشتر...</textarea>
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+        <h3 class="order_review_heading">سفارش شما</h3>
+        <div class="woocommerce-checkout-review-order" id="order_review">
+          <div class="table-responsive">
+            <table class="shop_table woocommerce-checkout-review-order-table">
+              <thead>
+                <tr>
+                  <th class="product-name">محصول</th>
+                  <th class="product-total">مبلغ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="cart_item">
+                  <td class="product-name">
+                    نام محصول برنده شده <span class="product-quantity">× ۶</span>
+                  </td>
+                  <td class="product-total">
+                    <span class="amount">۲،۰۰۰،۰۰۰ تومان</span>
+                  </td>
+                </tr>
+                <tr class="cart_item">
+                  <td class="product-name">
+                      نام محصول برنده شده	<span class="product-quantity">× ۲</span>
+                  </td>
+                  <td class="product-total">
+                    <span class="amount">۲،۰۰۰،۰۰۰ تومان</span>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="cart-subtotal">
+                  <th>کل مبلغ سفارش</th>
+                  <td><strong class="amount">۴،۰۰۰،۰۰۰ تومان</strong></td>
+                </tr>
+                <tr class="shipping">
+                  <th>نوع ارسال</th>
+                  <td>
+                    <ul id="shipping_method" class="list-none">
+                      <li>
+                        <input type="radio" class="shipping_method" checked="checked" value="free_shipping" id="shipping_method_0_free_shipping" data-index="0" name="shipping_method[0]">
+                        <label for="shipping_method_0_free_shipping">پیک موتوری (فقط تهران)</label>
+                      </li>
+                      <li>
+                        <input type="radio" class="shipping_method" value="local_delivery" id="shipping_method_0_local_delivery" data-index="0" name="shipping_method[0]">
+                        <label for="shipping_method_0_local_delivery">پرداخت درب منزل (پست)</label>
+                      </li>
+                      <li>
+                        <input type="radio" class="shipping_method" value="local_pickup" id="shipping_method_0_local_pickup" data-index="0" name="shipping_method[0]">
+                        <label for="shipping_method_0_local_pickup">تحویل حضوری</label>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr class="cart-subtotal">
+                  <th>هزینه ارسال</th>
+                  <td><strong class="amount">۱۰،۰۰۰ تومان</strong></td>
+                </tr>
+                <tr class="cart-subtotal">
+                  <th class="text-orange">تخفیف داده شده (کد تخفیف)</th>
+                  <td><strong class="amount text-orange">۴۰،۰۰۰ تومان</strong></td>
+                </tr>
+                <tr class="cart-subtotal">
+                  <th class="text-orange">تخفیف داده شده (محصول)</th>
+                  <td><strong class="amount text-orange">۲،۰۰۰،۰۰۰ تومان</strong></td>
+                </tr>
+                <tr class="order-total">
+                  <th>مبلغ پرداختی نهایی</th>
+                  <td><strong><span class="amount">۲،۹۰۰،۰۰۰ تومان </span></strong> </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="woocommerce-checkout-payment" id="payment">
+            <ul class="payment_methods methods list-none">
+              <li class="payment_method_bacs">
+                <input type="radio" data-order_button_text="" value="bacs" name="payment_method" class="input-radio" id="payment_method_bacs" checked="checked">
+                <label for="payment_method_bacs">پرداخت به صورت کارت به کارت</label>
+                <div class="payment_box payment_method_bacs">
+                  <p>پرداخت خود را به صورت کارت به کارت انجام دهید و لطفا شماره فاکتور سفارش خود را برای ما راسال کنید.  </p>
+                </div>
+              </li>
+              <li class="payment_method_cheque">
+                <input type="radio" data-order_button_text="" value="cheque" name="payment_method" class="input-radio" id="payment_method_cheque">
+                <label for="payment_method_cheque">پرداخت فیش بانکی</label>
+                  <div class="payment_box payment_method_cheque">
+                  <p>پس از پرداخت به شماره حساب اعلان شده شماره فیش پرداختی را برای ما ارسال کنید.</p>
+                </div>
+              </li>
+              <li class="payment_method_cod">
+                <input type="radio" data-order_button_text="" value="cod" name="payment_method" class="input-radio" id="payment_method_cod">
+                <label for="payment_method_cod">به صورت نقدی</label>
+                <div class="payment_box payment_method_cod">
+                  <p>لطفا مبلغ سفارش را بعد از تحویل کالا به مامور پست تحویل دهید.</p>
+                </div>
+              </li>
+              <li class="payment_method_paypal">
+                <input type="radio" data-order_button_text="Proceed" value="Proceed" name="payment_method" class="input-radio" id="payment_method_Proceed">
+                <label for="payment_method_Proceed">
+                  آنلاین <img alt="" src="{{url_for('static', filename='images/theme/bank.png')}}"><a title="" onclick="javascript:window.open('https://shaparak.ir/content?id=287','WIPaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700'); return false;" class="about_paypal" href="https://shaparak.ir/content?id=287">کارت های عضو شتاب</a>
+                </label>
+              </li>
+            </ul>
+            <div class="form-row place-order">
+              <input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order" name="woocommerce_checkout_place_order" class="button alt">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+
+<script>
+
+</script>
+{% endblock scripts %}

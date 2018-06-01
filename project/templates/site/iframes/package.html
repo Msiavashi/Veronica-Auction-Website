@@ -150,19 +150,21 @@ $('#place_order').on('click',function(){
 				method_id:payment_method_id,
 				amount:price
     },
-    dataType: 'application/json',
-    success: function (data) {
-        alert('پرداخت شما با موفقیت انجام شد و در حراجی ثبت نام شدید');
-				window.parent.location.reload();
-    },
-		error:function(data) {
-			result = JSON.parse(data.responseText)
-			alert(result.reason);
-			window.parent.location.reload();
-		}
-
-});
-
+    dataType: 'json',
+		error:function(data){
+			console.log(data);
+			alert(data.reason);
+		},
+		success:function(data) {
+			console.log(data);
+				alert(data.message)
+				if(data.type=="redirect_to_bank")
+					window.location ="/confirm/"+data.amount;
+				else {
+					window.parent.location.reload();
+				}
+    }
+	});
 });
 
 </script>

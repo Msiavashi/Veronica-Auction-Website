@@ -1,0 +1,46 @@
+{% extends 'site/iframes/ilayout.html' %}
+{% block title %}بردیتو | وضعیت پرداخت شما {% endblock %}
+{% block content %}
+<input type="hidden" id="auction_id" value="{{auction_id}}">
+<div class="Package">
+	<div class="container">
+		<div class="product-quickview woocommerce">
+			<div class="row">
+				<h3 class="order_review_heading">وضعیت پرداخت</h3>
+				<div class="woocommerce-checkout-review-order" id="order_review">
+					<div class="table-responsive">
+						<table class="shop_table woocommerce-checkout-review-order-table">
+
+							<tfoot>
+
+								<tr class="order-total">
+									<th>پرداخت شما با موفقیت همراه بود</th>
+									<td><strong><span class="amount"><span></span> شماره پیگیری </span></strong> </td>
+								</tr>
+
+								<tr class="cart-subtotal">
+									<th class="text-orange">پرداخت شما با خطا همراه بود</th>
+									<td><strong class="amount text-orange" id="credit_fraction"> شماره پیگیری</strong></td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<div class="woocommerce-checkout-payment" id="payment">
+						<div class="form-row place-order">
+							<input type="submit" id="redirect_to_home" name="woocommerce_checkout_place_order" value="تایید و هدایت به صفحه اصلی" class="button alt"></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+$('#redirect_to_home').on('click',function(){
+	window.parent.location.reload();
+});
+</script>
+{% endblock scripts %}

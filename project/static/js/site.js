@@ -116,7 +116,7 @@ function formatDate(date, format, utc){
     };
 
 function ToPersian( num, dontTrim ) {
-	if(!num) return ;
+	if(!num) return '۰';
 
 	    var i = 0,
 
@@ -304,4 +304,25 @@ function triggerPaymentTable() {
 		$(this).addClass("open").next(".fold").addClass("open");
 		}
 	});
+}
+
+function triggerUpDown() {
+$('.qty-product').each(function(){
+	var qtyval = parseInt($(this).find('.qty-num').text(),10);
+	$('.qty-up').on('click',function(event){
+		event.preventDefault();
+		qtyval=qtyval+1;
+		$(this).prev().text(qtyval);
+	});
+	$('.qty-down').on('click',function(event){
+		event.preventDefault();
+		qtyval=qtyval-1;
+		if(qtyval>1){
+			$(this).next().text(qtyval);
+		}else{
+			qtyval=1;
+			$(this).next().text(qtyval);
+		}
+	});
+});
 }

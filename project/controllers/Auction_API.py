@@ -13,6 +13,7 @@ import time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import login_required ,current_user
 from decimal import Decimal
+from ..static_classes import Payment_Types
 
 class AuctionUserViewed(Resource):
     def get(self):
@@ -28,7 +29,7 @@ class AuctionViewFinished(Resource):
             user = User.query.join(UserPlan).join(Offer).filter_by(id=offer.id).first()
             user_schema = UserSchema()
 
-            if(user.first_name):
+            if(user.first_name and user.last_name and offer.win):
                 offer.winner = user.first_name + ' ' + user.last_name
             else:
                 offer.winner = user.username
@@ -41,29 +42,40 @@ class AuctionUserParticipation(Resource):
         plan_id = request.form.get('plan_id')
         auction_id = request.form.get('auction_id')
         payment_method_id = request.form.get('method_id')
+        payment_method = PaymentMethod.query.get(payment_method_id)
+
         amount = request.form.get('amount')
 
         auction = Auction.query.get(auction_id)
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
+
         if(remained < 60):
             return make_response(jsonify({'success':False,"reason":"حداکثر تا یک دقیقه قبل از حراجی برای ثبت نام فرصت دارید"}),400)
 
-        plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
-        auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
-        user_plan = UserPlan()
-        user_plan.auction = auction
-        user_plan.auction_plan = auction_plan
-        current_user.auctions.append(auction)
-        current_user.user_plans.append(user_plan)
+        if(payment_method.type == Payment_Types.Credit):
+            if(current_user.credit < int(amount)):
+                return make_response(jsonify({'success':False,"reason":"موجودی حساب شما برای پرداخت این پلن کافی نمی باشد.لطفا یکی از روش های پرداخت دیگر را انتخاب کنید"}),400)
 
-        current_user.credit -= Decimal(amount)
+            plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
+            auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
+            user_plan = UserPlan()
+            user_plan.auction = auction
+            user_plan.auction_plan = auction_plan
+            current_user.auctions.append(auction)
+            current_user.user_plans.append(user_plan)
+            current_user.credit -= Decimal(amount)
 
-        db.session.add(current_user)
-        db.session.commit()
+            db.session.add(current_user)
+            db.session.commit()
+            msg = "شرکت در حراجی با موفقیت انجام شد"
+            return make_response(jsonify({"success":True,"type":"registered","message":msg}),200)
 
-        return make_response(jsonify({'success':True,"reason":"شرکت در حراجی با موفقیت انجام شد"}),200)
+        if(payment_method.type == Payment_Types.Online):
+            msg = " برای پرداخت به صفحه تایید هدایت می شوید"
+            return make_response(jsonify({'success':True,"type":"redirect_to_bank","amount":amount,"message":msg}),200)
+
 class AuctionInstanceView(Resource):
     def get(self,aid):
         auction = Auction.query.get(aid)

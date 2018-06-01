@@ -13,3 +13,4 @@ SESSION_EXPIRE_TIME = 100
 UPLOAD_FOLDER = os.path.join(STATIC_DIR, 'messages', 'attachments')
 ALLOWED_EXTENTIONS = set(['text', 'pdf', 'doc', 'docs', 'jpg', 'jpeg', 'png'])
 MESSAGE_SUBJECTS = [{"title":'درخواست کمک','type':1},{"title":'مشکل در سایت','type':2},{"title":'تقدیر و تشکر','type':3}]
+MAXIMUM_ORDERS = 3

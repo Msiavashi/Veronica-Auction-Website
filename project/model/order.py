@@ -39,7 +39,8 @@ class Order(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return "کاربر : "+str(self.user) +" - محصول : "+ str(self.item) + " - تعداد : " + str(self.total) + " - جمع کل : " + str(self.total * self.item.price - self.item.discount)
+        return self.desciption
+        # return "کاربر : "+str(self.user) +" - محصول : "+ str(self.item) + " - تعداد : " + str(self.total) + " - جمع کل : " + str(self.total * self.item.price - self.item.discount)
 
 class OrderSchema(Schema):
     id = fields.Int()

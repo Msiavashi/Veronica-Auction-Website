@@ -128,7 +128,7 @@
                                                 <div id='tiles' class="color-full"></div>
                                                 <div class="countdown-label">دو شنبه ۱۳ فروردین ساعت ۱۴</div>
                                             </div>
-                                            <a class="addcart-link" href="#">پیشنهاد <div class="detail-qty border radius">۱۲۲</div></a>
+                                            <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius">۱۲۲</div></a>
                                         </div>
                                         <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span> سه شنبه ۷فروردین ۱۳۹۷
                                             <i aria-hidden="true" class="fa fa-clock-o"></i> ساعت: ۲۰:۲۵:۱۲
@@ -177,49 +177,34 @@
 
     var countdown = document.getElementById("tiles"); // get tag element
 
-    var start_miliseconds = 1*60*1000;
+    var start_miliseconds = 1*30*1000;
+    var time_limit = 1*30*1000;
 
     function BesideOfWS(){
 	    updateTimer(start_miliseconds);
 	    setTimeout(function() {
-	    	start_miliseconds -= 300;
+	    	start_miliseconds -= 100;
 	    	if( start_miliseconds >= 0){
 	    		BesideOfWS();
 	    	}else{
 	    		alert('حراجی به پایان رسید!');
 	    	}
-	    }, 300);
+	    }, 100);
     }
 
-
-
 	BesideOfWS();
-
-
-
-
-
-
-
-
-
-
-
-
-    function updateTimer(millisecond){
-
+  function updateTimer(millisecond){
 
         if ( millisecond  >= 0) {
 
-            // if ((seconds_left * 1000) < (time_limit / 1)) {
-            //     $('#tiles').removeClass('color-full');
-            //     $('#tiles').addClass('color-half');
-
-            // }
-            // if ((seconds_left * 1000) < (time_limit / 6)) {
-            //     $('#tiles').removeClass('color-half');
-            //     $('#tiles').addClass('color-empty');
-            // }
+            if ( millisecond  < time_limit / 2 ) {
+                $('#tiles').removeClass('color-full');
+                $('#tiles').addClass('color-half');
+            }
+            if (millisecond < 10 * 1000) {
+                $('#tiles').removeClass('color-half');
+                $('#tiles').addClass('color-empty');
+            }
 
             var hours = parseInt(millisecond / (3600*1000));
             var left_millisecond = millisecond - (hours * 3600*1000);
@@ -237,10 +222,13 @@
 
             // format countdown string + set tag value
             countdown.innerHTML = "<span>" + pad(hours) + ":</span><span>" + pad(minutes) + ":</span><span>" + pad(seconds) + ":</span><span>" + left_millisecond + "</span>";
-        }else{
-        	alert('حراجی به پایان رسید!');
         }
-    }
+  }
+
+    $('#offer').on('click',function() {
+      if( start_miliseconds < 10 * 1000)
+        start_miliseconds = 11 * 1000;
+    });
 
 
 
@@ -287,6 +275,7 @@
         return (n < 10 ? '0' : '') + n;
     }
     </script>
+
 </body>
 
 </html>

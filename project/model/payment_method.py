@@ -12,6 +12,7 @@ class PaymentMethod(Base):
     id = db.Column(db.BigInteger, primary_key=True)
     title = db.Column(db.String(length=100), nullable=False)
     description = db.Column(db.Text, nullable=False)
+    type = db.Column(db.Integer)
     details = db.Column(db.Text)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)

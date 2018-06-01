@@ -92,7 +92,7 @@
                   <p class="price-Bid"><span id="auction_current_offer"></span> تومان</p>
                   <p class="name-price-Bid" id="auction_current_winner"></p>
                 </div>
-                <input type="hidden" id="set-time" value="0.3"/>
+
                 <div id="countdown">
                   <div id='tiles' class="color-full"></div>
                   <div class="countdown-label" data-bind="text:now_date"></div>
@@ -252,58 +252,109 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('connect', function() {
 		 console.log('connected');
      socket.emit('join', {'auction_id':auction_id});
+     getStatus();
  });
 
- var timer = setInterval(getStatus,1000);
+ var timer = setInterval(getStatus,2000);
+ var countdownTimer = null
 
  function getStatus() {
    socket.emit('status',{'auction_id':auction_id});
  }
+ var start_miliseconds = 0;
 
+ // socket.on('auction_status',function(data) {
+ //
+ //  var countdown = document.getElementById("tiles");
+ //
+ //  getCountdown(data.remained);
+ //
+ //  function getCountdown(seconds_left){
+ //
+ //    if ( seconds_left >= 0 ) {
+ //
+ //     if ( seconds_left  <  60 )
+ //     {
+ //       $( '#tiles' ).removeClass('color-full');
+ //       $( '#tiles' ).addClass('color-half');
+ //     }
+ //     else {
+ //       $( '#tiles' ).addClass('color-full');
+ //       $( '#tiles' ).removeClass('color-half');
+ //     }
+ //
+ //     if ( seconds_left  < 10 )
+ //      {
+ //        $( '#tiles' ).removeClass('color-half');
+ //        $( '#tiles' ).addClass('color-empty');
+ //      }else {
+ //        $( '#tiles' ).addClass('color-half');
+ //        $( '#tiles' ).removeClass('color-empty');
+ //      }
+ //
+ //    days = pad( parseInt(seconds_left / 86400) );
+ //    seconds_left = seconds_left % 86400;
+ //
+ //    hours = pad( parseInt(seconds_left / 3600) );
+ //    seconds_left = seconds_left % 3600;
+ //
+ //    minutes = pad( parseInt(seconds_left / 60) );
+ //
+ //    seconds = pad( parseInt( seconds_left % 60 ) );
+ //
+ //    // format countdown string + set tag value
+ //    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
+ //    }
+ //  }
+ // });
  socket.on('auction_status',function(data) {
+   start_miliseconds = data.remained * 1000;
+ });
 
-  var countdown = document.getElementById("tiles");
+ var days, hours, minutes, seconds; // variables for time units
 
-  getCountdown(data.remained);
+ var countdown = document.getElementById("tiles"); // get tag element
 
-  function getCountdown(seconds_left){
+ function BesideOfWS(){
+   updateTimer(start_miliseconds);
+   countdownTimer = setTimeout(function() {
+     start_miliseconds -= 100;
+    BesideOfWS();
+   }, 100);
+ }
 
-    if ( seconds_left >= 0 ) {
+ BesideOfWS();
+ function updateTimer(millisecond){
 
-     if ( seconds_left  <  60 )
-     {
-       $( '#tiles' ).removeClass('color-full');
-       $( '#tiles' ).addClass('color-half');
+     if ( millisecond  >= 0) {
+
+         if ( millisecond  < time_left / 2 ) {
+             $('#tiles').removeClass('color-full');
+             $('#tiles').addClass('color-half');
+         }
+         if (millisecond < 10 * 1000) {
+             $('#tiles').removeClass('color-half');
+             $('#tiles').addClass('color-empty');
+         }
+
+         var hours = parseInt(millisecond / (3600*1000));
+         var left_millisecond = millisecond - (hours * 3600*1000);
+
+         var minutes = parseInt(left_millisecond / (60*1000));
+         var left_millisecond = left_millisecond - (minutes * 60*1000);
+
+         var seconds = parseInt(left_millisecond / 1000);
+         var left_millisecond = left_millisecond - (seconds*1000);
+
+         if(left_millisecond < 10)
+           left_millisecond = '00'+left_millisecond;
+         else if(left_millisecond < 100)
+           left_millisecond = '0'+left_millisecond;
+
+         // format countdown string + set tag value
+         countdown.innerHTML = "<span>" + pad(hours) + ":</span><span>" + pad(minutes) + ":</span><span>" + pad(seconds) + ":</span><span>" + left_millisecond + "</span>";
      }
-     else {
-       $( '#tiles' ).addClass('color-full');
-       $( '#tiles' ).removeClass('color-half');
-     }
-
-     if ( seconds_left  < 10 )
-      {
-        $( '#tiles' ).removeClass('color-half');
-        $( '#tiles' ).addClass('color-empty');
-      }else {
-        $( '#tiles' ).addClass('color-half');
-        $( '#tiles' ).removeClass('color-empty');
-      }
-
-    days = pad( parseInt(seconds_left / 86400) );
-    seconds_left = seconds_left % 86400;
-
-    hours = pad( parseInt(seconds_left / 3600) );
-    seconds_left = seconds_left % 3600;
-
-    minutes = pad( parseInt(seconds_left / 60) );
-
-    seconds = pad( parseInt( seconds_left % 60 ) );
-
-    // format countdown string + set tag value
-    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-    }
-  }
-});
+ }
 
  function pad(n) {
    return (n < 10 ? '0' : '') + n;
@@ -311,7 +362,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  socket.on('join', function(data) {
    console.log(data);
-   time_left = data.deadline;
+   time_left = data.deadline * 1000;
  });
 
  socket.on('update_view', function(data) {
@@ -379,10 +430,13 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      });
      people.valueHasMutated();
    }
+   getStatus();
  });
 
  socket.on('auction_done', function(data) {
     clearInterval(timer);
+    clearInterval(countdownTimer);
+    countdown.innerHTML = "<span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + "</span>";
     if(data.success){
       $(".error_alert").addClass('hide');
       $(".success_alert").removeClass('hide');
@@ -403,6 +457,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  $("#offer").on("click", function(event) {
    socket.emit('bid', {'auction_id':auction_id});
+   getStatus();
  });
 
 </script>

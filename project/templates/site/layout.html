@@ -142,57 +142,40 @@
       								<div class="mini-cart-box">
       									<a class="mini-cart-link" href="#">
       										<span class="mini-cart-icon"><i class="fa fa-shopping-basket" aria-hidden="true"></i></span>
-      										<span class="mini-cart-number">۲</span>
+      										<span class="mini-cart-number"></span>
       									</a>
       									<div class="mini-cart-content">
-      										<h2>سبد خرید من (۲)</h2>
-      										<ul class="list-mini-cart-item list-unstyled">
+      										<h2>سبد خرید من (<span data-bind="text:total_carts"></span>) </h2>
+      										<ul class="list-mini-cart-item list-unstyled" data-bind="foreach:mycart">
       											<li>
       												<div class="mini-cart-edit">
       													<a class="delete-mini-cart-item" href="#"><i class="fa fa-trash-o"></i></a>
       													<a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a>
       												</div>
       												<div class="mini-cart-thumb">
-      													<a href="#"><img alt="" src="/static/images/photos/electronics/3.jpg"></a>
+      													<a href="#"><img data-bind="attr:{src: product_image_path + ClearifyNames(item.images)[0] }"></a>
       												</div>
       												<div class="mini-cart-info">
-      													<h3><a href="#">نام محصول</a></h3>
+      													<h3><a href="#" data-bind="text:item.product.title+' '+item.title"></a></h3>
       													<div class="info-price">
-      														<span>۴۵۰،۰۰۰</span>
-      														<del>۶۴۰،۰۰۰</del>
+      														<span data-bind="text:ToPersian(formatCurrency(item.price - item.discount))"></span>
+      														<del data-bind="text:ToPersian(formatCurrency(item.price))"></del>
       													</div>
       													<div class="qty-product">
       														<span class="qty-down">-</span>
-      														<span class="qty-num">۱</span>
+      														<span class="qty-num">1</span>
       														<span class="qty-up">+</span>
       													</div>
       												</div>
       											</li>
-      											<li>
-      												<div class="mini-cart-edit">
-      													<a class="delete-mini-cart-item" href="#"><i class="fa fa-trash-o"></i></a>
-      													<a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a>
-      												</div>
-      												<div class="mini-cart-thumb">
-      													<a href="#"><img alt="" src="/static/images/photos/electronics/12.jpg"></a>
-      												</div>
-      												<div class="mini-cart-info">
-      													<h3><a href="#">نام محصول</a></h3>
-      													<div class="info-price">
-      														<span>۴۵۰،۰۰۰</span>
-      														<del>۶۴۰،۰۰۰</del>
-      													</div>
-      													<div class="qty-product">
-      														<span class="qty-down">-</span>
-      														<span class="qty-num">۱</span>
-      														<span class="qty-up">+</span>
-      													</div>
-      												</div>
-      											</li>
+                            <!-- ko text: triggerUpDown() -->
+                            <!-- /ko -->
       										</ul>
+
+
       										<div class="mini-cart-total">
       											<label>قیمت نهایی</label>
-      											<span>۶۴۰،۰۰۰ تومان</span>
+      											<span><span data-bind="text:cart_final_price"></span>تومان</span>
       										</div>
       										<div class="mini-cart-button">
       											<a class="mini-cart-view" href="#">مشاهده سبد خرید</a>
@@ -326,7 +309,7 @@
       								<div class="mini-cart-content">
       										<h2>سبد خرید من (۲)</h2>
       										<ul class="list-mini-cart-item list-unstyled">
-      											<li>
+      											<!-- <li>
       												<div class="mini-cart-edit">
       													<a class="delete-mini-cart-item" href="#"><i class="fa fa-trash-o"></i></a>
       													<a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a>
@@ -367,8 +350,9 @@
       														<span class="qty-up">+</span>
       													</div>
       												</div>
-      											</li>
+      											</li> -->
       										</ul>
+
       										<div class="mini-cart-total">
       											<label>قیمت نهایی</label>
       											<span>۶۴۰،۰۰۰ تومان</span>
@@ -479,68 +463,7 @@
             <a href="#" class="wobble-vertical"><img src="{{url_for('static',filename='images/theme/sibapp.png')}}" alt="" /></a>
             <a href="#" class="wobble-vertical"><img src="{{url_for('static',filename='images/theme/googleplay.png')}}" alt="" /></a>
           </div>
-          <!-- End Payment -->
-          <!-- <div class="footer-tabs">
-            <div class="container">
-              <div class="row">
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                  <div class="item-tag-footer">
-                    <div class="title-tag-footer"><span style="width:130px">نام دسته اصلی: </span></div>
-                    <div class="list-tag-footer">
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی </a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                    </div>
-                  </div>
-                  <div class="item-tag-footer">
-                    <div class="title-tag-footer"><span style="width:130px">نام دسته اصلی: </span></div>
-                    <div class="list-tag-footer">
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                  <div class="item-tag-footer">
-                    <div class="title-tag-footer"><span style="width:130px">نام دسته اصلی: </span></div>
-                    <div class="list-tag-footer">
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                    </div>
-                  </div>
-                  <div class="item-tag-footer">
-                    <div class="title-tag-footer"><span style="width:130px">نام دسته اصلی: </span></div>
-                    <div class="list-tag-footer">
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                      <a href="#">نام دسته بندی</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
-          <!-- End Footer Tab -->
+
           <div class="footer-copyright">
             <div class="container">
               <div class="row">
@@ -592,10 +515,23 @@
   });
 
   var viewed = ko.observable();
+  var mycart = ko.observableArray([]);
+  var total_carts = ko.observable(0);
+  var cart_final_price = ko.observable(0);
+
+  total_carts.subscribe(function(value) {
+      $('.mini-cart-number').html(value);
+  });
+
 
   $.getJSON("{{url_for('auctionuserviewed')}}", function(data) {
     if(data)
-      OnDataReady(data[0]);
+    OnDataReady(data[0]);
+  });
+
+  $.getJSON("{{url_for('usercartorder')}}", function(data) {
+    mycart(data[0][0]);
+    total_carts(ToPersian(data[0][0].length));
   });
 
   function OnDataReady(data){
