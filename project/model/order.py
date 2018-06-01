@@ -7,6 +7,10 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
+class OrderStatus:
+    UNPAID = 0
+    PAID = 1
+    PAYING = 2
 
 
 
@@ -29,6 +33,7 @@ class Order(Base):
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'))
     item = db.relationship('Item')
 
+    shipmet = db.relationship('Shipment')
 
     payments = db.relationship('Payment',secondary='payment_orders',back_populates='orders')
 

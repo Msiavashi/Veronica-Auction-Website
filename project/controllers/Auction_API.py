@@ -13,7 +13,6 @@ import time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import login_required ,current_user
 from decimal import Decimal
-from ..static_classes import Payment_Types
 
 class AuctionUserViewed(Resource):
     def get(self):
