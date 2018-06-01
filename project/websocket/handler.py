@@ -102,7 +102,7 @@ def handle_bid(data):
             emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
             return 400
 
-        my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
+        my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('created_at DESC').first()
 
         if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
             emit("failed", {"success":False, "reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید"})
@@ -116,15 +116,21 @@ def handle_bid(data):
 
         if(my_last_offer):
             if(my_last_offer.current_bids > 0):
-                offer.total_price = auction.base_price + offer_count * (BASE_BID_PRICE * auction.ratio)
+                calculated_price = auction.base_price + offer_count * (BASE_BID_PRICE * auction.ratio)
+                if( calculated_price < auction.max_price):
+                    offer.total_price = calculated_price
+                else:
+                    offer.total_price = auction.max_price
                 offer.current_bids = my_last_offer.current_bids - 1
             else:
                 emit("failed", {"success":False,"reason":"پیشنهادات شما به پایان رسید"})
                 return 400
         elif(last_offer):
+            #get last_offer price for offer
             offer.total_price = last_offer.total_price + (BASE_BID_PRICE * auction.ratio)
             offer.current_bids = user_plan.auction_plan.max_offers - 1
         else:
+            #starting price for first offer
             offer.total_price = auction.base_price + (BASE_BID_PRICE * auction.ratio)
             offer.current_bids = user_plan.auction_plan.max_offers - 1
 

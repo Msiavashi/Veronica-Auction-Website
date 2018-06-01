@@ -2,8 +2,8 @@
 .idea
 storage
 *.pyc
-./project/db_config.py
-./project/static/images
+/project/db_config.py
+/project/static/images
 venv
 ./project/static/js/js_config.js
 .DS_Store
