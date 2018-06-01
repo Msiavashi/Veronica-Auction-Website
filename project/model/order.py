@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 from project.database import db, Base
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields ,post_load
 import datetime
 
 
@@ -55,3 +55,7 @@ class OrderSchema(Schema):
     # user = fields.Nested('UserSchema',exclude=('orders',))
     # payments = fields.Nested('PaymentSchema',many=True,exclude=('orders',))
     item = fields.Nested('ItemSchema',exclude=('orders',))
+
+    @post_load
+    def make_order(self,data):
+        return Order(**data)

@@ -11,3 +11,7 @@ def as_python_object(dct):
     if '_python_object' in dct:
         return pickle.loads(str(dct['_python_object']))
     return dct
+
+class Payload(object):
+    def __init__(self, j):
+        self.__dict__ = loads(j)

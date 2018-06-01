@@ -1,3 +1,4 @@
+        
 class Payment_Types():
     Credit = 0
     Online = 1

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-US" ng-app='bidbazi'>
+<html lang="en-US" ng-app='bordito'>
   <head>
     {% block head_meta %}
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -149,7 +149,7 @@
       										<ul class="list-mini-cart-item list-unstyled" data-bind="foreach:mycart">
       											<li>
       												<div class="mini-cart-edit">
-      													<a class="delete-mini-cart-item" href="#"><i class="fa fa-trash-o"></i></a>
+      													<a class="delete-mini-cart-item" href="#"><input type="hidden" data-bind="attr:{value:item.id}"><i class="fa fa-trash-o"></i></a>
       													<a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a>
       												</div>
       												<div class="mini-cart-thumb">
@@ -446,12 +446,16 @@
                 </div>
                 <div class="col-md-3 col-sm-6 col-xs-12">
                   <div class="contact-footer-box footer-box">
-                    <h2 class="title14">تماس با بردیتو</h2>
+                    <h2 class="title14">بردیتو</h2>
+                    <!-- <h2 class="title14">تماس با بردیتو</h2> -->
                     <p class="formule-address">
-                      شهرک غرب – بلوار دادمان – نبش هرمزان – برج طوبی – طبقه شانزدهم – واحد ۳
+                      <!-- شهرک غرب – بلوار دادمان – نبش هرمزان – برج طوبی – طبقه شانزدهم – واحد ۳ -->
+                      تهران - تهران - تهران
                     </p>
-                    <p class="formule-phone">۰۲۱-۹۶۶۶۷۵۰۱</p>
-                    <p class="formule-email"><a href="mailto:info@bordito.com">info@bordito.com</a></p>
+                    <!-- <p class="formule-phone">۰۲۱-۹۶۶۶۷۵۰۱</p> -->
+                    <p class="formule-phone">۰۲۱-۱۱۱۱۱۱۱۱۱۱۱۱۱۱۱</p>
+                    <!-- <p class="formule-email"><a href="mailto:info@bordito.com">info@bordito.com</a></p> -->
+                    <p class="formule-email"><a href="mailto:info@bordito.ir">info@bordito.ir</a></p>
                   </div>
                 </div>
               </div>
@@ -468,7 +472,7 @@
             <div class="container">
               <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                  <p class="copyright"> تمامی كالاها و خدمات این فروشگاه، حسب مورد دارای مجوزهای لازم از مراجع مربوطه می باشند و فعالیت های این سایت تابع قوانین و مقررات جمهوری اسلامی ایران است. © 2018 bidbazi.ir</p>
+                  <p class="copyright"> تمامی كالاها و خدمات این فروشگاه، حسب مورد دارای مجوزهای لازم از مراجع مربوطه می باشند و فعالیت های این سایت تابع قوانین و مقررات جمهوری اسلامی ایران است. © 2018 bordito.ir</p>
                 </div>
               </div>
             </div>
@@ -530,10 +534,51 @@
   });
 
   $.getJSON("{{url_for('usercartorder')}}", function(data) {
-    mycart(data[0][0]);
-    total_carts(ToPersian(data[0][0].length));
+    console.log(data);
+    carts = []
+    $.each(data,function(key,val) {
+      console.log(val[0]);
+      carts.push(val[0]);
+    });
+    console.log(carts);
+    mycart(carts);
+    total_carts(ToPersian(carts.length));
   });
+  $(document).on('click','.delete-mini-cart-item',function(e) {
+    e.preventDefault();
+    item_id = $(this).find('input').val();
 
+    var data = JSON.stringify({
+    	"item_id": item_id
+  	});
+
+    var xhr = new XMLHttpRequest();
+  	xhr.withCredentials = true;
+
+  	xhr.open("patch", "{{url_for('usercartorder')}}");
+  	xhr.setRequestHeader("Content-Type", "application/json");
+  	xhr.setRequestHeader("Cache-Control", "no-cache");
+  	xhr.send(data);
+  	xhr.onreadystatechange = function (oEvent) {
+      if (xhr.readyState === 4) {
+  				data = JSON.parse(xhr.responseText);
+          if (xhr.status === 200) {
+  					carts = []
+            mycart([])
+  			    $.each(data,function(key,val) {
+              if(val[0])
+  			         carts.push(val[0]);
+  			    });
+  			    console.log(carts);
+  			    mycart(carts);
+  			    total_carts(ToPersian(carts.length));
+  					alert('محصول مورد نظر از سبد خرید حذف شد')
+          } else {
+             alert(data.reason)
+          }
+      	}
+  		};
+  });
   function OnDataReady(data){
     viewed(data);
   }

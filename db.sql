@@ -34,7 +34,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: addresses; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: addresses; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.addresses (
@@ -49,10 +49,10 @@ CREATE TABLE public.addresses (
 );
 
 
-ALTER TABLE public.addresses OWNER TO bidbazi;
+ALTER TABLE public.addresses OWNER TO bordito;
 
 --
--- Name: addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.addresses_id_seq
@@ -63,17 +63,17 @@ CREATE SEQUENCE public.addresses_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.addresses_id_seq OWNER TO bidbazi;
+ALTER TABLE public.addresses_id_seq OWNER TO bordito;
 
 --
--- Name: addresses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: addresses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
 
 
 --
--- Name: advertisements; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: advertisements; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.advertisements (
@@ -89,10 +89,10 @@ CREATE TABLE public.advertisements (
 );
 
 
-ALTER TABLE public.advertisements OWNER TO bidbazi;
+ALTER TABLE public.advertisements OWNER TO bordito;
 
 --
--- Name: advertisements_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: advertisements_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.advertisements_id_seq
@@ -103,17 +103,17 @@ CREATE SEQUENCE public.advertisements_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.advertisements_id_seq OWNER TO bidbazi;
+ALTER TABLE public.advertisements_id_seq OWNER TO bordito;
 
 --
--- Name: advertisements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: advertisements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.advertisements_id_seq OWNED BY public.advertisements.id;
 
 
 --
--- Name: auction_plans; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: auction_plans; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.auction_plans (
@@ -127,10 +127,10 @@ CREATE TABLE public.auction_plans (
 );
 
 
-ALTER TABLE public.auction_plans OWNER TO bidbazi;
+ALTER TABLE public.auction_plans OWNER TO bordito;
 
 --
--- Name: auction_plans_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: auction_plans_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.auction_plans_id_seq
@@ -141,17 +141,17 @@ CREATE SEQUENCE public.auction_plans_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auction_plans_id_seq OWNER TO bidbazi;
+ALTER TABLE public.auction_plans_id_seq OWNER TO bordito;
 
 --
--- Name: auction_plans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: auction_plans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.auction_plans_id_seq OWNED BY public.auction_plans.id;
 
 
 --
--- Name: auctions; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: auctions; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.auctions (
@@ -172,10 +172,10 @@ CREATE TABLE public.auctions (
 );
 
 
-ALTER TABLE public.auctions OWNER TO bidbazi;
+ALTER TABLE public.auctions OWNER TO bordito;
 
 --
--- Name: auctions_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: auctions_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.auctions_id_seq
@@ -186,17 +186,17 @@ CREATE SEQUENCE public.auctions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auctions_id_seq OWNER TO bidbazi;
+ALTER TABLE public.auctions_id_seq OWNER TO bordito;
 
 --
--- Name: auctions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: auctions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.auctions_id_seq OWNED BY public.auctions.id;
 
 
 --
--- Name: categories; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: categories; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.categories (
@@ -210,10 +210,10 @@ CREATE TABLE public.categories (
 );
 
 
-ALTER TABLE public.categories OWNER TO bidbazi;
+ALTER TABLE public.categories OWNER TO bordito;
 
 --
--- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.categories_id_seq
@@ -224,17 +224,17 @@ CREATE SEQUENCE public.categories_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.categories_id_seq OWNER TO bidbazi;
+ALTER TABLE public.categories_id_seq OWNER TO bordito;
 
 --
--- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
 
 --
--- Name: comments; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: comments; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.comments (
@@ -249,10 +249,10 @@ CREATE TABLE public.comments (
 );
 
 
-ALTER TABLE public.comments OWNER TO bidbazi;
+ALTER TABLE public.comments OWNER TO bordito;
 
 --
--- Name: comments_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: comments_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.comments_id_seq
@@ -263,17 +263,17 @@ CREATE SEQUENCE public.comments_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.comments_id_seq OWNER TO bidbazi;
+ALTER TABLE public.comments_id_seq OWNER TO bordito;
 
 --
--- Name: comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.comments_id_seq OWNED BY public.comments.id;
 
 
 --
--- Name: events; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: events; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.events (
@@ -289,10 +289,10 @@ CREATE TABLE public.events (
 );
 
 
-ALTER TABLE public.events OWNER TO bidbazi;
+ALTER TABLE public.events OWNER TO bordito;
 
 --
--- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.events_id_seq
@@ -303,17 +303,17 @@ CREATE SEQUENCE public.events_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.events_id_seq OWNER TO bidbazi;
+ALTER TABLE public.events_id_seq OWNER TO bordito;
 
 --
--- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
 
 
 --
--- Name: garanties; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: garanties; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.garanties (
@@ -326,10 +326,10 @@ CREATE TABLE public.garanties (
 );
 
 
-ALTER TABLE public.garanties OWNER TO bidbazi;
+ALTER TABLE public.garanties OWNER TO bordito;
 
 --
--- Name: garanties_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: garanties_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.garanties_id_seq
@@ -340,17 +340,17 @@ CREATE SEQUENCE public.garanties_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.garanties_id_seq OWNER TO bidbazi;
+ALTER TABLE public.garanties_id_seq OWNER TO bordito;
 
 --
--- Name: garanties_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: garanties_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.garanties_id_seq OWNED BY public.garanties.id;
 
 
 --
--- Name: garanty_products; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: garanty_products; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.garanty_products (
@@ -359,10 +359,10 @@ CREATE TABLE public.garanty_products (
 );
 
 
-ALTER TABLE public.garanty_products OWNER TO bidbazi;
+ALTER TABLE public.garanty_products OWNER TO bordito;
 
 --
--- Name: gifts; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: gifts; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.gifts (
@@ -375,10 +375,10 @@ CREATE TABLE public.gifts (
 );
 
 
-ALTER TABLE public.gifts OWNER TO bidbazi;
+ALTER TABLE public.gifts OWNER TO bordito;
 
 --
--- Name: gifts_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: gifts_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.gifts_id_seq
@@ -389,17 +389,17 @@ CREATE SEQUENCE public.gifts_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.gifts_id_seq OWNER TO bidbazi;
+ALTER TABLE public.gifts_id_seq OWNER TO bordito;
 
 --
--- Name: gifts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: gifts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.gifts_id_seq OWNED BY public.gifts.id;
 
 
 --
--- Name: guest_messages; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: guest_messages; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.guest_messages (
@@ -412,10 +412,10 @@ CREATE TABLE public.guest_messages (
 );
 
 
-ALTER TABLE public.guest_messages OWNER TO bidbazi;
+ALTER TABLE public.guest_messages OWNER TO bordito;
 
 --
--- Name: guest_messages_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: guest_messages_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.guest_messages_id_seq
@@ -426,17 +426,17 @@ CREATE SEQUENCE public.guest_messages_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.guest_messages_id_seq OWNER TO bidbazi;
+ALTER TABLE public.guest_messages_id_seq OWNER TO bordito;
 
 --
--- Name: guest_messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: guest_messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.guest_messages_id_seq OWNED BY public.guest_messages.id;
 
 
 --
--- Name: insurances; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: insurances; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.insurances (
@@ -449,10 +449,10 @@ CREATE TABLE public.insurances (
 );
 
 
-ALTER TABLE public.insurances OWNER TO bidbazi;
+ALTER TABLE public.insurances OWNER TO bordito;
 
 --
--- Name: insurances_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: insurances_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.insurances_id_seq
@@ -463,17 +463,17 @@ CREATE SEQUENCE public.insurances_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.insurances_id_seq OWNER TO bidbazi;
+ALTER TABLE public.insurances_id_seq OWNER TO bordito;
 
 --
--- Name: insurances_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: insurances_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.insurances_id_seq OWNED BY public.insurances.id;
 
 
 --
--- Name: inventories; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: inventories; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.inventories (
@@ -486,10 +486,10 @@ CREATE TABLE public.inventories (
 );
 
 
-ALTER TABLE public.inventories OWNER TO bidbazi;
+ALTER TABLE public.inventories OWNER TO bordito;
 
 --
--- Name: inventories_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: inventories_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.inventories_id_seq
@@ -500,17 +500,17 @@ CREATE SEQUENCE public.inventories_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.inventories_id_seq OWNER TO bidbazi;
+ALTER TABLE public.inventories_id_seq OWNER TO bordito;
 
 --
--- Name: inventories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: inventories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.inventories_id_seq OWNED BY public.inventories.id;
 
 
 --
--- Name: inventory_products; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: inventory_products; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.inventory_products (
@@ -519,10 +519,10 @@ CREATE TABLE public.inventory_products (
 );
 
 
-ALTER TABLE public.inventory_products OWNER TO bidbazi;
+ALTER TABLE public.inventory_products OWNER TO bordito;
 
 --
--- Name: items; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: items; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.items (
@@ -539,10 +539,10 @@ CREATE TABLE public.items (
 );
 
 
-ALTER TABLE public.items OWNER TO bidbazi;
+ALTER TABLE public.items OWNER TO bordito;
 
 --
--- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.items_id_seq
@@ -553,17 +553,17 @@ CREATE SEQUENCE public.items_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.items_id_seq OWNER TO bidbazi;
+ALTER TABLE public.items_id_seq OWNER TO bordito;
 
 --
--- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
 
 
 --
--- Name: manufacture_products; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: manufacture_products; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.manufacture_products (
@@ -572,10 +572,10 @@ CREATE TABLE public.manufacture_products (
 );
 
 
-ALTER TABLE public.manufacture_products OWNER TO bidbazi;
+ALTER TABLE public.manufacture_products OWNER TO bordito;
 
 --
--- Name: manufactures; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: manufactures; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.manufactures (
@@ -589,10 +589,10 @@ CREATE TABLE public.manufactures (
 );
 
 
-ALTER TABLE public.manufactures OWNER TO bidbazi;
+ALTER TABLE public.manufactures OWNER TO bordito;
 
 --
--- Name: manufactures_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: manufactures_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.manufactures_id_seq
@@ -603,17 +603,17 @@ CREATE SEQUENCE public.manufactures_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.manufactures_id_seq OWNER TO bidbazi;
+ALTER TABLE public.manufactures_id_seq OWNER TO bordito;
 
 --
--- Name: manufactures_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: manufactures_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.manufactures_id_seq OWNED BY public.manufactures.id;
 
 
 --
--- Name: offers; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: offers; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.offers (
@@ -628,10 +628,10 @@ CREATE TABLE public.offers (
 );
 
 
-ALTER TABLE public.offers OWNER TO bidbazi;
+ALTER TABLE public.offers OWNER TO bordito;
 
 --
--- Name: offers_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: offers_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.offers_id_seq
@@ -642,17 +642,17 @@ CREATE SEQUENCE public.offers_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.offers_id_seq OWNER TO bidbazi;
+ALTER TABLE public.offers_id_seq OWNER TO bordito;
 
 --
--- Name: offers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: offers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.offers_id_seq OWNED BY public.offers.id;
 
 
 --
--- Name: order_items; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: order_items; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.order_items (
@@ -661,10 +661,10 @@ CREATE TABLE public.order_items (
 );
 
 
-ALTER TABLE public.order_items OWNER TO bidbazi;
+ALTER TABLE public.order_items OWNER TO bordito;
 
 --
--- Name: orders; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: orders; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.orders (
@@ -679,10 +679,10 @@ CREATE TABLE public.orders (
 );
 
 
-ALTER TABLE public.orders OWNER TO bidbazi;
+ALTER TABLE public.orders OWNER TO bordito;
 
 --
--- Name: orders_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: orders_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.orders_id_seq
@@ -693,17 +693,17 @@ CREATE SEQUENCE public.orders_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.orders_id_seq OWNER TO bidbazi;
+ALTER TABLE public.orders_id_seq OWNER TO bordito;
 
 --
--- Name: orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
 
 
 --
--- Name: payment_methods; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: payment_methods; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.payment_methods (
@@ -716,10 +716,10 @@ CREATE TABLE public.payment_methods (
 );
 
 
-ALTER TABLE public.payment_methods OWNER TO bidbazi;
+ALTER TABLE public.payment_methods OWNER TO bordito;
 
 --
--- Name: payment_methods_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: payment_methods_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.payment_methods_id_seq
@@ -730,17 +730,17 @@ CREATE SEQUENCE public.payment_methods_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payment_methods_id_seq OWNER TO bidbazi;
+ALTER TABLE public.payment_methods_id_seq OWNER TO bordito;
 
 --
--- Name: payment_methods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: payment_methods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.payment_methods_id_seq OWNED BY public.payment_methods.id;
 
 
 --
--- Name: payments; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: payments; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.payments (
@@ -757,10 +757,10 @@ CREATE TABLE public.payments (
 );
 
 
-ALTER TABLE public.payments OWNER TO bidbazi;
+ALTER TABLE public.payments OWNER TO bordito;
 
 --
--- Name: payments_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: payments_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.payments_id_seq
@@ -772,17 +772,17 @@ CREATE SEQUENCE public.payments_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payments_id_seq OWNER TO bidbazi;
+ALTER TABLE public.payments_id_seq OWNER TO bordito;
 
 --
--- Name: payments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: payments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.payments_id_seq OWNED BY public.payments.id;
 
 
 --
--- Name: plans; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: plans; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.plans (
@@ -794,10 +794,10 @@ CREATE TABLE public.plans (
 );
 
 
-ALTER TABLE public.plans OWNER TO bidbazi;
+ALTER TABLE public.plans OWNER TO bordito;
 
 --
--- Name: plans_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: plans_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.plans_id_seq
@@ -808,17 +808,17 @@ CREATE SEQUENCE public.plans_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.plans_id_seq OWNER TO bidbazi;
+ALTER TABLE public.plans_id_seq OWNER TO bordito;
 
 --
--- Name: plans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: plans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.plans_id_seq OWNED BY public.plans.id;
 
 
 --
--- Name: products; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: products; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.products (
@@ -835,10 +835,10 @@ CREATE TABLE public.products (
 );
 
 
-ALTER TABLE public.products OWNER TO bidbazi;
+ALTER TABLE public.products OWNER TO bordito;
 
 --
--- Name: products_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: products_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.products_id_seq
@@ -849,17 +849,17 @@ CREATE SEQUENCE public.products_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.products_id_seq OWNER TO bidbazi;
+ALTER TABLE public.products_id_seq OWNER TO bordito;
 
 --
--- Name: products_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: products_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.products_id_seq OWNED BY public.products.id;
 
 
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: roles; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.roles (
@@ -871,10 +871,10 @@ CREATE TABLE public.roles (
 );
 
 
-ALTER TABLE public.roles OWNER TO bidbazi;
+ALTER TABLE public.roles OWNER TO bordito;
 
 --
--- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.roles_id_seq
@@ -885,17 +885,17 @@ CREATE SEQUENCE public.roles_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.roles_id_seq OWNER TO bidbazi;
+ALTER TABLE public.roles_id_seq OWNER TO bordito;
 
 --
--- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
 
 
 --
--- Name: shipment_methods; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: shipment_methods; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.shipment_methods (
@@ -908,10 +908,10 @@ CREATE TABLE public.shipment_methods (
 );
 
 
-ALTER TABLE public.shipment_methods OWNER TO bidbazi;
+ALTER TABLE public.shipment_methods OWNER TO bordito;
 
 --
--- Name: shipment_methods_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: shipment_methods_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.shipment_methods_id_seq
@@ -922,17 +922,17 @@ CREATE SEQUENCE public.shipment_methods_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.shipment_methods_id_seq OWNER TO bidbazi;
+ALTER TABLE public.shipment_methods_id_seq OWNER TO bordito;
 
 --
--- Name: shipment_methods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: shipment_methods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.shipment_methods_id_seq OWNED BY public.shipment_methods.id;
 
 
 --
--- Name: shipments; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: shipments; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.shipments (
@@ -948,10 +948,10 @@ CREATE TABLE public.shipments (
 );
 
 
-ALTER TABLE public.shipments OWNER TO bidbazi;
+ALTER TABLE public.shipments OWNER TO bordito;
 
 --
--- Name: shipments_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: shipments_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.shipments_id_seq
@@ -962,17 +962,17 @@ CREATE SEQUENCE public.shipments_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.shipments_id_seq OWNER TO bidbazi;
+ALTER TABLE public.shipments_id_seq OWNER TO bordito;
 
 --
--- Name: shipments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: shipments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.shipments_id_seq OWNED BY public.shipments.id;
 
 
 --
--- Name: user_auction_likes; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: user_auction_likes; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.user_auction_likes (
@@ -982,10 +982,10 @@ CREATE TABLE public.user_auction_likes (
 );
 
 
-ALTER TABLE public.user_auction_likes OWNER TO bidbazi;
+ALTER TABLE public.user_auction_likes OWNER TO bordito;
 
 --
--- Name: user_auction_participations; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: user_auction_participations; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.user_auction_participations (
@@ -997,10 +997,10 @@ CREATE TABLE public.user_auction_participations (
 );
 
 
-ALTER TABLE public.user_auction_participations OWNER TO bidbazi;
+ALTER TABLE public.user_auction_participations OWNER TO bordito;
 
 --
--- Name: user_auction_participations_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: user_auction_participations_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.user_auction_participations_id_seq
@@ -1011,17 +1011,17 @@ CREATE SEQUENCE public.user_auction_participations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_auction_participations_id_seq OWNER TO bidbazi;
+ALTER TABLE public.user_auction_participations_id_seq OWNER TO bordito;
 
 --
--- Name: user_auction_participations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: user_auction_participations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.user_auction_participations_id_seq OWNED BY public.user_auction_participations.id;
 
 
 --
--- Name: user_auction_views; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: user_auction_views; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.user_auction_views (
@@ -1033,10 +1033,10 @@ CREATE TABLE public.user_auction_views (
 );
 
 
-ALTER TABLE public.user_auction_views OWNER TO bidbazi;
+ALTER TABLE public.user_auction_views OWNER TO bordito;
 
 --
--- Name: user_gifts; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: user_gifts; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.user_gifts (
@@ -1046,10 +1046,10 @@ CREATE TABLE public.user_gifts (
 );
 
 
-ALTER TABLE public.user_gifts OWNER TO bidbazi;
+ALTER TABLE public.user_gifts OWNER TO bordito;
 
 --
--- Name: user_messages; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: user_messages; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.user_messages (
@@ -1064,10 +1064,10 @@ CREATE TABLE public.user_messages (
 );
 
 
-ALTER TABLE public.user_messages OWNER TO bidbazi;
+ALTER TABLE public.user_messages OWNER TO bordito;
 
 --
--- Name: user_messages_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: user_messages_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.user_messages_id_seq
@@ -1078,17 +1078,17 @@ CREATE SEQUENCE public.user_messages_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_messages_id_seq OWNER TO bidbazi;
+ALTER TABLE public.user_messages_id_seq OWNER TO bordito;
 
 --
--- Name: user_messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: user_messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.user_messages_id_seq OWNED BY public.user_messages.id;
 
 
 --
--- Name: user_plans; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: user_plans; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.user_plans (
@@ -1101,10 +1101,10 @@ CREATE TABLE public.user_plans (
 );
 
 
-ALTER TABLE public.user_plans OWNER TO bidbazi;
+ALTER TABLE public.user_plans OWNER TO bordito;
 
 --
--- Name: user_plans_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: user_plans_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.user_plans_id_seq
@@ -1115,17 +1115,17 @@ CREATE SEQUENCE public.user_plans_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_plans_id_seq OWNER TO bidbazi;
+ALTER TABLE public.user_plans_id_seq OWNER TO bordito;
 
 --
--- Name: user_plans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: user_plans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.user_plans_id_seq OWNED BY public.user_plans.id;
 
 
 --
--- Name: user_roles; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: user_roles; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.user_roles (
@@ -1134,10 +1134,10 @@ CREATE TABLE public.user_roles (
 );
 
 
-ALTER TABLE public.user_roles OWNER TO bidbazi;
+ALTER TABLE public.user_roles OWNER TO bordito;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: bidbazi
+-- Name: users; Type: TABLE; Schema: public; Owner: bordito
 --
 
 CREATE TABLE public.users (
@@ -1159,10 +1159,10 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO bidbazi;
+ALTER TABLE public.users OWNER TO bordito;
 
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: bidbazi
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: bordito
 --
 
 CREATE SEQUENCE public.users_id_seq
@@ -1173,206 +1173,206 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq OWNER TO bidbazi;
+ALTER TABLE public.users_id_seq OWNER TO bordito;
 
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bidbazi
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bordito
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: addresses id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: addresses id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.addresses ALTER COLUMN id SET DEFAULT nextval('public.addresses_id_seq'::regclass);
 
 
 --
--- Name: advertisements id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: advertisements id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.advertisements ALTER COLUMN id SET DEFAULT nextval('public.advertisements_id_seq'::regclass);
 
 
 --
--- Name: auction_plans id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: auction_plans id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auction_plans ALTER COLUMN id SET DEFAULT nextval('public.auction_plans_id_seq'::regclass);
 
 
 --
--- Name: auctions id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: auctions id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auctions ALTER COLUMN id SET DEFAULT nextval('public.auctions_id_seq'::regclass);
 
 
 --
--- Name: categories id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: categories id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
 
 
 --
--- Name: comments id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: comments id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.comments ALTER COLUMN id SET DEFAULT nextval('public.comments_id_seq'::regclass);
 
 
 --
--- Name: events id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: events id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
 
 
 --
--- Name: garanties id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: garanties id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.garanties ALTER COLUMN id SET DEFAULT nextval('public.garanties_id_seq'::regclass);
 
 
 --
--- Name: gifts id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: gifts id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.gifts ALTER COLUMN id SET DEFAULT nextval('public.gifts_id_seq'::regclass);
 
 
 --
--- Name: guest_messages id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: guest_messages id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.guest_messages ALTER COLUMN id SET DEFAULT nextval('public.guest_messages_id_seq'::regclass);
 
 
 --
--- Name: insurances id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: insurances id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.insurances ALTER COLUMN id SET DEFAULT nextval('public.insurances_id_seq'::regclass);
 
 
 --
--- Name: inventories id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: inventories id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.inventories ALTER COLUMN id SET DEFAULT nextval('public.inventories_id_seq'::regclass);
 
 
 --
--- Name: items id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: items id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
 
 
 --
--- Name: manufactures id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: manufactures id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.manufactures ALTER COLUMN id SET DEFAULT nextval('public.manufactures_id_seq'::regclass);
 
 
 --
--- Name: offers id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: offers id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.offers ALTER COLUMN id SET DEFAULT nextval('public.offers_id_seq'::regclass);
 
 
 --
--- Name: orders id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: orders id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.orders_id_seq'::regclass);
 
 
 --
--- Name: payment_methods id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: payment_methods id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.payment_methods ALTER COLUMN id SET DEFAULT nextval('public.payment_methods_id_seq'::regclass);
 
 
 --
--- Name: payments id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: payments id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.payments ALTER COLUMN id SET DEFAULT nextval('public.payments_id_seq'::regclass);
 
 
 --
--- Name: plans id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: plans id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.plans ALTER COLUMN id SET DEFAULT nextval('public.plans_id_seq'::regclass);
 
 
 --
--- Name: products id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: products id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.products ALTER COLUMN id SET DEFAULT nextval('public.products_id_seq'::regclass);
 
 
 --
--- Name: roles id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: roles id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_id_seq'::regclass);
 
 
 --
--- Name: shipment_methods id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: shipment_methods id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.shipment_methods ALTER COLUMN id SET DEFAULT nextval('public.shipment_methods_id_seq'::regclass);
 
 
 --
--- Name: shipments id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: shipments id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.shipments ALTER COLUMN id SET DEFAULT nextval('public.shipments_id_seq'::regclass);
 
 
 --
--- Name: user_auction_participations id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: user_auction_participations id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_auction_participations ALTER COLUMN id SET DEFAULT nextval('public.user_auction_participations_id_seq'::regclass);
 
 
 --
--- Name: user_messages id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: user_messages id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_messages ALTER COLUMN id SET DEFAULT nextval('public.user_messages_id_seq'::regclass);
 
 
 --
--- Name: user_plans id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: user_plans id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_plans ALTER COLUMN id SET DEFAULT nextval('public.user_plans_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: bidbazi
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
--- Data for Name: addresses; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: addresses; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.addresses (id, country, state, city, address, postal_code, created_at, updated_at) FROM stdin;
@@ -1380,7 +1380,7 @@ COPY public.addresses (id, country, state, city, address, postal_code, created_a
 
 
 --
--- Data for Name: advertisements; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: advertisements; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.advertisements (id, title, description, images, link_title, show, discount, created_at, updated_at) FROM stdin;
@@ -1388,7 +1388,7 @@ COPY public.advertisements (id, title, description, images, link_title, show, di
 
 
 --
--- Data for Name: auction_plans; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: auction_plans; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.auction_plans (id, price, max_offers, auction_id, plan_id, created_at, updated_at) FROM stdin;
@@ -1401,7 +1401,7 @@ COPY public.auction_plans (id, price, max_offers, auction_id, plan_id, created_a
 
 
 --
--- Data for Name: auctions; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: auctions; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.auctions (id, title, description, start_date, end_date, base_price, max_price, max_members, ratio, item_id, event_id, advertisement_id, created_at, updated_at) FROM stdin;
@@ -1411,7 +1411,7 @@ COPY public.auctions (id, title, description, start_date, end_date, base_price, 
 
 
 --
--- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.categories (id, title, description, icon, category_id, created_at, updated_at) FROM stdin;
@@ -1421,7 +1421,7 @@ COPY public.categories (id, title, description, icon, category_id, created_at, u
 
 
 --
--- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.comments (id, title, message, likes, user_id, product_id, created_at, updated_at) FROM stdin;
@@ -1429,7 +1429,7 @@ COPY public.comments (id, title, message, likes, user_id, product_id, created_at
 
 
 --
--- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.events (id, title, description, start_date, end_date, is_active, discount, created_at, updated_at) FROM stdin;
@@ -1437,7 +1437,7 @@ COPY public.events (id, title, description, start_date, end_date, is_active, dis
 
 
 --
--- Data for Name: garanties; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: garanties; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.garanties (id, title, description, price, created_at, updated_at) FROM stdin;
@@ -1445,7 +1445,7 @@ COPY public.garanties (id, title, description, price, created_at, updated_at) FR
 
 
 --
--- Data for Name: garanty_products; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: garanty_products; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.garanty_products (garanty_id, product_id) FROM stdin;
@@ -1453,7 +1453,7 @@ COPY public.garanty_products (garanty_id, product_id) FROM stdin;
 
 
 --
--- Data for Name: gifts; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: gifts; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.gifts (id, title, description, amount, created_at, updated_at) FROM stdin;
@@ -1461,7 +1461,7 @@ COPY public.gifts (id, title, description, amount, created_at, updated_at) FROM 
 
 
 --
--- Data for Name: guest_messages; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: guest_messages; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.guest_messages (id, full_name, email, website, message, created_at) FROM stdin;
@@ -1469,7 +1469,7 @@ COPY public.guest_messages (id, full_name, email, website, message, created_at) 
 
 
 --
--- Data for Name: insurances; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: insurances; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.insurances (id, company, description, price, created_at, updated_at) FROM stdin;
@@ -1477,7 +1477,7 @@ COPY public.insurances (id, company, description, price, created_at, updated_at)
 
 
 --
--- Data for Name: inventories; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: inventories; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.inventories (id, name, desciption, address_id, created_at, updated_at) FROM stdin;
@@ -1485,7 +1485,7 @@ COPY public.inventories (id, name, desciption, address_id, created_at, updated_a
 
 
 --
--- Data for Name: inventory_products; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: inventory_products; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.inventory_products (inventory_id, product_id) FROM stdin;
@@ -1493,7 +1493,7 @@ COPY public.inventory_products (inventory_id, product_id) FROM stdin;
 
 
 --
--- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.items (id, title, description, price, discount, details, images, product_id, created_at, updated_at) FROM stdin;
@@ -1503,7 +1503,7 @@ COPY public.items (id, title, description, price, discount, details, images, pro
 
 
 --
--- Data for Name: manufacture_products; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: manufacture_products; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.manufacture_products (manufacture_id, product_id) FROM stdin;
@@ -1511,7 +1511,7 @@ COPY public.manufacture_products (manufacture_id, product_id) FROM stdin;
 
 
 --
--- Data for Name: manufactures; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: manufactures; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.manufactures (id, name, country, desciption, details, created_at, updated_at) FROM stdin;
@@ -1519,7 +1519,7 @@ COPY public.manufactures (id, name, country, desciption, details, created_at, up
 
 
 --
--- Data for Name: offers; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: offers; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.offers (id, total_price, current_bids, win, user_plan_id, auction_id, created_at, updated_at) FROM stdin;
@@ -1535,7 +1535,7 @@ COPY public.offers (id, total_price, current_bids, win, user_plan_id, auction_id
 
 
 --
--- Data for Name: order_items; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: order_items; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.order_items (order_id, item_id) FROM stdin;
@@ -1543,7 +1543,7 @@ COPY public.order_items (order_id, item_id) FROM stdin;
 
 
 --
--- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.orders (id, desciption, status, register_user, total_cost, user_id, created_at, updated_at) FROM stdin;
@@ -1551,7 +1551,7 @@ COPY public.orders (id, desciption, status, register_user, total_cost, user_id, 
 
 
 --
--- Data for Name: payment_methods; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: payment_methods; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.payment_methods (id, title, description, details, created_at, updated_at) FROM stdin;
@@ -1561,7 +1561,7 @@ COPY public.payment_methods (id, title, description, details, created_at, update
 
 
 --
--- Data for Name: payments; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: payments; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.payments (id, "GUID", amount, status, details, payment_method_id, order_id, user_id, created_at, updated_at) FROM stdin;
@@ -1569,7 +1569,7 @@ COPY public.payments (id, "GUID", amount, status, details, payment_method_id, or
 
 
 --
--- Data for Name: plans; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: plans; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.plans (id, title, desciption, created_at, updated_at) FROM stdin;
@@ -1580,7 +1580,7 @@ COPY public.plans (id, title, desciption, created_at, updated_at) FROM stdin;
 
 
 --
--- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.products (id, title, desciption, quantity, details, category_id, manufacture_id, advertisement_id, created_at, updated_at) FROM stdin;
@@ -1589,7 +1589,7 @@ COPY public.products (id, title, desciption, quantity, details, category_id, man
 
 
 --
--- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.roles (id, name, description, created_at, updated_at) FROM stdin;
@@ -1599,7 +1599,7 @@ COPY public.roles (id, name, description, created_at, updated_at) FROM stdin;
 
 
 --
--- Data for Name: shipment_methods; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: shipment_methods; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.shipment_methods (id, title, description, price, created_at, updated_at) FROM stdin;
@@ -1607,7 +1607,7 @@ COPY public.shipment_methods (id, title, description, price, created_at, updated
 
 
 --
--- Data for Name: shipments; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: shipments; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.shipments (id, shipment_method_id, insurance_id, send_date, recieve_date, status, payment_id, created_at, updated_at) FROM stdin;
@@ -1615,7 +1615,7 @@ COPY public.shipments (id, shipment_method_id, insurance_id, send_date, recieve_
 
 
 --
--- Data for Name: user_auction_likes; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: user_auction_likes; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.user_auction_likes (user_id, auction_id, date) FROM stdin;
@@ -1623,7 +1623,7 @@ COPY public.user_auction_likes (user_id, auction_id, date) FROM stdin;
 
 
 --
--- Data for Name: user_auction_participations; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: user_auction_participations; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.user_auction_participations (id, auction_id, user_id, created_at, updated_at) FROM stdin;
@@ -1635,7 +1635,7 @@ COPY public.user_auction_participations (id, auction_id, user_id, created_at, up
 
 
 --
--- Data for Name: user_auction_views; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: user_auction_views; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.user_auction_views (user_id, auction_id, count, ip, date) FROM stdin;
@@ -1643,7 +1643,7 @@ COPY public.user_auction_views (user_id, auction_id, count, ip, date) FROM stdin
 
 
 --
--- Data for Name: user_gifts; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: user_gifts; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.user_gifts (user_id, gift_id, used) FROM stdin;
@@ -1651,7 +1651,7 @@ COPY public.user_gifts (user_id, gift_id, used) FROM stdin;
 
 
 --
--- Data for Name: user_messages; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: user_messages; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.user_messages (id, user_id, title, subject, message, file, created_at, updated_at) FROM stdin;
@@ -1659,7 +1659,7 @@ COPY public.user_messages (id, user_id, title, subject, message, file, created_a
 
 
 --
--- Data for Name: user_plans; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: user_plans; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.user_plans (id, user_id, auction_id, auction_plan_id, created_at, updated_at) FROM stdin;
@@ -1671,7 +1671,7 @@ COPY public.user_plans (id, user_id, auction_id, auction_plan_id, created_at, up
 
 
 --
--- Data for Name: user_roles; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: user_roles; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.user_roles (user_id, role_id) FROM stdin;
@@ -1681,7 +1681,7 @@ COPY public.user_roles (user_id, role_id) FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: bidbazi
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
 COPY public.users (id, username, first_name, last_name, work_place, mobile, email, password, avatar, created_at, updated_at, invitor, credit, address_id, alias_name) FROM stdin;
@@ -1691,196 +1691,196 @@ COPY public.users (id, username, first_name, last_name, work_place, mobile, emai
 
 
 --
--- Name: addresses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: addresses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.addresses_id_seq', 1, false);
 
 
 --
--- Name: advertisements_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: advertisements_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.advertisements_id_seq', 1, false);
 
 
 --
--- Name: auction_plans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: auction_plans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.auction_plans_id_seq', 5, true);
 
 
 --
--- Name: auctions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: auctions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.auctions_id_seq', 2, true);
 
 
 --
--- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.categories_id_seq', 2, true);
 
 
 --
--- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.comments_id_seq', 1, false);
 
 
 --
--- Name: events_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: events_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.events_id_seq', 1, false);
 
 
 --
--- Name: garanties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: garanties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.garanties_id_seq', 1, false);
 
 
 --
--- Name: gifts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: gifts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.gifts_id_seq', 1, false);
 
 
 --
--- Name: guest_messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: guest_messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.guest_messages_id_seq', 1, false);
 
 
 --
--- Name: insurances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: insurances_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.insurances_id_seq', 1, false);
 
 
 --
--- Name: inventories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: inventories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.inventories_id_seq', 1, false);
 
 
 --
--- Name: items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.items_id_seq', 2, true);
 
 
 --
--- Name: manufactures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: manufactures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.manufactures_id_seq', 1, false);
 
 
 --
--- Name: offers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: offers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.offers_id_seq', 780, true);
 
 
 --
--- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.orders_id_seq', 1, false);
 
 
 --
--- Name: payment_methods_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: payment_methods_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.payment_methods_id_seq', 2, true);
 
 
 --
--- Name: payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.payments_id_seq', 1, false);
 
 
 --
--- Name: plans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: plans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.plans_id_seq', 3, true);
 
 
 --
--- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.products_id_seq', 1, true);
 
 
 --
--- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.roles_id_seq', 2, true);
 
 
 --
--- Name: shipment_methods_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: shipment_methods_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.shipment_methods_id_seq', 1, false);
 
 
 --
--- Name: shipments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: shipments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.shipments_id_seq', 1, false);
 
 
 --
--- Name: user_auction_participations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: user_auction_participations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.user_auction_participations_id_seq', 66, true);
 
 
 --
--- Name: user_messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: user_messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.user_messages_id_seq', 1, false);
 
 
 --
--- Name: user_plans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: user_plans_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.user_plans_id_seq', 50, true);
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bidbazi
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bordito
 --
 
 SELECT pg_catalog.setval('public.users_id_seq', 3, true);
 
 
 --
--- Name: addresses addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: addresses addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.addresses
@@ -1888,7 +1888,7 @@ ALTER TABLE ONLY public.addresses
 
 
 --
--- Name: advertisements advertisements_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: advertisements advertisements_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.advertisements
@@ -1896,7 +1896,7 @@ ALTER TABLE ONLY public.advertisements
 
 
 --
--- Name: auction_plans auction_plans_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: auction_plans auction_plans_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auction_plans
@@ -1904,7 +1904,7 @@ ALTER TABLE ONLY public.auction_plans
 
 
 --
--- Name: auctions auctions_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: auctions auctions_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auctions
@@ -1912,7 +1912,7 @@ ALTER TABLE ONLY public.auctions
 
 
 --
--- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.categories
@@ -1920,7 +1920,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.comments
@@ -1928,7 +1928,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.events
@@ -1936,7 +1936,7 @@ ALTER TABLE ONLY public.events
 
 
 --
--- Name: garanties garanties_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: garanties garanties_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.garanties
@@ -1944,7 +1944,7 @@ ALTER TABLE ONLY public.garanties
 
 
 --
--- Name: gifts gifts_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: gifts gifts_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.gifts
@@ -1952,7 +1952,7 @@ ALTER TABLE ONLY public.gifts
 
 
 --
--- Name: guest_messages guest_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: guest_messages guest_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.guest_messages
@@ -1960,7 +1960,7 @@ ALTER TABLE ONLY public.guest_messages
 
 
 --
--- Name: insurances insurances_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: insurances insurances_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.insurances
@@ -1968,7 +1968,7 @@ ALTER TABLE ONLY public.insurances
 
 
 --
--- Name: inventories inventories_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: inventories inventories_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.inventories
@@ -1976,7 +1976,7 @@ ALTER TABLE ONLY public.inventories
 
 
 --
--- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.items
@@ -1984,7 +1984,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- Name: manufactures manufactures_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: manufactures manufactures_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.manufactures
@@ -1992,7 +1992,7 @@ ALTER TABLE ONLY public.manufactures
 
 
 --
--- Name: offers offers_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: offers offers_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.offers
@@ -2000,7 +2000,7 @@ ALTER TABLE ONLY public.offers
 
 
 --
--- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.orders
@@ -2008,7 +2008,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: payment_methods payment_methods_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: payment_methods payment_methods_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.payment_methods
@@ -2016,7 +2016,7 @@ ALTER TABLE ONLY public.payment_methods
 
 
 --
--- Name: payments payments_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: payments payments_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.payments
@@ -2024,7 +2024,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- Name: plans plans_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: plans plans_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.plans
@@ -2032,7 +2032,7 @@ ALTER TABLE ONLY public.plans
 
 
 --
--- Name: products products_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: products products_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.products
@@ -2040,7 +2040,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.roles
@@ -2048,7 +2048,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: shipment_methods shipment_methods_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: shipment_methods shipment_methods_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.shipment_methods
@@ -2056,7 +2056,7 @@ ALTER TABLE ONLY public.shipment_methods
 
 
 --
--- Name: shipments shipments_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: shipments shipments_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.shipments
@@ -2064,7 +2064,7 @@ ALTER TABLE ONLY public.shipments
 
 
 --
--- Name: user_auction_participations user_auction_participations_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_auction_participations user_auction_participations_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_auction_participations
@@ -2072,7 +2072,7 @@ ALTER TABLE ONLY public.user_auction_participations
 
 
 --
--- Name: user_messages user_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_messages user_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_messages
@@ -2080,7 +2080,7 @@ ALTER TABLE ONLY public.user_messages
 
 
 --
--- Name: user_plans user_plans_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_plans user_plans_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_plans
@@ -2088,7 +2088,7 @@ ALTER TABLE ONLY public.user_plans
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.users
@@ -2096,7 +2096,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_username_uc; Type: CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: users users_username_uc; Type: CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.users
@@ -2104,7 +2104,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: auction_plans auction_plans_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: auction_plans auction_plans_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auction_plans
@@ -2112,7 +2112,7 @@ ALTER TABLE ONLY public.auction_plans
 
 
 --
--- Name: auction_plans auction_plans_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: auction_plans auction_plans_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auction_plans
@@ -2120,7 +2120,7 @@ ALTER TABLE ONLY public.auction_plans
 
 
 --
--- Name: auctions auctions_advertisement_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: auctions auctions_advertisement_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auctions
@@ -2128,7 +2128,7 @@ ALTER TABLE ONLY public.auctions
 
 
 --
--- Name: auctions auctions_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: auctions auctions_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auctions
@@ -2136,7 +2136,7 @@ ALTER TABLE ONLY public.auctions
 
 
 --
--- Name: auctions auctions_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: auctions auctions_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.auctions
@@ -2144,7 +2144,7 @@ ALTER TABLE ONLY public.auctions
 
 
 --
--- Name: categories categories_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: categories categories_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.categories
@@ -2152,7 +2152,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- Name: comments comments_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: comments comments_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.comments
@@ -2160,7 +2160,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- Name: comments comments_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: comments comments_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.comments
@@ -2168,7 +2168,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- Name: garanty_products garanty_products_garanty_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: garanty_products garanty_products_garanty_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.garanty_products
@@ -2176,7 +2176,7 @@ ALTER TABLE ONLY public.garanty_products
 
 
 --
--- Name: garanty_products garanty_products_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: garanty_products garanty_products_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.garanty_products
@@ -2184,7 +2184,7 @@ ALTER TABLE ONLY public.garanty_products
 
 
 --
--- Name: inventories inventories_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: inventories inventories_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.inventories
@@ -2192,7 +2192,7 @@ ALTER TABLE ONLY public.inventories
 
 
 --
--- Name: inventory_products inventory_products_inventory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: inventory_products inventory_products_inventory_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.inventory_products
@@ -2200,7 +2200,7 @@ ALTER TABLE ONLY public.inventory_products
 
 
 --
--- Name: inventory_products inventory_products_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: inventory_products inventory_products_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.inventory_products
@@ -2208,7 +2208,7 @@ ALTER TABLE ONLY public.inventory_products
 
 
 --
--- Name: items items_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: items items_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.items
@@ -2216,7 +2216,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- Name: manufacture_products manufacture_products_manufacture_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: manufacture_products manufacture_products_manufacture_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.manufacture_products
@@ -2224,7 +2224,7 @@ ALTER TABLE ONLY public.manufacture_products
 
 
 --
--- Name: manufacture_products manufacture_products_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: manufacture_products manufacture_products_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.manufacture_products
@@ -2232,7 +2232,7 @@ ALTER TABLE ONLY public.manufacture_products
 
 
 --
--- Name: offers offers_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: offers offers_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.offers
@@ -2240,7 +2240,7 @@ ALTER TABLE ONLY public.offers
 
 
 --
--- Name: offers offers_user_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: offers offers_user_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.offers
@@ -2248,7 +2248,7 @@ ALTER TABLE ONLY public.offers
 
 
 --
--- Name: order_items order_items_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: order_items order_items_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.order_items
@@ -2256,7 +2256,7 @@ ALTER TABLE ONLY public.order_items
 
 
 --
--- Name: order_items order_items_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: order_items order_items_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.order_items
@@ -2264,7 +2264,7 @@ ALTER TABLE ONLY public.order_items
 
 
 --
--- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.orders
@@ -2272,7 +2272,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: payments payments_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: payments payments_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.payments
@@ -2280,7 +2280,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- Name: payments payments_payment_method_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: payments payments_payment_method_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.payments
@@ -2288,7 +2288,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- Name: payments payments_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: payments payments_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.payments
@@ -2296,7 +2296,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- Name: products products_advertisement_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: products products_advertisement_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.products
@@ -2304,7 +2304,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.products
@@ -2312,7 +2312,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- Name: products products_manufacture_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: products products_manufacture_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.products
@@ -2320,7 +2320,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- Name: shipments shipments_insurance_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: shipments shipments_insurance_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.shipments
@@ -2328,7 +2328,7 @@ ALTER TABLE ONLY public.shipments
 
 
 --
--- Name: shipments shipments_payment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: shipments shipments_payment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.shipments
@@ -2336,7 +2336,7 @@ ALTER TABLE ONLY public.shipments
 
 
 --
--- Name: shipments shipments_shipment_method_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: shipments shipments_shipment_method_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.shipments
@@ -2344,7 +2344,7 @@ ALTER TABLE ONLY public.shipments
 
 
 --
--- Name: user_auction_likes user_auction_likes_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_auction_likes user_auction_likes_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_auction_likes
@@ -2352,7 +2352,7 @@ ALTER TABLE ONLY public.user_auction_likes
 
 
 --
--- Name: user_auction_likes user_auction_likes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_auction_likes user_auction_likes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_auction_likes
@@ -2360,7 +2360,7 @@ ALTER TABLE ONLY public.user_auction_likes
 
 
 --
--- Name: user_auction_participations user_auction_participations_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_auction_participations user_auction_participations_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_auction_participations
@@ -2368,7 +2368,7 @@ ALTER TABLE ONLY public.user_auction_participations
 
 
 --
--- Name: user_auction_participations user_auction_participations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_auction_participations user_auction_participations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_auction_participations
@@ -2376,7 +2376,7 @@ ALTER TABLE ONLY public.user_auction_participations
 
 
 --
--- Name: user_auction_views user_auction_views_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_auction_views user_auction_views_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_auction_views
@@ -2384,7 +2384,7 @@ ALTER TABLE ONLY public.user_auction_views
 
 
 --
--- Name: user_auction_views user_auction_views_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_auction_views user_auction_views_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_auction_views
@@ -2392,7 +2392,7 @@ ALTER TABLE ONLY public.user_auction_views
 
 
 --
--- Name: user_gifts user_gifts_gift_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_gifts user_gifts_gift_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_gifts
@@ -2400,7 +2400,7 @@ ALTER TABLE ONLY public.user_gifts
 
 
 --
--- Name: user_gifts user_gifts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_gifts user_gifts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_gifts
@@ -2408,7 +2408,7 @@ ALTER TABLE ONLY public.user_gifts
 
 
 --
--- Name: user_messages user_messages_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_messages user_messages_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_messages
@@ -2416,7 +2416,7 @@ ALTER TABLE ONLY public.user_messages
 
 
 --
--- Name: user_plans user_plans_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_plans user_plans_auction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_plans
@@ -2424,7 +2424,7 @@ ALTER TABLE ONLY public.user_plans
 
 
 --
--- Name: user_plans user_plans_auction_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_plans user_plans_auction_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_plans
@@ -2432,7 +2432,7 @@ ALTER TABLE ONLY public.user_plans
 
 
 --
--- Name: user_plans user_plans_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_plans user_plans_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_plans
@@ -2440,7 +2440,7 @@ ALTER TABLE ONLY public.user_plans
 
 
 --
--- Name: user_roles user_roles_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_roles user_roles_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_roles
@@ -2448,7 +2448,7 @@ ALTER TABLE ONLY public.user_roles
 
 
 --
--- Name: user_roles user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: user_roles user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.user_roles
@@ -2456,7 +2456,7 @@ ALTER TABLE ONLY public.user_roles
 
 
 --
--- Name: users users_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bidbazi
+-- Name: users users_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: bordito
 --
 
 ALTER TABLE ONLY public.users
