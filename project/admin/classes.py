@@ -13,14 +13,16 @@ import ast
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
     @expose('/')
     def index(self):
         return super(MyAdminIndexView, self).index()
 
 class UserAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
     column_exclude_list = list = ('password',)
 
@@ -43,11 +45,13 @@ class UserAdmin(ModelView):
 
 class RoleAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class ItemAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
     def _list_thumbnail(view, context, model, name):
         if not model.images:
@@ -68,7 +72,8 @@ class ItemAdmin(ModelView):
 
 class AdvertisementAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
     def _list_thumbnail(view, context, model, name):
         if not model.images:
@@ -89,7 +94,7 @@ class AdvertisementAdmin(ModelView):
 
 class CategoryAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        return True
 
     def _list_thumbnail(view, context, model, name):
         if not model.icon:
@@ -110,35 +115,44 @@ class CategoryAdmin(ModelView):
 
 class ProductAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class AuctionAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+
+        return True
 
 class AddressAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class StateAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class GiftAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class InsuranceAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class GarantyAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class InventoryAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class ManufactureAdmin(ModelView):
     def is_accessible(self):

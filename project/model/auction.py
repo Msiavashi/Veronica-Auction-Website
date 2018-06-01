@@ -18,7 +18,7 @@ class Auction(Base):
     max_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     max_members = db.Column(db.BigInteger,default=40,nullable=False)
     ratio = db.Column(db.Integer,default=3,nullable=False)
-
+    
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'),nullable=False)
     item = db.relationship('Item')
 

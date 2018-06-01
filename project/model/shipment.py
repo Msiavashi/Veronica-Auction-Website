@@ -14,16 +14,16 @@ class Shipment(Base):
     shipment_method_id = db.Column(db.BigInteger,db.ForeignKey('shipment_methods.id'))
     shipment_method = db.relationship('ShipmentMethod')
 
-    insurance_id = db.Column(db.BigInteger, db.ForeignKey('insurances.id'))
+    insurance_id = db.Column(db.BigInteger, db.ForeignKey('insurances.id'), nullable=True)      #TODO: remove the nullable later
     insurance = db.relationship('Insurance')
 
     send_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     recieve_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
 
-    status = db.Column(db.Boolean)
+    status = db.Column(db.String(255), default="ارسال نشده")
 
-    payment_id = db.Column(db.BigInteger, db.ForeignKey('payments.id'))
-    payment = db.relationship('Payment')
+    order_id = db.Column(db.BigInteger, db.ForeignKey('orders.id'))
+    # payment = db.relationship('Payment')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)

@@ -2,7 +2,6 @@
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
-
 from flask_restful import Resource, reqparse
 import os
 from os import listdir
@@ -14,6 +13,7 @@ from project import app
 from datetime import datetime
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.user_message import UserMessage
+from ..model.order import OrderStatus
 import definitions
 from werkzeug.utils import secure_filename
 from ..utils import Payload
@@ -217,7 +217,7 @@ class UserContactUs(Resource):
         # return redirect(url_for('profile'))
 
 parser = reqparse.RequestParser()
-parser.add_argument('itme_id')
+parser.add_argument('item_id')
 
 class UserCartOrder(Resource):
     def get(self):
