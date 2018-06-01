@@ -308,6 +308,4 @@ class UserCartOrder(Resource):
                     temp.append(order)
 
             session['orders']= temp
-            if (founded):
-                session['orders'].remove(founded)
-                return make_response(jsonify(session['orders']), 200)
+            return make_response(jsonify(session['orders']), 200)

@@ -8,6 +8,6 @@ class Config:
     engine = "postgres"
     port = "5432"
     host_name = "localhost"
-    db_name = "bordito_db"
+    db_name = "bidbazi_db"
     password = "12345"
-    username = "bordito"
+    username = "bidbazi"
