@@ -10,6 +10,7 @@ from definitions import BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID, BANK_MELL
 import random
 from ..model.payment import *
 from ..model.order import *
+from ..model.user import *
 
 '''
 # Request Payment Token:
@@ -31,13 +32,21 @@ bml.settle_payment(long(SaleOrderId), SaleReferenceId)
 class MellatGatewayCallBack(Resource):
 
     def post(self, uid, pid):
-        data = request.data.get_json(force=True)
+        print "mellat callback"
+        data = request.get_json(force=True)
         ref_id = data['RefId']
         res_code = data['ResCode']
         sale_order_id = data['SaleOrderId']
         sale_refrence_id = data['SaleReferenceId']
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, long(BANK_MELLAT_TERMINAL_ID))
         verify_res = bml.verify_payment(long(sale_order_id), long(sale_refrence_id)) 
+
+
+        print ref_id
+        print res_code
+        print sale_order_id
+        print sale_order_id
+        print verify_res
 
         if verify_res[0] == '0':
             payment = Payment.query.get(request.args.get(pid))
@@ -59,15 +68,15 @@ class MellatGatewayCallBack(Resource):
 
 
 class MellatGateway(Resource):
-
-    @login_required
+    # @login_required
     def post(self, uid, pid):
-        if not request.data.is_json:
+        current_user = User.query.filter_by(username="mohammad").first()
+        if not request.is_json:
             return make_response(jsonify({"message": {"error": "not json"}}, 400))
-        data = request.data.get_json(force=True)
-        bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, long(BANK_MELLAT_TERMINAL_ID))
+        data = request.get_json(force=True)
+        bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
         price = data['price']
-        pay_token = bml.request_pay_ref(current_user.id, price, url_for('mellatgatewaycallback', uid=current_user.id, pid=pid), None)
+        pay_token = bml.request_pay_ref(pid, price, url_for('mellatgatewaycallback', uid=current_user.id, pid=pid), None)
         if pay_token:
             return make_response(jsonify({"pay_token": pay_token}), 200)
         else:

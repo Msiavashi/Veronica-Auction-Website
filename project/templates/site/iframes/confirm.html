@@ -47,6 +47,15 @@ $('#confirm_payment').on('click',function(){
 	window.location ="/callback";
 });
 
+// $.getJSON('{{url_for("mellatgateway", pid=1, uid=1)}}', function(data){
+// 	console.log(data)
+// });
+
+// $.post('{{url_for("mellatgateway", pid=1, uid=1)}}', {"price": 2000}).done(function(data){
+// 	console.log(data);
+// });	
+
+
 </script>
 
 {% endblock scripts %}

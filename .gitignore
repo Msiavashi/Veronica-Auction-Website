@@ -6,3 +6,4 @@ storage
 venv
 ./project/static/js/js_config.js
 .DS_Store
+project/admin/classes.py
