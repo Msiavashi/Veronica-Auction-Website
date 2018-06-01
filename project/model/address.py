@@ -26,7 +26,7 @@ class Address(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return " آدرس :" + self.country + " - " + self.state + "  - " + self.city + " - " + self.address
+        return " آدرس :" + self.country + " - " + str(self.state) + "  - " + self.city + " - " + self.address
 
 class AddressSchema(Schema):
     id = fields.Str()

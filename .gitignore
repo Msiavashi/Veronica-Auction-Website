@@ -5,3 +5,4 @@ storage
 ./project/db_config.py
 venv
 ./project/static/js/js_config.js
+.DS_Store

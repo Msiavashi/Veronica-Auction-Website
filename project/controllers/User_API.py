@@ -19,6 +19,7 @@ from werkzeug.utils import secure_filename
 from ..utils import PythonObjectEncoder
 from definitions import AVATAR_DIR
 from definitions import MESSAGE_SUBJECTS
+from definitions import MAXIMUM_ORDERS
 
 
 class PaymentsInfo(Resource):
@@ -211,131 +212,56 @@ class UserContactUs(Resource):
         db.session.commit()
         msg ="پیام شما با موفقیت ارسال شد. در اولین فرصت جهت پیگیری با شما تماس خواهیم گرفت"
         return make_response(jsonify({"message":{"success":msg}}),200)
+        # flash("پیام با موفقیت ارسال شد")
+        # return redirect(url_for('profile'))
 
-class CartOrder(Resource):
+parser = reqparse.RequestParser()
+parser.add_argument('item_id')
 
+class UserCartOrder(Resource):
     def get(self):
         if current_user.is_authenticated:
-            orders = Order.query.filter_by(status=OrderStatus.UNPAID, user_id=current_user.id).all()
-            order_schema = OrderSchema()
+            orders = Order.query.filter_by(user_id=current_user.id)
+            order_schema = OrderSchema(many=True)
             return make_response(jsonify(order_schema.dump(orders), 200))
 
         else:
-            orders = session['orders']
-            order_schema = OrderSchema()
-            return make_response(jsonify(order_schema.dump(orders)), 200)
+            if "orders" in session:
+                return make_response(jsonify(session['orders']), 200)
+            else:
+                return make_response(jsonify({"msg": "no orders"}), 200)
 
-    def post(self, data):
-        order_schema = OrderSchema()
-        data = data.get_json(force=True)
-        item = Item.query.filter_by(id=data['item_id']).first()
+    def post(self):
+        data = request.get_json('item_id')
+        item_id = data['item_id']
+
+        item = Item.query.get(item_id)
+
         if current_user.is_authenticated:
-            quantity = data['quantity']
-            if quantity > item.quantity:
-                return make_response(jsonify({"message": {"error": "تعداد درخواست شده موجود نیست"}}), 400)
-
             new_order = Order()
-            new_order.item_id = item.id
-            new_order.total = quantity
-            new_order.total_cost = ( quantity * item.price ) - item.discount
-            new_order.user = current_user.id
-
+            new_order.user_id = current_user.id
+            new_order.item = item
+            new_order.total_cost = item.price - item.discount
+            new_order.status = 0
             db.session.add(new_order)
             db.session.commit()
-            return make_response(jsonify({"message": {"success": "به سبک خرید اضافه شد"}, "unpaid_orders": jsonify(order_schema.dump( Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID ).all() ))}), 200)
-
+            orders = Order.query.filter_by(user_id=current_user.id)
+            order_schema = OrderSchema(many=True)
+            return make_response(jsonify(order_schema.dump(orders), 200))
         else:
             if not "orders" in session:
                 session['orders'] = list()
-            new_order = Order()
-            new_order.id = len(session['orders'])
-            new_order.item_id = item.id
-            new_order.item = item
-            new_order.total = quantity
-            new_order.total_cost = ( quantity * (item.price - item.discount) )
-            new_order.user = current_user.id
-            session['orders'].append(new_order)
-            return make_response(jsonify({"message": {"success": "به سبک خرید اضافه شد"}, "unpaid_orders": jsonify(OrderSchema.dump(session['orders']))}), 200)
 
-    def patch(self, data):
-        data = data.get_json(force=True)
-        if current_user.is_authenticated:
-            order = Order.query.get(data['order_id'])
-            order.total = data['quantity']
-            order.total_cost = (order.total * (order.item.price - order.item.discount))
-            db.session.add(order)
-            db.session.commit()
-        else:
-            orders = session['orders']
-            order = filter(lambda order: order.id == data['order_id'], orders)
-            order.total = data['quantity']
-            order.total_cost = (order.total * (order.item.price - order.item.discount))
-
-
-        return make_response(jsonify({"message": {"success": "تغییرات اعمال شد"}}), 200)
-
-
-    def delete(self, data):
-        data = data.json(force=True)
-
-        if current_user.is_authenticated:
-            db.session.delete(Order.query.get(data['order_id']))
-        else:
-            session['orders'] = filter(lambda order: order.id != data['order_id'], session['orders'])
-
-        return make_response(jsonify({"message": {"success": "محصول مورد نظر از سبد خرید حذف شد"}}), 200)
-
-
-#TODO: *strict validation*
-class Checkout(Resource):
-
-
-    def get(self):
-        payment_methods = PaymentMethod.query.all()
-        payment_methods_schema = PaymentMethodSchema(many=True)
-        shipment_methods = ShipmentMethod.query.all()
-        shipment_methods_schema = ShipmentMethodSchema(many=True)
-        order_schema = OrderSchema(many=True)
-        if current_user.is_authenticated:
-            return make_response(jsonify({"payment_methods": jsonify(payment_methods_schema.dump(payment_methods)), "shipment_methods": jsonify(shipment_methods_schema.dump(shipment_methods)), "orders": jsonify(order_schema.dump(Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID)))}), 200)
-        else:
-            return make_response(jsonify({"payment_methods": jsonify(payment_methods_schema.dump(payment_methods)), "shipment_methods": jsonify(shipment_methods_schema.dump(shipment_methods)), "orders": jsonify(order_schema.dump(session['orders']))}), 200)
-
-
-    @login_required
-    def post(self):
-        data = request.get_json(force=True)
-        order_id = data['order_id']
-        order = Order.query.get(order_id)
-        if not order or not order.user_id == current_user.id:
-            return make_response(jsonify({"msg": "سبد خرید مورد نظر یافت نشد"}) , 400)
-
-        payment = Payment()
-        payment.amount = order.total_cost
-        payment.order_id = order_id
-        payment.user_id = current_user.id
-        payment.payment_method = PaymentMethod.query.get(data['payment_method'])
-        payment.payment_method_id = payment.payment_method.id
-
-        db.session.add(payment)
-        db.session.commit()
-
-        shipment = Shipment()
-        shipment.order_id = order.id
-        shipment.payment_id = payment.id
-
-        shipment_method = ShipmentMethod.query.get(data['shipment_method'])
-
-        shipment.shipment_method = shipment_method
-        shipment.shipment_method_id = shipment_method.id
-
-        db.session.add(shipment)
-        db.session.commit()
-
-        order.total_cost += shipment_method.price
-        order.payment_id = payment.id
-
-        db.session.add(order)
-        db.session.commit()
-
-        return make_response(jsonify({'success': True}, 200))
+            if len(session['orders']) < MAXIMUM_ORDERS :
+                new_order = Order()
+                new_order.item = item;
+                new_order.total_cost = item.price
+                new_order.total = 1
+                new_order.status = 0
+                new_order.total_discount = item.discount
+                order_schema = OrderSchema()
+                session['orders'].append(order_schema.dump(new_order))
+                return make_response(jsonify(session['orders']), 200)
+            else:
+                session['orders'] = list()
+                return make_response(jsonify({"msg": "orders full"}), 400)

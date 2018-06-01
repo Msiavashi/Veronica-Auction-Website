@@ -66,6 +66,8 @@ class Route():
     @app.route("/instantview/<int:aid>")
     #@login_required
     def instantview(aid):
+        if(current_user and not current_user.has_auction(aid)):
+            return render_template('site/iframes/package.html',auction_id=aid)
         return render_template('site/iframes/quickview.html',auction_id=aid)
         # if(current_user.is_authenticated and not current_user.has_auction(aid)):
         # return render_template('site/iframes/quickview-guest.html',auction_id=aid)
@@ -100,6 +102,14 @@ class Route():
     def about():
         return render_template('site/about.html')
 
+    @app.route('/confirm/<amount>')
+    def confirm(amount):
+        return render_template('site/iframes/confirm.html',amount=amount)
+
+    @app.route('/callback')
+    def callback():
+        return render_template('site/iframes/callback.html')
+
     @app.route('/faq')
     def faq():
         return render_template('site/faq.html')
@@ -130,11 +140,11 @@ class Route():
 
     @app.route('/checkout')
     def checkout():
-        return render_template('/checkout.html')
+        return render_template('site/checkout.html')
 
     @app.route('/cart')
     def cart():
-        return render_template('/cart.html')
+        return render_template('site/cart.html')
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)

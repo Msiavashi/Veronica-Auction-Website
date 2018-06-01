@@ -1,0 +1,52 @@
+{% extends 'site/iframes/ilayout.html' %}
+{% block title %} بردیتو | تایید پرداخت {% endblock %}
+{% block content %}
+<input type="hidden" id="auction_id" value="{{auction_id}}">
+<div class="Package">
+	<div class="container">
+		<div class="product-quickview woocommerce">
+			<div class="row">
+				<h3 class="order_review_heading">تایید پرداخت</h3>
+				<div class="woocommerce-checkout-review-order" id="order_review">
+					<div class="table-responsive">
+						<table class="shop_table woocommerce-checkout-review-order-table">
+							<tfoot>
+								<tr class="cart-subtotal">
+									<th>هزینه کلی برای پرداخت</th>
+									<td><strong class="amount"><span id="selected_plan_price"></span>تومان</strong></td>
+								</tr>
+
+								<tr class="order-total">
+									<th>موجودی حساب شما</th>
+									<td><strong><span class="amount"><span >{{current_user.credit}}</span> تومان </span></strong> </td>
+								</tr>
+								<tr class="order-total">
+									<th>مبلغ پرداختی نهایی</th>
+									<td><strong><span class="amount">{{amount}} تومان </span></strong> </td>
+								</tr>
+
+							</tfoot>
+						</table>
+					</div>
+					<div class="woocommerce-checkout-payment" id="payment">
+						<div class="form-row place-order">
+							<input type="submit" value="تایید نهایی پرداخت و هدایت به درگاه بانک" id="confirm_payment" name="woocommerce_checkout_place_order" class="button alt">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+
+$('#confirm_payment').on('click',function(){
+	window.location ="/callback";
+});
+
+</script>
+
+{% endblock scripts %}
