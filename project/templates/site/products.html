@@ -175,10 +175,10 @@ ko.applyBindings(new dealModel());
 $(document).on('click','.addcart-link',function(event) {
 	self = $(this);
 	item_id = self.find('input').val();
-	data={'item_id':item_id}
 
 	var data = JSON.stringify({
-  	"item_id": item_id
+  	"item_id": item_id,
+		"total":1
 	});
 
 	var xhr = new XMLHttpRequest();
@@ -188,8 +188,24 @@ $(document).on('click','.addcart-link',function(event) {
 	xhr.setRequestHeader("Content-Type", "application/json");
 	xhr.setRequestHeader("Cache-Control", "no-cache");
 	xhr.send(data);
-		console.log(data[0][0]);
-		mycart(data[0][0]);
+	xhr.onreadystatechange = function (oEvent) {
+    if (xhr.readyState === 4) {
+				data = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+					carts = []
+			    $.each(data,function(key,val) {
+						if(val[0])
+				      carts.push(val[0]);
+			    });
+			    console.log(carts);
+			    mycart(carts);
+			    total_carts(ToPersian(carts.length));
+					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
+        } else {
+           alert(data.reason)
+        }
+    	}
+		};
 	});
 
 </script>

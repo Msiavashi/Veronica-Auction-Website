@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 from project.database import db, Base
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields,post_load
 import datetime
 
 class Item(Base):
@@ -13,8 +13,8 @@ class Item(Base):
     title = db.Column(db.String(length=100), nullable=False)
     description = db.Column(db.Text(),nullable=False)
     price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
-    quantity = db.Column(db.Integer())
-    discount = db.Column(db.Integer())
+    quantity = db.Column(db.Integer(),default=0,nullable=False)
+    discount = db.Column(db.Integer(),default=0,nullable=False)
     details = db.Column(db.Text())
     images = db.Column(db.Text, nullable=False)
 
@@ -41,3 +41,6 @@ class ItemSchema(Schema):
     inventories = fields.Nested('InventorySchema', many=True,exclude=('items',))
     insurances = fields.Nested('InsuranceSchema',many=True,exclude=('items',))
     orders = fields.Nested('OrderSchema',many=True,exclude=('item',))
+    @post_load
+    def make_item(self,data):
+        return Item(**data)

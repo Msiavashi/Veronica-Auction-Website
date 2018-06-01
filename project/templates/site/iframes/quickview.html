@@ -113,7 +113,7 @@
             </div>
             <div class="detail-extralink mt-0">
               <div class="product-extra-link2">
-                <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"></i> اضافه به سبد</a>
+                <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" data-bind="attr:{value:auction_item_id}"></i> اضافه به سبد</a>
                 <a class="wishlist-link2" href="#" id="like_auction"><i aria-hidden="true" class="fa fa-heart"></i></a>
                 <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span>تومان</a>
               </div>
@@ -521,24 +521,26 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   else {
     offer_bid_count = 0;
   }
+  var item_id = data.item.id;
 
- var mvvm = function MyViewModel() {
-      this.participant_count = participant_count;
-      this.max_members = max_members;
-      this.images = images;
-      this.active_image = images[0].url;
-      this.auction = data
-      this.auction_title = data.title;
-      this.auction_item_price = ToPersian(formatCurrency(data.item.price));
-      this.auction_register_price = ToPersian(formatCurrency(data.base_price));
-      this.people = people;
-      this.auction_rate = ToPersian(data.ratio);
-      this.auction_end_date = end_date_date;
-      this.auction_end_time = end_date_time;
-      this.now_date = now_date_date;
-      this.before_start = before_start_text;
-  }
-  ko.applyBindings(mvvm);
+   var mvvm = function MyViewModel() {
+        this.participant_count = participant_count;
+        this.max_members = max_members;
+        this.images = images;
+        this.active_image = images[0].url;
+        this.auction = data
+        this.auction_title = data.title;
+        this.auction_item_price = ToPersian(formatCurrency(data.item.price));
+        this.auction_register_price = ToPersian(formatCurrency(data.base_price));
+        this.people = people;
+        this.auction_rate = ToPersian(data.ratio);
+        this.auction_end_date = end_date_date;
+        this.auction_end_time = end_date_time;
+        this.auction_item_id = item_id;
+        this.now_date = now_date_date;
+        this.before_start = before_start_text;
+    }
+    ko.applyBindings(mvvm);
 
   if($('.detail-gallery').length>0){
     $('.detail-gallery').each(function(){
@@ -781,6 +783,44 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
    getStatus();
  });
 >>>>>>> master
+
+ $(document).on('click','.addcart-link2',function(event) {
+  event.preventDefault();
+
+ 	self = $(this);
+ 	item_id = self.find('input').val();
+
+ 	var data = JSON.stringify({
+   	"item_id": item_id,
+ 		"total":1
+ 	});
+
+ 	var xhr = new XMLHttpRequest();
+ 	xhr.withCredentials = true;
+
+ 	xhr.open("POST", "{{url_for('usercartorder')}}");
+ 	xhr.setRequestHeader("Content-Type", "application/json");
+ 	xhr.setRequestHeader("Cache-Control", "no-cache");
+ 	xhr.send(data);
+ 	xhr.onreadystatechange = function (oEvent) {
+     if (xhr.readyState === 4) {
+ 				data = JSON.parse(xhr.responseText);
+         if (xhr.status === 200) {
+ 					carts = []
+ 			    $.each(data,function(key,val) {
+ 						if(val[0])
+ 				      carts.push(val[0]);
+ 			    });
+ 			    console.log(carts);
+ 			    mycart(carts);
+ 			    total_carts(ToPersian(carts.length));
+ 					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
+         } else {
+            alert(data.reason)
+         }
+     	}
+ 		};
+ 	});
 
 </script>
 

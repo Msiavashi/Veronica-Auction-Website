@@ -16,10 +16,11 @@ from ..model.user_message import UserMessage
 from ..model.order import OrderStatus
 import definitions
 from werkzeug.utils import secure_filename
-from ..utils import PythonObjectEncoder
+from ..utils import Payload
 from definitions import AVATAR_DIR
 from definitions import MESSAGE_SUBJECTS
 from definitions import MAXIMUM_ORDERS
+import copy
 
 
 class PaymentsInfo(Resource):
@@ -220,11 +221,14 @@ parser.add_argument('item_id')
 
 class UserCartOrder(Resource):
     def get(self):
+
         if current_user.is_authenticated:
             orders = Order.query.filter_by(user_id=current_user.id)
-            order_schema = OrderSchema(many=True)
-            return make_response(jsonify(order_schema.dump(orders), 200))
-
+            result = []
+            order_schema = OrderSchema()
+            for order in orders:
+                result.append(order_schema.dump(order))
+            return make_response(jsonify(result), 200)
         else:
             if "orders" in session:
                 return make_response(jsonify(session['orders']), 200)
@@ -232,36 +236,77 @@ class UserCartOrder(Resource):
                 return make_response(jsonify({"msg": "no orders"}), 200)
 
     def post(self):
-        data = request.get_json('item_id')
-        item_id = data['item_id']
-
+        order_schema = OrderSchema(many=True)
+        item_id = request.get_json('item_id')['item_id']
+        total = request.get_json('total')['total']
         item = Item.query.get(item_id)
 
         if current_user.is_authenticated:
+            last_order = Order.query.filter_by(user_id=current_user.id,item_id=item_id).first()
+            if(last_order):
+                msg = " این محصول در سبد خرید شما از قبل موجود است"
+                return make_response(jsonify({"reason":msg}),400)
             new_order = Order()
             new_order.user_id = current_user.id
             new_order.item = item
             new_order.total_cost = item.price - item.discount
             new_order.status = 0
+            new_order.total = total
+            new_order.total_discount = item.discount
             db.session.add(new_order)
             db.session.commit()
             orders = Order.query.filter_by(user_id=current_user.id)
-            order_schema = OrderSchema(many=True)
-            return make_response(jsonify(order_schema.dump(orders), 200))
+            return make_response(jsonify(order_schema.dump(orders)), 200)
         else:
+
             if not "orders" in session:
-                session['orders'] = list()
+                session['orders'] = []
+
+            founded = False
+            order_schema = OrderSchema(many=True)
+            for order in session['orders']:
+                p = order_schema.load(order)
+                if (int(p.data[0]['item']['id']) == item.id):
+                    founded = True
+                    break
+
+            if (founded):
+                msg = " این محصول در سبد خرید شما از قبل موجود است"
+                return make_response(jsonify({"reason":msg}),400)
+
 
             if len(session['orders']) < MAXIMUM_ORDERS :
                 new_order = Order()
+                new_order.id = 1000
                 new_order.item = item;
                 new_order.total_cost = item.price
-                new_order.total = 1
+                new_order.total = total
                 new_order.status = 0
                 new_order.total_discount = item.discount
                 order_schema = OrderSchema()
                 session['orders'].append(order_schema.dump(new_order))
                 return make_response(jsonify(session['orders']), 200)
             else:
-                session['orders'] = list()
-                return make_response(jsonify({"msg": "orders full"}), 400)
+                return make_response(jsonify({"reason": "حداکثر تعداد سبد خرید شما پر شده است"}), 400)
+
+class UserCartOrderDelete(Resource):
+    def post(self):
+        order_schema = OrderSchema(many=True)
+        item_id = request.get_json('item_id')['item_id']
+        item = Item.query.get(item_id)
+
+        if current_user.is_authenticated:
+            last_order = Order.query.filter_by(user_id=current_user.id,item_id=item_id).delete()
+            db.session.commit()
+            orders = Order.query.filter_by(user_id=current_user.id)
+            return make_response(jsonify(order_schema.dump(orders)), 200)
+        else:
+            order_schema = OrderSchema(many=True)
+            temp = []
+            for order in session['orders']:
+                p = order_schema.load(order)
+                if (int(p.data[0]['item']['id']) != item.id):
+                    temp.append(order)
+
+            session['orders']= temp
+            return make_response(jsonify(session['orders']), 200)

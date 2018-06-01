@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 from project.database import db, Base
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields ,post_load
 import datetime
 
 class OrderStatus:
@@ -44,8 +44,7 @@ class Order(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return self.desciption
-        # return "کاربر : "+str(self.user) +" - محصول : "+ str(self.item) + " - تعداد : " + str(self.total) + " - جمع کل : " + str(self.total * self.item.price - self.item.discount)
+        return "کاربر : "+str(self.user) +" - محصول : "+ str(self.item) + " - تعداد : " + str(self.total) + " - جمع کل : " + str(self.total * self.item.price - self.item.discount)
 
 class OrderSchema(Schema):
     id = fields.Int()
@@ -60,3 +59,7 @@ class OrderSchema(Schema):
     # user = fields.Nested('UserSchema',exclude=('orders',))
     # payments = fields.Nested('PaymentSchema',many=True,exclude=('orders',))
     item = fields.Nested('ItemSchema',exclude=('orders',))
+
+    @post_load
+    def make_order(self,data):
+        return Order(**data)
