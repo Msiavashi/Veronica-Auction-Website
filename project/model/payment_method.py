@@ -7,6 +7,12 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
+class Payment_Types:
+    Credit = 0
+    Online = 1
+    CardToCard = 2
+    BankReceipt = 3
+
 class PaymentMethod(Base):
     __tablename__ = 'payment_methods'
     id = db.Column(db.BigInteger, primary_key=True)
@@ -24,5 +30,5 @@ class PaymentMethod(Base):
 class PaymentMethodSchema(Schema):
     id = fields.Int()
     title = fields.Str()
-    desciption = fields.Str()
+    description = fields.Str()
     details = fields.Str()

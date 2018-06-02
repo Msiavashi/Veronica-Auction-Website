@@ -289,6 +289,21 @@ class UserCartOrder(Resource):
             else:
                 return make_response(jsonify({"reason": "حداکثر تعداد سبد خرید شما پر شده است"}), 400)
 
+    #TODO: fix this
+    # def patch(self):
+    #         data = request.get_json(force=True)
+    #         if current_user.is_authenticated:
+    #             order = Order.query.get(data['order_id'])
+    #             order.total = data['quantity']
+    #             order.total_cost = (order.total * (order.item.price - order.item.discount))
+    #             db.session.add(order)
+    #             db.session.commit()
+    #         else:
+    #             orders = session['orders']
+    #             order = filter(lambda order: order.id == data['order_id'], orders)
+    #             order.total = data['quantity']
+    #             order.total_cost = (order.total * (order.item.price - order.item.discount))
+
 class UserCartOrderDelete(Resource):
     def post(self):
         order_schema = OrderSchema(many=True)
@@ -340,3 +355,53 @@ class UserAuctionLikes(Resource):
             return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
         else:
             return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
+#TODO: *strict validation*
+class UserCheckout(Resource):
+
+    def get(self):
+        payment_methods = PaymentMethod.query.all()
+        payment_methods_schema = PaymentMethodSchema(many=True)
+        shipment_methods = ShipmentMethod.query.all()
+        shipment_methods_schema = ShipmentMethodSchema(many=True)
+        order_schema = OrderSchema(many=True)
+        return make_response(jsonify({"payment_methods": payment_methods_schema.dump(payment_methods), "shipment_methods": shipment_methods_schema.dump(shipment_methods)}), 200)
+
+
+
+    @login_required
+    def post(self):
+        data = request.get_json(force=True)
+        order_id = data['order_id']
+        order = Order.query.get(order_id)
+        if not order or not order.user_id == current_user.id:
+            return make_response(jsonify({"msg": "سبد خرید مورد نظر یافت نشد"}) , 400)
+
+        payment = Payment()
+        payment.amount = order.total_cost
+        payment.order_id = order_id
+        payment.user_id = current_user.id
+        payment.payment_method = PaymentMethod.query.get(data['payment_method'])
+        payment.payment_method_id = payment.payment_method.id
+
+        db.session.add(payment)
+        db.session.commit()
+
+        shipment = Shipment()
+        shipment.order_id = order.id
+        shipment.payment_id = payment.id
+
+        shipment_method = ShipmentMethod.query.get(data['shipment_method'])
+
+        shipment.shipment_method = shipment_method
+        shipment.shipment_method_id = shipment_method.id
+
+        db.session.add(shipment)
+        db.session.commit()
+
+        order.total_cost += shipment_method.price
+        order.payment_id = payment.id
+
+        db.session.add(order)
+        db.session.commit()
+
+        return make_response(jsonify({'success': True}, 200))
