@@ -10,6 +10,9 @@ from flask_login import current_user,login_required,logout_user
 # from .model import *
 from . import app,login_manager
 from urlparse import urlparse, urljoin
+from .controllers.PyMellat.PyMellat import *
+from definitions import *
+import time
 
 class Route():
 
@@ -72,8 +75,8 @@ class Route():
     @app.route("/instantview/<int:aid>")
     #@login_required
     def instantview(aid):
-        if(current_user and not current_user.has_auction(aid)):
-            return render_template('site/iframes/package.html',auction_id=aid)
+        # if(current_user and not current_user.has_auction(aid)):
+        #     return render_template('site/iframes/package.html',auction_id=aid)
         return render_template('site/iframes/quickview.html',auction_id=aid)
         # if(current_user.is_authenticated and not current_user.has_auction(aid)):
         # return render_template('site/iframes/quickview-guest.html',auction_id=aid)
@@ -108,9 +111,21 @@ class Route():
     def about():
         return render_template('site/about.html')
 
-    @app.route('/confirm/<amount>')
-    def confirm(amount):
-        return render_template('site/iframes/confirm.html',amount=amount)
+
+    @app.before_request
+    def before_request():
+        if(request.endpoint=='confirm'):
+            token = MellatGateway.post()
+
+    @app.route('/confirm/')
+    def confirm():
+        amount = request.form.get('amount')
+        bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
+        price = amount
+        # pay_token = bml.request_pay_ref(int(time.time()), price, url_for('mellatgatewaycallback', uid=current_user.id, pid=10), None)
+        pay_token = bml.request_pay_ref(int(time.time()), price,'http://bordito.ir/api/user/mellat/callback/', "this is test")
+
+        return render_template('site/iframes/confirm.html',ref_id=pay_token,amount=amount)
 
     @app.route('/callback')
     def callback():

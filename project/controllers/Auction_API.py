@@ -55,7 +55,8 @@ class AuctionUserParticipation(Resource):
 
         if(payment_method.type == Payment_Types.Credit):
             if(current_user.credit < int(amount)):
-                return make_response(jsonify({'success':False,"reason":"موجودی حساب شما برای پرداخت این پلن کافی نمی باشد.لطفا یکی از روش های پرداخت دیگر را انتخاب کنید"}),400)
+                msg = "موجودی حساب شما برای پرداخت این پلن کافی نمی باشد"
+                return make_response(jsonify({'success':False,"reason":msg}),400)
 
             plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
             auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
@@ -82,16 +83,14 @@ class AuctionInstanceView(Resource):
         auction_schema = AuctionSchema()
         product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
         product_schema = ProductSchema()
-        auction.remained_time = (auction.start_date - datetime.now()).seconds * 1000
-        now_milliseconds = int(round(time.time() * 1000))
-        now_date = datetime.now()
+        auction.remained_time = auction.start_date
 
         if(current_user.is_authenticated):
             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()
             auction_plan_schema = AuctionPlanSchema()
-            return make_response(jsonify({"server_now_date":now_date,"server_time_mili":now_milliseconds,"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
+            return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
+        return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
 
-        return make_response(jsonify({"server_now_date":now_date,"server_time_mili":now_milliseconds,"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
 class AuctionGetPlans(Resource):
     def get(self,aid):
         auction=Auction.query.get(aid)

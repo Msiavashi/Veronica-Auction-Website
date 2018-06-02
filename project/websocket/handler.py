@@ -49,11 +49,11 @@ def loadview(data):
     try:
         auction_id = data['auction_id']
         auction = Auction.query.get(auction_id)
-        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
-        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
+        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
         for user in users:
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
-            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
+            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
             user.current_bids = user_last_offer.current_bids
             user.current_offer_price = user_last_offer.total_price
 
@@ -90,7 +90,7 @@ def handle_bid(data):
             return 400
         # check for one minutes remained for starting auction
 
-        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
 
         if(last_offer and last_offer.win):
             auction_done(data)
@@ -98,11 +98,11 @@ def handle_bid(data):
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
-        if(remained > 60):
+        if(remained > 60 * 15):
             emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
             return 400
 
-        my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('created_at DESC').first()
+        my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
 
         if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
             emit("failed", {"success":False, "reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید"})
@@ -142,10 +142,10 @@ def handle_bid(data):
             db.session.add(auction)
             db.session.commit()
 
-        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('total_price DESC')
+        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
         for user in users:
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
-            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('total_price DESC').first()
+            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
             user.current_bids = user_last_offer.current_bids
             user.current_offer_price = user_last_offer.total_price
 
@@ -165,7 +165,7 @@ def auction_done(data):
         price = auction.item.price
 
         total_bids = Offer.query.filter_by(auction_id=auction_id).count()
-        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('total_price DESC').first()
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
 
         if(last_offer):
             last_offer.win = True

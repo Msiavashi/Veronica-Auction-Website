@@ -1,7 +1,8 @@
-{% extends 'site/iframes/ilayout.html' %}
+{% extends 'site/layout.html' %}
 {% block title %}بردیتو | وضعیت پرداخت شما {% endblock %}
 {% block content %}
-<input type="hidden" id="auction_id" value="{{auction_id}}">
+<input type="hidden" id="data" value="{{data}}">
+
 <div class="Package">
 	<div class="container">
 		<div class="product-quickview woocommerce">
@@ -25,11 +26,6 @@
 							</tfoot>
 						</table>
 					</div>
-					<div class="woocommerce-checkout-payment" id="payment">
-						<div class="form-row place-order">
-							<input type="submit" id="redirect_to_home" name="woocommerce_checkout_place_order" value="تایید و هدایت به صفحه اصلی" class="button alt"></a>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -39,8 +35,7 @@
 {% block scripts %}
 {{ super() }}
 <script>
-$('#redirect_to_home').on('click',function(){
-	window.parent.location.reload();
-});
+console.log($('#data').val());
+ko.applyBindings();
 </script>
 {% endblock scripts %}

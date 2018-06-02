@@ -52,7 +52,7 @@
 							<td class="actions" colspan="6">
 								<div class="coupon">
 									<label for="coupon_code">کد تخفیف: </label>
-									<input type="text" placeholder="شماره کد" value="" id="coupon_code" class="input-text" name="coupon_code">
+									<input type="text" placeholder="کد ۵ حرفی" value="" id="coupon_code" class="input-text" name="coupon_code">
 									<input type="submit" value="درخواست" name="apply_coupon" class="button">
 								</div>
 								<input type="submit" value="به روزرسانی سبد" name="update_cart" class="button">
@@ -101,17 +101,41 @@
 <script>
 
 ko.applyBindings();
-//
-// $.getJSON("{{url_for('usercartorder')}}", function(data){
-// 	function cartViewModel(){
-// 		self = this;
-// 		self.ordersInformation = ko.observable();
-// 		self.ordersInformation(data);
-// 		console.log(data);
-// 	}
-// 	ko.applyBindings(new cartViewModel());
-// });
+$(document).on('click','.remove',function(e) {
+	e.preventDefault();
+	item_id = $(this).find('input').val();
 
+	var data = JSON.stringify({
+		"item_id": item_id
+	});
+
+	var xhr = new XMLHttpRequest();
+	xhr.withCredentials = true;
+
+	xhr.open("post", "{{url_for('usercartorderdelete')}}");
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.setRequestHeader("Cache-Control", "no-cache");
+	xhr.send(data);
+	xhr.onreadystatechange = function (oEvent) {
+		if (xhr.readyState === 4) {
+				data = JSON.parse(xhr.responseText);
+				if (xhr.status === 200) {
+					carts = []
+					mycart([])
+					$.each(data,function(key,val) {
+						if(val[0])
+							 carts.push(val[0]);
+					});
+					console.log(carts);
+					mycart(carts);
+					total_carts(ToPersian(carts.length));
+					alert('محصول مورد نظر از سبد خرید حذف شد')
+				} else {
+					 alert(data.reason)
+				}
+			}
+		};
+});
 </script>
 
 {% endblock scripts %}

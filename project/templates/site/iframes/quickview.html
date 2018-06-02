@@ -56,7 +56,7 @@
         </div>
         <div class="col-md-8 col-sm-7 col-xs-12">
           <div class="detail-info">
-            <h2 class="title-detail" data-bind="text: auction.title + ' '+auction.item.title"></h2>
+            <h2 class="title-detail" data-bind="text: auction.title"></h2>
             <div class="product-price">
               <!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
               <div class="textboX">
@@ -141,7 +141,6 @@
 <script>
 
 var auction_id = $('#auction').val();
-var auction_deadline = 0;
 var people = ko.observableArray([]);
 var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
@@ -178,28 +177,20 @@ socket.on('join', function(data){
 });
 
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
-  console.log(data);
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
+  var deadline = new Date(data.start_date).format("yyyy-M-d HH:mm:ss","UTC");
 
-  var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
-  auction_deadline= parseInt(data.remained_time) + time_difference;
+  before_start_text = "شروع حراجی : ";
 
-  before_start_text = "تاریخ شروع حراجی : ";
-  var event = new Date(Date.parse(deadline));
-  var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
-  var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
-  var end_month = event.toLocaleDateString('fa-IR', {month:'long'});
-  var end_date_time =  " ساعت  " + event.toLocaleTimeString('fa-IR');
-  var end_date_date = end_weekday + " " + end_day +" "+ end_month;
+  full_date = new persianDate(new Date(data.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+  full_hour = new persianDate(new Date(data.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
 
-  var event = new Date(Date.now());
-  var now_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
-  var now_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
-  var now_month = event.toLocaleDateString('fa-IR', {month:'long'});
-  var now_date_time = event.toLocaleTimeString('fa-IR');
-  var now_date_date = now_weekday + " " + now_day +" "+ now_month;
+  var end_date_date = full_date;
+  var end_date_time =  " ساعت  " + full_hour;
+
+  var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
 
   var participant_count = ToPersian(data.participants.length);
   var max_members = ToPersian(data.max_members);
@@ -409,7 +400,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      people([]);
      $.each(users,function(key,val){
        its_you = val.id == current_user_id ? true : false;
-       name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+       name = val.username ;
        avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
        row = ToPersian(++rowIndex);
        price = val.current_offer_price ? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
@@ -443,7 +434,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      people([]);
      $.each(data.users[0],function(key,val){
        its_you = val.id == current_user_id ? true : false;
-       name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+       name = val.username ;
        avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
        row = ++rowIndex;
        person = new Person(name,avatar,its_you,ToPersian(row));
@@ -509,9 +500,6 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  						if(val[0])
  				      carts.push(val[0]);
  			    });
- 			    console.log(carts);
- 			    mycart(carts);
- 			    total_carts(ToPersian(carts.length));
  					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
          } else {
             alert(data.reason)

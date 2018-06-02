@@ -62,6 +62,10 @@ from flask_restful import Api
 def custom_401(error):
     return render_template('site/400.html'), 400
     # return Response('دسترسی شما به آدرس مورد نظر ممکن نیست', 401, {'WWWAuthenticate':'Basic realm="Login Required"'})
+@app.after_request
+def apply_changing(response):
+    response.headers["X-Frame-Options"] = "Allow"
+    return response
 
 # @app.errorhandler(CSRFError)
 # def handle_csrf_error(e):
@@ -96,7 +100,7 @@ api.add_resource(User_API.UserContactUs, '/user/contactus')
 api.add_resource(User_API.UserAuctionLikes, '/user/auction/likes')
 # api.add_resource(User_API.CartOrder, '/cart/order')
 api.add_resource(MellatPayment_API.MellatGateway, '/user/<int:uid>/payment/<int:pid>')
-api.add_resource(MellatPayment_API.MellatGatewayCallBack, '/user/<int:uid>/payment/<int:pid>/mellat/callback/')
+api.add_resource(MellatPayment_API.MellatGatewayCallBack, '/user/mellat/callback/')
 api.add_resource(User_API.UserCartOrder, '/user/cart/order')
 api.add_resource(User_API.UserCartOrderDelete, '/user/cart/order/delete')
 

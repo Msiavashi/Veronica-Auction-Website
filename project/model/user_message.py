@@ -7,6 +7,7 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 import enum
+from . import User
 
 
 class UserMessage(Base):
@@ -28,7 +29,7 @@ class UserMessage(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return " ارسال توسط :" + str(User.query.filter_by(id=self.user_id)) + " درتاریخ " + self.created_at
+        return " ارسال توسط :" + str(User.query.filter_by(id=self.user_id)) + " درتاریخ " + str(self.created_at)
 
 class UserMessageSchema(Schema):
     id = fields.Int()
