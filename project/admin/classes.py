@@ -156,23 +156,28 @@ class InventoryAdmin(ModelView):
 
 class ManufactureAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class OfferAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class EventAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class PaymentMethodAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class ShipmentMethodAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class OrderAdmin(ModelView):
     def is_accessible(self):
@@ -180,11 +185,13 @@ class OrderAdmin(ModelView):
 
 class PaymentAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class ShipmentAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
+        # return current_user.has_role('admin')
+        return True
 
 class PlanAdmin(ModelView):
     def is_accessible(self):

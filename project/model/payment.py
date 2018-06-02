@@ -10,11 +10,6 @@ class PaymentStatus:
     PAID = 1
     UNPAID = 0
 
-class Payment_Types:
-    Credit = 0
-    Online = 1
-    CardToCard = 2
-    BankReceipt = 3
 
 class Payment(Base):
     __tablename__ = 'payments'

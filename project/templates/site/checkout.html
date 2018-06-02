@@ -1,7 +1,7 @@
 {% extends 'site/layout.html' %}
 {% block title %} بید بازی | برندگان گذشته {% endblock %}
 {% block content %}
-<div class="content-page woocommerce">
+<div id="app" class="content-page woocommerce">
   <div class="container">
     <div class="row">
       <div class="col-md-12">
@@ -87,19 +87,19 @@
                 <tr class="shipping">
                   <th>نوع ارسال</th>
                   <td>
-                    <ul id="shipping_method" class="list-none">
+                    <ul v-for="shipment in shipment_methods" id="shipping_method" class="list-none">
                       <li>
                         <input type="radio" class="shipping_method" checked="checked" value="free_shipping" id="shipping_method_0_free_shipping" data-index="0" name="shipping_method[0]">
-                        <label for="shipping_method_0_free_shipping">پیک موتوری (فقط تهران)</label>
+                        <label for="shipping_method_0_free_shipping">{%raw%} {{shipment.title}} {%endraw%}</label>
                       </li>
-                      <li>
+                      <!-- <li>
                         <input type="radio" class="shipping_method" value="local_delivery" id="shipping_method_0_local_delivery" data-index="0" name="shipping_method[0]">
                         <label for="shipping_method_0_local_delivery">پرداخت درب منزل (پست)</label>
                       </li>
                       <li>
                         <input type="radio" class="shipping_method" value="local_pickup" id="shipping_method_0_local_pickup" data-index="0" name="shipping_method[0]">
                         <label for="shipping_method_0_local_pickup">تحویل حضوری</label>
-                      </li>
+                      </li> -->
                     </ul>
                   </td>
                 </tr>
@@ -123,15 +123,15 @@
             </table>
           </div>
           <div class="woocommerce-checkout-payment" id="payment">
-            <ul class="payment_methods methods list-none">
+            <ul v-for="payment_method in payment_methods" class="payment_methods methods list-none">
               <li class="payment_method_bacs">
                 <input type="radio" data-order_button_text="" value="bacs" name="payment_method" class="input-radio" id="payment_method_bacs" checked="checked">
-                <label for="payment_method_bacs">پرداخت به صورت کارت به کارت</label>
+                <label for="payment_method_bacs">{%raw%} {{payment_method.title}} {%endraw%}</label>
                 <div class="payment_box payment_method_bacs">
-                  <p>پرداخت خود را به صورت کارت به کارت انجام دهید و لطفا شماره فاکتور سفارش خود را برای ما راسال کنید.  </p>
+                  <p>{%raw%}{{payment_method.description}}{%endraw%}</p>
                 </div>
               </li>
-              <li class="payment_method_cheque">
+              <!-- <li class="payment_method_cheque">
                 <input type="radio" data-order_button_text="" value="cheque" name="payment_method" class="input-radio" id="payment_method_cheque">
                 <label for="payment_method_cheque">پرداخت فیش بانکی</label>
                   <div class="payment_box payment_method_cheque">
@@ -150,7 +150,7 @@
                 <label for="payment_method_Proceed">
                   آنلاین <img alt="" src="{{url_for('static', filename='images/theme/bank.png')}}"><a title="" onclick="javascript:window.open('https://shaparak.ir/content?id=287','WIPaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700'); return false;" class="about_paypal" href="https://shaparak.ir/content?id=287">کارت های عضو شتاب</a>
                 </label>
-              </li>
+              </li> -->
             </ul>
             <div class="form-row place-order">
               <input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order" name="woocommerce_checkout_place_order" class="button alt">
@@ -161,11 +161,44 @@
     </div>
   </div>
 </div>
+
+<!-- <h2 id="app"> {%raw%} {{shipment_methods}} {%endraw%}  </h2> -->
 {% endblock %}
 {% block scripts %}
 {{ super() }}
 
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+
 <script>
+
+var app = new Vue({
+
+  el: '#app',
+
+  data:{
+    shipment_methods: [],
+    payment_methods: [],
+    user_orders: [],
+  },
+
+  created: function(){
+    self = this;
+    $.getJSON("{{url_for('usercheckout')}}", function(data){
+      self.shipment_methods = data['shipment_methods'][0];
+      self.payment_methods = data['payment_methods'][0];
+    });
+
+    $.getJSON("{{url_for('usercartorder')}}", function(data){
+      self.user_orders = data;
+    });
+  },
+
+  computed: {
+    ordersInfo: function(){
+      //TODO: do the calculation for orders
+    }
+  }
+});
 
 </script>
 {% endblock scripts %}

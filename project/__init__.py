@@ -98,3 +98,5 @@ api.add_resource(MellatPayment_API.MellatGateway, '/user/<int:uid>/payment/<int:
 api.add_resource(MellatPayment_API.MellatGatewayCallBack, '/user/<int:uid>/payment/<int:pid>/mellat/callback/')
 api.add_resource(User_API.UserCartOrder, '/user/cart/order')
 api.add_resource(User_API.UserCartOrderDelete, '/user/cart/order/delete')
+
+api.add_resource(User_API.UserCheckout, '/user/checkout/confirm')
