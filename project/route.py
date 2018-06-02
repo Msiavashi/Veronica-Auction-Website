@@ -112,20 +112,10 @@ class Route():
         return render_template('site/about.html')
 
 
-    @app.before_request
-    def before_request():
-        if(request.endpoint=='confirm'):
-            token = MellatGateway.post()
-
-    @app.route('/confirm/')
-    def confirm():
+    @app.route('/confirm/payment/<int:pid>')
+    def confirm(pid):
         amount = request.form.get('amount')
-        bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
-        price = amount
-        # pay_token = bml.request_pay_ref(int(time.time()), price, url_for('mellatgatewaycallback', uid=current_user.id, pid=10), None)
-        pay_token = bml.request_pay_ref(int(time.time()), price,'http://bordito.ir/api/user/mellat/callback/', "this is test")
-
-        return render_template('site/iframes/confirm.html',ref_id=pay_token,amount=amount)
+        return render_template('site/iframes/confirm.html', amount=amount, pid=pid)
 
     @app.route('/callback')
     def callback():

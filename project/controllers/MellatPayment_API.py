@@ -78,9 +78,9 @@ class MellatGateway(Resource):
         data = request.get_json(force=True)
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
         price = data['price']
-        pay_token = bml.request_pay_ref(pid, price, url_for('mellatgatewaycallback', uid=current_user.id, pid=pid), None)
+        pay_token = bml.request_pay_ref(pid, price, "http://bordito.ir/api/user/mellat/callback/", uid=current_user.id, pid=pid), None)
         print pay_token
         if pay_token:
-            return make_response(jsonify({"pay_token": pay_token}), 200)
+            return make_response(jsonify({"ref_id": pay_token, "amount": price}), 200)
         else:
             return make_response(jsonify({"message": {"error": "خطای بانک"}}), 400)

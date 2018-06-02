@@ -27,10 +27,12 @@
 					</div>
 					<div class="woocommerce-checkout-payment" id="payment">
 						<div class="form-row place-order">
-							<form action="https://bpm.shaparak.ir/pgwchannel/startpay.mellat" method="post">
+							<form id="confirm" action="https://bpm.shaparak.ir/pgwchannel/startpay.mellat" method="post">
 								<input type="hidden" name="RefId" id="RefId" value="{{ref_id}}">
+								<input type="hidden" name="amount" id="Amount" value="{{amount}}">
 								<input type="submit" value="تایید نهایی پرداخت و هدایت به درگاه بانک" class="button alt">
 							</form>
+
 						</div>
 					</div>
 				</div>
@@ -41,46 +43,28 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script>
-console.log($('#RefId').val());
-// $('#confirm_payment').on('click',function(){
-// 	window.location ="/callback";
-// });
-
-// $.getJSON('{{url_for("mellatgateway", pid=1, uid=1)}}', function(data){
-// 	console.log(data)
-// });
-
-// $.post('{{url_for("mellatgateway", pid=1, uid=1)}}', {"price": 2000}).done(function(data){
-// 	console.log(data);
-// });
-
-$('#confirm_payment').on('click',function(e) {
-	var data = JSON.stringify({
-	  "price": parseInt($('#price').val())
+	var app = new Vue({
+		data: {
+			ref_id: null,
+		},
 	});
 
-	var xhr = new XMLHttpRequest();
-	xhr.withCredentials = true;
+	$('#confirm').on('submit', function(event){
+		event.preventDefault();
+		
+		$.getJSON("/confirm/payment/{{pid}}", function(data){
+			app.ref_id = data['ref_id'];
+			ondatareceive();
+		});
 
-	xhr.addEventListener("readystatechange", function () {
-	  if (this.readyState === 4) {
-	    console.log(this.responseText);
-	  }
 	});
 
-	xhr.open("POST", "http://bidbazi.ir/api/user/1/payment/1");
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.setRequestHeader("Cache-Control", "no-cache");
-	xhr.send(data);
 
-	xhr.onreadystatechange = function (oEvent) {
-    if (xhr.readyState === 4) {
-				data = JSON.parse(xhr.responseText);
-				console.log(data);
-    	}
-		};
-	});
+	function ondatareceive(){
+		$('#confirm').submit();
+	}
 
 </script>
 
