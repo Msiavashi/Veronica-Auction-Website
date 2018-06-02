@@ -35,3 +35,4 @@ class AddressSchema(Schema):
     city = fields.Str()
     address = fields.Str()
     postal_code = fields.Str()
+    state = fields.Nested('StateSchema')

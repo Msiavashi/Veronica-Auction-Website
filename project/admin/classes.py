@@ -13,7 +13,6 @@ import ast
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
-        return True
         return current_user.has_role('admin')
 
     @expose('/')
@@ -22,7 +21,6 @@ class MyAdminIndexView(AdminIndexView):
 
 class UserAdmin(ModelView):
     def is_accessible(self):
-        return True
         return current_user.has_role('admin')
 
 
@@ -47,7 +45,6 @@ class UserAdmin(ModelView):
 
 class RoleAdmin(ModelView):
     def is_accessible(self):
-        return True
         return current_user.has_role('admin')
 
 class ItemAdmin(ModelView):

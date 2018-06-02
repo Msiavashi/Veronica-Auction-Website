@@ -34,7 +34,7 @@ class User(Base,UserMixin):
     credit = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
 
     address_id = db.Column(db.BigInteger, db.ForeignKey('addresses.id'))
-    address = db.relationship('Address', uselist=False, back_populates='user')
+    address = db.relationship('Address')
 
     comments = db.relationship('Comment')
 

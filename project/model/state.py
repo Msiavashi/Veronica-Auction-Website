@@ -18,5 +18,5 @@ class State(Base):
         return self.title
 
 class StateSchema(Schema):
-    id = fields.Str()
+    id = fields.Int()
     title = fields.Str()

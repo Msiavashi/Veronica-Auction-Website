@@ -1,4 +1,5 @@
 var images_path = '/static/images/products/';
+var main_avatar_path = '/files/avatars/';
 var avatar_path = '/static/images/avatars/';
 var category_icon = '/static/images/icons/category/';
 var ad_image_path = '/static/images/ads/';

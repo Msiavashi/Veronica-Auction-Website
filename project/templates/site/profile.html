@@ -170,7 +170,7 @@
 										</p>
 										<p>
 											<select name="state" id="state" data-bind="foreach:states">
-												<option value="" data-bind="text:state , attr:{value:state, selected: {if :userInfo.info[0].address &&  state == userInfo.info[0].address.state}}"></option>
+												<option value="" data-bind="text:title , attr:{value:id, selected: {if : id == userInfo.info[0].address.state.id }}"></option>
 											</select>
 										</p>
 										<p><input name="address" type="text"  data-bind="attr:{value: userInfo.info[0].address ?  userInfo.info[0].address.address : ''}"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
@@ -414,6 +414,7 @@ var states = ko.observable([]);
 $.getJSON("{{url_for('userinformation')}}", function(data){
 	userInfo = data;
 	states = data.states[0];
+	console.log(data);
 });
 
 $.getJSON("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}", function(data){
