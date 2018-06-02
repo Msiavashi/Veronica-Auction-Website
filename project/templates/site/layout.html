@@ -533,7 +533,8 @@
   });
 
   $.getJSON("{{url_for('usercartorder')}}", function(data) {
-    console.log(data);
+    if(data.msg == "no orders")
+      return;
     carts = []
     $.each(data,function(key,val) {
       carts.push(val[0]);

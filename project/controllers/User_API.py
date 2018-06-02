@@ -72,7 +72,8 @@ class UserInformation(Resource):
         avatars = []
         for root, dirs, files in os.walk(AVATAR_DIR):
             for filename in files:
-                avatars.append({"name":filename})
+                if("thumb" not in filename):
+                    avatars.append({"name":filename})
 
         info = {
             "credit": str(credit),
