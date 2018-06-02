@@ -77,6 +77,7 @@ class MellatGateway(Resource):
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
         price = data['price']
         pay_token = bml.request_pay_ref(pid, price, url_for('mellatgatewaycallback', uid=current_user.id, pid=pid), None)
+        print pay_token
         if pay_token:
             return make_response(jsonify({"pay_token": pay_token}), 200)
         else:
