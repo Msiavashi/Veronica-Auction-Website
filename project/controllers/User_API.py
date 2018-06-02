@@ -247,7 +247,7 @@ class UserCartOrder(Resource):
                 msg = " این محصول در سبد خرید شما از قبل موجود است"
                 return make_response(jsonify({"reason":msg}),400)
             new_order = Order()
-            new_order.user_id = current_user.id
+            new_order.user = current_user
             new_order.item = item
             new_order.total_cost = item.price - item.discount
             new_order.status = 0
@@ -255,7 +255,7 @@ class UserCartOrder(Resource):
             new_order.total_discount = item.discount
             db.session.add(new_order)
             db.session.commit()
-            orders = Order.query.filter_by(user_id=current_user.id)
+            orders = Order.query.filter_by(user_id=current_user.id).all()
             return make_response(jsonify(order_schema.dump(orders)), 200)
         else:
 
@@ -310,3 +310,33 @@ class UserCartOrderDelete(Resource):
 
             session['orders']= temp
             return make_response(jsonify(session['orders']), 200)
+
+class UserAuctionLikes(Resource):
+    def get(self):
+        if(current_user.is_authenticated):
+            return make_response(jsonify(AuctionSchema(many=True).dump(current_user.auction_likes)),200)
+        else:
+            return make_response(jsonify({"success":False,"message":"برای مشاهده علاقمندی ها باید لاگین کنید"}),400)
+
+    def post(self):
+        if current_user.is_authenticated:
+            data = request.get_json(force=True)
+            auction_id = data['auction_id']
+            auction = Auction.query.get(auction_id)
+            auction.likes.append(current_user)
+            db.session.add(auction)
+            db.session.commit()
+            return make_response(jsonify({"success":"true","message":"حراجی به علاقمندی های شما اضافه شد"}),200)
+        else:
+            return make_response(jsonify({"message":"برای لایک کردن باید به سایت وارد شوید"}),400)
+    def delete(self):
+        if current_user.is_authenticated:
+            data = request.get_json(force=True)
+            auction_id = data['auction_id']
+            auction = Auction.query.get(auction_id)
+            auction.likes.remove(current_user)
+            db.session.add(auction)
+            db.session.commit()
+            return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
+        else:
+            return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)

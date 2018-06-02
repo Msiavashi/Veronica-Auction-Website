@@ -2,6 +2,7 @@
 {% block title %} بردیتو | تایید پرداخت {% endblock %}
 {% block content %}
 <input type="hidden" id="auction_id" value="{{auction_id}}">
+<input type="hidden" id="price" value="{{amount}}">
 <div class="Package">
 	<div class="container">
 		<div class="product-quickview woocommerce">
@@ -43,9 +44,9 @@
 {{ super() }}
 <script>
 
-$('#confirm_payment').on('click',function(){
-	window.location ="/callback";
-});
+// $('#confirm_payment').on('click',function(){
+// 	window.location ="/callback";
+// });
 
 // $.getJSON('{{url_for("mellatgateway", pid=1, uid=1)}}', function(data){
 // 	console.log(data)
@@ -53,8 +54,34 @@ $('#confirm_payment').on('click',function(){
 
 // $.post('{{url_for("mellatgateway", pid=1, uid=1)}}', {"price": 2000}).done(function(data){
 // 	console.log(data);
-// });	
+// });
 
+$('#confirm_payment').on('click',function(e) {
+	var data = JSON.stringify({
+	  "price": parseInt($('#price').val())
+	});
+
+	var xhr = new XMLHttpRequest();
+	xhr.withCredentials = true;
+
+	xhr.addEventListener("readystatechange", function () {
+	  if (this.readyState === 4) {
+	    console.log(this.responseText);
+	  }
+	});
+
+	xhr.open("POST", "http://bidbazi.ir/api/user/1/payment/1");
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.setRequestHeader("Cache-Control", "no-cache");
+	xhr.send(data);
+
+	xhr.onreadystatechange = function (oEvent) {
+    if (xhr.readyState === 4) {
+				data = JSON.parse(xhr.responseText);
+				console.log(data);
+    	}
+		};
+	});
 
 </script>
 

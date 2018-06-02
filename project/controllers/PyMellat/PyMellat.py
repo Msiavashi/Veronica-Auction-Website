@@ -73,6 +73,7 @@ class BMLPaymentAPI(object):
                 additionalData=additional_data,
                 callBackUrl=call_back_address,
                 payerId=0)
+            print rid
             if ',' in rid and rid.partition(',')[0] == '0':
                 return rid[2:]
             else:

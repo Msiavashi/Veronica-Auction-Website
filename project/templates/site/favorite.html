@@ -1,8 +1,6 @@
 {% extends 'site/layout.html' %}
-{% block title %} بید بازی | دسته بندی ها {% endblock %}
+{% block title %} بیدبازی | علاقمندی های شما{% endblock %}
 {% block content %}
-<input type="hidden" id="category" value="{{category_id}}">
-
 <div class="content-page page-product-hot-deal">
 	<div class="container">
 		<div class="boxed-slider radius">
@@ -25,7 +23,7 @@
 		<!-- End Banner -->
 
 		<div class="bread-crumb radius">
-			<a href="/">خانه</a><span data-bind="text:category_title"></span>
+			<a href="/">خانه</a><span>علاقمندی ها</span>
 		</div>
 
 		<!-- End Bread Crumb -->
@@ -70,7 +68,7 @@
 
 							<div class="product-extra-link">
 								<a class="addcart-link" href="#"><input type="hidden" data-bind="attr:{value : item_id}"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
-								<a href="#" class="wishlist-link"><input type="hidden" data-bind="attr:{value : id}"><i class="fa fa-heart" aria-hidden="true"></i></a>
+								<a href="#" class="wishlist-link"><input type="hidden" data-bind="attr:{value : id}"><i class="fa fa-heart-o" aria-hidden="true"></i></a>
 							</div>
 						</div>
 						<div class="product-info">
@@ -98,8 +96,6 @@
 			</div>
 
 		</div>
-
-
 		<div class="btn-loadmore"><a href="#"><i aria-hidden="true" class="fa fa-spinner fa-spin"></i></a></div>
 	</div>
 </div>
@@ -111,13 +107,11 @@
 
 <script>
 
-var category_id = $('#category').val();
 var ads = [];
 var auctions = [];
-var category_title = ko.observable('دسته بندی');
 
 
-function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,showlink,item_id,likes) {
+function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,showlink,item_id) {
     var self = this;
 		self.id = id;
 		self.title = ko.observable(title);
@@ -132,9 +126,6 @@ function Auction(id,title,description,deadline,participant_count,max_members,bas
 		self.link = ko.observable(link);
 		self.showlink = ko.observable(showlink);
 		self.item_id = ko.observable(item_id);
-		$.each(likes,function(key,val) {
-			console.log(val);
-		});
 }
 
 function dealModel() {
@@ -145,12 +136,11 @@ function dealModel() {
 
 	$.getJSON("{{url_for('siteauctioncarouselads')}}", function(data) {
 		self.ads(data[0]);
-	})
+	});
 
-	$.getJSON("/api/site/category/"+category_id+"/products", function( data ) {
-		category_title(data.category[0].title);
-		console.log(data.auctions);
-		$.each(data.auctions[0],function(key,val){
+	$.getJSON("{{url_for('userauctionlikes')}}", function( data ) {
+		console.log(data);
+		$.each(data[0],function(key,val){
 			auction = new Auction(
 				val.id,
 				val.title ,
@@ -165,11 +155,9 @@ function dealModel() {
 				"/instantview/"+ val.id,
 				"/view/auction/"+ val.id,
 				val.item.id,
-				val.likes
 			);
 			auctions.push(auction);
 		});
-
 		self.auctions(auctions);
 	});
 }
@@ -201,7 +189,7 @@ $(document).on('click','.addcart-link',function(event) {
 						if(val[0])
 				      carts.push(val[0]);
 			    });
-			    console.log(carts);
+
 			    mycart(carts);
 			    total_carts(ToPersian(carts.length));
 					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
@@ -212,35 +200,36 @@ $(document).on('click','.addcart-link',function(event) {
 		};
 	});
 
-$(document).on('click','.wishlist-link',function(event) {
-	self = $(this);
 
-	var data = JSON.stringify({
-  	"auction_id": parseInt(self.find('input').val()),
-	});
+	$(document).on('click','.wishlist-link',function(event) {
+		self = $(this);
 
+		var data = JSON.stringify({
+	  	"auction_id": parseInt(self.find('input').val()),
+		});
 
-	var xhr = new XMLHttpRequest();
-	xhr.withCredentials = true;
+		var xhr = new XMLHttpRequest();
+		xhr.withCredentials = true;
 
-	xhr.open("POST", "{{url_for('userauctionlikes')}}");
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.setRequestHeader("Cache-Control", "no-cache");
-	xhr.send(data);
-	xhr.onreadystatechange = function (oEvent) {
-    if (xhr.readyState === 4) {
-				data = JSON.parse(xhr.responseText);
-        if (xhr.status === 200) {
+		xhr.open("DELETE", "{{url_for('userauctionlikes')}}");
+		xhr.setRequestHeader("Content-Type", "application/json");
+		xhr.setRequestHeader("Cache-Control", "no-cache");
+		xhr.send(data);
+		xhr.onreadystatechange = function (oEvent) {
+	    if (xhr.readyState === 4) {
+					data = JSON.parse(xhr.responseText);
+	        if (xhr.status === 200) {
+						console.log(data);
+						console.log('success');
+	        } else {
 					console.log(data);
-					console.log('success');
-        } else {
-				console.log(data);
-				 console.log('error');
-				 alert(data.message)
-        }
-    	}
-		};
-	});
+					 console.log('error');
+					 alert(data.message)
+	        }
+	    	}
+			};
+		});
 
 </script>
+
 {% endblock scripts %}

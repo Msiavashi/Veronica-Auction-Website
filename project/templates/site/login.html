@@ -1,6 +1,7 @@
 {% extends 'site/layout.html' %}
 {% block title %} بید بازی | ورود  {% endblock %}
 {% block content %}
+<input type="hidden" value="{{next}}" id="next">
 <div class="content-page woocommerce">
 	<div class="container">
 		<div class="row">
@@ -78,6 +79,9 @@
 {{ super() }}
 <script>
 
+next = $('#next').val();
+console.log(next);
+
 $( "#login_form" ).submit(function( event ) {
 
   event.preventDefault();
@@ -89,8 +93,9 @@ $( "#login_form" ).submit(function( event ) {
 		$(".error_alert").addClass('hide');
 		$(".success_alert").removeClass('hide');
 		$(".success_container").html('ورود شما با موفقیت انجام ')
-		if(data.next){
-			parent.location.reload(next);
+
+		if(next){
+			window.location = next;
 		}else {
 			window.parent.location.reload();
 		}

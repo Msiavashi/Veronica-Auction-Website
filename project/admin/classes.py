@@ -13,16 +13,16 @@ import ast
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
-        # return current_user.has_role('admin')
-        return True
+        return current_user.has_role('admin')
+
     @expose('/')
     def index(self):
         return super(MyAdminIndexView, self).index()
 
 class UserAdmin(ModelView):
     def is_accessible(self):
-        # return current_user.has_role('admin')
-        return True
+        return current_user.has_role('admin')
+        
 
     column_exclude_list = list = ('password',)
 
@@ -45,13 +45,11 @@ class UserAdmin(ModelView):
 
 class RoleAdmin(ModelView):
     def is_accessible(self):
-        # return current_user.has_role('admin')
-        return True
+        return current_user.has_role('admin')
 
 class ItemAdmin(ModelView):
     def is_accessible(self):
-        # return current_user.has_role('admin')
-        return True
+        return current_user.has_role('admin')
 
     def _list_thumbnail(view, context, model, name):
         if not model.images:

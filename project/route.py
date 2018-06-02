@@ -25,7 +25,8 @@ class Route():
     def account_login():
         if current_user.is_authenticated:
             return redirect('/')
-        return render_template('site/login.html')
+        next = request.args.get('next')
+        return render_template('site/login.html',next=next)
 
     @app.route('/ilogin')
     def ilogin():
@@ -55,6 +56,11 @@ class Route():
     @login_required
     def profile():
         return render_template('site/profile.html')
+
+    @app.route("/favorite")
+    @login_required
+    def favorite():
+        return render_template('site/favorite.html')
 
     @app.route("/participate/<int:aid>")
     @login_required
