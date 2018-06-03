@@ -1,8 +1,7 @@
 {% extends 'site/iframes/ilayout.html' %}
 {% block title %} بردیتو | تایید پرداخت {% endblock %}
 {% block content %}
-<input type="hidden" id="auction_id" value="{{auction_id}}">
-<input type="hidden" id="price" value="{{amount}}">
+<input type="hidden" id="pid" value="{{pid}}">
 <div class="Package">
 	<div class="container">
 		<div class="product-quickview woocommerce">
@@ -29,7 +28,6 @@
 						<div class="form-row place-order">
 							<form id="confirm" action="https://bpm.shaparak.ir/pgwchannel/startpay.mellat" method="post">
 								<input type="hidden" name="RefId" id="RefId" value="{{ref_id}}">
-								<input type="hidden" name="amount" id="Amount" value="{{amount}}">
 								<input type="submit" value="تایید نهایی پرداخت و هدایت به درگاه بانک" class="button alt">
 							</form>
 
@@ -45,26 +43,41 @@
 {{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script>
+
 	var app = new Vue({
 		data: {
 			ref_id: null,
 		},
 	});
 
+	function getRefID() {
+		pid = $('#pid').val();
+		$.ajax({
+			url: "{{url_for('mellatgateway')}}",
+			type: 'post',
+			data: {
+					pid:pid
+			},
+			dataType: 'json',
+			error:function(data){
+				console.log(data);
+			},
+			success:function(data) {
+				console.log(data);
+				// app.ref_id = data['ref_id'];
+			}
+		});
+	}
+	getRefID();
+
 	$('#confirm').on('submit', function(event){
 		event.preventDefault();
-		
-		$.getJSON("/confirm/payment/{{pid}}", function(data){
-			app.ref_id = data['ref_id'];
-			ondatareceive();
-		});
-
+		if(!app.ref_id)
+			alert('please wait for Token');
+		else {
+			$('#confirm').submit();
+		}
 	});
-
-
-	function ondatareceive(){
-		$('#confirm').submit();
-	}
 
 </script>
 

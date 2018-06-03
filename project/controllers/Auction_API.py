@@ -13,6 +13,7 @@ import time
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import login_required ,current_user
 from decimal import Decimal
+import random
 
 class AuctionUserViewed(Resource):
     def get(self):
@@ -58,11 +59,23 @@ class AuctionUserParticipation(Resource):
                 msg = "موجودی حساب شما برای پرداخت این پلن کافی نمی باشد"
                 return make_response(jsonify({'success':False,"reason":msg}),400)
 
+            payment = Payment()
+            payment.ref_id = current_user.id
+            payment.sale_order_id = current_user.id
+            payment.sale_refrence_id = current_user.id
+            payment.GUID = random.randint(100000,100000000)
+            payment.amount = amount
+            payment.payment_method = payment_method
+            payment.status = PaymentStatus.PAID
+
             plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
             auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
             user_plan = UserPlan()
             user_plan.auction = auction
             user_plan.auction_plan = auction_plan
+            user_plan.payment = payment
+
+            current_user.payments.append(payment)
             current_user.auctions.append(auction)
             current_user.user_plans.append(user_plan)
             current_user.credit -= Decimal(amount)
@@ -73,8 +86,28 @@ class AuctionUserParticipation(Resource):
             return make_response(jsonify({"success":True,"type":"registered","message":msg}),200)
 
         if(payment_method.type == Payment_Types.Online):
+
+            payment = Payment()
+            payment.amount = amount
+            payment.payment_method = payment_method
+            payment.status = PaymentStatus.UNPAID
+
+            plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
+            auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
+            user_plan = UserPlan()
+            user_plan.auction = auction
+            user_plan.auction_plan = auction_plan
+            user_plan.payment = payment
+
+            current_user.payments.append(payment)
+            current_user.auctions.append(auction)
+            current_user.user_plans.append(user_plan)
+
+            db.session.add(current_user)
+            db.session.commit()
+
             msg = " برای پرداخت به صفحه تایید هدایت می شوید"
-            return make_response(jsonify({'success':True,"type":"redirect_to_bank","amount":amount,"message":msg}),200)
+            return make_response(jsonify({'success':True,"type":"redirect_to_bank","pid":payment.id,"message":msg}),200)
 
 class AuctionInstanceView(Resource):
     def get(self,aid):

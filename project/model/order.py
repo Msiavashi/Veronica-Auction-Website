@@ -35,10 +35,10 @@ class Order(Base):
 
     shipmet = db.relationship('Shipment')
 
-    payments = db.relationship('Payment',secondary='payment_orders',back_populates='orders')
+    # payments = db.relationship('Payment',secondary='payment_orders',back_populates='orders')
 
-    # payment_id = db.Column(db.BigInteger,db.ForeignKey('payments.id','orders.id'))
-    # payment = db.relationship('Payment')
+    payment_id = db.Column(db.BigInteger,db.ForeignKey('payments.id'))
+    payment = db.relationship('Payment')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
@@ -57,8 +57,9 @@ class OrderSchema(Schema):
     create_at = fields.DateTime()
     updated_at = fields.DateTime()
     # user = fields.Nested('UserSchema',exclude=('orders',))
-    # payments = fields.Nested('PaymentSchema',many=True,exclude=('orders',))
     item = fields.Nested('ItemSchema',exclude=('orders',))
+    payment = fields.Nested('PaymentSchema')
+
 
     @post_load
     def make_order(self,data):

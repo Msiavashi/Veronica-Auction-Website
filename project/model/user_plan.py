@@ -19,6 +19,9 @@ class UserPlan(Base):
     auction_plan_id = db.Column(db.BigInteger,db.ForeignKey('auction_plans.id'))
     auction_plan = db.relationship('AuctionPlan')
 
+    payment_id = db.Column(db.BigInteger,db.ForeignKey('payments.id'))
+    payment = db.relationship('Payment')
+
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
@@ -26,4 +29,5 @@ class UserPlan(Base):
             return    " پلن : " + self.auction_plan.plan.title +" "+ self.user.username + " "
         return self.auction_plan.plan.title
 class UserPlanSchema(Schema):
-    user = fields.Nested('UserSchema',exclude=('user_plans',))
+    # user = fields.Nested('UserSchema',exclude=('user_plans',))
+    payment = fields.Nested('PaymentSchema')

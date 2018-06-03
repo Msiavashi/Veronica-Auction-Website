@@ -11,8 +11,11 @@ from flask_login import current_user,login_required,logout_user
 from . import app,login_manager
 from urlparse import urlparse, urljoin
 from .controllers.PyMellat.PyMellat import *
+from .controllers.MellatPayment_API import MellatGateway
 from definitions import *
 import time
+from .model import Payment
+
 
 class Route():
 
@@ -113,9 +116,13 @@ class Route():
 
 
     @app.route('/confirm/payment/<int:pid>')
+    @login_required
     def confirm(pid):
-        amount = request.form.get('amount')
-        return render_template('site/iframes/confirm.html', amount=amount, pid=pid)
+        payment = Payment.query.get(pid)
+        if(payment):
+            amount = payment.amount
+            return render_template('site/iframes/confirm.html',amount=amount,pid=pid)
+        return render_template('site/404.html'), 404
 
     @app.route('/callback')
     def callback():

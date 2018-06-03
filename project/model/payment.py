@@ -21,8 +21,8 @@ class Payment(Base):
 
     payment_method_id = db.Column(db.BigInteger,db.ForeignKey('payment_methods.id'),nullable=False)
     payment_method = db.relationship('PaymentMethod')
-    orders = db.relationship('Order' , secondary = 'payment_orders', back_populates='payments')
-    
+    # orders = db.relationship('Order' , secondary = 'payment_orders', back_populates='payments')
+
     ref_id = db.Column(db.Integer)
     sale_order_id = db.Column(db.Integer)
     sale_refrence_id = db.Column(db.Integer)
@@ -49,7 +49,6 @@ class PaymentSchema(Schema):
     created_at = fields.Str()
     details = fields.Raw()
     payment_method = fields.Nested('PaymentMethodSchema')
-    orders = fields.Nested('OrderSchema',many=True,exclude=('payments',))
-    user = fields.Nested('UserSchema',exclude=('payments',))
-    shipment = fields.Nested('ShipmentSchema',exclude=('payment',))
+    # user = fields.Nested('UserSchema',exclude=('payments',))
+    # shipment = fields.Nested('ShipmentSchema',exclude=('payment',))
     messages = fields.Nested('PaymentMessageSchema',many=True,exclude=('payments',))

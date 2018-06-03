@@ -11,6 +11,7 @@ import random
 from ..model.payment import *
 from ..model.order import *
 from ..model.user import *
+import time
 
 '''
 # Request Payment Token:
@@ -71,16 +72,16 @@ class MellatGatewayCallBack(Resource):
 
 class MellatGateway(Resource):
     @login_required
-    def post(self, uid, pid):
+    def post(self):
         # current_user = User.query.filter_by(username="mohammad").first()
         # if not request.is_json:
         #     return make_response(jsonify({"message": {"error": "not json"}}, 400))
-        data = request.get_json(force=True)
+        pid = request.form.get('pid')
+        payment = Payment.query.get(pid)
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
-        price = data['price']
-        pay_token = bml.request_pay_ref(pid, price, "http://bordito.ir/api/user/mellat/callback/", uid=current_user.id, pid=pid), None)
+        pay_token = bml.request_pay_ref(random.randint(123,321)*int(time.time()), int(payment.amount), "http://bordito.ir/api/user/mellat/callback/", "درگاه پرداخت بردیتو")
         print pay_token
         if pay_token:
-            return make_response(jsonify({"ref_id": pay_token, "amount": price}), 200)
+            return make_response(jsonify({'success':True,"ref_id": pay_token}), 200)
         else:
-            return make_response(jsonify({"message": {"error": "خطای بانک"}}), 400)
+            return make_response(jsonify({'success':False,"pay_token":pay_token,"message":"خطای بانک"}),400)
