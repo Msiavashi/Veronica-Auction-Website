@@ -10,7 +10,6 @@ class PaymentStatus:
     PAID = 1
     UNPAID = 0
 
-
 class Payment(Base):
     __tablename__ = 'payments'
     id = db.Column(db.Integer, primary_key=True)

@@ -79,7 +79,7 @@ class MellatGateway(Resource):
         pid = request.form.get('pid')
         payment = Payment.query.get(pid)
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
-        pay_token = bml.request_pay_ref(random.randint(123,321)*int(time.time()), int(payment.amount), "http://bordito.ir/api/user/mellat/callback/", "درگاه پرداخت بردیتو")
+        pay_token = bml.request_pay_ref(int(time.time()), int(payment.amount), "http://bordito.ir/api/user/mellat/callback/", "درگاه پرداخت بردیتو")
         print pay_token
         if pay_token:
             return make_response(jsonify({'success':True,"ref_id": pay_token}), 200)

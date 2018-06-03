@@ -158,8 +158,10 @@ $('#place_order').on('click',function(){
 		success:function(data) {
 			console.log(data);
 				alert(data.message)
-				if(data.type=="redirect_to_bank")
-					window.location ="/confirm/payment/"+data.pid;
+				if(data.type=="redirect_to_bank"){
+					window.parent.location = "/confirm/payment/"+data.pid;
+					window.parent.reload();
+				}
 				else {
 					window.parent.location.reload();
 				}
