@@ -101,6 +101,7 @@ api.add_resource(User_API.UserAuctionLikes, '/user/auction/likes')
 # api.add_resource(User_API.CartOrder, '/cart/order')
 api.add_resource(MellatPayment_API.MellatGateway, '/mellat/payment/gateway')
 api.add_resource(MellatPayment_API.MellatGatewayCallBack, '/user/mellat/callback')
+api.add_resource(User_API.UserApplyPayment, '/user/apply/payment')
 api.add_resource(User_API.UserCartOrder, '/user/cart/order')
 api.add_resource(User_API.UserCartOrderDelete, '/user/cart/order/delete')
 

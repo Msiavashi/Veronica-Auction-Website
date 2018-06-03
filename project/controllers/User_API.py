@@ -366,8 +366,6 @@ class UserCheckout(Resource):
         order_schema = OrderSchema(many=True)
         return make_response(jsonify({"payment_methods": payment_methods_schema.dump(payment_methods), "shipment_methods": shipment_methods_schema.dump(shipment_methods)}), 200)
 
-
-
     @login_required
     def post(self):
         data = request.get_json(force=True)
@@ -405,3 +403,25 @@ class UserCheckout(Resource):
         db.session.commit()
 
         return make_response(jsonify({'success': True}, 200))
+
+class UserApplyPayment(Resource):
+    @login_required
+    def get(self,pid):
+        
+        payment = Payment.query.get(pid)
+        if(payment.status == PaymentStatus.PAID):
+            order = Order.query.filter_by(payment_id=payment.id).first()
+            user_plan = UserPlan.query.filter_by(payment_id=payment.id).first()
+
+            if(order):
+                pass
+            elif(user_plan):
+                current_user.auctions.append(user_plan.auction)
+                current_user.user_plans.append(user_plan)
+            else:
+                current_user.credit += payment.amount
+            msg = "پرداخت شما با موفقیت انجام شد"
+            return make_response(jsonify({"success":True,"message":msg,"token":payment.ref_id}),200)
+        else:
+            msg = "پرداخت ناموفق"
+            return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),400)

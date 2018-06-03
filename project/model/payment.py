@@ -9,6 +9,7 @@ import datetime
 class PaymentStatus:
     PAID = 1
     UNPAID = 0
+    ERROR = -1
 
 class Payment(Base):
     __tablename__ = 'payments'
@@ -22,7 +23,7 @@ class Payment(Base):
     payment_method = db.relationship('PaymentMethod')
     # orders = db.relationship('Order' , secondary = 'payment_orders', back_populates='payments')
 
-    ref_id = db.Column(db.Integer)
+    ref_id = db.Column(db.Text)
     sale_order_id = db.Column(db.Integer)
     sale_refrence_id = db.Column(db.Integer)
 

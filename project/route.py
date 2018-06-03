@@ -119,14 +119,14 @@ class Route():
     @login_required
     def confirm(pid):
         payment = Payment.query.get(pid)
-        if(payment):
+        if(payment.status != PaymentStatus.PAID):
             amount = payment.amount
             return render_template('site/iframes/confirm.html',amount=amount,pid=pid)
         return render_template('site/404.html'), 404
 
-    @app.route('/callback')
-    def callback():
-        return render_template('site/iframes/callback.html')
+    @app.route('/callback/payment/<int:pid>')
+    def callback(pid):
+        return render_template('site/iframes/callback.html',pid=pid)
 
     @app.route('/faq')
     def faq():

@@ -45,28 +45,27 @@ class MellatGatewayCallBack(Resource):
         print ref_id
         print res_code
         print sale_order_id
-        print sale_order_id
+        print sale_refrence_id
         print verify_res
 
+        payment = Payment.query.filter_by(GUID=sale_order_id,ref_id=ref_id).first()
+        payment.sale_order_id = sale_order_id
+        payment.sale_refrence_id = sale_refrence_id
+
+
         if verify_res[1] == '0':
-        #     payment = Payment()
-        #     payment.status = PaymentStatus.PAID
-        #     payment.ref_id = ref_id
-        #     payment.sale_order_id = sale_order_id
-        #     payment.sale_refrence_id = sale_refrence_id
-        #     for order in payment.orders:
-        #         order.status = OrderStatus.PAID
-        #
-        #     db.session.add(payment)
-        #     db.session.commit()
-        #
-        #
+            payment.status = PaymentStatus.PAID
             bml.settle_payment(sale_order_id , sale_refrence_id)
+        else:
+            payment.status = PaymentStatus.ERROR
 
-        return redirect('/callback')
+        db.session.add(payment)
+        db.session.commit()
 
-        return make_response(jsonify({"success": True, "message": {"success": "پرداخت با موفقیت انجام شد"}}), 200)
-        return make_response(jsonify({"success": False, "message": {"error": "پرداخت با خطا مواجه شد"}}), 400)
+        return redirect('/callback/payment/'+payment.id)
+
+        # return make_response(jsonify({"success": True, "message": {"success": "پرداخت با موفقیت انجام شد"}}), 200)
+        # return make_response(jsonify({"success": False, "message": {"error": "پرداخت با خطا مواجه شد"}}), 400)
 
 
 
@@ -79,7 +78,11 @@ class MellatGateway(Resource):
         pid = request.form.get('pid')
         payment = Payment.query.get(pid)
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
-        pay_token = bml.request_pay_ref(int(time.time()), int(payment.amount), "http://bordito.ir/api/user/mellat/callback/", "درگاه پرداخت بردیتو")
+        payment.GUID = int(time.time())
+        pay_token = bml.request_pay_ref( payment.GUID, int(payment.amount), "http://bordito.com/api/user/mellat/callback", "درگاه پرداخت بردیتو")
+        payment.ref_id = pay_token
+        db.session.add(payment)
+        db.session.commit()
         print pay_token
         if pay_token:
             return make_response(jsonify({'success':True,"ref_id": pay_token}), 200)
