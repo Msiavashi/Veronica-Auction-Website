@@ -24,8 +24,8 @@ class Payment(Base):
     # orders = db.relationship('Order' , secondary = 'payment_orders', back_populates='payments')
 
     ref_id = db.Column(db.Text)
-    sale_order_id = db.Column(db.Integer)
-    sale_refrence_id = db.Column(db.Integer)
+    sale_order_id = db.Column(db.String(255))
+    sale_refrence_id = db.Column(db.String(255))
 
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'))
     user = db.relationship('User')

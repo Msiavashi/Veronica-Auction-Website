@@ -409,6 +409,7 @@ class UserApplyPayment(Resource):
     def get(self,pid):
         payment = Payment.query.get(pid)
         if(payment.status == PaymentStatus.PAID):
+
             order = Order.query.filter_by(payment_id=payment.id).first()
             user_plan = UserPlan.query.filter_by(payment_id=payment.id).first()
 
@@ -419,8 +420,10 @@ class UserApplyPayment(Resource):
                 current_user.user_plans.append(user_plan)
             else:
                 current_user.credit += payment.amount
+            db.session.add(current_user)
+            db.session.commit()
             msg = "پرداخت شما با موفقیت انجام شد"
             return make_response(jsonify({"success":True,"message":msg,"token":payment.ref_id}),200)
         else:
-            msg = "پرداخت ناموفق"
+            msg = "پرداخت شما موفقیت آمیز نبود"
             return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),400)

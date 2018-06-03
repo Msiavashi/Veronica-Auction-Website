@@ -49,11 +49,11 @@ class MellatGatewayCallBack(Resource):
         print verify_res
 
         payment = Payment.query.filter_by(GUID=sale_order_id,ref_id=ref_id).first()
-        payment.sale_order_id = sale_order_id
+        payment.sale_order_id = str(sale_order_id)
 
         if verify_res[1] == '0':
             payment.status = PaymentStatus.PAID
-            payment.sale_refrence_id = sale_refrence_id
+            payment.sale_refrence_id = str(sale_refrence_id)
             bml.settle_payment(sale_order_id , sale_refrence_id)
         else:
             payment.status = PaymentStatus.ERROR
@@ -78,7 +78,7 @@ class MellatGateway(Resource):
         payment = Payment.query.get(pid)
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
         payment.GUID = int(time.time())
-        pay_token = bml.request_pay_ref( payment.GUID, int(payment.amount), "http://bordito.com/api/user/mellat/callback", "درگاه پرداخت بردیتو")
+        pay_token = bml.request_pay_ref( payment.GUID, int(payment.amount) * 10, "http://bordito.com/api/user/mellat/callback", "درگاه پرداخت بردیتو")
         payment.ref_id = pay_token
         db.session.add(payment)
         db.session.commit()
