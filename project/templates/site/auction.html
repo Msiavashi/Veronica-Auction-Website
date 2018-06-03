@@ -224,9 +224,6 @@
 <script>
 
 var auction_id = $('#auction').val();
-var images_path = '../../static/images/products/';
-var avatar_path = '../../static/images/avatars/';
-var auction_deadline = 0;
 var people = ko.observableArray([]);
 var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
@@ -243,29 +240,40 @@ function Person(name,avatar,its_me,row,price) {
     self.row = ko.observable(row);
     self.offer_price = ko.observable(price);
 }
+
+
+if (window.location.protocol == "https:") {
+    var ws_scheme = "https://";
+    }
+  else {
+    var ws_scheme = "http://"
+};
+
+var socket = io.connect(ws_scheme + location.host + ":8000/");
+socket.on('connect', function(data){
+	console.log("connected successfuly");
+	socket.emit("join", {'auction_id': 2});
+});
+
+socket.on('join', function(data){
+	console.log(data);
+});
+
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
-  console.log(data);
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
+  var deadline = new Date(data.start_date).format("yyyy-M-d HH:mm:ss","UTC");
 
-  var deadline = new Date(data.start_date).format("yyyy-M-d hh:mm:ss TT","UTC");
-  auction_deadline= parseInt(data.remained_time) + time_difference;
+  before_start_text = "شروع حراجی : ";
 
-  before_start_text = "تاریخ شروع حراجی : ";
-  var event = new Date(Date.parse(deadline));
-  var end_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
-  var end_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
-  var end_month = event.toLocaleDateString('fa-IR', {month:'long'});
-  var end_date_time =  " ساعت  " + event.toLocaleTimeString('fa-IR');
-  var end_date_date = end_weekday + " " + end_day +" "+ end_month;
+  full_date = new persianDate(new Date(data.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+  full_hour = new persianDate(new Date(data.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
 
-  var event = new Date(Date.now());
-  var now_day = event.toLocaleDateString('fa-IR', {day:'numeric'});
-  var now_weekday = event.toLocaleDateString('fa-IR', {weekday:'long'});
-  var now_month = event.toLocaleDateString('fa-IR', {month:'long'});
-  var now_date_time = event.toLocaleTimeString('fa-IR');
-  var now_date_date = now_weekday + " " + now_day +" "+ now_month;
+  var end_date_date = full_date;
+  var end_date_time =  " ساعت  " + full_hour;
+
+  var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
 
   var participant_count = ToPersian(data.participants.length);
   var max_members = ToPersian(data.max_members);
@@ -285,24 +293,26 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   else {
     offer_bid_count = 0;
   }
+  var item_id = data.item.id;
 
- var mvvm = function MyViewModel() {
-      this.participant_count = participant_count;
-      this.max_members = max_members;
-      this.images = images;
-      this.active_image = images[0].url;
-      this.auction = data
-      this.auction_title = data.title;
-      this.auction_item_price = ToPersian(formatCurrency(data.item.price));
-      this.auction_register_price = ToPersian(formatCurrency(data.base_price));
-      this.people = people;
-      this.auction_rate = ToPersian(data.ratio);
-      this.auction_end_date = end_date_date;
-      this.auction_end_time = end_date_time;
-      this.now_date = now_date_date;
-      this.before_start = before_start_text;
-  }
-  ko.applyBindings(mvvm);
+   var mvvm = function MyViewModel() {
+        this.participant_count = participant_count;
+        this.max_members = max_members;
+        this.images = images;
+        this.active_image = images[0].url;
+        this.auction = data
+        this.auction_title = data.title;
+        this.auction_item_price = ToPersian(formatCurrency(data.item.price));
+        this.auction_register_price = ToPersian(formatCurrency(data.base_price));
+        this.people = people;
+        this.auction_rate = ToPersian(data.ratio);
+        this.auction_end_date = end_date_date;
+        this.auction_end_time = end_date_time;
+        this.auction_item_id = item_id;
+        this.now_date = now_date_date;
+        this.before_start = before_start_text;
+    }
+    ko.applyBindings(mvvm);
 
   if($('.detail-gallery').length>0){
     $('.detail-gallery').each(function(){
@@ -337,58 +347,65 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('connect', function() {
 		 console.log('connected');
      socket.emit('join', {'auction_id':auction_id});
+     getStatus();
  });
 
- var timer = setInterval(getStatus,1000);
+ var timer = setInterval(getStatus,10000);
+ var countdownTimer = null
 
  function getStatus() {
    socket.emit('status',{'auction_id':auction_id});
  }
+ var start_miliseconds = 0;
 
  socket.on('auction_status',function(data) {
+   start_miliseconds = data.remained * 1000;
+ });
 
-  var countdown = document.getElementById("tiles");
+ var days, hours, minutes, seconds; // variables for time units
 
-  getCountdown(data.remained);
+ var countdown = document.getElementById("tiles"); // get tag element
 
-  function getCountdown(seconds_left){
+ function BesideOfWS(){
+   updateTimer(start_miliseconds);
+   countdownTimer = setTimeout(function() {
+     start_miliseconds -= 100;
+    BesideOfWS();
+   }, 100);
+ }
 
-    if ( seconds_left >= 0 ) {
+ BesideOfWS();
+ function updateTimer(millisecond){
 
-     if ( seconds_left  <  60 )
-     {
-       $( '#tiles' ).removeClass('color-full');
-       $( '#tiles' ).addClass('color-half');
+     if ( millisecond  >= 0) {
+
+         if ( millisecond  < time_left / 2 ) {
+             $('#tiles').removeClass('color-full');
+             $('#tiles').addClass('color-half');
+         }
+         if (millisecond < 10 * 1000) {
+             $('#tiles').removeClass('color-half');
+             $('#tiles').addClass('color-empty');
+         }
+
+         var hours = parseInt(millisecond / (3600*1000));
+         var left_millisecond = millisecond - (hours * 3600*1000);
+
+         var minutes = parseInt(left_millisecond / (60*1000));
+         var left_millisecond = left_millisecond - (minutes * 60*1000);
+
+         var seconds = parseInt(left_millisecond / 1000);
+         var left_millisecond = left_millisecond - (seconds*1000);
+
+         if(left_millisecond < 10)
+           left_millisecond = '00'+left_millisecond;
+         else if(left_millisecond < 100)
+           left_millisecond = '0'+left_millisecond;
+
+         // format countdown string + set tag value
+         countdown.innerHTML = "<span>" + pad(hours) + ":</span><span>" + pad(minutes) + ":</span><span>" + pad(seconds) + ":</span><span>" + left_millisecond + "</span>";
      }
-     else {
-       $( '#tiles' ).addClass('color-full');
-       $( '#tiles' ).removeClass('color-half');
-     }
-
-     if ( seconds_left  < 10 )
-      {
-        $( '#tiles' ).removeClass('color-half');
-        $( '#tiles' ).addClass('color-empty');
-      }else {
-        $( '#tiles' ).addClass('color-half');
-        $( '#tiles' ).removeClass('color-empty');
-      }
-
-    days = pad( parseInt(seconds_left / 86400) );
-    seconds_left = seconds_left % 86400;
-
-    hours = pad( parseInt(seconds_left / 3600) );
-    seconds_left = seconds_left % 3600;
-
-    minutes = pad( parseInt(seconds_left / 60) );
-
-    seconds = pad( parseInt( seconds_left % 60 ) );
-
-    // format countdown string + set tag value
-    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-    }
-  }
-});
+ }
 
  function pad(n) {
    return (n < 10 ? '0' : '') + n;
@@ -396,7 +413,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  socket.on('join', function(data) {
    console.log(data);
-   time_left = data.deadline;
+   time_left = data.deadline * 1000;
  });
 
  socket.on('update_view', function(data) {
@@ -415,14 +432,14 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
     $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
     if(active_user){
       $('#auction_current_winner').html(active_user.username);
-			$('#auction_current_winner_image').attr('src',data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#");
+      $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(active_user.avatar)[0])
     }
    if(users){
      rowIndex = 0;
      people([]);
      $.each(users,function(key,val){
        its_you = val.id == current_user_id ? true : false;
-       name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+       name = val.username ;
        avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
        row = ToPersian(++rowIndex);
        price = val.current_offer_price ? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
@@ -449,14 +466,14 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
    $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
    if(winner_user){
      $('#auction_current_winner').html(data.users[0][0].username);
-     $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(data.users[0][0].avatar)[0]);
+     $('#auction_current_winner_image').attr('src',data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#");
    }
    if(users){
      rowIndex = 0;
      people([]);
      $.each(data.users[0],function(key,val){
        its_you = val.id == current_user_id ? true : false;
-       name = val.first_name ? val.first_name +" "+ val.last_name : val.username ;
+       name = val.username ;
        avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
        row = ++rowIndex;
        person = new Person(name,avatar,its_you,ToPersian(row));
@@ -464,11 +481,13 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      });
      people.valueHasMutated();
    }
+   getStatus();
  });
 
  socket.on('auction_done', function(data) {
-	 console.log(data);
     clearInterval(timer);
+    clearInterval(countdownTimer);
+    countdown.innerHTML = "<span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + "</span>";
     if(data.success){
       $(".error_alert").addClass('hide');
       $(".success_alert").removeClass('hide');
@@ -489,7 +508,47 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  $("#offer").on("click", function(event) {
    socket.emit('bid', {'auction_id':auction_id});
+   getStatus();
  });
 
+
+ $(document).on('click','.addcart-link2',function(event) {
+  event.preventDefault();
+
+ 	self = $(this);
+ 	item_id = self.find('input').val();
+
+ 	var data = JSON.stringify({
+   	"item_id": item_id,
+ 		"total":1
+ 	});
+
+ 	var xhr = new XMLHttpRequest();
+ 	xhr.withCredentials = true;
+
+ 	xhr.open("POST", "{{url_for('usercartorder')}}");
+ 	xhr.setRequestHeader("Content-Type", "application/json");
+ 	xhr.setRequestHeader("Cache-Control", "no-cache");
+ 	xhr.send(data);
+ 	xhr.onreadystatechange = function (oEvent) {
+     if (xhr.readyState === 4) {
+ 				data = JSON.parse(xhr.responseText);
+         if (xhr.status === 200) {
+ 					carts = []
+ 			    $.each(data,function(key,val) {
+ 						if(val[0])
+ 				      carts.push(val[0]);
+ 			    });
+ 					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
+         } else {
+            alert(data.reason)
+         }
+     	}
+ 		};
+ 	});
+
 </script>
+
+
+
 {% endblock scripts %}

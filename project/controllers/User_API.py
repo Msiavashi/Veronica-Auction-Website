@@ -407,7 +407,6 @@ class UserCheckout(Resource):
 class UserApplyPayment(Resource):
     @login_required
     def get(self,pid):
-        
         payment = Payment.query.get(pid)
         if(payment.status == PaymentStatus.PAID):
             order = Order.query.filter_by(payment_id=payment.id).first()

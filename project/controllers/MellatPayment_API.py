@@ -50,11 +50,10 @@ class MellatGatewayCallBack(Resource):
 
         payment = Payment.query.filter_by(GUID=sale_order_id,ref_id=ref_id).first()
         payment.sale_order_id = sale_order_id
-        payment.sale_refrence_id = sale_refrence_id
-
 
         if verify_res[1] == '0':
             payment.status = PaymentStatus.PAID
+            payment.sale_refrence_id = sale_refrence_id
             bml.settle_payment(sale_order_id , sale_refrence_id)
         else:
             payment.status = PaymentStatus.ERROR
@@ -62,7 +61,7 @@ class MellatGatewayCallBack(Resource):
         db.session.add(payment)
         db.session.commit()
 
-        return redirect('/callback/payment/'+payment.id)
+        return redirect('/callback/payment/'+str(payment.id))
 
         # return make_response(jsonify({"success": True, "message": {"success": "پرداخت با موفقیت انجام شد"}}), 200)
         # return make_response(jsonify({"success": False, "message": {"error": "پرداخت با خطا مواجه شد"}}), 400)

@@ -14,7 +14,7 @@ from .controllers.PyMellat.PyMellat import *
 from .controllers.MellatPayment_API import MellatGateway
 from definitions import *
 import time
-from .model import Payment
+from .model.payment import *
 
 
 class Route():

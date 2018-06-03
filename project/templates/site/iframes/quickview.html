@@ -267,7 +267,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      getStatus();
  });
 
- var timer = setInterval(getStatus,2000);
+ // var timer = setInterval(getStatus,1000 * 60);
  var countdownTimer = null
 
  function getStatus() {
@@ -275,50 +275,6 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  }
  var start_miliseconds = 0;
 
- // socket.on('auction_status',function(data) {
- //
- //  var countdown = document.getElementById("tiles");
- //
- //  getCountdown(data.remained);
- //
- //  function getCountdown(seconds_left){
- //
- //    if ( seconds_left >= 0 ) {
- //
- //     if ( seconds_left  <  60 )
- //     {
- //       $( '#tiles' ).removeClass('color-full');
- //       $( '#tiles' ).addClass('color-half');
- //     }
- //     else {
- //       $( '#tiles' ).addClass('color-full');
- //       $( '#tiles' ).removeClass('color-half');
- //     }
- //
- //     if ( seconds_left  < 10 )
- //      {
- //        $( '#tiles' ).removeClass('color-half');
- //        $( '#tiles' ).addClass('color-empty');
- //      }else {
- //        $( '#tiles' ).addClass('color-half');
- //        $( '#tiles' ).removeClass('color-empty');
- //      }
- //
- //    days = pad( parseInt(seconds_left / 86400) );
- //    seconds_left = seconds_left % 86400;
- //
- //    hours = pad( parseInt(seconds_left / 3600) );
- //    seconds_left = seconds_left % 3600;
- //
- //    minutes = pad( parseInt(seconds_left / 60) );
- //
- //    seconds = pad( parseInt( seconds_left % 60 ) );
- //
- //    // format countdown string + set tag value
- //    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
- //    }
- //  }
- // });
  socket.on('auction_status',function(data) {
    start_miliseconds = data.remained * 1000;
  });
@@ -446,7 +402,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  });
 
  socket.on('auction_done', function(data) {
-    clearInterval(timer);
+    // clearInterval(timer);
     clearInterval(countdownTimer);
     countdown.innerHTML = "<span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + "</span>";
     if(data.success){

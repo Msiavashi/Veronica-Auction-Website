@@ -37,5 +37,30 @@
 {{ super() }}
 <script>
 
+$.getJSON("/api/user/apply/payment/"+ pid , function(data) {
+	console.log(data);
+});
+
+// function applyPayment() {
+// 	pid = $('#pid').val();
+// 	$.ajax({
+// 		url: "{{url_for('userapplypayment')}}",
+// 		type: 'get',
+// 		dataType: 'json',
+// 		data: {
+// 				pid:pid
+// 		},
+// 		error:function(data){
+// 			console.log('error');
+// 			console.log(data);
+// 		},
+// 		success:function(data) {
+// 			console.log('success');
+// 			console.log(data);
+// 		}
+// 	});
+// }
+// applyPayment();
+
 </script>
 {% endblock scripts %}
