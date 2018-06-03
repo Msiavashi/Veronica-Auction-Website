@@ -438,32 +438,5 @@ $(document).ready(function(){
 	sleep(1000);
 });
 
-
-</script>
-
-var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
- socket.on('connect', function() {
-		 console.log('connected');
-
-
- });
- var timer = setInterval(function () {
- 	socket.emit('sync_timers');
- },10000);
-
- socket.on('sync_timers',function(data){
-	// $.each(data.timers,function(key,timer) {
-	// 	$.each(auctions,function(key,auction) {
-	// 		if(auction.id == timer.auction_id)
-	// 		{
-	// 			auction.deadline(timer.remained);
-	// 			// triggerFlashTimer();
-	// 		}
-	// 	});
-	// })
-
- });
-
 </script>
 {% endblock scripts %}

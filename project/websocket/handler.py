@@ -98,7 +98,7 @@ def handle_bid(data):
 
         now = datetime.now()
         remained = (auction.start_date - now).seconds
-        if(remained > 60 * 15):
+        if(remained > 60):
             emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
             return 400
 
