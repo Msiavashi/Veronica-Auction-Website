@@ -5,8 +5,8 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <h2 class="title-shop-page">ثبت نام</h2>
-        <div class="row">
+        <h2 v-if="user" class="title-shop-page">ثبت نام</h2>
+        <div v-if="user" class="row">
           <div class="col-md-6 col-sm-6 col-ms-12">
             <div class="check-billing">
               <form class="form-my-account">
@@ -82,14 +82,15 @@
               <tfoot>
                 <tr class="cart-subtotal">
                   <th>کل مبلغ سفارش</th>
-                  <td><strong class="amount">۴،۰۰۰،۰۰۰ تومان</strong></td>
+                  <td><strong class="amount">{%raw%}{{total_price}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="shipping">
                   <th>نوع ارسال</th>
                   <td>
-                    <ul v-for="shipment in shipment_methods" id="shipping_method" class="list-none">
+                    <ul v-for="(shipment, index) in shipment_methods" id="shipping_method" class="list-none">
                       <li>
-                        <input type="radio" class="shipping_method" checked="checked" value="free_shipping" id="shipping_method_0_free_shipping" data-index="0" name="shipping_method[0]">
+                        <!-- <input type="hidden" v-model="shipment_price" v-bind:value="shipment.price"> -->
+                        <input @click="update_shipment_data(shipment.price ,shipment.id)" type="radio" class="shipping_method" id="shipping_method_0_free_shipping" data-index="shipment.id">
                         <label for="shipping_method_0_free_shipping">{%raw%} {{shipment.title}} {%endraw%}</label>
                       </li>
                       <!-- <li>
@@ -105,19 +106,19 @@
                 </tr>
                 <tr class="cart-subtotal">
                   <th>هزینه ارسال</th>
-                  <td><strong class="amount">۱۰،۰۰۰ تومان</strong></td>
+                  <td><strong class="amount">{%raw%}{{ shipment_price }}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="cart-subtotal">
                   <th class="text-orange">تخفیف داده شده (کد تخفیف)</th>
-                  <td><strong class="amount text-orange">۴۰،۰۰۰ تومان</strong></td>
+                  <td><strong class="amount text-orange">{%raw%}{{invitation_discount}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="cart-subtotal">
                   <th class="text-orange">تخفیف داده شده (محصول)</th>
-                  <td><strong class="amount text-orange">۲،۰۰۰،۰۰۰ تومان</strong></td>
+                  <td><strong class="amount text-orange">{%raw%}{{items_discount}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="order-total">
                   <th>مبلغ پرداختی نهایی</th>
-                  <td><strong><span class="amount">۲،۹۰۰،۰۰۰ تومان </span></strong> </td>
+                  <td><strong><span class="amount">{%raw%}{{final_price}}{%endraw%} تومان </span></strong> </td>
                 </tr>
               </tfoot>
             </table>
@@ -153,7 +154,9 @@
               </li> -->
             </ul>
             <div class="form-row place-order">
-              <input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order" name="woocommerce_checkout_place_order" class="button alt">
+              <form id="confirm" action="/api/user/checkout/confirm/payment/{{pid}}" method="POST">
+                <input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order"  class="button alt">
+              </form>
             </div>
           </div>
         </div>
@@ -177,28 +180,69 @@ var app = new Vue({
 
   data:{
     shipment_methods: [],
+    shipment_method_id: null,
     payment_methods: [],
+    payment_method_id: null,
+    shipment_method_id: null,
+    shipment_price: 0,
     user_orders: [],
+    user: "{{current_user.id}}",
+    invitation_discount: 0,
+    items_discount: 0,
+    total_price: 0
+  },
+
+  computed: {
+    final_price: function(){
+      return this.total_price + this.shipment_price + this.invitation_discount + this.items_discount;
+    }
+  },
+
+  methods:{
+    update_shipment_data: function(price, id){
+      this.shipment_price = price;
+      this.shipment_method_id = id;
+    }
   },
 
   created: function(){
-    self = this;
-    $.getJSON("{{url_for('usercheckout')}}", function(data){
+   self = this;0
+    $.getJSON("/api/user/checkout/confirm/payment/{{pid}}", function(data){
       self.shipment_methods = data['shipment_methods'][0];
       self.payment_methods = data['payment_methods'][0];
     });
+
+    if (this.user == ""){
+      this.user= true;
+    }
+    else{
+      this.user = false;
+    }
 
     $.getJSON("{{url_for('usercartorder')}}", function(data){
       self.user_orders = data;
     });
   },
 
-  computed: {
-    ordersInfo: function(){
-      //TODO: do the calculation for orders
-    }
-  }
 });
+
+$('#confirm').on('submit', function(event){
+  event.preventDefault();
+  var price = $("<input>")
+               .attr("type", "hidden")
+               .attr("name", "final_price").val(app.final_price);
+
+  var shipment = $("<input>")
+               .attr("type", "hidden")
+               .attr("name", "shipment_method").val(app.shipment_method_id);
+
+  var payment = $("<input>")
+               .attr("type", "hidden")
+               .attr("name", "payment_method_id").val(app.payment_method_id);
+
+  $('#confirm').append($(price)).append($(shipment)).append($(payment)).submit();
+});
+
 
 </script>
 {% endblock scripts %}

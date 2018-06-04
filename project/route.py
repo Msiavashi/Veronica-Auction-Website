@@ -7,14 +7,14 @@ import gevent
 from flask import url_for, redirect, render_template, request, abort ,redirect, session,jsonify
 from datetime import timedelta
 from flask_login import current_user,login_required,logout_user
-# from .model import *
+from .model import *
 from . import app,login_manager
 from urlparse import urlparse, urljoin
 from .controllers.PyMellat.PyMellat import *
 from .controllers.MellatPayment_API import MellatGateway
 from definitions import *
 import time
-from .model.payment import *
+# from .model.payment import *
 
 
 class Route():
@@ -156,9 +156,9 @@ class Route():
     def socket():
         return render_template('/socket.html')
 
-    @app.route('/checkout')
-    def checkout():
-        return render_template('site/checkout.html')
+    @app.route('/checkout/payment/<int:pid>')
+    def checkout(pid):
+        return render_template('site/checkout.html', pid=pid)
 
     @app.route('/cart')
     def cart():
