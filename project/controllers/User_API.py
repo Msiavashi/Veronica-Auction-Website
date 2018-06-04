@@ -355,7 +355,7 @@ class UserAuctionLikes(Resource):
             return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
         else:
             return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
-#TODO: *strict validation*
+
 class UserCheckout(Resource):
 
     def get(self):
@@ -367,9 +367,11 @@ class UserCheckout(Resource):
         return make_response(jsonify({"payment_methods": payment_methods_schema.dump(payment_methods), "shipment_methods": shipment_methods_schema.dump(shipment_methods)}), 200)
 
 
+#TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
     @login_required
     def post(self, pid):
+        print request.form
         payment_method_id = request.form.get('payment_method_id')
         shipment_method_id = request.form.get('shipment_method_id')
         final_price = request.form.get('final_price')

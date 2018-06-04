@@ -126,7 +126,7 @@
           <div class="woocommerce-checkout-payment" id="payment">
             <ul v-for="payment_method in payment_methods" class="payment_methods methods list-none">
               <li class="payment_method_bacs">
-                <input type="radio" data-order_button_text="" value="bacs" name="payment_method" class="input-radio" id="payment_method_bacs" checked="checked">
+                <input @click="update_payment_id(payment_method.id)" type="radio" data-order_button_text=""  name="payment_method" class="input-radio" id="payment_method_bacs" checked="checked">
                 <label for="payment_method_bacs">{%raw%} {{payment_method.title}} {%endraw%}</label>
                 <div class="payment_box payment_method_bacs">
                   <p>{%raw%}{{payment_method.description}}{%endraw%}</p>
@@ -153,14 +153,9 @@
                 </label>
               </li> -->
             </ul>
-            <div class="form-row place-order">
-              <form id="confirm" action="/api/user/checkout/confirm/payment/{{pid}}" method="POST">
-              {%raw%}
-                <input type="hidden" name="final_price" v-bind:value="final_price">
-                <input type="hidden" name="payment_method_id" v-bind:value="payment_method_id">
-                <input type="hidden" name="shipment_method_id" v-bind:value="shipment_method_id">
+            <div id="app" class="form-row place-order">
+              <form @submit.prevent="handleSubmit" id="confirm">
                 <input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order"  class="button alt">
-              {%endraw%}
               </form>
             </div>
           </div>
@@ -176,7 +171,7 @@
 {{ super() }}
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
 
 var app = new Vue({
@@ -185,7 +180,6 @@ var app = new Vue({
 
   data:{
     shipment_methods: [],
-    shipment_method_id: null,
     payment_methods: [],
     payment_method_id: null,
     shipment_method_id: null,
@@ -204,9 +198,37 @@ var app = new Vue({
   },
 
   methods:{
+
+    update_payment_id: function(payment_method_id){
+      this.payment_method_id = payment_method_id;
+    },
+
     update_shipment_data: function(price, id){
+      console.log(price);
       this.shipment_price = price;
       this.shipment_method_id = id;
+    },
+
+    handleSubmit: function(){
+      var bodyFormData = new FormData();
+      bodyFormData.set('final_price', this.final_price);
+      bodyFormData.set('payment_method_id', this.payment_method_id);
+      bodyFormData.set('shipment_method_id', this.shipment_method_id);
+      axios({
+        method: 'POST',
+        url: '/api/user/checkout/confirm/payment/{{pid}}',
+        data: bodyFormData,
+        config: { headers: {'Content-Type': 'multipart/form-data' }}
+      })
+      .then(function (response) {
+        //handle success
+        window.location = "/confirm/payment/{{pid}}"
+        console.log(response);
+       })
+      .catch(function (response) {
+          //handle error
+          console.log(response);
+      });
     }
   },
 
@@ -215,6 +237,9 @@ var app = new Vue({
     $.getJSON("{{url_for('usercheckout')}}", function(data){
       self.shipment_methods = data['shipment_methods'][0];
       self.payment_methods = data['payment_methods'][0];
+
+      this.shipment_method_id = self.shipment_methods[0].id;
+      this.payment_method_id = self.payment_methods[0].id;
     });
 
     if (this.user == ""){
@@ -227,9 +252,12 @@ var app = new Vue({
     $.getJSON("{{url_for('usercartorder')}}", function(data){
       self.user_orders = data;
     });
-  },
+  }
+
+
 
 });
+
 
 </script>
 {% endblock scripts %}

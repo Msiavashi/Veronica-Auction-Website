@@ -98,7 +98,94 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
+
+var app = new Vue({
+
+  el: '#app',
+
+  data:{
+    shipment_methods: [],
+    payment_methods: [],
+    payment_method_id: null,
+    shipment_method_id: null,
+    shipment_price: 0,
+    user_orders: [],
+    user: "{{current_user.id}}",
+    invitation_discount: 0,
+    items_discount: 0,
+    total_price: 0
+  },
+
+  computed: {
+    final_price: function(){
+      return this.total_price + this.shipment_price + this.invitation_discount + this.items_discount;
+    }
+  },
+
+  methods:{
+
+    update_payment_id: function(payment_method_id){
+      this.payment_method_id = payment_method_id;
+    },
+
+    update_shipment_data: function(price, id){
+      console.log(price);
+      this.shipment_price = price;
+      this.shipment_method_id = id;
+    },
+
+    handleSubmit: function(){
+      var bodyFormData = new FormData();
+      bodyFormData.set('final_price', this.final_price);
+      bodyFormData.set('payment_method_id', this.payment_method_id);
+      bodyFormData.set('shipment_method_id', this.shipment_method_id);
+      axios({
+        method: 'POST',
+        url: '/api/user/checkout/confirm/payment/{{pid}}',
+        data: bodyFormData,
+        config: { headers: {'Content-Type': 'multipart/form-data' }}
+      })
+      .then(function (response) {
+        //handle success
+        window.location = "/confirm/payment/{{pid}}"
+        console.log(response);
+       })
+      .catch(function (response) {
+          //handle error
+          console.log(response);
+      });
+    }
+  },
+
+  created: function(){
+   self = this;0
+    $.getJSON("{{url_for('usercheckout')}}", function(data){
+      self.shipment_methods = data['shipment_methods'][0];
+      self.payment_methods = data['payment_methods'][0];
+    });
+
+    if (this.user == ""){
+      this.user= true;
+    }
+    else{
+      this.user = false;
+    }
+
+    $.getJSON("{{url_for('usercartorder')}}", function(data){
+      self.user_orders = data;
+    });
+  }
+
+
+
+});
+
+
+</script>
 
 ko.applyBindings();
 $(document).on('click','.remove',function(e) {
