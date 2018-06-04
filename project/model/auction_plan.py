@@ -19,7 +19,7 @@ class AuctionPlan(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return self.plan.title
+        return self.plan.title + " " + self.auction.title
 
 class AuctionPlanSchema(Schema):
     id = fields.Int()

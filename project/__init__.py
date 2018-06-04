@@ -19,12 +19,22 @@ from definitions import SESSION_EXPIRE_TIME
 
 REDIS_URL = "redis://localhost:6379/0"
 
+
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-socketio = SocketIO()
+
+params = {
+	'ping_timeout': 60,
+	'ping_interval': 10
+}
+#
+# socketio = SocketIO(logger=True, engineio_logger=True, **params)
+
+
+socketio = SocketIO(**params)
 socketio.init_app(app, message_queue=REDIS_URL)
 jwt = JWTManager(app)
-app.debug = True
+app.debug = False
 toolbar = DebugToolbarExtension(app)
 
 #login manager
@@ -62,10 +72,10 @@ from flask_restful import Api
 def custom_401(error):
     return render_template('site/400.html'), 400
     # return Response('دسترسی شما به آدرس مورد نظر ممکن نیست', 401, {'WWWAuthenticate':'Basic realm="Login Required"'})
-@app.after_request
-def apply_changing(response):
-    response.headers["X-Frame-Options"] = "Allow"
-    return response
+# @app.after_request
+# def apply_changing(response):
+#     response.headers["X-Frame-Options"] = "Allow"
+#     return response
 
 # @app.errorhandler(CSRFError)
 # def handle_csrf_error(e):

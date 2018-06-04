@@ -121,6 +121,7 @@ class AuctionInstanceView(Resource):
         product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
         product_schema = ProductSchema()
         auction.remained_time = auction.start_date
+        print auction.remained_time
 
         if(current_user.is_authenticated):
             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()

@@ -159,23 +159,6 @@ function Person(name,avatar,its_me,row,price) {
 }
 
 
-if (window.location.protocol == "https:") {
-    var ws_scheme = "https://";
-    }
-  else {
-    var ws_scheme = "http://"
-};
-
-var socket = io.connect(ws_scheme + location.host + ":8000/");
-socket.on('connect', function(data){
-	console.log("connected successfuly");
-	socket.emit("join", {'auction_id': 2});
-});
-
-socket.on('join', function(data){
-	console.log(data);
-});
-
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   product = data.product[0]
   plan = data.plan[0]
@@ -267,7 +250,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      getStatus();
  });
 
- var timer = setInterval(getStatus,1000);
+ var timer = setInterval(getStatus,10000);
  var countdownTimer = null
 
  function getStatus() {
