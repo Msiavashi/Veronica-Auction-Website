@@ -358,7 +358,7 @@ class UserAuctionLikes(Resource):
 #TODO: *strict validation*
 class UserCheckout(Resource):
 
-    def get(self):
+    def get(self, pid):
         payment_methods = PaymentMethod.query.all()
         payment_methods_schema = PaymentMethodSchema(many=True)
         shipment_methods = ShipmentMethod.query.all()
@@ -367,7 +367,9 @@ class UserCheckout(Resource):
         return make_response(jsonify({"payment_methods": payment_methods_schema.dump(payment_methods), "shipment_methods": shipment_methods_schema.dump(shipment_methods)}), 200)
 
     @login_required
-    def post(self):
+    def post(self, pid):
+        print "in loggin mode"
+        print pid
         data = request.get_json(force=True)
         order_id = data['order_id']
         order = Order.query.get(order_id)

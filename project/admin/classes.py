@@ -52,6 +52,7 @@ class RoleAdmin(ModelView):
 
 class ItemAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
 
     def _list_thumbnail(view, context, model, name):
@@ -95,7 +96,8 @@ class AdvertisementAdmin(ModelView):
 
 class CategoryAdmin(ModelView):
     def is_accessible(self):
-        return True
+        # return True
+        return current_user.has_role('admin')
 
     def _list_thumbnail(view, context, model, name):
         if not model.icon:
@@ -116,14 +118,14 @@ class CategoryAdmin(ModelView):
 
 class ProductAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
 class AuctionAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
 
-        # return True
 
 class AddressAdmin(ModelView):
     def is_accessible(self):
@@ -172,27 +174,28 @@ class EventAdmin(ModelView):
 
 class PaymentMethodAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class ShipmentMethodAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class OrderAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
 
 class PaymentAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class ShipmentAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class PlanAdmin(ModelView):
     def is_accessible(self):
