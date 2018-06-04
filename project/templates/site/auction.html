@@ -221,6 +221,7 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 
+
 <script>
 
 var auction_id = $('#auction').val();
@@ -242,37 +243,27 @@ function Person(name,avatar,its_me,row,price) {
 }
 
 
-if (window.location.protocol == "https:") {
-    var ws_scheme = "https://";
-    }
-  else {
-    var ws_scheme = "http://"
-};
-
-var socket = io.connect(ws_scheme + location.host + ":8000/");
-socket.on('connect', function(data){
-	console.log("connected successfuly");
-	socket.emit("join", {'auction_id': 2});
-});
-
-socket.on('join', function(data){
-	console.log(data);
-});
-
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
-  var deadline = new Date(data.start_date).format("yyyy-M-d HH:mm:ss","UTC");
+
 
   before_start_text = "شروع حراجی : ";
+  var full_date = null
+  var full_hour = null
 
-  full_date = new persianDate(new Date(data.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-  full_hour = new persianDate(new Date(data.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+  if(isSafari()){
+    var deadline = new Date(data.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+    full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+  }else{
+    full_date = new persianDate(new Date(data.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_hour = new persianDate(new Date(data.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+  }
 
   var end_date_date = full_date;
   var end_date_time =  " ساعت  " + full_hour;
-
   var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
 
   var participant_count = ToPersian(data.participants.length);
@@ -548,7 +539,5 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  	});
 
 </script>
-
-
 
 {% endblock scripts %}

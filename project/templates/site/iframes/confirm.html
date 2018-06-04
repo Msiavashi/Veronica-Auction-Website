@@ -19,7 +19,8 @@
 									</tr> -->
 									<tr class="order-total">
 										<th>مبلغ پرداختی نهایی</th>
-										<td><strong><span class="amount">{{amount}} تومان </span></strong> </td>
+										<input type="hidden" id="amount_money" value="{{amount}}">
+										<td><strong><span class="amount" id="amount"></span></strong> </td>
 									</tr>
 
 								</tfoot>
@@ -60,6 +61,7 @@
 			success:function(data) {
 				console.log(data);
 				$('#RefId').val(data['ref_id']);
+				$('#amount').html(ToPersian(formatCurrency($('#amount_money').val())) + " تومان ")
 			}
 		});
 	}
@@ -71,7 +73,7 @@
 			event.preventDefault();
 			alert('please wait for Token');
 		}
-		
+
 	});
 
 </script>

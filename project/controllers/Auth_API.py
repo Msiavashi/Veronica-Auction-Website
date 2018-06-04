@@ -10,7 +10,7 @@ from flask import url_for, redirect, render_template, request, abort, make_respo
 from ..model import Order, Item, Payment
 import json
 from ..database import db
-from project import app
+from project import app ,auto
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 
 parser_register = reqparse.RequestParser()
@@ -27,6 +27,8 @@ def can_access(f):
     if not hasattr(f, 'access_control'):
         return True
     return _eval_access(**f.access_control) == AccessResult.ALLOWED
+
+
 
 class UserRegistration(Resource):
     def post(self):

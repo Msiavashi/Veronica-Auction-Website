@@ -18,7 +18,7 @@ class Item(Base):
     details = db.Column(db.Text())
     images = db.Column(db.Text, nullable=False)
 
-    product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'))
+    product_id = db.Column(db.BigInteger, db.ForeignKey('products.id'),nullable=False)
     product = db.relationship('Product')
 
     orders = db.relationship('Order')
@@ -26,7 +26,8 @@ class Item(Base):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
-        return  " محصول :"+self.product.title + " آیتم: " + self.title
+        return  " محصول :"+str(self.product.title) + " آیتم: " + self.title
+        # return  'نام محصول'
 
 class ItemSchema(Schema):
     id = fields.Int()
