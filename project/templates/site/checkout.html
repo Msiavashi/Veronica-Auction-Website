@@ -61,23 +61,25 @@
                   <th class="product-total">مبلغ</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="cart_item">
+              <tbody >
+                <tr v-for="order in user_orders" class="cart_item">
+                  {%raw%}
                   <td class="product-name">
-                    نام محصول برنده شده <span class="product-quantity">× ۶</span>
+                    {{order[0].item.title}} <span class="product-quantity">× {{order[0].total}}</span>
                   </td>
                   <td class="product-total">
-                    <span class="amount">۲،۰۰۰،۰۰۰ تومان</span>
+                    <span class="amount">{{order[0].total_cost}} تومان</span>
                   </td>
+                  {%endraw%}
                 </tr>
-                <tr class="cart_item">
+                <!-- <tr class="cart_item">
                   <td class="product-name">
                       نام محصول برنده شده	<span class="product-quantity">× ۲</span>
                   </td>
                   <td class="product-total">
                     <span class="amount">۲،۰۰۰،۰۰۰ تومان</span>
                   </td>
-                </tr>
+                </tr> -->
               </tbody>
               <tfoot>
                 <tr class="cart-subtotal">
@@ -87,20 +89,11 @@
                 <tr class="shipping">
                   <th>نوع ارسال</th>
                   <td>
-                    <ul v-for="(shipment, index) in shipment_methods" id="shipping_method" class="list-none">
-                      <li>
-                        <!-- <input type="hidden" v-model="shipment_price" v-bind:value="shipment.price"> -->
-                        <input @click="update_shipment_data(shipment.price ,shipment.id)" type="radio" class="shipping_method" id="shipping_method_0_free_shipping" data-index="shipment.id">
-                        <label for="shipping_method_0_free_shipping">{%raw%} {{shipment.title}} {%endraw%}</label>
+                    <ul  id="shipping_method" class="list-none">
+                      <li v-for="(shipment, index) in shipment_methods">
+                        <input type="radio" @click="update_shipment_data(shipment.price ,shipment.id)" class="shipping_method" value="local_delivery" :id="index" data-index="0" name="shipping_method[0]">
+                        <label :for="index">{%raw%} {{shipment.title}} {%endraw%}</label> 
                       </li>
-                      <!-- <li>
-                        <input type="radio" class="shipping_method" value="local_delivery" id="shipping_method_0_local_delivery" data-index="0" name="shipping_method[0]">
-                        <label for="shipping_method_0_local_delivery">پرداخت درب منزل (پست)</label>
-                      </li>
-                      <li>
-                        <input type="radio" class="shipping_method" value="local_pickup" id="shipping_method_0_local_pickup" data-index="0" name="shipping_method[0]">
-                        <label for="shipping_method_0_local_pickup">تحویل حضوری</label>
-                      </li> -->
                     </ul>
                   </td>
                 </tr>
@@ -193,7 +186,7 @@ var app = new Vue({
 
   computed: {
     final_price: function(){
-      return this.total_price + this.shipment_price + this.invitation_discount + this.items_discount;
+      return parseInt(this.total_price)  + parseInt(this.shipment_price) + parseInt(this.invitation_discount) + parseInt(this.items_discount);
     }
   },
 
@@ -233,13 +226,13 @@ var app = new Vue({
   },
 
   created: function(){
-   self = this;0
+   self = this;
     $.getJSON("{{url_for('usercheckout')}}", function(data){
       self.shipment_methods = data['shipment_methods'][0];
       self.payment_methods = data['payment_methods'][0];
 
-      this.shipment_method_id = self.shipment_methods[0].id;
-      this.payment_method_id = self.payment_methods[0].id;
+      self.shipment_method_id = self.shipment_methods[0].id;
+      self.payment_method_id = self.payment_methods[0].id;
     });
 
     if (this.user == ""){
@@ -250,7 +243,12 @@ var app = new Vue({
     }
 
     $.getJSON("{{url_for('usercartorder')}}", function(data){
+      console.log(data);
       self.user_orders = data;
+      data.forEach(order => {
+        self.total_price += parseInt(order[0].total_cost);
+      });
+
     });
   }
 

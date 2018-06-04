@@ -162,30 +162,21 @@ var app = new Vue({
   },
 
   created: function(){
-   self = this;0
-    $.getJSON("{{url_for('usercheckout')}}", function(data){
-      self.shipment_methods = data['shipment_methods'][0];
-      self.payment_methods = data['payment_methods'][0];
-    });
-
-    if (this.user == ""){
-      this.user= true;
-    }
-    else{
-      this.user = false;
-    }
-
-    $.getJSON("{{url_for('usercartorder')}}", function(data){
-      self.user_orders = data;
-    });
+   	self = this;
+	axios.get("{{url_for('usercartorder')}}")
+		.then(function (response) {
+			console.log(response.data);
+			self.user_orders = response.data;
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
   }
-
-
 
 });
 
 
-</script>
+
 
 ko.applyBindings();
 $(document).on('click','.remove',function(e) {
