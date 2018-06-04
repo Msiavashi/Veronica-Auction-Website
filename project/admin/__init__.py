@@ -17,7 +17,7 @@ security = Security(app, user_datastore)
 
 # Create admin
 admin = Admin(
-    app," بید بازی ",index_view=MyAdminIndexView(),base_template='admin.html',template_mode='bootstrap3',
+    app," بردیتو ",index_view=MyAdminIndexView(),base_template='admin.html',template_mode='bootstrap3',
 )
 
 admin.add_view(UserAdmin(User, db.session,name='کاربران',menu_icon_type='fa', menu_icon_value='fa fa-user'))

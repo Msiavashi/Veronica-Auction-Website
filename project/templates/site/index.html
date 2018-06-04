@@ -13,8 +13,8 @@
 			<div class="col-md-12 col-sm-12 col-xs-12">
 				<div class="wrap-banner-slider1">
 					<div class="banner-slider banner-slider1">
-						<div class="wrap-item" data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade" data-bind='foreach: ads'>
-							<div class="item-banner item-banner1">
+						<div class="wrap-item" data-bind='foreach: ads' data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
+							 <div class="item-banner item-banner1">
 								<div class="banner-thumb">
 									<a href="#"><img data-bind="attr:{src : ad_image_path + ClearifyNames(advertisement.images)[0]}" alt="" /></a>
 								</div>
@@ -24,7 +24,7 @@
 									<p data-bind="text: advertisement.description"></p>
 									<a data-bind="attr:{href : 'view/auction/'+id}" class="shopnow"><span data-bind="text: advertisement.link_title"></span></a>
 								</div>
-							</div>
+							  </div>
 							<!-- ko text: triggerSlider($($element.parentElement)) -->
 							<!-- /ko -->
 						</div>
@@ -289,7 +289,6 @@
 		<!-- End Deal -->
 	</div>
 
-
 {% endblock %}
 {% block scripts %}
 {{ super() }}
@@ -323,8 +322,8 @@ function Auction(id,title,description,deadline,participant_count,max_members,bas
 }
 
 function Category(title,auctions) {
-	this.title = title;
-	this.auctions = auctions;
+	this.title = ko.observable(title);
+	this.auctions = ko.observableArray(auctions);
 }
 
 function dealModel() {
@@ -341,8 +340,12 @@ function dealModel() {
 	var categories = [];
 	$.getJSON("{{url_for('sitecategorymenuitems')}}", function(data){
 		$.each(data[0],function(key,val){
-			$.getJSON("api/site/category/"+val.id+"/auctions", function(auctions) {
-				category = new Category(val.title,auctions[0]);
+			$.getJSON("api/site/category/"+val.id+"/auctions", function(innerData) {
+				aucs = []
+				$.each(innerData.auctions[0],function(ky,vl) {
+					aucs.push(vl)
+				});
+				category = new Category(val.title,aucs);
 				OnDataReady(category);
 			});
 		});
@@ -353,6 +356,7 @@ function dealModel() {
 	}
 
 	$.getJSON("{{url_for('siteauctioncarouselads')}}", function(data) {
+		console.log(data[0]);
 		self.ads(data[0]);
 	})
 
@@ -435,7 +439,7 @@ function dealModel() {
 ko.applyBindings(new dealModel());
 
 $(document).ready(function(){
-	sleep(1000);
+	sleep(5000);
 });
 
 </script>

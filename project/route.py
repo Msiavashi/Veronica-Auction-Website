@@ -8,7 +8,7 @@ from flask import url_for, redirect, render_template, request, abort ,redirect, 
 from datetime import timedelta
 from flask_login import current_user,login_required,logout_user
 from .model import *
-from . import app,login_manager
+from . import app,login_manager,auto
 from urlparse import urlparse, urljoin
 from .controllers.PyMellat.PyMellat import *
 from .controllers.MellatPayment_API import MellatGateway
@@ -22,6 +22,10 @@ class Route():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(user_id)
+
+    @app.route('/documentation')
+    def documentation():
+        return auto.html()
 
     @app.route('/')
     def site():
@@ -114,6 +118,10 @@ class Route():
     def about():
         return render_template('site/about.html')
 
+    @app.route('/user/<int:id>')
+    @auto.doc()
+    def show_user(id):
+        return id
 
     @app.route('/confirm/payment/<int:pid>')
     @login_required

@@ -146,7 +146,7 @@ var offer_bid_count = ko.observable();
 var before_start_text = ko.observable();
 var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
-var time_left = ko.observable();
+var time_left = 1000000;
 var time_difference = ko.observable();
 
 function Person(name,avatar,its_me,row,price) {
@@ -163,16 +163,23 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   product = data.product[0]
   plan = data.plan[0]
   data = data.auction[0]
-  var deadline = new Date(data.start_date).format("yyyy-M-d HH:mm:ss","UTC");
+
 
   before_start_text = "شروع حراجی : ";
+  var full_date = null
+  var full_hour = null
 
-  full_date = new persianDate(new Date(data.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-  full_hour = new persianDate(new Date(data.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+  if(isSafari()){
+    var deadline = new Date(data.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+    full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+  }else{
+    full_date = new persianDate(new Date(data.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_hour = new persianDate(new Date(data.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+  }
 
   var end_date_date = full_date;
   var end_date_time =  " ساعت  " + full_hour;
-
   var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
 
   var participant_count = ToPersian(data.participants.length);
@@ -258,50 +265,6 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  }
  var start_miliseconds = 0;
 
- // socket.on('auction_status',function(data) {
- //
- //  var countdown = document.getElementById("tiles");
- //
- //  getCountdown(data.remained);
- //
- //  function getCountdown(seconds_left){
- //
- //    if ( seconds_left >= 0 ) {
- //
- //     if ( seconds_left  <  60 )
- //     {
- //       $( '#tiles' ).removeClass('color-full');
- //       $( '#tiles' ).addClass('color-half');
- //     }
- //     else {
- //       $( '#tiles' ).addClass('color-full');
- //       $( '#tiles' ).removeClass('color-half');
- //     }
- //
- //     if ( seconds_left  < 10 )
- //      {
- //        $( '#tiles' ).removeClass('color-half');
- //        $( '#tiles' ).addClass('color-empty');
- //      }else {
- //        $( '#tiles' ).addClass('color-half');
- //        $( '#tiles' ).removeClass('color-empty');
- //      }
- //
- //    days = pad( parseInt(seconds_left / 86400) );
- //    seconds_left = seconds_left % 86400;
- //
- //    hours = pad( parseInt(seconds_left / 3600) );
- //    seconds_left = seconds_left % 3600;
- //
- //    minutes = pad( parseInt(seconds_left / 60) );
- //
- //    seconds = pad( parseInt( seconds_left % 60 ) );
- //
- //    // format countdown string + set tag value
- //    countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
- //    }
- //  }
- // });
  socket.on('auction_status',function(data) {
    start_miliseconds = data.remained * 1000;
  });
@@ -358,6 +321,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('join', function(data) {
    console.log(data);
    time_left = data.deadline * 1000;
+   getStatus();
  });
 
  socket.on('update_view', function(data) {
