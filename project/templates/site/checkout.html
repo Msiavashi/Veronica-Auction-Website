@@ -155,7 +155,12 @@
             </ul>
             <div class="form-row place-order">
               <form id="confirm" action="/api/user/checkout/confirm/payment/{{pid}}" method="POST">
+              {%raw%}
+                <input type="hidden" name="final_price" v-bind:value="final_price">
+                <input type="hidden" name="payment_method_id" v-bind:value="payment_method_id">
+                <input type="hidden" name="shipment_method_id" v-bind:value="shipment_method_id">
                 <input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order"  class="button alt">
+              {%endraw%}
               </form>
             </div>
           </div>
@@ -207,7 +212,7 @@ var app = new Vue({
 
   created: function(){
    self = this;0
-    $.getJSON("/api/user/checkout/confirm/payment/{{pid}}", function(data){
+    $.getJSON("{{url_for('usercheckout')}}", function(data){
       self.shipment_methods = data['shipment_methods'][0];
       self.payment_methods = data['payment_methods'][0];
     });
@@ -225,24 +230,6 @@ var app = new Vue({
   },
 
 });
-
-$('#confirm').on('submit', function(event){
-  event.preventDefault();
-  var price = $("<input>")
-               .attr("type", "hidden")
-               .attr("name", "final_price").val(app.final_price);
-
-  var shipment = $("<input>")
-               .attr("type", "hidden")
-               .attr("name", "shipment_method").val(app.shipment_method_id);
-
-  var payment = $("<input>")
-               .attr("type", "hidden")
-               .attr("name", "payment_method_id").val(app.payment_method_id);
-
-  $('#confirm').append($(price)).append($(shipment)).append($(payment)).submit();
-});
-
 
 </script>
 {% endblock scripts %}

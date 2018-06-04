@@ -7,6 +7,13 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
+class ShipmentStatus:
+    IN_STORE = 0
+    READY_TO_SEND = 1
+    SENT = 2
+    DELIVERED = 3
+
+
 class Shipment(Base):
     __tablename__ = 'shipments'
     id = db.Column(db.BigInteger, primary_key=True)
@@ -20,7 +27,7 @@ class Shipment(Base):
     send_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
     recieve_date = db.Column(db.TIMESTAMP, default=datetime.datetime.now)
 
-    status = db.Column(db.String(255), default="ارسال نشده")
+    status = db.Column(db.Integer, default=ShipmentStatus.IN_STORE)
 
     order_id = db.Column(db.BigInteger, db.ForeignKey('orders.id'))
     # payment = db.relationship('Payment')
@@ -42,6 +49,6 @@ class ShipmentSchema(Schema):
     send_date = fields.DateTime()
     recieve_date = fields.DateTime()
     price = fields.Str()
-    status = fields.Boolean()
+    status = fields.Int()
     # insurance = fields.Nested('InsuranceSchema',exclude=('shipment',))
     payment = fields.Nested('OrderSchema',exclude=('shipment',))

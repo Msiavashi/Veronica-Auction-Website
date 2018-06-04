@@ -358,7 +358,7 @@ class UserAuctionLikes(Resource):
 #TODO: *strict validation*
 class UserCheckout(Resource):
 
-    def get(self, pid):
+    def get(self):
         payment_methods = PaymentMethod.query.all()
         payment_methods_schema = PaymentMethodSchema(many=True)
         shipment_methods = ShipmentMethod.query.all()
@@ -366,45 +366,53 @@ class UserCheckout(Resource):
         order_schema = OrderSchema(many=True)
         return make_response(jsonify({"payment_methods": payment_methods_schema.dump(payment_methods), "shipment_methods": shipment_methods_schema.dump(shipment_methods)}), 200)
 
+
+class UserCheckoutConfirm(Resource):
     @login_required
     def post(self, pid):
-        print "in loggin mode"
-        print pid
-        data = request.get_json(force=True)
-        order_id = data['order_id']
-        order = Order.query.get(order_id)
-        if not order or not order.user_id == current_user.id:
+        payment_method_id = request.form.get('payment_method_id')
+        shipment_method_id = request.form.get('shipment_method_id')
+        final_price = request.form.get('final_price')
+        payment = Payment.query.get(pid)
+
+        if not payment or payment.user_id != current_user.id:
             return make_response(jsonify({"msg": "سبد خرید مورد نظر یافت نشد"}) , 400)
 
-        payment = Payment()
-        payment.amount = order.total_cost
-        payment.order_id = order_id
-        payment.user_id = current_user.id
-        payment.payment_method = PaymentMethod.query.get(data['payment_method'])
-        payment.payment_method_id = payment.payment_method.id
+        shipment_method = ShipmentMethod.query.get(shipment_method_id)
+        payment_method = PaymentMethod.query.get(payment_method_id)
+
+        payment.payment_method = payment_method
+        payment.payment_method_id = payment_method_id
+
+        orders = Order.query.filter_by(payment_id=pid).all()
+
+        for order in orders:
+            shipment = Shipment()
+            shipment.order_id = order.id
+            shipment.payment_id = pid
+            shipment.status = ShipmentStatus.IN_STORE
+            shipment.shipment_method = shipment_method
+            shipment.shipment_method_id = shipment_method_id 
+            
+            db.session.add(shipment)
+            db.session.commit()
+
+            order.shipment = shipment
+
+            db.session.add(order)
+            db.session.commit()
+        
+        
+        payment.amount = final_price
 
         db.session.add(payment)
         db.session.commit()
 
-        shipment = Shipment()
-        shipment.order_id = order.id
-        shipment.payment_id = payment.id
+        if payment_method.type == Payment_Types.Online:
+            return redirect('/checkout/payment/%s' % pid)
+        else:
+            return make_response(jsonify({'success': False, "message": {"error": "روش پرداخت مورد نظر وجود ندارد"}}, 406))
 
-        shipment_method = ShipmentMethod.query.get(data['shipment_method'])
-
-        shipment.shipment_method = shipment_method
-        shipment.shipment_method_id = shipment_method.id
-
-        db.session.add(shipment)
-        db.session.commit()
-
-        order.total_cost += shipment_method.price
-        order.payment_id = payment.id
-
-        db.session.add(order)
-        db.session.commit()
-
-        return make_response(jsonify({'success': True}, 200))
 
 class UserApplyPayment(Resource):
     @login_required
