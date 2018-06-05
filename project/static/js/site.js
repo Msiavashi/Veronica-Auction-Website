@@ -294,7 +294,27 @@ function triggerSlider(element){
 			});
 		}
 
-	}, 500);
+	}, 1000);
+}
+
+function triggerOwlcarousel() {
+	console.log('here');
+	if($('.wrap-item').length>0){
+		$('.wrap-item').each(function(){
+			var data = $(this).data();
+			$(this).owlCarousel({
+				addClassActive:true,
+				stopOnHover:true,
+				itemsCustom:data.itemscustom,
+				autoPlay:data.autoplay,
+				transitionStyle:data.transition,
+				beforeInit:background,
+				afterAction:animated,
+				navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+			});
+			$(this).find('.owl-controls').css('left',data.control+'px');
+		});
+	}
 }
 
 function background(){
