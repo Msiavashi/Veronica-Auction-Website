@@ -165,12 +165,20 @@ class Route():
         return render_template('/socket.html')
 
     @app.route('/checkout/payment/<int:pid>')
-    def checkout(pid):
+    @login_required
+    def checkout_payment(pid):
         return render_template('site/checkout.html', pid=pid)
+
+    @app.route('/checkout')
+    @login_required
+    def checkout():
+        unpaid_payment = Payment.query.filter_by(user_id=current_user.id, status=PaymentStatus.UNPAID).first()
+        return redirect(url_for('checkout_payment', pid=unpaid_payment.id))
 
     @app.route('/cart')
     def cart():
         return render_template('site/cart.html')
+
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)

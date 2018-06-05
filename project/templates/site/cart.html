@@ -1,7 +1,7 @@
 {% extends 'site/layout.html' %}
 {% block title %} بردیتو | سبد خرید  {% endblock %}
 {% block content %}
-<div class="content-page woocommerce">
+<div id="app" class="content-page woocommerce">
 	<div class="container">
 		<div class="cart-content-page">
 			<h2 class="title-shop-page">سبد خرید من</h2>
@@ -88,7 +88,10 @@
 						</table>
 					</div>
 					<div class="wc-proceed-to-checkout">
-						<a class="checkout-button button alt wc-forward" href="checkout.html">مرحله بعد تایید نهایی</a>
+						<!-- <a class="checkout-button button alt wc-forward" href="checkout.html">مرحله بعد تایید نهایی</a> -->
+						<form id="confirm" action="{{url_for('checkout')}}">
+							<input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order"  class="button alt">
+						</form>
 					</div>
 				</div>
 			</div>
@@ -98,7 +101,51 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
+
+var app = new Vue({
+
+  el: '#app',
+
+  methods:{
+    handleSubmit: function(){
+		if ('{{current_user.id}}'){
+			axios.get("{{url_for('userunpaidorders')}}")
+				.then(function (response) {
+					if (response.status == 20){
+						window.location = "url_for('user')"
+					}
+					// $("#confirm").submit();
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+			}
+		else{
+			$("#confirm").submit();
+		}
+
+    }
+  }
+//   created: function(){
+//    	self = this;
+// 	axios.get("{{url_for('usercartorder')}}")
+// 		.then(function (response) {
+// 			console.log(response.data);
+// 			self.user_orders = response.data;
+// 		})
+// 		.catch(function (error) {
+// 			console.log(error);
+// 		});
+//   }
+
+});
+
+
+
 
 ko.applyBindings();
 $(document).on('click','.remove',function(e) {
