@@ -356,15 +356,20 @@ class UserAuctionLikes(Resource):
         else:
             return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
 
-class UserCheckout(Resource):
+class PaymentMethods(Resource):
 
     def get(self):
         payment_methods = PaymentMethod.query.all()
         payment_methods_schema = PaymentMethodSchema(many=True)
+        return make_response(jsonify(payment_methods_schema.dump(payment_methods)), 200)
+
+
+class ShipmentMethods(Resource):
+
+    def get(self):
         shipment_methods = ShipmentMethod.query.all()
         shipment_methods_schema = ShipmentMethodSchema(many=True)
-        order_schema = OrderSchema(many=True)
-        return make_response(jsonify({"payment_methods": payment_methods_schema.dump(payment_methods), "shipment_methods": shipment_methods_schema.dump(shipment_methods)}), 200)
+        return make_response(jsonify(shipment_methods_schema.dump(shipment_methods)), 200)
 
 
 #TODO: *strict validation*
@@ -439,3 +444,20 @@ class UserApplyPayment(Resource):
         else:
             msg = "پرداخت شما موفقیت آمیز نبود"
             return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),400)
+
+class UserUnpaidOrders(Resource):
+
+    @login_required
+    def get(self):
+        unpaid_orders = Order.query.filter_by(status=OrderStatus.UNPAID, user_id = current_user.id).all()
+        order_schema = OrderSchema(many=True)
+        return make_response(jsonify(order_schema.dump(unpaid_orders)), 200)
+        
+
+class UserUnpaidPayments(Resource):
+
+    @login_required
+    def get(self):
+        unpaid_payments = Payment.query.filter_by(user_id=current_user.id, status=PaymentStatus.UNPAID).all()
+        payment_schema = PaymentSchema(many=True)
+        return make_response(jsonify(payment_schema.dump(unpaid_payments)), 200)
