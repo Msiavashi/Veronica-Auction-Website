@@ -70,6 +70,8 @@ class AuctionUserParticipation(Resource):
 
             plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
             auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
+            unpain_user_plan = UserPlan.query.filter_by(auction_plan_id = auction_plan.id,user_id=current_user.id,auction_id=auction.id).delete()
+
             user_plan = UserPlan()
             user_plan.auction = auction
             user_plan.auction_plan = auction_plan
@@ -94,6 +96,9 @@ class AuctionUserParticipation(Resource):
 
             plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
             auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
+            unpain_user_plan = UserPlan.query.filter_by(auction_plan_id = auction_plan.id,user_id=current_user.id,auction_id=auction.id).delete()
+            db.session.commit()
+
 
             user_plan = UserPlan()
             user_plan.auction = auction
@@ -105,7 +110,7 @@ class AuctionUserParticipation(Resource):
 
             current_user.payments.append(payment)
             # current_user.auctions.append(auction)
-            # current_user.user_plans.append(user_plan)
+            current_user.user_plans.append(user_plan)
 
             db.session.add(current_user)
             db.session.commit()

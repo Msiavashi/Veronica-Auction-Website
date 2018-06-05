@@ -26,7 +26,7 @@ class UserPlan(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     def __str__(self):
         if(self.user):
-            return    " پلن : " + self.auction_plan.plan.title +" "+ self.user.username + " "
+            return    " پلن : " + self.auction_plan.plan.title +" "+ self.auction_plan.auction.title +" "+ self.user.username + " "
         return self.auction_plan.plan.title
 class UserPlanSchema(Schema):
     # user = fields.Nested('UserSchema',exclude=('user_plans',))

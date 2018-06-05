@@ -22,7 +22,6 @@ var isBlink = (isChrome || isOpera) && !!window.CSS;
 function isSafari() {
 	var isSafari = false;
 	var ua = navigator.userAgent.toLowerCase();
-	console.log(ua);
 	if (ua.indexOf('safari') != -1) {
 	  if (ua.indexOf('chrome') > -1) {
 	    isSafari = false;

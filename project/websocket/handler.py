@@ -50,19 +50,20 @@ def loadview(data):
         auction_id = data['auction_id']
         auction = Auction.query.get(auction_id)
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
-        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
-        for user in users:
+        result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
+        users = []
+        for user in result:
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
             user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
             user.current_bids = user_last_offer.current_bids
             user.current_offer_price = user_last_offer.total_price
+            users.append(user)
 
         user_schema = UserSchema(many=True)
 
         if(last_offer):
             emit("update_view", {"success":True, "current_offer_price": str(last_offer.total_price),"users": user_schema.dump(users)})
         else:
-            print "here i am no last_offer"
             emit("update_view", {"success":True , "current_offer_price": 0,"users": user_schema.dump(users)})
 
     except Exception as e:
@@ -142,12 +143,14 @@ def handle_bid(data):
             db.session.add(auction)
             db.session.commit()
 
-        users = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
-        for user in users:
+        result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
+        users = []
+        for user in result:
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
             user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
             user.current_bids = user_last_offer.current_bids
             user.current_offer_price = user_last_offer.total_price
+            users.append(user)
 
         user_schema = UserSchema(many=True)
         emit("accepted", {"success": True, "current_bids": offer.current_bids, "total_price": str(offer.total_price) ,"users":user_schema.dump(users)},room=room)
@@ -192,6 +195,7 @@ def get_acution_status(data):
     server_time = datetime.now()
     auction_time = auction.start_date
     if (auction.start_date < datetime.now()):
+        loadview(data)
         auction_done(data)
     else:
         emit("auction_status", {"status": "running","remained":remained,"server_time":str(server_time),"auction_time":str(auction_time)},room=room)

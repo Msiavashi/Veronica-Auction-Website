@@ -48,6 +48,8 @@ class PaymentSchema(Schema):
     status = fields.Int()
     created_at = fields.Str()
     details = fields.Raw()
+    ref_id = fields.Str()
+    sale_refrence_id = fields.Str()
     payment_method = fields.Nested('PaymentMethodSchema')
     # user = fields.Nested('UserSchema',exclude=('payments',))
     # shipment = fields.Nested('ShipmentSchema',exclude=('payment',))

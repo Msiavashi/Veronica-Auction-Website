@@ -23,7 +23,7 @@
 										</div>
 										<div class="col-md-6 col-sm-12 col-xs-6">
 											<div class="product-info">
-												<h3 class="product-title"><a data-bind="attr:{href: '/view/auction/'+auction.id},text:auction.title +' '+auction.item.title">نام محصول حراجی</a></h3>
+												<h3 class="product-title"><a data-bind="attr:{href: '/view/auction/'+auction.id},text:auction.title">نام محصول حراجی</a></h3>
 												<div class="product-price">
 													<ins><span data-bind="text: ToPersian(formatCurrency(total_price))"></span>تومان</ins>
 													<del><span data-bind="text : ToPersian(formatCurrency(auction.item.price))"></span>تومان</del>
@@ -58,8 +58,6 @@ $.getJSON("{{url_for('auctionviewfinished')}}", function(data){
 	offers(data[0]);
 });
 ko.applyBindings();
-
-
 
 </script>
 {% endblock scripts %}

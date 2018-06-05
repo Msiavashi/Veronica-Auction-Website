@@ -35,7 +35,7 @@
 											<i class="fa fa-usd fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge"><span data-bind="text: ToPersian(formatCurrency(userInfo.credit))" ></span> تومان</div>
+											<div class="huge"><span data-bind="text: ToPersian(formatCurrency(userInfo.info[0].credit))" ></span> تومان</div>
 											<div>موجودی</div>
 										</div>
 										</div>
@@ -284,7 +284,7 @@
 								</thead>
 								<tbody data-bind="foreach:paymentsinfo">
 									<tr class="view">
-										<td data-bind="text:ToPersian(id+payment_method.id+'-'+user.id)"></td>
+										<td data-bind="text:ToPersian(id+payment_method.id+'-'+ser.id)"></td>
 										<td><span data-bind="text:ToPersian(formatCurrency(amount))" ></span> تومان  </td>
 										<td data-bind="text : new Date(created_at).toLocaleDateString('fa-IR')"></td>
 									</tr>
@@ -418,6 +418,7 @@ $.getJSON("{{url_for('userinformation')}}", function(data){
 });
 
 $.getJSON("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}", function(data){
+	console.log(data);
 	paymentsinfo = data[0];
 	ko.applyBindings();
 });

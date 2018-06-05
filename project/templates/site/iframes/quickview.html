@@ -8,8 +8,8 @@
       <div class="row">
         <div class="col-md-4 col-sm-5 col-xs-12">
           <div class="product-extra-link2 rightList">
-            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times" data-bind="text:auction_rate">ضریب</i></a>
-            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span  data-bind="text: participant_count"></span> از <span data-bind="text: max_members"></span></a>
+            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times" data-bind="text:ToPersian(auction.ratio)">ضریب</i></a>
+            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span  data-bind="text: ToPersian(auction.participants.length)"></span> از <span data-bind="text: ToPersian(auction.max_members)"></span></a>
           </div>
           <!-- End rightlist -->
           <div class="detail-gallery">
@@ -105,7 +105,7 @@
                 {% endif %}
               </div>
 
-              <div class="detail-countdowns"><span data-bind="text : before_start"></span>
+              <div class="detail-countdowns"><span>شروع حراجی :</span>
                 <span data-bind="text:auction_end_date"></span>
                 <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
               </div>
@@ -113,7 +113,7 @@
             </div>
             <div class="detail-extralink mt-0">
               <div class="product-extra-link2">
-                <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" data-bind="attr:{value:auction_item_id}"></i> اضافه به سبد</a>
+                <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" data-bind="attr:{value:auction.item.id}"></i> اضافه به سبد</a>
                 <a class="wishlist-link2" href="#" id="like_auction"><i aria-hidden="true" class="fa fa-heart"></i></a>
                 <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span>تومان</a>
               </div>
@@ -143,10 +143,9 @@
 var auction_id = $('#auction').val();
 var people = ko.observableArray([]);
 var offer_bid_count = ko.observable();
-var before_start_text = ko.observable();
 var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
-var time_left = 1000000;
+var time_left = ko.observable();
 var time_difference = ko.observable();
 
 function Person(name,avatar,its_me,row,price) {
@@ -158,35 +157,31 @@ function Person(name,avatar,its_me,row,price) {
     self.offer_price = ko.observable(price);
 }
 
-
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
+
   product = data.product[0]
   plan = data.plan[0]
-  data = data.auction[0]
+  auction = data.auction[0]
+	console.log(auction);
 
-
-  before_start_text = "شروع حراجی : ";
   var full_date = null
   var full_hour = null
 
   if(isSafari()){
-    var deadline = new Date(data.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+    var deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
     full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
     full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
   }else{
-    full_date = new persianDate(new Date(data.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-    full_hour = new persianDate(new Date(data.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_date = new persianDate(new Date(auction.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_hour = new persianDate(new Date(auction.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
   }
 
   var end_date_date = full_date;
   var end_date_time =  " ساعت  " + full_hour;
   var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
 
-  var participant_count = ToPersian(data.participants.length);
-  var max_members = ToPersian(data.max_members);
-  var images_temp = ClearifyNames(data.item.images);
+  var images_temp = ClearifyNames(auction.item.images);
   var images = [];
-
   $.each(product.items,function(key,item) {
     $.each(ClearifyNames(item.images),function(key1,val) {
       images.push({url:images_path+val.trim(),active:false});
@@ -200,24 +195,16 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   else {
     offer_bid_count = 0;
   }
-  var item_id = data.item.id;
+  var item_id = auction.item.id;
 
    var mvvm = function MyViewModel() {
-        this.participant_count = participant_count;
-        this.max_members = max_members;
         this.images = images;
         this.active_image = images[0].url;
-        this.auction = data
-        this.auction_title = data.title;
-        this.auction_item_price = ToPersian(formatCurrency(data.item.price));
-        this.auction_register_price = ToPersian(formatCurrency(data.base_price));
+        this.auction = auction;
         this.people = people;
-        this.auction_rate = ToPersian(data.ratio);
         this.auction_end_date = end_date_date;
         this.auction_end_time = end_date_time;
-        this.auction_item_id = item_id;
         this.now_date = now_date_date;
-        this.before_start = before_start_text;
     }
     ko.applyBindings(mvvm);
 
@@ -254,13 +241,13 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('connect', function() {
 		 console.log('connected');
      socket.emit('join', {'auction_id':auction_id});
-     getStatus();
  });
 
  var timer = setInterval(getStatus,10000);
  var countdownTimer = null
 
  function getStatus() {
+   console.log('syncing... : '+ "{{current_user.id}}" );
    socket.emit('status',{'auction_id':auction_id});
  }
  var start_miliseconds = 0;
@@ -286,14 +273,21 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
      if ( millisecond  >= 0) {
 
-         if ( millisecond  < time_left / 2 ) {
+         if ( millisecond  < (60 * 1000) && millisecond  > (10 * 1000) ) {
              $('#tiles').removeClass('color-full');
              $('#tiles').addClass('color-half');
-         }
-         if (millisecond < 10 * 1000) {
+         } else{
+  					 $('#tiles').addClass('color-full');
+  					 $('#tiles').removeClass('color-half');
+  				}
+				 if ( millisecond  < (10 * 1000) ) {
              $('#tiles').removeClass('color-half');
              $('#tiles').addClass('color-empty');
          }
+				 else{
+ 					 $('#tiles').addClass('color-full');
+ 					 $('#tiles').removeClass('color-empty');
+ 				 }
 
          var hours = parseInt(millisecond / (3600*1000));
          var left_millisecond = millisecond - (hours * 3600*1000);
@@ -320,7 +314,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  socket.on('join', function(data) {
    console.log(data);
-   time_left = data.deadline * 1000;
+   start_miliseconds = data.deadline * 1000;
    getStatus();
  });
 
@@ -343,6 +337,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
       $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(active_user.avatar)[0])
     }
    if(users){
+		 console.log(users);
      rowIndex = 0;
      people([]);
      $.each(users,function(key,val){
@@ -350,7 +345,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
        name = val.username ;
        avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
        row = ToPersian(++rowIndex);
-       price = val.current_offer_price ? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
+       price = ToPersian(formatCurrency(val.current_offer_price)); //? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
        person = new Person(name,avatar,its_you,row,price);
        people.push(person);
      });
@@ -383,8 +378,9 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
        its_you = val.id == current_user_id ? true : false;
        name = val.username ;
        avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-       row = ++rowIndex;
-       person = new Person(name,avatar,its_you,ToPersian(row));
+			 row = ToPersian(++rowIndex);
+			 price = ToPersian(formatCurrency(val.current_offer_price)); //? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
+       person = new Person(name,avatar,its_you,row,price);
        people.push(person);
      });
      people.valueHasMutated();
@@ -416,7 +412,6 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  $("#offer").on("click", function(event) {
    socket.emit('bid', {'auction_id':auction_id});
-   getStatus();
  });
 
 

@@ -1,11 +1,11 @@
 {% extends 'site/layout.html' %}
-{% block title %} بردیتو | درباره ما {% endblock %}
+{% block title %} بردیتو | حراجی محصول {% endblock %}
 {% block content %}
 <input type="hidden" id="auction" value="{{auction_id}}">
 <div class="content-page">
 	<div class="container">
 		<div class="bread-crumb radius">
-			<a href="/">خانه</a> <span data-bind="text: auction.item.title">نام محصول</span>
+			<a href="/">خانه</a> <span data-bind="text: auction.title">نام محصول</span>
 		</div>
 		<!-- End Bread Crumb -->
 		<div class="row">
@@ -16,8 +16,8 @@
 						<div class="row">
 							<div class="col-md-4 col-sm-12 col-xs-12">
 								<div class="product-extra-link2 rightList">
-									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times" data-bind="text:auction_rate">ضریب</i></a>
-			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span  data-bind="text: participant_count"></span> از <span data-bind="text: max_members"></span></a>
+									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times" data-bind="text:ToPersian(auction.ratio)">ضریب</i></a>
+			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span  data-bind="text: ToPersian(auction.participants.length)"></span> از <span data-bind="text: ToPersian(auction.max_members)"></span></a>
 			          </div>
 								<div class="detail-gallery">
 									<div class="mid">
@@ -61,11 +61,11 @@
 							</div>
 							<div class="col-md-8 col-sm-12 col-xs-12">
 								<div class="detail-info">
-									<h2 class="title-detail" data-bind="text: auction.title + ' '+auction.item.title"></h2>
+									<h2 class="title-detail" data-bind="text: auction.title"></h2>
 									<div class="product-price">
 										<!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
 										<div class="textboX">
-											<div class="textboXX"><p id="auction_item_price"> قیمت محصول : <span data-bind="text:ToPersian(formatCurrency(auction.item.price))"></span> تومان <div> &nbsp  </div></p></div>
+											<div class="textboXX"><p> قیمت محصول : <span data-bind="text:ToPersian(formatCurrency(auction.item.price))"></span> تومان <div> &nbsp  </div></p></div>
 											<div class="upArrow"></div>
 										</div>
 										<div class="textboX">
@@ -81,10 +81,9 @@
 											<p class="item-Bid" data-bind="css: { 'YOU' : its_me  }">
 												<img data-bind="attr:{src: avatar}"/>
 												<br class="resWd"/>
-												<span data-bind="text:name"></span>
+												<label data-bind="text:name"></label>
 												<span data-bind="text:row"></span>
-												<b data-bind="text:offer_price">
-												</b>
+												<b data-bind="text:offer_price"></b>
 											</p>
 										</div>
 
@@ -115,14 +114,14 @@
 											<div class="success_container"></div>
 										</div>
 
-										<div class="detail-countdowns"><span data-bind="text : before_start"></span>
+										<div class="detail-countdowns">شروع حراجی : </span>
 			                <span data-bind="text:auction_end_date"></span>
 			                <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
 			              </div>
 									</div
 									<div class="detail-extralink mt-0">
 										<div class="product-extra-link2">
-											<a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true"></i> اضافه به سبد</a>
+											<a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" data-bind="attr:{value:auction.item.id}"></i> اضافه به سبد</a>
 											<a class="wishlist-link2" href="#"><i aria-hidden="true" class="fa fa-heart"></i></a>
 											<a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span> تومان</a>
 										</div>
@@ -139,9 +138,9 @@
 								<li class="active"><a href="#hoz1" data-toggle="tab">اطلاعات</a></li>
 								<li><a href="#hoz2" data-toggle="tab">مشخصات فنی</a></li>
 								<li><a href="#hoz3" data-toggle="tab">مشخصات</a></li>
-								<li><a href="#hoz4" data-toggle="tab">مشخصات</a></li>
+								<!-- <li><a href="#hoz4" data-toggle="tab">مشخصات</a></li>
 								<li><a href="#hoz5" data-toggle="tab">مشخصات</a></li>
-								<li><a href="#hoz6" data-toggle="tab">مشخصات</a></li>
+								<li><a href="#hoz6" data-toggle="tab">مشخصات</a></li> -->
 							</ul>
 						</div>
 						<div class="tab-content">
@@ -149,9 +148,9 @@
 								<div class="hoz-tab-content">
 									<div class="content-detail-tab">
 										<div class="detail-tab-info">
-											<p class="desc"> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد. </p>
-											<ul>
-												<li> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
+											<p class="desc" data-bind="text:auction.description"> توضیحات محصول
+												<ul>
+													<li data-bind="text:auction.item.product.desciption">توضیحات آیتم محصول</li>
 											</ul>
 										</div>
 									</div>
@@ -161,9 +160,9 @@
 								<div class="hoz-tab-content">
 									<div class="content-detail-tab">
 										<div class="detail-tab-info">
-											<p class="desc"> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد. </p>
-											<ul>
-												<li> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
+											<p class="desc" data-bind="text:auction.description"> توضیحات محصول
+												<ul>
+													<li data-bind="text:auction.item.product.desciption">توضیحات آیتم محصول</li>
 											</ul>
 										</div>
 									</div>
@@ -173,12 +172,9 @@
 								<div class="hoz-tab-content">
 									<div class="content-detail-tab">
 										<div class="detail-tab-info">
-											<p class="desc"> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد.  اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای قرارداد شما را برآورده نکرد، بردیتو مبلغ پرداخت شده شما را بازپرداخت خواهد کرد. </p>
-											<ul>
-												<li> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
-												<li> اگر بردیتو نتواند کالاهای خود را در زمان معین حمل کند یا کیفیت محصول استانداردهای </li>
+											<p class="desc" data-bind="text:auction.description"> توضیحات محصول
+												<ul>
+													<li data-bind="text:auction.item.product.desciption">توضیحات آیتم محصول</li>
 											</ul>
 										</div>
 									</div>
@@ -193,13 +189,13 @@
 				<div class="sidebar">
 					<div class="list-detail-adv">
 						<div class="detail-adv">
-							<a href="#"><img class="radius wobble-horizontal" alt="" src="static/images/theme/pro-adv1.jpg"></a>
+							<a href="#"><img class="radius wobble-horizontal" alt="" src="/static/images/theme/pro-adv1.jpg"></a>
 						</div>
 						<div class="detail-adv">
-							<a href="#"><img class="radius wobble-horizontal" alt="" src="static/images/theme/pro-adv2.jpg"></a>
+							<a href="#"><img class="radius wobble-horizontal" alt="" src="/static/images/theme/pro-adv2.jpg"></a>
 						</div>
 						<div class="detail-adv">
-							<a href="#"><img class="radius wobble-horizontal" alt="" src="static/images/theme/pro-adv3.jpg"></a>
+							<a href="#"><img class="radius wobble-horizontal" alt="" src="/static/images/theme/pro-adv3.jpg"></a>
 						</div>
 					</div>
 				</div>
@@ -227,7 +223,6 @@
 var auction_id = $('#auction').val();
 var people = ko.observableArray([]);
 var offer_bid_count = ko.observable();
-var before_start_text = ko.observable();
 var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
 var time_left = ko.observable();
@@ -242,35 +237,31 @@ function Person(name,avatar,its_me,row,price) {
     self.offer_price = ko.observable(price);
 }
 
-
 $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
+
   product = data.product[0]
   plan = data.plan[0]
-  data = data.auction[0]
+  auction = data.auction[0]
+	console.log(auction);
 
-
-  before_start_text = "شروع حراجی : ";
   var full_date = null
   var full_hour = null
 
   if(isSafari()){
-    var deadline = new Date(data.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+    var deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
     full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
     full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
   }else{
-    full_date = new persianDate(new Date(data.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-    full_hour = new persianDate(new Date(data.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_date = new persianDate(new Date(auction.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_hour = new persianDate(new Date(auction.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
   }
 
   var end_date_date = full_date;
   var end_date_time =  " ساعت  " + full_hour;
   var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
 
-  var participant_count = ToPersian(data.participants.length);
-  var max_members = ToPersian(data.max_members);
-  var images_temp = ClearifyNames(data.item.images);
+  var images_temp = ClearifyNames(auction.item.images);
   var images = [];
-
   $.each(product.items,function(key,item) {
     $.each(ClearifyNames(item.images),function(key1,val) {
       images.push({url:images_path+val.trim(),active:false});
@@ -284,24 +275,16 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   else {
     offer_bid_count = 0;
   }
-  var item_id = data.item.id;
+  var item_id = auction.item.id;
 
    var mvvm = function MyViewModel() {
-        this.participant_count = participant_count;
-        this.max_members = max_members;
         this.images = images;
         this.active_image = images[0].url;
-        this.auction = data
-        this.auction_title = data.title;
-        this.auction_item_price = ToPersian(formatCurrency(data.item.price));
-        this.auction_register_price = ToPersian(formatCurrency(data.base_price));
+        this.auction = auction;
         this.people = people;
-        this.auction_rate = ToPersian(data.ratio);
         this.auction_end_date = end_date_date;
         this.auction_end_time = end_date_time;
-        this.auction_item_id = item_id;
         this.now_date = now_date_date;
-        this.before_start = before_start_text;
     }
     ko.applyBindings(mvvm);
 
@@ -338,13 +321,14 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('connect', function() {
 		 console.log('connected');
      socket.emit('join', {'auction_id':auction_id});
-     getStatus();
+
  });
 
  var timer = setInterval(getStatus,10000);
  var countdownTimer = null
 
  function getStatus() {
+	 console.log('syncing... : '+ "{{current_user.id}}" );
    socket.emit('status',{'auction_id':auction_id});
  }
  var start_miliseconds = 0;
@@ -370,14 +354,21 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
      if ( millisecond  >= 0) {
 
-         if ( millisecond  < time_left / 2 ) {
+         if ( millisecond  < (60 * 1000) && millisecond  > (10 * 1000) ) {
              $('#tiles').removeClass('color-full');
              $('#tiles').addClass('color-half');
-         }
-         if (millisecond < 10 * 1000) {
+         } else{
+  					 $('#tiles').addClass('color-full');
+  					 $('#tiles').removeClass('color-half');
+  				}
+				 if ( millisecond  < (10 * 1000) ) {
              $('#tiles').removeClass('color-half');
              $('#tiles').addClass('color-empty');
          }
+				 else{
+ 					 $('#tiles').addClass('color-full');
+ 					 $('#tiles').removeClass('color-empty');
+ 				 }
 
          var hours = parseInt(millisecond / (3600*1000));
          var left_millisecond = millisecond - (hours * 3600*1000);
@@ -404,7 +395,8 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  socket.on('join', function(data) {
    console.log(data);
-   time_left = data.deadline * 1000;
+   start_miliseconds = data.deadline * 1000;
+	 getStatus();
  });
 
  socket.on('update_view', function(data) {
@@ -426,6 +418,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
       $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(active_user.avatar)[0])
     }
    if(users){
+		 console.log(users);
      rowIndex = 0;
      people([]);
      $.each(users,function(key,val){
@@ -433,7 +426,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
        name = val.username ;
        avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
        row = ToPersian(++rowIndex);
-       price = val.current_offer_price ? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
+       price = ToPersian(formatCurrency(val.current_offer_price)); //? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
        person = new Person(name,avatar,its_you,row,price);
        people.push(person);
      });
@@ -466,8 +459,9 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
        its_you = val.id == current_user_id ? true : false;
        name = val.username ;
        avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-       row = ++rowIndex;
-       person = new Person(name,avatar,its_you,ToPersian(row));
+			 row = ToPersian(++rowIndex);
+			 price = ToPersian(formatCurrency(val.current_offer_price)); //? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
+       person = new Person(name,avatar,its_you,row,price);
        people.push(person);
      });
      people.valueHasMutated();
@@ -499,7 +493,6 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  $("#offer").on("click", function(event) {
    socket.emit('bid', {'auction_id':auction_id});
-   getStatus();
  });
 
 

@@ -75,7 +75,6 @@ class UserInformation(Resource):
                 avatars.append({"name":filename})
 
         info = {
-            "credit": str(credit),
             "total_discount": str(total_discount),
             "won_auctions": len(won_auctions),
             "total_boughts": len(bought_items),
@@ -399,8 +398,8 @@ class UserCheckoutConfirm(Resource):
             shipment.payment_id = pid
             shipment.status = ShipmentStatus.IN_STORE
             shipment.shipment_method = shipment_method
-            shipment.shipment_method_id = shipment_method_id 
-            
+            shipment.shipment_method_id = shipment_method_id
+
             db.session.add(shipment)
             db.session.commit()
 
@@ -408,8 +407,8 @@ class UserCheckoutConfirm(Resource):
 
             db.session.add(order)
             db.session.commit()
-        
-        
+
+
         payment.amount = final_price
 
         db.session.add(payment)
@@ -425,23 +424,27 @@ class UserApplyPayment(Resource):
     @login_required
     def get(self,pid):
         payment = Payment.query.get(pid)
+
+        unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).first()
         if(payment.status == PaymentStatus.PAID):
 
             order = Order.query.filter_by(payment_id=payment.id).first()
-            user_plan = UserPlan.query.filter_by(payment_id=payment.id).first()
 
             if(order):
                 pass
-            elif(user_plan):
-                current_user.auctions.append(user_plan.auction)
-                current_user.user_plans.append(user_plan)
+            elif(unpaid_user_plan):
+                if(not current_user.has_auction(unpaid_user_plan.auction)):
+                    current_user.auctions.append(unpaid_user_plan.auction)
             else:
                 current_user.credit += payment.amount
+
             db.session.add(current_user)
             db.session.commit()
             msg = "پرداخت شما با موفقیت انجام شد"
             return make_response(jsonify({"success":True,"message":msg,"token":payment.ref_id}),200)
         else:
+            unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).delete()
+            db.session.commit()
             msg = "پرداخت شما موفقیت آمیز نبود"
             return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),400)
 
@@ -452,7 +455,7 @@ class UserUnpaidOrders(Resource):
         unpaid_orders = Order.query.filter_by(status=OrderStatus.UNPAID, user_id = current_user.id).all()
         order_schema = OrderSchema(many=True)
         return make_response(jsonify(order_schema.dump(unpaid_orders)), 200)
-        
+
 
 class UserUnpaidPayments(Resource):
 

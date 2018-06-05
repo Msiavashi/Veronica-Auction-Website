@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
@@ -19,7 +23,11 @@ class AuctionPlan(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        return self.plan.title + " " + self.auction.title
+        try:
+            return self.plan.title + " " + self.auction.title
+        except Exception as e:
+            return " بدون حراجی "
+
 
 class AuctionPlanSchema(Schema):
     id = fields.Int()
