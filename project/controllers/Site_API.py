@@ -132,3 +132,19 @@ class UserContactUs(Resource):
         flash("پیام با موفقیت ارسال شد")
 
         return redirect(url_for('index'))
+
+
+class PaymentMethods(Resource):
+
+    def get(self):
+        payment_methods = PaymentMethod.query.all()
+        payment_methods_schema = PaymentMethodSchema(many=True)
+        return make_response(jsonify(payment_methods_schema.dump(payment_methods)), 200)
+
+
+class ShipmentMethods(Resource):
+
+    def get(self):
+        shipment_methods = ShipmentMethod.query.all()
+        shipment_methods_schema = ShipmentMethodSchema(many=True)
+        return make_response(jsonify(shipment_methods_schema.dump(shipment_methods)), 200)
