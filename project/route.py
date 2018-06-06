@@ -80,7 +80,7 @@ class Route():
     def participate(aid):
         if(not current_user.has_auction(aid)):
             return render_template('site/iframes/package.html',auction_id=aid)
-        return render_template('site/iframes/quickview.html',auction_id=aid)
+        return redirect(url_for('viewauction',aid=aid))
 
     @app.route("/instantview/<int:aid>")
     @login_required
