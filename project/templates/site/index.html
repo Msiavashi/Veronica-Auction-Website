@@ -10,7 +10,8 @@
 					</ul>
 				</div>
 			</div>
-			<div class="col-md-12 col-sm-12 col-xs-12">
+			
+			<div data-bind="if: ads.length" class="col-md-12 col-sm-12 col-xs-12">
 				<div class="wrap-banner-slider1">
 					<div class="banner-slider banner-slider1">
 						<div class="wrap-item" data-bind='foreach: ads' data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">

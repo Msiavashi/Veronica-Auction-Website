@@ -343,6 +343,8 @@ class UserAuctionLikes(Resource):
             return make_response(jsonify({"success":"true","message":"حراجی به علاقمندی های شما اضافه شد"}),200)
         else:
             return make_response(jsonify({"message":"برای لایک کردن باید به سایت وارد شوید"}),400)
+
+    #TODO: create new Route for this
     def delete(self):
         if current_user.is_authenticated:
             data = request.get_json(force=True)
@@ -355,27 +357,11 @@ class UserAuctionLikes(Resource):
         else:
             return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
 
-class PaymentMethods(Resource):
-
-    def get(self):
-        payment_methods = PaymentMethod.query.all()
-        payment_methods_schema = PaymentMethodSchema(many=True)
-        return make_response(jsonify(payment_methods_schema.dump(payment_methods)), 200)
-
-
-class ShipmentMethods(Resource):
-
-    def get(self):
-        shipment_methods = ShipmentMethod.query.all()
-        shipment_methods_schema = ShipmentMethodSchema(many=True)
-        return make_response(jsonify(shipment_methods_schema.dump(shipment_methods)), 200)
-
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
     @login_required
     def post(self, pid):
-        print request.form
         payment_method_id = request.form.get('payment_method_id')
         shipment_method_id = request.form.get('shipment_method_id')
         final_price = request.form.get('final_price')
