@@ -16,7 +16,6 @@ import time
 from project import socketio
 from flask_socketio import emit, join_room, leave_room
 
-
 @socketio.on('sync_timers')
 def sync_timers():
     room = 'index'

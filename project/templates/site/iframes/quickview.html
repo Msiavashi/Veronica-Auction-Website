@@ -147,6 +147,7 @@ var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
 var time_left = ko.observable();
 var time_difference = ko.observable();
+var is_registered = ko.observable();
 
 function Person(name,avatar,its_me,row,price) {
     var self = this;
@@ -162,6 +163,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   product = data.product[0]
   plan = data.plan[0]
   auction = data.auction[0]
+
 	console.log(auction);
 
   var full_date = null
@@ -243,7 +245,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      socket.emit('join', {'auction_id':auction_id});
  });
 
- var timer = setInterval(getStatus,10000);
+ var timer = setInterval(getStatus,1000);
  var countdownTimer = null
 
  function getStatus() {

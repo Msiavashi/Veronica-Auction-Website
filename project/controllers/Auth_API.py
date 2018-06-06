@@ -68,13 +68,13 @@ class UserLogin(Resource):
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
             login_user(current_user,remember=True)
-            next = request.args.get('next')
+
             # Set the JWT cookies in the response
             resp = jsonify({
                 'message': 'Logged in as {}'.format(current_user.username),
                 'access_token': access_token,
-                'refresh_token': refresh_token,
-                'next':next})
+                'refresh_token': refresh_token
+                })
 
             '''
                 TODO: FIX THIS

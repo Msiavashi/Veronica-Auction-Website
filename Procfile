@@ -1,4 +1,4 @@
-uwsgi : nohup uwsgi --socket 127.0.0.1:8080 -w runserver:app &
+uwsgi : nohup uwsgi --socket 127.0.0.1:8000 -w runserver:app &
 flask_sockets local : gunicorn -w 4 -b 127.0.0.1:8000 -k flask_sockets.worker --reload runserver:app
 socketio local :gunicorn --worker-class eventlet -w 1 runserver:app --reload
 

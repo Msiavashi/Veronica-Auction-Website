@@ -162,10 +162,9 @@ $('#place_order').on('click',function(){
 				alert(data.message)
 				if(data.type=="redirect_to_bank"){
 					window.parent.location = "/confirm/payment/"+data.pid;
-					window.parent.reload();
 				}
 				else {
-					window.parent.location.reload();
+					window.parent.location = "/view/auction/"+auction_id;
 				}
     }
 	});

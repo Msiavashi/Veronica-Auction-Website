@@ -37,9 +37,16 @@ class Route():
             return redirect('/')
         next = request.args.get('next')
 
-        if next and ( "participate" in next or "quickview" in next):
+        if next and ( "participate" in next or "quickview" in next or "auction" in next):
             return render_template('site/iframes/ilogin.html', next=next)
+
         return render_template('site/login.html',next=next)
+
+    @app.route('/viewauction/<int:aid>')
+    def viewauctionlogin(aid):
+        return render_template('site/iframes/ilogin.html',next="/view/auction/"+str(aid))
+
+
 
     @app.route('/ilogin')
     def ilogin():
@@ -80,7 +87,7 @@ class Route():
     def participate(aid):
         if(not current_user.has_auction(aid)):
             return render_template('site/iframes/package.html',auction_id=aid)
-        return redirect(url_for('viewauction',aid=aid))
+        return redirect(url_for('viewAuction',aid=aid))
 
     @app.route("/instantview/<int:aid>")
     @login_required

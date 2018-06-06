@@ -88,14 +88,13 @@
 
 									{%if current_user.is_authenticated%}
 									<div data-bind="if:is_participant">
-										<a data-bind="attr:{href:link}" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+										<a data-bind="attr:{href:link}" class="btn-rect white bg-color radius"><span>نمایش حراجی</span></a>
 									</div>
 									<div data-bind="ifnot:is_participant">
 										<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
 									</div>
 									{%else%}
-									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
-									<!-- <a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a> -->
+										<a data-bind="attr:{href : 'view/auction/'+id}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
 									{%endif%}
 
 								</div>
@@ -314,7 +313,7 @@ var views = [];
 var categories = [];
 var alldatareveived = false;
 
-function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link) {
+function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,is_participant) {
     var self = this;
 		self.id = id;
 		self.title = ko.observable(title);
@@ -327,6 +326,7 @@ function Auction(id,title,description,deadline,participant_count,max_members,bas
 		self.price = ko.observable(price);
 		self.image = ko.observable(images);
 		self.link = ko.observable(link);
+		self.is_participant = ko.observable(is_participant);
 }
 
 function Category(title,auctions) {
