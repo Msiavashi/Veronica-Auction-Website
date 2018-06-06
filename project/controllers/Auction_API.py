@@ -45,6 +45,9 @@ class AuctionUserParticipation(Resource):
         payment_method = PaymentMethod.query.get(payment_method_id)
 
         amount = request.form.get('amount')
+        if not amount:
+            return make_response(jsonify({'success':False,"reason":"پلنی برای این حراجی تعریف نشده است"}),400)
+
 
         auction = Auction.query.get(auction_id)
 

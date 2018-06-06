@@ -2,6 +2,7 @@
 {% block title %} بردیتو | شرکت در حراجی {% endblock %}
 {% block content %}
 <input type="hidden" id="auction_id" value="{{auction_id}}">
+<input type="hidden" value="{{next}}" id="next">
 <div class="Package">
 	<div class="container">
 		<div class="product-quickview woocommerce">
@@ -83,6 +84,7 @@
 {{ super() }}
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script>
+next = $('#next').val();
 var auction_id = $('#auction_id').val();
 var plan_id = ko.observable();
 var payment_method_id = ko.observable();
@@ -163,7 +165,12 @@ $('#place_order').on('click',function(){
 					window.parent.reload();
 				}
 				else {
-					window.parent.location.reload();
+					if(next!="None"){
+							window.location = next;
+
+					}else {
+						window.parent.location.reload();
+					}
 				}
     }
 	});

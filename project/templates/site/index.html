@@ -87,14 +87,15 @@
 								<div class="flash-timer">
 
 									{%if current_user.is_authenticated%}
-									<div data-bind="if:is_participant">
-										<a data-bind="attr:{href:link}" class="btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-									</div>
-									<div data-bind="ifnot:is_participant">
+									<!-- <div data-bind="if:is_participant">
 										<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-									</div>
+									</div> -->
+									<!-- <div data-bind="ifnot:is_participant"> -->
+									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+									<!-- </div> -->
 									{%else%}
-									<a href="/login" class="btn-rect white bg-color radius"><span>ورود</span></a>
+									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
+									<!-- <a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a> -->
 									{%endif%}
 
 								</div>
@@ -313,7 +314,7 @@ var views = [];
 var categories = [];
 var alldatareveived = false;
 
-function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,is_participant) {
+function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link) {
     var self = this;
 		self.id = id;
 		self.title = ko.observable(title);
@@ -326,7 +327,6 @@ function Auction(id,title,description,deadline,participant_count,max_members,bas
 		self.price = ko.observable(price);
 		self.image = ko.observable(images);
 		self.link = ko.observable(link);
-		self.is_participant = ko.observable(is_participant);
 }
 
 function Category(title,auctions) {
@@ -383,13 +383,6 @@ function dealModel() {
 	$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
 
 		$.each(data[0],function(key,val){
-			is_participant = false;
-			$.each(val.participants,function(k,v) {
-				if(v.id=="{{current_user.id}}"){
-					is_participant = true;
-					return;
-				}
-			});
 			auction = new Auction(
 				val.id,
 				val.title ,
@@ -401,8 +394,7 @@ function dealModel() {
 				ToPersian(formatCurrency(val.max_price)),
 				ToPersian(formatCurrency(val.item.price)),
 				product_image_path + ClearifyNames(val.item.images)[0],
-				is_participant ? "/view/auction/"+val.id : "/participate/"+ val.id,
-				is_participant,
+				"/participate/"+ val.id,
 			);
 			auctions.push(auction);
 		});

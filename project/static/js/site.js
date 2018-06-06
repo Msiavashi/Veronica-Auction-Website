@@ -402,3 +402,19 @@ function triggerUpDownCart() {
 		});
 	});
 }
+
+
+function startLoading(e){
+
+    $('<div class="page-loading" id="page-loading"> \
+        <div class="bx-loading"> \
+                <div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div> \
+                <h3>لطفا صبر کنید ...</h3> \
+            </div> \
+        </div>').prependTo( $(e) );
+}
+function endLoading(){
+    $("#page-loading").fadeOut('slow', function(){
+        $(this).remove();
+    });
+}

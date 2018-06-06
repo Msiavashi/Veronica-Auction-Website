@@ -35,7 +35,7 @@ params = {
 
 
 socketio = SocketIO(**params)
-socketio.init_app(app, message_queue=REDIS_URL)
+socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet')
 jwt = JWTManager(app)
 app.debug = False
 toolbar = DebugToolbarExtension(app)

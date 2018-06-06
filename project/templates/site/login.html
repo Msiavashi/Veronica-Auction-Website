@@ -1,6 +1,7 @@
 {% extends 'site/layout.html' %}
 {% block title %} بردیتو | ورود  {% endblock %}
 {% block content %}
+
 <input type="hidden" value="{{next}}" id="next">
 <div class="content-page woocommerce">
 	<div class="container">
@@ -77,6 +78,7 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+
 <script>
 
 next = $('#next').val();
@@ -95,8 +97,9 @@ $( "#login_form" ).submit(function( event ) {
 		$(".success_container").html('ورود شما با موفقیت انجام ')
 
 		if(next!="None"){
-			window.location = next;
-		}else {
+				window.location = next;
+			}
+			else {
 			window.parent.location.reload();
 		}
   });

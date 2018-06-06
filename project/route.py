@@ -36,6 +36,9 @@ class Route():
         if current_user.is_authenticated:
             return redirect('/')
         next = request.args.get('next')
+
+        if next and ( "participate" in next or "quickview" in next):
+            return render_template('site/iframes/ilogin.html', next=next)
         return render_template('site/login.html',next=next)
 
     @app.route('/ilogin')
@@ -77,13 +80,13 @@ class Route():
     def participate(aid):
         if(not current_user.has_auction(aid)):
             return render_template('site/iframes/package.html',auction_id=aid)
-        return redirect(url_for('viewauction',aid=aid))
+        return render_template('site/iframes/quickview.html',auction_id=aid)
 
     @app.route("/instantview/<int:aid>")
-    #@login_required
+    @login_required
     def instantview(aid):
-        # if(current_user and not current_user.has_auction(aid)):
-        #     return render_template('site/iframes/package.html',auction_id=aid)
+        if(current_user and not current_user.has_auction(aid)):
+            return render_template('site/iframes/package.html',auction_id=aid)
         return render_template('site/iframes/quickview.html',auction_id=aid)
         # if(current_user.is_authenticated and not current_user.has_auction(aid)):
         # return render_template('site/iframes/quickview-guest.html',auction_id=aid)
@@ -103,8 +106,11 @@ class Route():
 
     @login_manager.unauthorized_handler
     def unauthorized():
-         next=url_for(request.endpoint,**request.view_args)
-         return render_template('site/401.html',next=next), 401
+        # next = url_for(request.endpoint,**request.view_args)
+        print request.endpoint
+        if reuquest.endpoint == "participate" or request.endpoint == "instantview":
+            next += "iframe";
+        return render_template('site/401.html',next=next), 401
 
     @app.errorhandler(404)
     def page_not_found(e):
