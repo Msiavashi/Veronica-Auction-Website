@@ -10,7 +10,7 @@
 					</ul>
 				</div>
 			</div>
-			
+
 			<div data-bind="if: ads.length" class="col-md-12 col-sm-12 col-xs-12">
 				<div class="wrap-banner-slider1">
 					<div class="banner-slider banner-slider1">
@@ -31,7 +31,7 @@
 						</div>
 					</div>
 					<!-- End Banner -->
-					<div class="sub-banner-slider">
+					<div data-bind="if: productAds.length" class="sub-banner-slider">
 						<div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]" data-bind="foreach:productAds">
 							<div class="item-sub-banner">
 								<div class="product-thumb">
