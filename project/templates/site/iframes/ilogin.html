@@ -45,15 +45,15 @@
 												<a href="#" class="color">رمز عبور خود را فراموش کرده اید؟</a>
 											</div>
 										</div>
-										<h2 class="title18 social-login-title">یا از طریق زیر وارد شوید</h2>
-										<div class="social-login-block table text-center">
-											<div class="social-login-btn">
+										<!-- <h2 class="title18 social-login-title">یا از طریق زیر وارد شوید</h2> -->
+										<!-- <div class="social-login-block table text-center"> -->
+											<!-- <div class="social-login-btn">
 												<a href="#" class="login-fb-link">Facebook</a>
 											</div>
 											<div class="social-login-btn">
 												<a href="#" class="login-goo-link">Google</a>
-											</div>
-										</div>
+											</div> -->
+										<!-- </div> -->
 									</form>
 								</div>
 							</div>
@@ -61,10 +61,10 @@
 						<div class="col-md-6 col-sm-6 col-ms-12">
 							<div class="check-address">
 								<div class="form-my-account check-register text-center">
-									<h2 class="title24 title-form-account">ثبت نام کنید!</h2>
+									<!-- <h2 class="title24 title-form-account">ثبت نام کنید!</h2>
 									<p class="desc">
 											ثبت نام در بردیتو به شما اجازه می دهد در حراجی ها شرکت کنید و به وضعیت و تاریخ سفارش خود دسترسی داشته باشید. فقط فیلدهای مربوطه را پر کنید و در هر زمان یک حساب جدید برای خود ایجاد کنید. ما فقط از شما برای اطلاعاتی که لازم است تا فرایند خرید را سریع تر و آسان تر خواهد کرد پرسیده ایم .
-									</p>
+									</p> -->
 									<a href="{{ ('/iregister') }}" class="shop-button">هم اکنون ثبت نام کنید!</a>
 								</div>
 							</div>
@@ -97,7 +97,7 @@ $( "#login_form" ).submit(function( event ) {
 				window.parent.location = '/view/auction/'+data.auction_id;
 				return ;
 			}
-			if(next.includes('participate')){
+			if(next.includes('participate') || next.includes('instantview')){
 					window.location = next;
 			}
 			if(next.includes('view/auction')){

@@ -25,8 +25,8 @@
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/jquery.mCustomScrollbar.css') }}"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/animate.css') }}"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/hover.css') }}"/>
-    	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/color-orange.css') }}" media="all"/>
-    	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/theme.css') }}" media="all"/>
+    	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/color-purple.css') }}" media="all"/>
+    	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/theme-purple.css') }}" media="all"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/responsive.css') }}" media="all"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/browser.css') }}" media="all"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rtl.css') }}" media="all"/>
@@ -39,7 +39,20 @@
 
     {% block head_tail %}
     {% endblock head_tail%}
+
+
+  <script type="text/javascript">!function(){function t(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,localStorage.getItem("rayToken")?t.src="https://app.raychat.io/scripts/js/"+o+"?rid="+localStorage.getItem("rayToken")+"&href="+window.location.href:t.src="https://app.raychat.io/scripts/js/"+o;var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}var e=document,a=window,o="ee3796c7-d732-4f36-93a3-31cf449eb95f";"complete"==e.readyState?t():a.attachEvent?a.attachEvent("onload",t):a.addEventListener("load",t,!1)}();</script>
   </head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120307926-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-120307926-1');
+  </script>
+
   <body style="background:#f4f4f4">
     <div class="wrap">
       {% block header %}
@@ -68,7 +81,7 @@
       						<div class="col-md-3 col-sm-3 col-xs-12">
       							<div class="logo logo4">
       								<h1 class="hidden">حراجی آنلاین اینترنتی</h1>
-      								<a  class="resWd" href="/"><img src="/static/images/theme/logo.jpeg" alt="" /></a>
+      								<a  class="resWd" href="/"><img src="/static/images/theme/logo.png" alt="" /></a>
       							</div>
       						</div>
       						<div class="col-md-6 col-sm-6 col-xs-12">
@@ -247,9 +260,9 @@
       								<nav class="main-nav main-nav6">
       									<ul>
       										<li class="menu-item-has-children"><a href="/">صفحه اصلی</a></li>
-      										<li class="menu-item-has-children"><a href="/view/auctions">برندگان گذشته</a></li>
-      										<li class="menu-item-has-children"><a href="/help">راهنمایی</a></li>
-      										<li class="menu-item-has-children"><a href="/contact">تماس با ما</a></li>
+      										<li class="menu-item-has-children"><a href="/view/auctions">حراجی های برگزار شده</a></li>
+      										<!-- <li class="menu-item-has-children"><a href="/help">راهنمایی</a></li> -->
+      										<!-- <li class="menu-item-has-children"><a href="/contact">تماس با ما</a></li> -->
       									</ul>
       									<a href="#" class="toggle-mobile-menu"><span></span></a>
       								</nav>
@@ -266,7 +279,7 @@
       					<div class="col-md-2 col-sm-2 col-xs-12">
       						<div class="logo">
       							<h1 class="hidden">بردیتو</h1>
-      							<a href="#"><img src="/static/images/theme/logo.jpeg" alt=""></a>
+      							<a href="#"><img src="/static/images/theme/logo.png" alt=""></a>
       						</div>
       					</div>
       					<div class="col-md-8 col-sm-8 col-xs-12">
@@ -437,8 +450,8 @@
                   <div class="menu-footer-box footer-box">
                     <h2 class="title14">سایر خدمات</h2>
                     <ul class="list-unstyled">
-                      <li><a href="/support">پشتیبانی</a></li>
-                      <li><a href="/news">اخبار</a></li>
+                      <!-- <li><a href="/support">پشتیبانی</a></li> -->
+                      <!-- <li><a href="/news">اخبار</a></li> -->
                       <li><a href="/about">درباره ما</a></li>
                       <li><a href="/contact">تماس با ما</a></li>
                     </ul>
