@@ -28,8 +28,8 @@ function rep_menu(){
 	});
 	if($(window).width()<768){
 		$('.main-nav li.menu-item-has-children>a').on('click',function(event){
-			let link = document.getElementsByClassName('tag').getAttribute('href')
-			window.open(link)
+			let link = document.getElementsByClassName('tag').getAttribute('href')  //edited
+			window.open(link) //edited
 			event.preventDefault();
 			$(this).next().stop(true,false).slideToggle();
 		});
