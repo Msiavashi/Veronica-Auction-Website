@@ -1,6 +1,17 @@
 (function($){
 "use strict"; // Start of use strict
 //Popup Wishlist
+
+
+
+	function _startIntroJs  () {  //start intro.js
+        introJs().start();
+	}
+
+	_startIntroJs()
+
+
+
 function popup_wishlist(){
 	$('.wishlist-link').on('click',function(event){
 		event.preventDefault();

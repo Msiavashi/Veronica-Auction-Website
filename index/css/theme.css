@@ -114,6 +114,45 @@ input:hover {
 .tab-pro-ajax-header h2 {
   font-size: 18px;
 }
+
+/* fallback */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+  local('MaterialIcons-Regular'),
+  url(https://example.com/MaterialIcons-Regular.woff2) format('woff2'),
+  url(https://example.com/MaterialIcons-Regular.woff) format('woff'),
+  url(https://example.com/MaterialIcons-Regular.ttf) format('truetype');
+}
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+padding-top: 5px;
+  font-size: 10px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
 .title24 {
   font-size: 24px;
 }
@@ -686,6 +725,16 @@ li.menu-item-has-children:hover > .sub-menu {
   vertical-align: top;
   z-index: 99;
 }
+
+#infoDivStyle{
+  border-left: 1px solid #e5e5e5;
+  border-right: 1px solid #e5e5e5;
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  margin: 0  15px;
+  padding: 0 15px;
+}
 .currency-language > div {
   border-left: 1px solid #e8e8e8;
   padding: 0 12px;
@@ -716,7 +765,7 @@ li.menu-item-has-children:hover > .sub-menu {
   top: 100%;
   background: #fff;
   padding: 10px;
-  width: 130px;
+  width: 150px;
   margin-top: 30px;
   visibility: hidden;
   opacity: 0;
@@ -978,7 +1027,7 @@ margin-bottom: 0;
 /*Begin Mini Cart*/
 .mini-cart-box {
   position: relative;
-  z-index: 99;
+  z-index: 999;
   display: inline-block;
 }
 .mini-cart-box:hover .mini-cart-content {
@@ -1138,6 +1187,16 @@ margin-bottom: 0;
 
 }
 /*End Mini Cart*/
+
+.infoDivStyle{
+  border-left: 1px solid #e5e5e5;
+  border-right: 1px solid #e5e5e5;
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  margin: 3px 15px;
+  padding: 0 15px;
+}
 .wishlist-box {
   border-left: 1px solid #e5e5e5;
   border-right: 1px solid #e5e5e5;
@@ -1148,7 +1207,7 @@ margin-bottom: 0;
   padding: 0 15px;
 }
 .list-checkout {
-  width: 170px;
+  width: 220px;
 }
 .list-checkout li {
   border-bottom: 1px solid #fff;
@@ -1157,11 +1216,14 @@ margin-bottom: 0;
   margin-right: 5px;
 }
 .check-cart {
-  float: right;
+  /*float: right;*/
+  display: inline-block;
+
 }
 .mini-cart-box .mini-cart-link {
   display: block;
   position: relative;
+  margin-right: 10px;
 }
 .mini-cart-link .mini-cart-icon {
   font-size: 30px;
@@ -1177,6 +1239,12 @@ margin-bottom: 0;
 	height: 20px;
 	border-radius: 100%;
 	text-align: center;
+}
+.info-link{
+  font-size: 35px;
+}
+.info-link1{
+  font-size: 23px;
 }
 .checkout-box .checkout-link,
 .wishlist-box .wishlist-top-link {
