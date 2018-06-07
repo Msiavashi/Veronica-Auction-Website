@@ -45,6 +45,24 @@
 {% block scripts %}
 {{ super() }}
 <script>
+	// var app = new Vue({
+	// 	data:{
+	// 		amount: 0
+	// 	},
+	// 	created: function(){
+	// 		self = this;
+	// 		axios.get("{{url_for('userunpaidpayments')}}")
+	// 		.then(function (response) {
+	// 			response.data.forEach(payment => {
+	// 				self.amount += parseInt(payment[0].amount);
+	// 			});
+	// 		})
+	// 		.catch(function (error) {
+	// 			console.error(error);
+	// 		});
+	// 	}
+	// });
+
 
 	function getRefID() {
 		pid = $('#pid').val();
