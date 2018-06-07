@@ -78,7 +78,6 @@ class UserLogin(Resource):
                 temp = data['next']
                 auction_id = temp.split('/')[2]
                 if(current_user.has_auction(int(auction_id))):
-                    print 'viwe auction_id'
                     redirect_to_auction = True
 
             if redirect_to_auction:
