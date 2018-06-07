@@ -22,6 +22,7 @@ parser_register.add_argument('c_password', help = 'ورود تکرار رمز ع
 parser_login = reqparse.RequestParser()
 parser_login.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
 parser_login.add_argument('password', help = 'ورود رمز عبور ضروری است', required = True)
+parser_login.add_argument('next')
 
 def can_access(f):
     if not hasattr(f, 'access_control'):
@@ -70,11 +71,30 @@ class UserLogin(Resource):
             login_user(current_user,remember=True)
 
             # Set the JWT cookies in the response
-            resp = jsonify({
-                'message': 'Logged in as {}'.format(current_user.username),
-                'access_token': access_token,
-                'refresh_token': refresh_token
-                })
+            redirect_to_auction = False
+            auction_id = 0
+
+            if data['next'] and "participate" in data['next'] :
+                temp = data['next']
+                auction_id = temp.split('/')[2]
+                if(current_user.has_auction(int(auction_id))):
+                    print 'viwe auction_id'
+                    redirect_to_auction = True
+
+            if redirect_to_auction:
+                resp = jsonify({
+                    'message': 'Logged in as {}'.format(current_user.username),
+                    'access_token': access_token,
+                    'refresh_token': refresh_token,
+                    'redirect_to_auction': redirect_to_auction,
+                    'auction_id':auction_id
+                    })
+            else:
+                resp = jsonify({
+                    'message': 'Logged in as {}'.format(current_user.username),
+                    'access_token': access_token,
+                    'refresh_token': refresh_token
+                    })
 
             '''
                 TODO: FIX THIS

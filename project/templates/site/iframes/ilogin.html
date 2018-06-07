@@ -93,8 +93,11 @@ $( "#login_form" ).submit(function( event ) {
 		$(".success_alert").removeClass('hide');
 		$(".success_container").html('ورود شما با موفقیت انجام ')
 		if(next!="None"){
+			if(data.redirect_to_auction){
+				window.parent.location = '/view/auction/'+data.auction_id;
+				return ;
+			}
 			if(next.includes('participate')){
-				alert('participate');
 					window.location = next;
 			}
 			if(next.includes('view/auction')){

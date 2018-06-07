@@ -42,11 +42,6 @@ class Route():
 
         return render_template('site/login.html',next=next)
 
-    @app.route('/viewauction/<int:aid>')
-    def viewauctionlogin(aid):
-        return render_template('site/iframes/ilogin.html',next="/view/auction/"+str(aid))
-
-
 
     @app.route('/ilogin')
     def ilogin():
