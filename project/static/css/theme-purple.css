@@ -17740,3 +17740,11 @@ ul.checkout-bar a {
 .woocommerce #tabMenu table.shop_table td .coupon {
   float:right !important
 }
+.fixed-bottom{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+}

@@ -7,7 +7,8 @@ from flask_restful import Resource, reqparse
 from project.model.user import *
 from flask_jwt_extended import (create_access_token,create_refresh_token,set_access_cookies,set_refresh_cookies)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
-from ..model import Order, Item, Payment
+from ..model import Item, Payment
+from ..model.order import *
 import json
 from ..database import db
 from project import app ,auto
@@ -100,12 +101,29 @@ class UserLogin(Resource):
             '''
             # create order on registeration
             if "orders" in session:
-                for new_order in session['orders']:
-                    new_order.user_id = current_user.id
-                    new_order.id = None
+                founded = False
+                order_schema = OrderSchema(many=True)
+                for order in session['orders']:
+                    p = order_schema.load(order)
+                    new_order = Order()
+                    item = Item.query.get(p.data[0]['item']['id'])
+                    new_order.item = item
+                    new_order.total_cost = (int(p.data[0]['item']['price']) * int(p.data[0]['total'])) - int(p.data[0]['item']['discount'])
+                    new_order.total = int(p.data[0]['total'])
+                    new_order.status = 0
+                    new_order.total_discount = int(p.data[0]['item']['discount'])
+                    new_order.user = current_user;
+                    print new_order
                     db.session.add(new_order)
                     db.session.commit()
-                session.pop('orders')       # clearing the session
+                session.pop('orders')
+
+                # for new_order in session['orders']:
+                #     new_order.user_id = current_user.id
+                #     new_order.id = None
+                #     db.session.add(new_order)
+                #     db.session.commit()
+                # session.pop('orders')       # clearing the session
 
             set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)
