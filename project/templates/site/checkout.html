@@ -65,10 +65,10 @@
                 <tr v-for="order in user_orders" class="cart_item">
                   {%raw%}
                   <td class="product-name">
-                    {{order[0].item.title}} <span class="product-quantity">× {{order[0].total}}</span>
+                    {{order[0].item.title}} <span class="product-quantity">× {{toPersian(order[0].total)}}</span>
                   </td>
                   <td class="product-total">
-                    <span class="amount">{{order[0].total_cost}} تومان</span>
+                    <span class="amount">{{toPersian(order[0].total_cost)}} تومان</span>
                   </td>
                   {%endraw%}
                 </tr>
@@ -84,7 +84,7 @@
               <tfoot>
                 <tr class="cart-subtotal">
                   <th>کل مبلغ سفارش</th>
-                  <td><strong class="amount">{%raw%}{{total_price}}{%endraw%} تومان</strong></td>
+                  <td><strong class="amount">{%raw%}{{toPersian(total_price)}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="shipping">
                   <th>نوع ارسال</th>
@@ -99,19 +99,19 @@
                 </tr>
                 <tr class="cart-subtotal">
                   <th>هزینه ارسال</th>
-                  <td><strong class="amount">{%raw%}{{ shipment_price }}{%endraw%} تومان</strong></td>
+                  <td><strong class="amount">{%raw%}{{toPersian(shipment_price)}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="cart-subtotal">
                   <th class="text-orange">تخفیف داده شده (کد تخفیف)</th>
-                  <td><strong class="amount text-orange">{%raw%}{{invitation_discount}}{%endraw%} تومان</strong></td>
+                  <td><strong class="amount text-orange">{%raw%}{{toPersian(invitation_discount)}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="cart-subtotal">
                   <th class="text-orange">تخفیف داده شده (محصول)</th>
-                  <td><strong class="amount text-orange">{%raw%}{{items_discount}}{%endraw%} تومان</strong></td>
+                  <td><strong class="amount text-orange">{%raw%}{{toPersian(items_discount)}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="order-total">
                   <th>مبلغ پرداختی نهایی</th>
-                  <td><strong><span class="amount">{%raw%}{{final_price}}{%endraw%} تومان </span></strong> </td>
+                  <td><strong><span class="amount">{%raw%}{{toPersian(final_price)}}{%endraw%} تومان </span></strong> </td>
                 </tr>
               </tfoot>
             </table>
@@ -186,11 +186,15 @@ var app = new Vue({
 
   computed: {
     final_price: function(){
-      return parseInt(this.total_price)  + parseInt(this.shipment_price) + parseInt(this.invitation_discount) + parseInt(this.items_discount);
+      return parseInt(this.total_price)  + parseInt(this.shipment_price) - parseInt(this.invitation_discount) - parseInt(this.items_discount);
     }
   },
 
   methods:{
+
+    toPersian: function(data){
+      return ToPersian(data);
+    },
 
     update_payment_id: function(payment_method_id){
       this.payment_method_id = payment_method_id;
@@ -262,6 +266,8 @@ var app = new Vue({
           self.user_orders = response.data;
           response.data.forEach(order => {
             self.total_price += parseInt(order[0].total_cost);
+            self.items_discount += parseInt(order[0].item.discount)*parseInt(order[0].total);
+            console.log(self.items_discount);
         });
       })
       .catch(function (error) {
