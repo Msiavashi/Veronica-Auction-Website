@@ -254,9 +254,42 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  }
  var start_miliseconds = 0;
 
- socket.on('auction_status',function(data) {
-   start_miliseconds = data.remained * 1000;
- });
+ socket.on('auction_status', function(data) {
+  console.log(data);
+  // server_time = new Date(data.server_time).getTime();
+  // client_time = new Date().getTime();
+  // difference = client_time - server_time;
+  // auction_time = new Date(data.auction_deadline).getTime() - difference;
+  
+  var countdown = document.getElementById("tiles"); // get tag element
+
+  getCountdown(data.remained);
+
+  function getCountdown(seconds_left){
+
+    if ( seconds_left >= 0 ) {
+
+    if ( seconds_left < ( time_left / 2))
+    {
+      $( '#tiles' ).removeClass('color-full');
+      $( '#tiles' ).addClass('color-half');
+    }
+    else {
+      $( '#tiles' ).addClass('color-full');
+      $( '#tiles' ).removeClass('color-half');
+    }
+    if ( seconds_left < 60 )
+    {
+      $( '#tiles' ).removeClass('color-half');
+      $( '#tiles' ).addClass('color-empty');
+    }
+    if( seconds_left < 10 ) {
+      $( '#tiles' ).addClass('color-half');
+      $( '#tiles' ).removeClass('color-empty');
+    }
+
+    days = pad( parseInt(seconds_left / 86400) );
+    seconds_left = seconds_left % 86400;
 
  var days, hours, minutes, seconds; // variables for time units
 
