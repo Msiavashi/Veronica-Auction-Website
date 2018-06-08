@@ -2,12 +2,10 @@
 {% block title %} بردیتو | حراجی محصول {% endblock %}
 {% block content %}
 <input type="hidden" id="auction" value="{{auction_id}}">
-<div id="app" class="content-page">
+<div class="content-page">
 	<div class="container">
 		<div class="bread-crumb radius">
-			{%raw%}
-			<a href="/">خانه</a> <span>{{auction.title}}</span>
-			{%endraw%}
+			<a href="/">خانه</a> <span data-bind="text: auction.title">نام محصول</span>
 		</div>
 		<!-- End Bread Crumb -->
 		<div class="row">
@@ -17,25 +15,20 @@
 					<div>
 						<div class="row">
 							<div class="col-md-4 col-sm-12 col-xs-12">
-								{%raw%}
 								<div class="product-extra-link2 rightList">
-									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times">{{convertToPersian(auction.id)}}</i></a>
-			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span></span>{{convertToPersian(auction.participants.length)}}<span>{{convertToPersian(auction.max_members)}}</span></a>
-								</div>
-								{%endraw%}
+									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times" data-bind="text:ToPersian(auction.ratio)">ضریب</i></a>
+			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span  data-bind="text: ToPersian(auction.participants.length)"></span> از <span data-bind="text: ToPersian(auction.max_members)"></span></a>
+			          </div>
 								<div class="detail-gallery">
 									<div class="mid">
-										<img v-bind:src="active_image" alt=""/>
+										<img data-bind="attr:{src: active_image}" alt=""/>
 									</div>
 									<div class="gallery-control">
 										<a href="#" class="prev"><i class="fa fa-angle-left"></i></a>
 										<div class="carousel">
-											<ul v-for="image in images">
-												<li><a href="#"><img v-bind:src="image.url" alt=""/></a></li>
-											</ul>
-											<!-- <ul data-bind="foreach: images">
+											<ul data-bind="foreach: images">
 												<li><a href="#"><img data-bind="attr:{src: url}" alt=""/></a></li>
-											</ul> -->
+											</ul>
 										</div>
 										<a href="#" class="next"><i class="fa fa-angle-right"></i></a>
 									</div>
@@ -66,32 +59,31 @@
 									</div>
 								</div>
 							</div>
-							{%raw%}
 							<div class="col-md-8 col-sm-12 col-xs-12">
 								<div class="detail-info">
-									<h2 class="title-detail">{{auction.title}}</h2>
+									<h2 class="title-detail" data-bind="text: auction.title"></h2>
 									<div class="product-price">
 										<!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
 										<div class="textboX">
-											<div class="textboXX"><p> قیمت محصول : <span></span> {{convertToPersian(_formatCurrency(auction.item.price))}} تومان <div> &nbsp  </div></p></div>
+											<div class="textboXX"><p> قیمت محصول : <span data-bind="text:ToPersian(formatCurrency(auction.item.price))"></span> تومان <div> &nbsp  </div></p></div>
 											<div class="upArrow"></div>
 										</div>
 										<div class="textboX">
 											<div class="textboXX">
-												<p id="auction_register_price">شروع حراجی : <span data-bind="text: ">{{convertToPersian(_formatCurrency(auction.base_price))}}</span> تومان
-												<div>  سقف حراجی : <span></span>{{convertToPersian(_formatCurrency(auction.max_price))}} تومان </p></div>
+												<p id="auction_register_price">شروع حراجی : <span data-bind="text: ToPersian(formatCurrency(auction.base_price))"></span> تومان
+												<div>  سقف حراجی : <span data-bind="text: ToPersian(formatCurrency(auction.max_price))"></span> تومان </p></div>
 											</div>
 											<div class="upArrow"></div>
 										</div>
 									</div>
 									<div class="detail-extralink">
-										<div class="list-member-bid" v-for="person in people">
-											<p class="item-Bid" data-bind:sytle="{ 'YOU' : its_me  }">
-												<img v-bind:src"avatar"/>
+										<div class="list-member-bid" data-bind="foreach: people">
+											<p class="item-Bid" data-bind="css: { 'YOU' : its_me  }">
+												<img data-bind="attr:{src: avatar}"/>
 												<br class="resWd"/>
-												<label>{{person.name}}</label>
-												<span>{{person.row}}</span>
-												<b>{{offer.price}}</b>
+												<label data-bind="text:name"></label>
+												<span data-bind="text:row"></span>
+												<b data-bind="text:offer_price"></b>
 											</p>
 										</div>
 
@@ -104,7 +96,7 @@
 											<input type="hidden" id="set-time" value="1"/>
 											<div id="countdown">
 												<div id='tiles' class="color-full"></div>
-												<div class="countdown-label">{{now_date}}</div>
+												<div class="countdown-label" data-bind="text:now_date"></div>
 											</div>
 											<a class="addcart-link" href="#"  onclick="event.preventDefault();" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count" data-bind="text: offer_bid_count ? ToPersian(offer_bid_count) : ToPersian(0)"></div></a>
 										</div>
@@ -120,10 +112,10 @@
 										</div>
 
 										<div class="detail-countdowns">شروع حراجی : </span>
-											<span>{{auction_end_date}}</span>
-											<i aria-hidden="true" class="fa fa-clock-o"></i><span>{{auction_end_time}}</span>
+			                <span data-bind="text:auction_end_date"></span>
+			                <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
 			              </div>
-									</div>
+									</div
 									<div class="detail-extralink mt-0">
 										<div class="product-extra-link2">
 											<a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" data-bind="attr:{value:auction.item.id}"></i> اضافه به سبد</a>
@@ -135,7 +127,6 @@
 								<!-- Detail Info -->
 							</div>
 						</div>
-						{%endraw%}
 					</div>
 
 					<div class="tab-detal hoz-tab-detail">
@@ -214,7 +205,6 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/owl.carousel.js')}} "></script>
@@ -226,6 +216,17 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 
 <script>
+
+
+	var app = new Vue({
+		data: {
+			auction_id: 
+		},
+
+		created: {
+
+	}
+	});
 
 var auction_id = $('#auction').val();
 var people = ko.observableArray([]);
@@ -277,7 +278,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
     });
   });
 
-
   images[0].active=true;
   if(plan){
     offer_bid_count = plan.max_offers ;
@@ -285,42 +285,18 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
   else {
     offer_bid_count = 0;
   }
-	var item_id = auction.item.id;
+  var item_id = auction.item.id;
 
-
-	var app = new Vue({
-		el: "#app",
-		data:{
-			images: images,
-			active_image: images[0].url,
-			auction:auction,
-			people: people,
-			auction_end_date: end_date_date,
-			auction_end_time: end_date_time,
-      now_date: now_date_date 
-		},
-
-		methods: {
-			convertToPersian: function(string){
-				return ToPersian(string);
-			},
-			_formatCurrency: function(price){
-				return formatCurrency(price);
-			}
-		}
-	})
-
-  //  var mvvm = function MyViewModel() {
-  //       this.images = images;
-  //       this.active_image = images[0].url;
-  //       this.auction = auction;
-  //       this.people = people;
-  //       this.auction_end_date = end_date_date;
-  //       this.auction_end_time = end_date_time;
-  //       this.now_date = now_date_date;
-  //   }
-	// 	ko.applyBindings(mvvm);
-		
+   var mvvm = function MyViewModel() {
+        this.images = images;
+        this.active_image = images[0].url;
+        this.auction = auction;
+        this.people = people;
+        this.auction_end_date = end_date_date;
+        this.auction_end_time = end_date_time;
+        this.now_date = now_date_date;
+    }
+    ko.applyBindings(mvvm);
 
   if($('.detail-gallery').length>0){
     $('.detail-gallery').each(function(){
@@ -349,7 +325,6 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
     });
   }
 });
-
 
 var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
@@ -563,8 +538,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
          }
      	}
  		};
-	 });
-	 
+ 	});
 axios.post("{{url_for('userauctionview')}}", {
   "aid": '{{auction_id}}'
 })
