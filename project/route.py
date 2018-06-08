@@ -35,11 +35,11 @@ class Route():
     def account_login():
         if current_user.is_authenticated:
             return redirect('/')
+
         next = request.args.get('next')
 
-        if next and ( "participate" in next or "quickview" in next or "auction" in next):
+        if next and ( "participate" in next or "instantview" in next):
             return render_template('site/iframes/ilogin.html', next=next)
-
         return render_template('site/login.html',next=next)
 
 

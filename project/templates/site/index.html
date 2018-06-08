@@ -1,6 +1,6 @@
 {% extends 'site/layout.html' %}
 {% block content %}
-<div class="container">
+<div id="app" class="container">
 	<div class="content-top1">
 		<div class="row">
 			<div class="col-md-3 hidden-sm hidden-xs" style="display:none">
@@ -160,12 +160,27 @@
 									</div>
 								</div>
 								<div class="product-extra-link2">
-									{% if current_user.is_authenticated %}
+									{%if current_user.is_authenticated%}
+									<div data-bind="if:is_participant">
+										<a data-bind="attr:{href:link}" class="addcart-link"><span>نمایش حراجی</span></a>
+										<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+
+									</div>
+									<div data-bind="ifnot:is_participant">
+										<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
+										<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+									</div>
+
+									{%else%}
+										<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
+									{%endif%}
+
+									<!-- {% if current_user.is_authenticated %}
 									<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe">شرکت در حراجی</a>
 									<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 									{% else %}
 									<a href="/ilogin" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
-									{% endif %}
+									{% endif %} -->
 								</div>
 							</div>
 						</div>
@@ -201,12 +216,20 @@
 									</div>
 								</div>
 								<div class="product-extra-link2">
-									{% if current_user.is_authenticated %}
-									<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe">شرکت در حراجی</a>
-									<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
-									{% else %}
-									<a href="/ilogin" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
-									{% endif %}
+									{%if current_user.is_authenticated%}
+									<div data-bind="if:is_participant">
+										<a data-bind="attr:{href:link}" class="addcart-link"><span>نمایش حراجی</span></a>
+										<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+
+									</div>
+									<div data-bind="ifnot:is_participant">
+										<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
+										<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+									</div>
+
+									{%else%}
+										<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
+									{%endif%}
 								</div>
 							</div>
 						</div>
@@ -267,8 +290,8 @@
 					<div class="deal-pro18">
 						<div class="product-thumb">
 							<a data-bind="attr:{href : '/instantview/'+id}" class="quickview-link fancybox.iframe product-thumb-link zoomout-thumb">
-								<img data-bind="attr:{src: product_image_path+'/'+ClearifyNames(item.images)[0] }" alt="">
-								<img data-bind="attr:{src: product_image_path+'/'+ClearifyNames(item.images)[0] }" alt="">
+								<img data-bind="attr:{src: image }" alt="">
+								<img data-bind="attr:{src: image }" alt="">
 							</a>
 							<a data-bind="attr:{href : '/instantview/'+id}" class="quickview-link plus pos-middle fancybox.iframe">مشاهده سریع</a>
 						</div>
@@ -276,15 +299,27 @@
 						<div class="product-info">
 							<div class="product-price">
 								<ins>شروع از : <span data-bind="text:ToPersian(formatCurrency(base_price))"></span></ins>
-								{% if current_user.is_authenticated %}
+								<!-- {% if current_user.is_authenticated %}
 								<a data-bind="attr:{href : '/participate/'+id}"  class="quickview-link fancybox.iframe addcart-link bg-color white radius">ثبت نام</a>
 								{% else %}
 								<a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
-								{% endif %}
+								{% endif %} -->
+
+								{%if current_user.is_authenticated%}
+								<div data-bind="if:is_participant">
+									<a data-bind="attr:{href:link}" class="btn-rect white bg-color radius"><span>نمایش حراجی</span></a>
+								</div>
+								<div data-bind="ifnot:is_participant">
+									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+								</div>
+								{%else%}
+									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
+								{%endif%}
+
 							</div>
 						</div>
 						<div class="deal-timer18 poly-box">
-							<div class="flash-countdown timer" data-bind='attr:{"data-timer" : remained_time }'></div>
+							<span data-bind='text : deadline '></span>
 						</div>
 					</div>
 					<!-- ko text: triggerSlider($($element.parentElement)) -->
@@ -300,6 +335,11 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 
 <script>
@@ -352,7 +392,35 @@ function dealModel() {
 			$.getJSON("api/site/category/"+val.id+"/auctions", function(innerData) {
 				aucs = []
 				$.each(innerData.auctions[0],function(ky,vl) {
-					aucs.push(vl)
+					is_participant = false;
+					$.each(vl.participants,function(k,v) {
+						if(v.id=="{{current_user.id}}"){
+							is_participant = true;
+							return;
+						}
+					});
+					console.log(vl.start_date);
+
+			    var deadline = new Date(vl.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+			    full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+			    full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+					auction_date = full_date + " ساعت : "+full_hour;
+
+					auction = new Auction(
+						vl.id,
+						vl.title ,
+						vl.description ,
+						auction_date,
+						ToPersian(vl.participants.length),
+					  ToPersian(vl.max_members),
+						ToPersian(formatCurrency(vl.base_price)),
+						ToPersian(formatCurrency(vl.max_price)),
+						ToPersian(formatCurrency(vl.item.price)),
+						product_image_path + ClearifyNames(vl.item.images)[0],
+						is_participant ? "/view/auction/"+vl.id : "/participate/"+ vl.id,
+						is_participant,
+					);
+					aucs.push(auction)
 				});
 				category = new Category(val.title,aucs);
 				OnDataReady(category);
@@ -413,6 +481,14 @@ function dealModel() {
 
 	$.getJSON( "{{url_for('sitemostpopularauctions')}}", function( data ) {
 		$.each(data[0],function(key,val){
+			is_participant = false;
+			$.each(val.participants,function(k,v) {
+				if(v.id=="{{current_user.id}}"){
+					is_participant = true;
+					return;
+				}
+			});
+
 			auction =
 			{
 				title : val.title ,
@@ -425,7 +501,8 @@ function dealModel() {
 				price : ToPersian(formatCurrency(val.item.price)),
 				image : product_image_path + ClearifyNames(val.item.images)[0],
 				instance_link : "/instantview/"+ val.id,
-				link : "/participate/"+ val.id
+				link : is_participant ? "/view/auction/"+val.id : "/participate/"+ val.id,
+				is_participant,
 			};
 			populars.push(auction);
 		});
@@ -434,6 +511,14 @@ function dealModel() {
 
 	$.getJSON( "{{url_for('sitemostviewedauctions')}}", function( data ) {
 		$.each(data[0],function(key,val){
+			is_participant = false;
+			$.each(val.participants,function(k,v) {
+				if(v.id=="{{current_user.id}}"){
+					is_participant = true;
+					return;
+				}
+			});
+
 			auction =
 			{
 				title : val.title ,
@@ -446,7 +531,8 @@ function dealModel() {
 				price : ToPersian(formatCurrency(val.item.price)),
 				image : product_image_path + ClearifyNames(val.item.images)[0],
 				instance_link : "/instantview/"+ val.id,
-				link : "/participate/"+ val.id
+				link : is_participant ? "/view/auction/"+val.id : "/participate/"+ val.id,
+				is_participant,
 			};
 			views.push(auction);
 		});
@@ -459,6 +545,26 @@ ko.applyBindings(new dealModel());
 $(document).ready(function(){
 	sleep(5000);
 });
+
+
+// var app = new Vue({
+// 	el: "#app",
+// 	data:{
+// 		seen_auctions: []
+// 	},
+// 	created: function(){
+// 		var self = this;
+// 		axios.get("{{url_for('userauctionview')}}")
+// 			.then(function (response) {
+// 			self.seen_auctions = response.data;
+// 			console.log(response);
+// 			})
+// 			.catch(function (error) {
+// 				console.log("failed");
+// 				console.error(error);
+// 			});
+// 	}
+// });
 
 </script>
 {% endblock scripts %}

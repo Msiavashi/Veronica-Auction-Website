@@ -205,7 +205,8 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/owl.carousel.js')}} "></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.jcarousellite.js')}} "></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.elevatezoom.js')}} "></script>
@@ -215,6 +216,17 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 
 <script>
+
+
+	var app = new Vue({
+		data: {
+			auction_id: 
+		},
+
+		created: {
+
+	}
+	});
 
 var auction_id = $('#auction').val();
 var people = ko.observableArray([]);
@@ -527,7 +539,15 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      	}
  		};
  	});
-
+axios.post("{{url_for('userauctionview')}}", {
+  "aid": '{{auction_id}}'
+})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((respones)=>{
+		console.error(response);
+	});
 </script>
 
 {% endblock scripts %}

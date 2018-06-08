@@ -35,13 +35,13 @@
 								</td>
 								<td class="product-quantity">
 									<div class="detail-qty border radius">
-										<a href="#" class="qty-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
-										<span class="qty-val" data-bind="text:total"></span>
-										<a href="#" class="qty-up"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
+										<a href="#" id="caret_up" class="qty-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
+										<span class="" data-bind="text:total"></span>
+										<a href="#" id="caret_down" class="qty-up"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
 									</div>
 								</td>
 								<td class="product-subtotal">
-									<span class="amount">۴،۰۰۰،۰۰۰ تومان</span>
+									<span class="amount" data-bind="text: ToPersian(formatCurrency((item.price - item.discount) * total))" >۴،۰۰۰،۰۰۰ تومان</span>
 								</td>
 							</tr>
 							<!-- ko text: triggerUpDownCart() -->
@@ -70,19 +70,27 @@
 							<tbody>
 								<tr class="cart-subtotal">
 									<th>کل مبلغ سفارش</th>
-									<td><strong class="amount">۴،۹۰۰،۰۰۰ تومان</strong></td>
+									{%raw%}
+									<td><strong class="amount">{{toPersian(total_items_price)}} تومان</strong></td>
+									{%endraw%}
 								</tr>
 								<tr class="cart-subtotal">
 									<th class="text-orange">تخفیف داده شده (کد تخفیف)</th>
-									<td><strong class="amount text-orange">۴۰،۰۰۰ تومان</strong></td>
+									{%raw%}
+									<td><strong class="amount text-orange">{{toPersian(invitation_discount)}} تومان</strong></td>
+									{%endraw%}
 								</tr>
 								<tr class="cart-subtotal">
 									<th class="text-orange">تخفیف داده شده (محصول)</th>
-									<td><strong class="amount text-orange">۲،۰۰۰،۰۰۰ تومان</strong></td>
+									{%raw%}
+									<td><strong class="amount text-orange">{{toPersian(items_discount)}} تومان</strong></td>
+									{%endraw%}
 								</tr>
 								<tr class="order-total">
 									<th>مبلغ پرداختی نهایی</th>
-									<td><strong><span class="amount">۲،۹۰۰،۰۰۰ تومان</span></strong> </td>
+									{%raw%}
+									<td><strong><span class="amount">{{toPersian(final_price)}} تومان</span></strong> </td>
+									{%endraw%}
 								</tr>
 							</tbody>
 						</table>
@@ -110,37 +118,41 @@ var app = new Vue({
 
   el: '#app',
 
-  methods:{
-    handleSubmit: function(){
-		if ('{{current_user.id}}'){
-			axios.get("{{url_for('userunpaidorders')}}")
-				.then(function (response) {
-					if (response.status == 20){
-						window.location = "url_for('user')"
-					}
-					// $("#confirm").submit();
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
-			}
-		else{
-			$("#confirm").submit();
-		}
+  data:{
+    user_orders: [],
+    user: "{{current_user.id}}",
+    invitation_discount: 0,
+    items_discount: 0,
+	total_items_price: 0,
+  },
 
-    }
+  computed: {
+    final_price: function(){
+      return parseInt(this.total_items_price)  - parseInt(this.invitation_discount) - parseInt(this.items_discount);
+	}
+  },
+
+  methods:{
+    toPersian: function(data){
+      return ToPersian(data);
+	}
+  },
+
+  created: function(){
+   	self = this;
+    axios.get("{{url_for('usercartorder')}}")
+      .then(function (response) {
+          self.user_orders = response.data;
+          response.data.forEach(order => {
+			self.total_items_price += parseInt(order[0].total_cost);
+			console.log(order[0]);
+            self.items_discount += parseInt(order[0].item.discount)*parseInt(order[0].total);
+        });
+      })
+      .catch(function (error) {
+        console.error(error);
+    });
   }
-//   created: function(){
-//    	self = this;
-// 	axios.get("{{url_for('usercartorder')}}")
-// 		.then(function (response) {
-// 			console.log(response.data);
-// 			self.user_orders = response.data;
-// 		})
-// 		.catch(function (error) {
-// 			console.log(error);
-// 		});
-//   }
 
 });
 
@@ -183,6 +195,11 @@ $(document).on('click','.remove',function(e) {
 			}
 		};
 });
+
+// $('#caret_up').click(function(event){
+
+// })
+
 </script>
 
 {% endblock scripts %}
