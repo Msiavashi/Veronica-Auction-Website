@@ -217,17 +217,6 @@
 
 <script>
 
-
-	// var app = new Vue({
-	// 	data: {
-	// 		auction_id:
-	// 	},
-	//
-	// 	created: {
-	//
-	// }
-	// });
-
 var auction_id = $('#auction').val();
 var people = ko.observableArray([]);
 var offer_bid_count = ko.observable();
@@ -337,7 +326,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      socket.emit('join', {'auction_id':auction_id});
  });
 
- var timer = setInterval(getStatus,1000);
+ var timer = setInterval(getStatus,5000);
  var countdownTimer = null
 
  function getStatus() {

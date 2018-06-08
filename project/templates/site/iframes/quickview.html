@@ -129,7 +129,8 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/owl.carousel.js')}} "></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.jcarousellite.js')}} "></script>
 <script type="text/javascript" src=" {{ url_for('static',filename='js/libs/jquery.elevatezoom.js')}} "></script>
@@ -147,7 +148,14 @@ var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
 var time_left = ko.observable();
 var time_difference = ko.observable();
-var is_registered = ko.observable();
+var active_image = ko.observable();
+var images = ko.observableArray([]);
+var now_date = ko.observable();
+var auction_end_date = ko.observable();
+var auction_end_time = ko.observable();
+var auction = ko.observable();
+
+
 
 function Person(name,avatar,its_me,row,price) {
     var self = this;
@@ -162,53 +170,50 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
   product = data.product[0]
   plan = data.plan[0]
-  auction = data.auction[0]
-
-	console.log(auction);
+  current_auction = data.auction[0]
 
   var full_date = null
   var full_hour = null
 
   if(isSafari()){
-    var deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+    var deadline = new Date(current_auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
     full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
     full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
   }else{
-    full_date = new persianDate(new Date(auction.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-    full_hour = new persianDate(new Date(auction.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_date = new persianDate(new Date(current_auction.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_hour = new persianDate(new Date(current_auction.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
   }
 
   var end_date_date = full_date;
   var end_date_time =  " ساعت  " + full_hour;
   var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
 
-  var images_temp = ClearifyNames(auction.item.images);
-  var images = [];
+  var images_temp = ClearifyNames(current_auction.item.images);
+  var imgs = [];
   $.each(product.items,function(key,item) {
     $.each(ClearifyNames(item.images),function(key1,val) {
-      images.push({url:images_path+val.trim(),active:false});
+      imgs.push({url:images_path+val.trim(),active:false});
     });
   });
 
-  images[0].active=true;
+  imgs[0].active=true;
   if(plan){
     offer_bid_count = plan.max_offers ;
   }
   else {
     offer_bid_count = 0;
   }
-  var item_id = auction.item.id;
+  var item_id = current_auction.item.id;
 
-   var mvvm = function MyViewModel() {
-        this.images = images;
-        this.active_image = images[0].url;
-        this.auction = auction;
-        this.people = people;
-        this.auction_end_date = end_date_date;
-        this.auction_end_time = end_date_time;
-        this.now_date = now_date_date;
-    }
-    ko.applyBindings(mvvm);
+
+	auction = current_auction ;
+	auction_end_date(end_date_date);
+	auction_end_time(end_date_time);
+	now_date(now_date_date);
+	images(imgs);
+	active_image(imgs[0].url);
+
+  ko.applyBindings();
 
   if($('.detail-gallery').length>0){
     $('.detail-gallery').each(function(){
@@ -245,51 +250,18 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      socket.emit('join', {'auction_id':auction_id});
  });
 
- var timer = setInterval(getStatus,1000);
+ var timer = setInterval(getStatus,5000);
  var countdownTimer = null
 
  function getStatus() {
-   console.log('syncing... : '+ "{{current_user.id}}" );
+	 console.log('syncing... : '+ "{{current_user.id}}" );
    socket.emit('status',{'auction_id':auction_id});
  }
  var start_miliseconds = 0;
 
- socket.on('auction_status', function(data) {
-  console.log(data);
-  // server_time = new Date(data.server_time).getTime();
-  // client_time = new Date().getTime();
-  // difference = client_time - server_time;
-  // auction_time = new Date(data.auction_deadline).getTime() - difference;
-  
-  var countdown = document.getElementById("tiles"); // get tag element
-
-  getCountdown(data.remained);
-
-  function getCountdown(seconds_left){
-
-    if ( seconds_left >= 0 ) {
-
-    if ( seconds_left < ( time_left / 2))
-    {
-      $( '#tiles' ).removeClass('color-full');
-      $( '#tiles' ).addClass('color-half');
-    }
-    else {
-      $( '#tiles' ).addClass('color-full');
-      $( '#tiles' ).removeClass('color-half');
-    }
-    if ( seconds_left < 60 )
-    {
-      $( '#tiles' ).removeClass('color-half');
-      $( '#tiles' ).addClass('color-empty');
-    }
-    if( seconds_left < 10 ) {
-      $( '#tiles' ).addClass('color-half');
-      $( '#tiles' ).removeClass('color-empty');
-    }
-
-    days = pad( parseInt(seconds_left / 86400) );
-    seconds_left = seconds_left % 86400;
+ socket.on('auction_status',function(data) {
+   start_miliseconds = data.remained * 1000;
+ });
 
  var days, hours, minutes, seconds; // variables for time units
 
@@ -350,7 +322,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('join', function(data) {
    console.log(data);
    start_miliseconds = data.deadline * 1000;
-   getStatus();
+	 getStatus();
  });
 
  socket.on('update_view', function(data) {
@@ -484,7 +456,15 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      	}
  		};
  	});
-
+axios.post("{{url_for('userauctionview')}}", {
+  "aid": '{{auction_id}}'
+})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((respones)=>{
+		console.error(response);
+	});
 </script>
 
 {% endblock scripts %}
