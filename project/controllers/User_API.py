@@ -450,3 +450,32 @@ class UserUnpaidPayments(Resource):
         unpaid_payments = Payment.query.filter_by(user_id=current_user.id, status=PaymentStatus.UNPAID).all()
         payment_schema = PaymentSchema(many=True)
         return make_response(jsonify(payment_schema.dump(unpaid_payments)), 200)
+
+class UserAuctionView(Resource):
+
+    # def get(self):
+        # if current_user.is_authenticated:
+        #     auction_views = db.session.query(user_auction_views).filter_by(user_id = current_user.id).all()
+        #     auctions = [Auction.query.get(auction_view.id) for auction_view in auction_views]
+        #     auction_schema = AuctionSchema(many=True)
+        #     print auctions
+        #     return make_response(jsonify({"seen_auctions": auction_schema.dump(auctions)}), 200)
+        # else:
+        #     return make_response(jsonify([]), 200)
+
+
+
+    def post(self):
+        if current_user.is_authenticated:
+            data = request.get_json(force=True)
+            auction_id = data.get('aid')
+            auction = Auction.query.get(auction_id)
+            if db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
+                current_user.auction_views.append(auction)
+                db.session.add(current_user)
+                db.session.commit()
+                return make_response(jsonify({"success": True, "message": {"success": "حراجی به لیست مشاهده شده افزوده شد"}}), 200)
+            return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 406)
+        else:
+            pass
+        

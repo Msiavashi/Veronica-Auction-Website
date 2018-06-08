@@ -67,6 +67,11 @@
                                 </div>
                             </div>
 
+                            <div id="myModal" class="modal"> <!-- loader div -->
+                                <div class="modals">
+                                    <div class="loader"></div>
+                                </div>
+                            </div>
 
                             <!-- End Gallery -->
                             <div class="detail-without-sidebar">
@@ -135,7 +140,7 @@
                                             <div id='tiles' class="color-full"></div>
                                             <div class="countdown-label">دو شنبه ۱۳ فروردین ساعت ۱۴</div>
                                         </div>
-                                        <a class="addcart-link" href="#" id="offer" onclick="showModal(5000 , '#exampleModal')">پیشنهاد <div class="detail-qty border radius">۱۲۲</div></a>
+                                        <a class="addcart-link" href="#" id="offer" onclick="_handleSpinner(5000)">پیشنهاد <div class="detail-qty border radius">۱۲۲</div></a> <!-- handle spinner -->
                                     </div>
                                     <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span> سه شنبه ۷فروردین ۱۳۹۷
                                         <i aria-hidden="true" class="fa fa-clock-o"></i> ساعت: ۲۰:۲۵:۱۲
@@ -146,33 +151,6 @@
                                         <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true"></i> اضافه به سبد</a>
                                         <a class="wishlist-link2" href="#"><i aria-hidden="true" class="fa fa-heart"></i></a>
                                         <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i>۲،۴۵۰،۰۰۰ تومان</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div  class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" data-backdrop=".5" style="margin-top: 100px">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content" style="flex: auto;justify-content: center">
-
-                                        <div class="modal-body" style="width:10%;height: 10%;margin: 10% auto">
-                                            <div class="windows8">
-                                                <div class="wBall" id="wBall_1">
-                                                    <div class="wInnerBall"></div>
-                                                </div>
-                                                <div class="wBall" id="wBall_2">
-                                                    <div class="wInnerBall"></div>
-                                                </div>
-                                                <div class="wBall" id="wBall_3">
-                                                    <div class="wInnerBall"></div>
-                                                </div>
-                                                <div class="wBall" id="wBall_4">
-                                                    <div class="wInnerBall"></div>
-                                                </div>
-                                                <div class="wBall" id="wBall_5">
-                                                    <div class="wInnerBall"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +175,26 @@
 <script type="text/javascript" src="js/libs/wow.js"></script>
 <script type="text/javascript" src="js/theme.js"></script>
 <script>
-    //countdown
+    //countdown\
+
+
+
+    function _handleSpinner(millisecond){ //spinner handler
+        let modal = document.getElementById('myModal');
+        let btn = document.getElementById("offer");
+        let span = document.getElementsByClassName("close")[0];
+        modal.style.display = "block";
+
+        setTimeout(function () {
+            modal.style.display = "none";
+        },millisecond)
+    }
+
+
+
+
+
+
     var minutes = $('#set-time').val();
 
     var target_date = new Date().getTime() + ((minutes * 70) * 1000); // set the countdown date
