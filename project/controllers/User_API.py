@@ -26,7 +26,7 @@ import copy
 class PaymentsInfo(Resource):
     @login_required
     def get(self,pagenum,pagesize):
-        payments = Payment.query.filter_by(user_id=current_user.id).paginate(pagenum, pagesize, True).items
+        payments = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').paginate(pagenum, pagesize, True).items
         paymentSchema = PaymentSchema(many=True)
         return make_response(jsonify(paymentSchema.dump(payments)),200)
 

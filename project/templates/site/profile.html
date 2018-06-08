@@ -277,21 +277,21 @@
 						<table class="fold-table">
 								<thead>
 									<tr>
-										<th>فاکتور / کد حراجی</th>
+										<th>شماره فاکتور</th>
 										<th>مبلغ</th>
 										<th>تاریخ</th>
 									</tr>
 								</thead>
 								<tbody data-bind="foreach:paymentsinfo">
 									<tr class="view">
-										<td data-bind="text:ToPersian(id+payment_method.id+'-'+ser.id)"></td>
+										<td data-bind="text:ToPersian(GUID)"></td>
 										<td><span data-bind="text:ToPersian(formatCurrency(amount))" ></span> تومان  </td>
 										<td data-bind="text : new Date(created_at).toLocaleDateString('fa-IR')"></td>
 									</tr>
-									<tr class="fold">
+									<!-- <tr class="fold">
 										<td colspan="7">
 											<div class="fold-content">
-												<h4> فاکتور خرید : <span data-bind="text:ToPersian(id+payment_method.id+'-'+user.id)"></span></h4>
+												<h4> فاکتور خرید : <span data-bind="text:ToPersian(id+payment_method.id)"></span></h4>
 												<div data-bind="foreach:messages">
 													<p data-bind="text:title +' : '+ message"></p>
 												</div>
@@ -365,7 +365,7 @@
 												</div>
 											</div>
 										</td>
-									</tr>
+									</tr> -->
 								</tbody>
 								<!-- ko text: triggerPaymentTable() -->
 								<!-- /ko -->
@@ -415,12 +415,11 @@ $.getJSON("{{url_for('userinformation')}}", function(data){
 	userInfo = data;
 	states = data.states[0];
 	console.log(data);
-});
-
-$.getJSON("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}", function(data){
-	console.log(data);
-	paymentsinfo = data[0];
-	ko.applyBindings();
+	$.getJSON("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}", function(data){
+		console.log(data);
+		paymentsinfo = data[0];
+		ko.applyBindings();
+	});
 });
 
 $(document).on('submit','#profile_form',function(event) {

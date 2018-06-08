@@ -236,7 +236,7 @@ a:hover {
 }
 
 .author-avatar a::before {
-    background: rgba(255, 68, 0, .7)
+    background: rgba(133, 7 , 242)
 }
 
 .comment-info>h3 a:hover {
@@ -915,7 +915,7 @@ a:hover {
 }
 
 .poly-slider .owl-theme .owl-controls .owl-buttons div {
-    background-color: rgba(255, 68, 0, .7)
+    background-color: rgba(133, 7 , 242)
 }
 
 .poly-slider .owl-theme .owl-controls .owl-buttons div:hover {
@@ -924,12 +924,12 @@ a:hover {
 
 .poly-slider .owl-theme .owl-controls .owl-buttons div.owl-prev::after,
 .poly-slider .owl-theme .owl-controls .owl-buttons div.owl-prev::before {
-    border-left: 20px solid rgba(255, 68, 0, .7)
+    border-left: 20px solid rgba(133, 7 , 242)
 }
 
 .poly-slider .owl-theme .owl-controls .owl-buttons div.owl-next::after,
 .poly-slider .owl-theme .owl-controls .owl-buttons div.owl-next::before {
-    border-right: 20px solid rgba(255, 68, 0, .7)
+    border-right: 20px solid rgba(133, 7 , 242)
 }
 
 .poly-slider .owl-theme .owl-controls .owl-buttons div.owl-prev:hover::after,

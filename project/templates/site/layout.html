@@ -159,7 +159,7 @@
       									</a>
       									<div class="mini-cart-content">
       										<h2>سبد خرید من (<span data-bind="text:total_carts"></span>) </h2>
-      										<ul class="list-mini-cart-item list-unstyled" data-bind="foreach:mycart">
+        										<ul class="list-mini-cart-item list-unstyled" data-bind="foreach:mycart">
       											<li>
       												<div class="mini-cart-edit">
       													<a class="delete-mini-cart-item" href="#"><input type="hidden" data-bind="attr:{value:item.id}"><i class="fa fa-trash-o"></i></a>
@@ -183,9 +183,7 @@
       											</li>
                             <!-- ko text: triggerUpDown() -->
                             <!-- /ko -->
-      										</ul>
-
-
+        										</ul>
       										<div class="mini-cart-total">
       											<label>قیمت نهایی</label>
       											<span><span data-bind="text:cart_final_price"></span>تومان</span>
@@ -219,12 +217,7 @@
       								</div>
 
                       <div class="checkout-box" id="infoDivStyle" > <!-- add about us and information -->
-                        <a href="#" class="info-link"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
-                        <ul class="list-checkout list-unstyled">
-                          <li><a href="/help"> راهنمایی</a></li>
-                          <li><a href="/howworks">چگونگی شرکت در حراجی</a></li>
-                          <li><a href="/about">درباره ما</a></li>
-                        </ul>
+                        <a href="/howworks" class="info-link">راهنمایی</a>
                       </div>
 
       								<!-- End Check Out Box -->
@@ -325,67 +318,48 @@
       							</div>
 
                     <div class="checkout-box" > <!-- add about us and information -->
-      								<a href="#" class="info-link1"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                      <a href="/howworks" class="info-link">راهنمایی</a>
+      								<!-- <a href="#" class="info-link1"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
       								<ul class="list-checkout list-unstyled">
       									<li><a href="/help"> راهنمایی</a></li>
       									<li><a href="/howworks">چگونگی شرکت در حراجی</a></li>
       									<li><a href="/about">درباره ما</a></li>
-      								</ul>
+      								</ul> -->
       							</div>
 
       							<!-- End Wishlist -->
       							<div class="mini-cart-box">
-      								<a class="mini-cart-link" href="cart.html">
+      								<a class="mini-cart-link" href="#">
       									<span class="mini-cart-icon"><i class="fa fa-shopping-basket" aria-hidden="true"></i></span>
-      									<span class="mini-cart-number">۲</span>
+      									<span class="mini-cart-number"></span>
       								</a>
       								<div class="mini-cart-content">
-      										<h2>سبد خرید من (۲)</h2>
-      										<ul class="list-mini-cart-item list-unstyled">
-      											<!-- <li>
-      												<div class="mini-cart-edit">
-      													<a class="delete-mini-cart-item" href="#"><i class="fa fa-trash-o"></i></a>
-      													<a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a>
-      												</div>
-      												<div class="mini-cart-thumb">
-      													<a href="#"><img alt="" src="/static/images/photos/electronics/3.jpg"></a>
-      												</div>
-      												<div class="mini-cart-info">
-      													<h3><a href="#">نام محصول</a></h3>
-      													<div class="info-price">
-      														<span>۴۵۰،۰۰۰</span>
-      														<del>۶۴۰،۰۰۰</del>
-      													</div>
-      													<div class="qty-product">
-      														<span class="qty-down">-</span>
-      														<span class="qty-num">۱</span>
-      														<span class="qty-up">+</span>
-      													</div>
-      												</div>
-      											</li>
-      											<li>
-      												<div class="mini-cart-edit">
-      													<a class="delete-mini-cart-item" href="#"><i class="fa fa-trash-o"></i></a>
-      													<a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a>
-      												</div>
-      												<div class="mini-cart-thumb">
-      													<a href="#"><img alt="" src="/static/images/photos/electronics/12.jpg"></a>
-      												</div>
-      												<div class="mini-cart-info">
-      													<h3><a href="#">نام محصول</a></h3>
-      													<div class="info-price">
-      														<span>۴۵۰،۰۰۰</span>
-      														<del>۶۴۰،۰۰۰</del>
-      													</div>
-      													<div class="qty-product">
-      														<span class="qty-down">-</span>
-      														<span class="qty-num">۱</span>
-      														<span class="qty-up">+</span>
-      													</div>
-      												</div>
-      											</li> -->
-      										</ul>
-
+                        <h2>سبد خرید من (<span data-bind="text:total_carts"></span>) </h2>
+                          <ul class="list-mini-cart-item list-unstyled" data-bind="foreach:mycart">
+                          <li>
+                            <div class="mini-cart-edit">
+                              <a class="delete-mini-cart-item" href="#"><input type="hidden" data-bind="attr:{value:item.id}"><i class="fa fa-trash-o"></i></a>
+                              <!-- <a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a> -->
+                            </div>
+                            <div class="mini-cart-thumb">
+                              <a href="#"><img data-bind="attr:{src: product_image_path + ClearifyNames(item.images)[0] }"></a>
+                            </div>
+                            <div class="mini-cart-info">
+                              <h3><a href="#" data-bind="text:item.product.title+' '+item.title"></a></h3>
+                              <div class="info-price">
+                                <span data-bind="text:ToPersian(formatCurrency(item.price - item.discount))"></span>
+                                <del data-bind="text:ToPersian(formatCurrency(item.price))"></del>
+                              </div>
+                              <div class="qty-product">
+                                <span class="qty-down">-</span>
+                                <span class="qty-num" data-bind="text:total"></span>
+                                <span class="qty-up">+</span>
+                              </div>
+                            </div>
+                          </li>
+                          <!-- ko text: triggerUpDown() -->
+                          <!-- /ko -->
+                          </ul>
       										<div class="mini-cart-total">
       											<label>قیمت نهایی</label>
       											<span>۶۴۰،۰۰۰ تومان</span>

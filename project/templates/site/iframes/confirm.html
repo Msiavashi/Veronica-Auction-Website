@@ -80,35 +80,7 @@
 	});
 
 
-var app = new Vue({
-	el: "#app",
-	data:{
-		final_price: 0
-	},
-
-	created: function(){
-		var self = this;
-		axios.get("{{url_for('userunpaidpayments')}}")
-		.then(function (response) {
-			self.final_price = response.data[0][0].amount;
-		})
-		.catch(function (error) {
-			console.error(error);
-		});
-	},
-
-	methods: {
-		toPersian: function(data){
-			return ToPersian(data);
-		},
-		currencyFormat: function(amount){
-			return formatCurrency(amoun);
-		}
-	}
-});
-
 ko.applyBindings();
-
 
 </script>
 

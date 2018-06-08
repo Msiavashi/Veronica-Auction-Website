@@ -288,7 +288,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 	now_date(now_date_date);
 	images(imgs);
 	active_image(imgs[0].url);
-
+	
   ko.applyBindings();
 
   if($('.detail-gallery').length>0){
