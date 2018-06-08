@@ -1223,7 +1223,8 @@ margin-bottom: 0;
 .mini-cart-box .mini-cart-link {
   display: block;
   position: relative;
-  margin-right: 10px;
+  /*margin-right: 10px;*/
+  padding-left: 20px;
 }
 .mini-cart-link .mini-cart-icon {
   font-size: 30px;
