@@ -470,7 +470,7 @@ class UserAuctionView(Resource):
             data = request.get_json(force=True)
             auction_id = data.get('aid')
             auction = Auction.query.get(auction_id)
-            if db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
+            if not db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
                 current_user.auction_views.append(auction)
                 db.session.add(current_user)
                 db.session.commit()
@@ -478,4 +478,3 @@ class UserAuctionView(Resource):
             return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 406)
         else:
             pass
-        

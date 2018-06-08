@@ -84,7 +84,7 @@
       								<a  class="resWd" href="/"><img src="/static/images/theme/logo.png" alt="" /></a>
       							</div>
       						</div>
-      						<div class="col-md-6 col-sm-6 col-xs-12">
+      						<div class="col-md-4 col-sm-6 col-xs-12">
       							<div class="smart-search smart-search4">
       								<div class="select-category">
       									<a class="category-toggle-link" href="#"><span>همه دسته بندی ها</span></a>
@@ -150,7 +150,7 @@
       								</form>
       							</div>
       						</div>
-      						<div class="col-md-3 col-sm-3 col-xs-12">
+      						<div class=".col-12 .col-md-12">
       							<div class="check-cart check-cart4">
       								<div class="mini-cart-box">
       									<a class="mini-cart-link" href="#">
@@ -217,6 +217,16 @@
                           {% endif%}
       									</ul>
       								</div>
+
+                      <div class="checkout-box" id="infoDivStyle" > <!-- add about us and information -->
+                        <a href="#" class="info-link"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                        <ul class="list-checkout list-unstyled">
+                          <li><a href="/help"> راهنمایی</a></li>
+                          <li><a href="/howworks">چگونگی شرکت در حراجی</a></li>
+                          <li><a href="/about">درباره ما</a></li>
+                        </ul>
+                      </div>
+
       								<!-- End Check Out Box -->
       							</div>
       						</div>
@@ -313,6 +323,16 @@
       									<input value="" type="hidden">
       								</form>
       							</div>
+
+                    <div class="checkout-box" > <!-- add about us and information -->
+      								<a href="#" class="info-link1"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+      								<ul class="list-checkout list-unstyled">
+      									<li><a href="/help"> راهنمایی</a></li>
+      									<li><a href="/howworks">چگونگی شرکت در حراجی</a></li>
+      									<li><a href="/about">درباره ما</a></li>
+      								</ul>
+      							</div>
+
       							<!-- End Wishlist -->
       							<div class="mini-cart-box">
       								<a class="mini-cart-link" href="cart.html">
@@ -593,7 +613,6 @@
   function OnDataReady(data){
     viewed(data);
   }
-
   </script>
   {% endblock scripts %}
 

@@ -21,7 +21,7 @@
 										<th>مبلغ پرداختی نهایی</th>
 										<input type="hidden" id="amount_money" value="{{amount}}">
 										{%raw%}
-										<td><strong><span class="amount" id="amount"></span></strong> {{toPersian(final_price)}} تومان</td>
+										<td><strong><span class="amount" id="amount"></span></strong></td>
 										{%endraw%}
 									</tr>
 
@@ -71,7 +71,7 @@
 
 	function getRefID() {
 		pid = $('#pid').val();
-		
+
 		$.ajax({
 			url: "{{url_for('mellatgateway')}}",
 			type: 'post',
@@ -128,7 +128,7 @@ var app = new Vue({
 	}
 });
 
-
+ko.applyBindings();
 
 
 </script>

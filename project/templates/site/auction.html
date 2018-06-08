@@ -218,15 +218,15 @@
 <script>
 
 
-	var app = new Vue({
-		data: {
-			auction_id: 
-		},
-
-		created: {
-
-	}
-	});
+	// var app = new Vue({
+	// 	data: {
+	// 		auction_id:
+	// 	},
+	//
+	// 	created: {
+	//
+	// }
+	// });
 
 var auction_id = $('#auction').val();
 var people = ko.observableArray([]);
@@ -235,6 +235,13 @@ var current_user_id = '{{current_user.id}}';
 var target_date = ko.observable();
 var time_left = ko.observable();
 var time_difference = ko.observable();
+var active_image = ko.observable();
+var images = ko.observableArray([]);
+var now_date = ko.observable();
+var auction_end_date = ko.observable();
+var auction_end_time = ko.observable();
+var auction = ko.observable();
+
 
 
 function Person(name,avatar,its_me,row,price) {
@@ -250,53 +257,50 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 
   product = data.product[0]
   plan = data.plan[0]
-  auction = data.auction[0]
-
-	console.log(auction);
+  current_auction = data.auction[0]
 
   var full_date = null
   var full_hour = null
 
   if(isSafari()){
-    var deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+    var deadline = new Date(current_auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
     full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
     full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
   }else{
-    full_date = new persianDate(new Date(auction.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-    full_hour = new persianDate(new Date(auction.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_date = new persianDate(new Date(current_auction.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+    full_hour = new persianDate(new Date(current_auction.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
   }
 
   var end_date_date = full_date;
   var end_date_time =  " ساعت  " + full_hour;
   var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
 
-  var images_temp = ClearifyNames(auction.item.images);
-  var images = [];
+  var images_temp = ClearifyNames(current_auction.item.images);
+  var imgs = [];
   $.each(product.items,function(key,item) {
     $.each(ClearifyNames(item.images),function(key1,val) {
-      images.push({url:images_path+val.trim(),active:false});
+      imgs.push({url:images_path+val.trim(),active:false});
     });
   });
 
-  images[0].active=true;
+  imgs[0].active=true;
   if(plan){
     offer_bid_count = plan.max_offers ;
   }
   else {
     offer_bid_count = 0;
   }
-  var item_id = auction.item.id;
+  var item_id = current_auction.item.id;
 
-   var mvvm = function MyViewModel() {
-        this.images = images;
-        this.active_image = images[0].url;
-        this.auction = auction;
-        this.people = people;
-        this.auction_end_date = end_date_date;
-        this.auction_end_time = end_date_time;
-        this.now_date = now_date_date;
-    }
-    ko.applyBindings(mvvm);
+
+	auction = current_auction ;
+	auction_end_date(end_date_date);
+	auction_end_time(end_date_time);
+	now_date(now_date_date);
+	images(imgs);
+	active_image(imgs[0].url);
+
+  ko.applyBindings();
 
   if($('.detail-gallery').length>0){
     $('.detail-gallery').each(function(){
