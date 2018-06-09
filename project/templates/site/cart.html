@@ -186,12 +186,14 @@ var app = new Vue({
 			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) - 1;
 			console.log(this.quantities[order[0].id]);
 		}
+			this.$forceUpdate();
 	},
 	caret_increase: function(order){
 		if (parseInt( this.quantities[order[0].id].current_quantity ) < parseInt(this.quantities[order[0].id].max_available_quantity)){
 			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) + 1;
 			console.log(this.quantities[order[0].id]);
 		}
+			this.$forceUpdate();
 	},
 
 	productThumbnail: function(order){
