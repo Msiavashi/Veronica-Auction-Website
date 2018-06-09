@@ -256,7 +256,7 @@ class UserCartOrder(Resource):
             new_order.status = 0
             new_order.total = total
             new_order.total_discount = item.discount
-            
+
             db.session.add(new_order)
             db.session.commit()
             orders = Order.query.filter_by(user_id=current_user.id).all()
@@ -308,8 +308,8 @@ class UserCouponApply(Resource):
             return make_response(jsonify({"success": True}), 200)
         else:
             return make_response(jsonify({"success": False, "message": {"error": "کد تخفیف معتبر نمی باشد"}}), 406)
-        
-        
+
+
 
 #TODO: fix this
 class UserCartUpdate(Resource):
@@ -329,7 +329,7 @@ class UserCartUpdate(Resource):
             order = filter(lambda order: order.id == data['order_id'], orders)
             order.total = data['quantity']
             order.total_cost = (order.total * (order.item.price - order.item.discount))
-    
+
     def delete(self):
         print request
 
@@ -406,7 +406,7 @@ class CheckOutInit(Resource):
             order.payment_id = payment.id
             db.session.add(order)
             db.session.commit()
-        
+
         return redirect(url_for('checkout_payment', pid=payment.id))
 
 
