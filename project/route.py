@@ -156,6 +156,10 @@ class Route():
     def help():
         return render_template('site/help.html')
 
+    @app.route('/howworks')
+    def howworks():
+        return render_template('site/howworks.html')
+
     @app.route('/private')
     def private():
         return render_template('site/private.html')

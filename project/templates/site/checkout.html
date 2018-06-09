@@ -92,7 +92,7 @@
                     <ul  id="shipping_method" class="list-none">
                       <li v-for="(shipment, index) in shipment_methods">
                         <input type="radio" @click="update_shipment_data(shipment.price ,shipment.id)" class="shipping_method" value="local_delivery" :id="index" data-index="0" name="shipping_method[0]">
-                        <label :for="index">{%raw%} {{shipment.title}} {%endraw%}</label> 
+                        <label :for="index">{%raw%} {{shipment.title}} {%endraw%}</label>
                       </li>
                     </ul>
                   </td>
@@ -193,7 +193,7 @@ var app = new Vue({
   methods:{
 
     toPersian: function(data){
-      return ToPersian(data);
+      return ToPersian(formatCurrency(data));
     },
 
     update_payment_id: function(payment_method_id){
@@ -287,6 +287,7 @@ var app = new Vue({
 
 });
 
+ko.applyBindings();
 
 </script>
 {% endblock scripts %}

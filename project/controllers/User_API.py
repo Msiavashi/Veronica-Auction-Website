@@ -27,7 +27,7 @@ import copy
 class PaymentsInfo(Resource):
     @login_required
     def get(self,pagenum,pagesize):
-        payments = Payment.query.filter_by(user_id=current_user.id).paginate(pagenum, pagesize, True).items
+        payments = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').paginate(pagenum, pagesize, True).items
         paymentSchema = PaymentSchema(many=True)
         return make_response(jsonify(paymentSchema.dump(payments)),200)
 
@@ -256,6 +256,7 @@ class UserCartOrder(Resource):
             new_order.status = 0
             new_order.total = total
             new_order.total_discount = item.discount
+            
             db.session.add(new_order)
             db.session.commit()
             orders = Order.query.filter_by(user_id=current_user.id).all()
@@ -298,7 +299,7 @@ class UserCouponApply(Resource):
     @login_required
     def post(self):
         data = request.get_json(force=True)
-        coupon_id = int(data['coupon'])
+        coupon_id = int(data.get("coupon", None))
         user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=coupon_id).first()
         if user_gift and user_gift.used==False:
             user_gift.used = True
@@ -382,6 +383,33 @@ class UserAuctionLikes(Resource):
             return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
         else:
             return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
+
+
+class CheckOutInit(Resource):
+    @login_required
+    def post(self):
+        unpaid_orders = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).all()
+        payment = Payment()
+        payment.amount = 0
+
+        # TODO: make PaymentMethod nullable in database
+        payment_method = PaymentMethod.query.all()[0]
+        payment.payment_method = payment_method
+
+        db.session.add(payment)
+        db.session.commit()
+        current_user.payments.append(payment)
+        db.session.add(current_user)
+        for order in unpaid_orders:
+            payment.amount += order.total_cost
+            order.payment = payment
+            order.payment_id = payment.id
+            db.session.add(order)
+            db.session.commit()
+        
+        return redirect(url_for('checkout_payment', pid=payment.id))
+
+
 
 
 #TODO: *strict validation*
@@ -496,7 +524,7 @@ class UserAuctionView(Resource):
             data = request.get_json(force=True)
             auction_id = data.get('aid')
             auction = Auction.query.get(auction_id)
-            if db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
+            if not db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
                 current_user.auction_views.append(auction)
                 db.session.add(current_user)
                 db.session.commit()
@@ -504,4 +532,3 @@ class UserAuctionView(Resource):
             return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 406)
         else:
             pass
-        

@@ -1,7 +1,7 @@
 {% extends 'site/layout.html' %}
 {% block title %} بردیتو | تایید پرداخت {% endblock %}
 {% block content %}
-<div id="app" class="content-page">
+<div class="content-page">
 	<input type="hidden" id="pid" value="{{pid}}">
 	<div class="Package">
 		<div class="container">
@@ -21,7 +21,7 @@
 										<th>مبلغ پرداختی نهایی</th>
 										<input type="hidden" id="amount_money" value="{{amount}}">
 										{%raw%}
-										<td><strong><span class="amount" id="amount"></span></strong> {{toPersian(final_price)}} تومان</td>
+										<td><strong><span class="amount" id="amount"></span></strong></td>
 										{%endraw%}
 									</tr>
 
@@ -46,32 +46,11 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-	// var app = new Vue({
-	// 	data:{
-	// 		amount: 0
-	// 	},
-	// 	created: function(){
-	// 		self = this;
-	// 		axios.get("{{url_for('userunpaidpayments')}}")
-	// 		.then(function (response) {
-	// 			response.data.forEach(payment => {
-	// 				self.amount += parseInt(payment[0].amount);
-	// 			});
-	// 		})
-	// 		.catch(function (error) {
-	// 			console.error(error);
-	// 		});
-	// 	}
-	// });
-
 
 	function getRefID() {
 		pid = $('#pid').val();
-		
+
 		$.ajax({
 			url: "{{url_for('mellatgateway')}}",
 			type: 'post',
@@ -101,35 +80,7 @@
 	});
 
 
-var app = new Vue({
-	el: "#app",
-	data:{
-		final_price: 0
-	},
-
-	created: function(){
-		var self = this;
-		axios.get("{{url_for('userunpaidpayments')}}")
-		.then(function (response) {
-			self.final_price = response.data[0][0].amount;
-		})
-		.catch(function (error) {
-			console.error(error);
-		});
-	},
-
-	methods: {
-		toPersian: function(data){
-			return ToPersian(data);
-		},
-		currencyFormat: function(amount){
-			return formatCurrency(amoun);
-		}
-	}
-});
-
-
-
+ko.applyBindings();
 
 </script>
 

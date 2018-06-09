@@ -42,7 +42,9 @@
 									<div class="detail-qty border radius">
 										{%raw%}
 										<a @click="caret_decrease(order)" id="caret_up" class="qty-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
+										<!-- <a @click="" id="caret_up" class="qty-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a> -->
 										<span class="">{{quantities[order[0].id].current_quantity}}</span>
+										<!-- <span class="">{{test}}</span> -->
 										<a @click="caret_increase(order)" id="caret_down" class="qty-up"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
 										{%endraw%}
 									</div>
@@ -106,7 +108,7 @@
 					</div>
 					<div class="wc-proceed-to-checkout">
 						<!-- <a class="checkout-button button alt wc-forward" href="checkout.html">مرحله بعد تایید نهایی</a> -->
-						<form id="confirm" action="{{url_for('checkout')}}">
+						<form id="confirm" action="{{url_for('checkoutinit')}}">
 							<input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order"  class="button alt">
 						</form>
 					</div>
@@ -135,6 +137,7 @@ var app = new Vue({
 	total_items_price: 0,
 	quantities: {},
 	coupon: null
+	// test: 0
   },
 
   computed: {
@@ -181,11 +184,13 @@ var app = new Vue({
 	caret_decrease: function(order){
 		if (parseInt(this.quantities[order[0].id].current_quantity) - 1 > 0){
 			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) - 1;
+			console.log(this.quantities[order[0].id]);
 		}
 	},
 	caret_increase: function(order){
 		if (parseInt( this.quantities[order[0].id].current_quantity ) < parseInt(this.quantities[order[0].id].max_available_quantity)){
 			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) + 1;
+			console.log(this.quantities[order[0].id]);
 		}
 	},
 
@@ -195,8 +200,7 @@ var app = new Vue({
 	},
 	getProductTitle: function(order){
 		return order[0].item.product.title+' '+order[0].item.title;
-	}
-
+	},
   },
 
   created: function(){
@@ -206,11 +210,10 @@ var app = new Vue({
           self.user_orders = response.data;
           response.data.forEach(order => {
 			self.total_items_price += parseInt(order[0].total_cost);
-			console.log(order[0]);
 			self.items_discount += parseInt(order[0].item.discount)*parseInt(order[0].total);
 			self.quantities[order[0].id] = {
-				current_quantity: order[0].total,
-				max_available_quantity: order[0].item.quantity
+				current_quantity: parseInt(order[0].total),
+				max_available_quantity: parseInt(order[0].item.quantity)
 			}
         });
       })

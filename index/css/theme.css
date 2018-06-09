@@ -826,7 +826,7 @@ margin-bottom: 0;
 	padding: 0px 80px 0 70px;
 	height: 50px;
 	line-height: 50px;
-	background: #f36;
+	background: #8507f2;
 	font-size: 18px;
 	position: relative;
 	margin: 0;
@@ -1242,10 +1242,10 @@ margin-bottom: 0;
 	text-align: center;
 }
 .info-link{
-  font-size: 35px;
+  font-size: 25px;
 }
 .info-link1{
-  font-size: 23px;
+  font-size: 20px;
 }
 .checkout-box .checkout-link,
 .wishlist-box .wishlist-top-link {
@@ -4088,7 +4088,7 @@ margin-bottom: 0;
   padding-top: 22px;
 }
 .attr-title sup {
-  color: #ff4400;
+  color: #7772d8;
   margin-right: 5px;
   top: -2px;
 }
@@ -4150,7 +4150,7 @@ margin-bottom: 0;
 	padding: 0px 80px 0 70px;
 	height: 50px;
 	line-height: 50px;
-	background: #f36;
+	background: #8507f2;
 	font-size: 18px;
 	position: relative;
 	margin: 0;
@@ -4280,6 +4280,17 @@ margin-bottom: 0;
 /* S */
 .config-detail .detail-countdowns {
 	background: #14d492 url("../images/theme/clock-w.png") no-repeat scroll 20px center;
+	border-radius: 4px;
+	margin: 20px 0;
+	max-width: 100%;
+	text-align: right;
+	width: 100%;
+	display: inline-table;
+	padding: 10px;
+	color: #fff;
+}
+.detail-warning {
+	background: #e75630;
 	border-radius: 4px;
 	margin: 20px 0;
 	max-width: 100%;
@@ -5691,7 +5702,7 @@ a.protect-icon:hover {
   -webkit-transition: all 0.5s ease-out 0s;
 }
 .deal-clock .flash-countdown .time_circles > div {
-  color: #f36;
+  color: #8507f2;
   font-weight: 700;
 }
 .store-process {
@@ -6372,7 +6383,7 @@ a.protect-icon:hover {
 }
 .deal-clock {
   background: #ff33661a !important;
-  color: #f36;
+  color: #8507f2;
 }
 .item-product1 .product-extra-link2 {
   margin-top: 20px;
@@ -7052,7 +7063,7 @@ a.protect-icon:hover {
   padding: 10px 0 10px;
 }
 .flash-label {
-	background: #333333 url("../images/home2/") repeat scroll 0 0;
+	background: #333333 /*url("../static/images/home2/")*/ repeat scroll 0 0;
 	font-size: 11px;
 	height: 30px;
 	padding-left: 18px;
@@ -8814,7 +8825,7 @@ a.protect-icon:hover {
   margin-bottom: 50px;
 }
 .header-nav6 {
-  background: #f36 none repeat scroll 0 0;
+  background: #8507f2 none repeat scroll 0 0;
 }
 .main-nav.main-nav6 > ul > li > a {
   color: #fff;
@@ -13254,10 +13265,10 @@ a.protect-icon:hover {
   margin: 0 5px;
 }
 .list-topsale15 .addcart-link {
-  color: #f36 !important;
+  color: #8507f2 !important;
 }
 .list-topsale15 .addcart-link:hover {
-  background:#f36 !important
+  background:#8507f2 !important
 }
 .list-topsale15 .product-title {
   margin-bottom:20px
@@ -14521,7 +14532,7 @@ a.protect-icon:hover {
   padding-right: 20px;
 }
 .wrap-cat-icon18 .title-cat-icon::after {
-  color: #FF4400;
+  color: #7772d8;
   left: 20px;
   right: auto;
   top: 12px;
@@ -14546,7 +14557,7 @@ a.protect-icon:hover {
   padding: 0 20px;
 }
 .mini-cart18.mini-cart-box .mini-cart-link .mini-cart-icon {
-  color: #FF4400;
+  color: #7772d8;
   font-size: 14px;
 }
 .mini-cart-box.mini-cart18 {
@@ -14561,7 +14572,7 @@ a.protect-icon:hover {
   text-transform: uppercase;
 }
 .mini-cart18.mini-cart-box .mini-cart-link .mini-cart-number sup {
-  color: #FF4400;
+  color: #7772d8;
   margin-right: 10px;
 }
 .smart-search18 .submit-form {
@@ -14571,7 +14582,7 @@ a.protect-icon:hover {
   background: transparent none repeat scroll 0 0;
 }
 .smart-search18 .submit-form::before {
-  color: #FF4400;
+  color: #7772d8;
   content: "";
   font-size: 18px;
   left: 18px;
@@ -14651,7 +14662,7 @@ a.protect-icon:hover {
   border-top: 28px solid transparent;
 }
 .deal-box18 .title30 span {
-  background: #f36 none repeat scroll 0 0;
+  background: #8507f2 none repeat scroll 0 0;
   display: inline-block;
   min-width: 380px;
   padding: 15px;
@@ -14751,13 +14762,13 @@ a.protect-icon:hover {
   background: #000;
 }
 .deal-timer18 .flash-countdown .time_circles > div {
-  color: #FF4400;
+  color: #7772d8;
   font-size: 25px;
   height: 56px;
   line-height: 56px;
 }
 .deal-timer18 .flash-countdown::before {
-  background: #FF4400 url("../images/theme/sand-clock.png") no-repeat scroll center center;
+  background: #7772d8 url("../images/theme/sand-clock.png") no-repeat scroll center center;
   content: "";
   height: 58px;
   left: -1px;
@@ -14789,7 +14800,7 @@ a.protect-icon:hover {
   right: 80px;
 }
 .banner-info.info-adv18 .title24:first-child {
-  color: #FF4400;
+  color: #7772d8;
   font-weight: 700;
 }
 .banner-info.info-adv18 .title24 {
@@ -14891,7 +14902,7 @@ a.protect-icon:hover {
   color: #fff;
 }
 .item-news18 .post-info .title18 > a:hover {
-  color: #FF4400;
+  color: #7772d8;
 }
 .item-news18 .post-info p {
   line-height: 24px;
@@ -15501,7 +15512,7 @@ a.protect-icon:hover {
 }
 #shipping_method li input[type="radio"]:checked + label::before {
   content: "\f111";
-  color: #f36;
+  color: #8507f2;
 }
 .payment_methods.methods {
   border: 1px solid #e5e5e5;
@@ -15668,7 +15679,31 @@ a.protect-icon:hover {
   color: #999;
   height: 40px;
   padding: 0 15px;
-  text-transform: uppercase;
+  /*text-transform: uppercase;*/
+  width: 100%;
+}
+.form-my-account input[type="email"] {
+  border: 1px solid #e5e5e5;
+  color: #999;
+  height: 40px;
+  padding: 0 15px;
+  /*text-transform: uppercase;*/
+  width: 100%;
+}
+.form-my-account input[type="password"] {
+  border: 1px solid #e5e5e5;
+  color: #999;
+  height: 40px;
+  padding: 0 15px;
+  /*text-transform: uppercase;*/
+  width: 100%;
+}
+.form-my-account input[type="number"] {
+  border: 1px solid #e5e5e5;
+  color: #999;
+  height: 40px;
+  padding: 0 15px;
+  /*text-transform: uppercase;*/
   width: 100%;
 }
 .check-address {
@@ -15693,7 +15728,7 @@ a.protect-icon:hover {
   color: #333;
 }
 .form-my-account input[type="checkbox"] + label::before {
-  border: 1px solid #f36;
+  border: 1px solid #8507f2;
   content: "";
   display: inline-block;
   font-family: "FontAwesome";
@@ -17011,7 +17046,7 @@ td.product-info-total .product-info .desc {
 }
 .item-Bid.YOU {
   background: #fff4f4;
-	border: 1px #f36 dashed;
+	border: 1px #8507f2 dashed;
 }
 .item-Bid span {
 	position: absolute;
@@ -17051,6 +17086,7 @@ td.product-info-total .product-info .desc {
   height: 96px;
   text-align: center;
   background: #f1f1f1;
+
   border-radius: 5px;
 }
 
@@ -17063,7 +17099,7 @@ td.product-info-total .product-info .desc {
   font-family: Arial, sans-serif;
   text-align: center;
   border-radius: 5px 5px 0 0;
-  font-size: 38px;
+  font-size: 34px;
   font-weight: thin;
   display: block;
 }
@@ -17171,11 +17207,11 @@ td.product-info-total .product-info .desc {
 
 #tabMenu.tab_container [id^="tab"]:checked + label.tablabel {
   background: #fff;
-  box-shadow: inset 0 3px #f36;
+  box-shadow: inset 0 3px #8507f2;
 }
 
 #tabMenu.tab_container [id^="tab"]:checked + label.tablabel .fa {
-  color: #f36;
+  color: #8507f2;
 }
 
 #tabMenu label .fa {
@@ -17211,7 +17247,7 @@ td.product-info-total .product-info .desc {
 
 #tabMenu .no_wrap {
   text-align:center;
-  color: #f36;
+  color: #8507f2;
 }
 #tabMenu .link {
   text-align:center;
@@ -17240,7 +17276,7 @@ td.product-info-total .product-info .desc {
   border-color:#ddd
 }
 .avatarUser img.current {
-  border-color:#f36
+  border-color:#8507f2
 }
 #tabMenu .form-my-account {
  max-width:100% !important
@@ -17510,11 +17546,11 @@ ul.checkout-bar li.active:before {
 }
 ul.checkout-bar li.visited {
   background: #ECECEC;
-  color: #f36;
+  color: #8507f2;
   z-index: 99999;
 }
 ul.checkout-bar li.visited:before {
-  background: #f36;
+  background: #8507f2;
   z-index: 99999;
 }
 ul.checkout-bar li:nth-child(1):before {
@@ -17536,7 +17572,7 @@ ul.checkout-bar li:nth-child(6):before {
   content: "6";
 }
 ul.checkout-bar a {
-  color: #f36;
+  color: #8507f2;
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
@@ -17577,7 +17613,7 @@ ul.checkout-bar a {
   }
   ul.checkout-bar:before {
     background-size: 35px 35px;
-    background-color: #f36;
+    background-color: #8507f2;
     background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
     background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
     -webkit-box-shadow: inset 2px 2px 2px 0px rgba(0, 0, 0, 0.2);
@@ -17610,7 +17646,7 @@ ul.checkout-bar a {
   }
   ul.checkout-bar li.visited:after {
     background-size: 35px 35px;
-    background-color: #f36;
+    background-color: #8507f2;
     background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
     background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
     -webkit-box-shadow: inset 2px 2px 2px 0px rgba(0, 0, 0, 0.2);

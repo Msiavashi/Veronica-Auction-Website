@@ -2814,6 +2814,11 @@
     padding-left:0;
     line-height: 27px;
   }
+  .FAQ .question-red {
+    padding-left:0;
+    line-height: 27px;
+    color: #f00
+  }
   .inner-coupon {
     padding: 20px;
   }
