@@ -316,14 +316,16 @@ class UserCartUpdate(Resource):
 
     def post(self):
 
-        print request.form
-        data = request.form
+        data = request.get_json(force=True)["user_orders"]
         if current_user.is_authenticated:
-            order = Order.query.get(data['order_id'])
-            order.total = data['quantity']
-            order.total_cost = (order.total * (order.item.price - order.item.discount))
-            db.session.add(order)
-            db.session.commit()
+            for order in data:
+                order = order[0]
+                db_order = Order.query.get(order["id"])
+                db_order.total = order.get("total")
+                db_order.total_cost = (int(order['total']) * int((order['item']['price']) - int(order['item']['discount'])))
+                db.session.add(db_order)
+                db.session.commit()
+            return make_response(jsonify({"success": True}), 200)
         else:
             orders = session['orders']
             order = filter(lambda order: order.id == data['order_id'], orders)

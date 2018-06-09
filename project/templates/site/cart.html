@@ -5,7 +5,7 @@
 	<div class="container">
 		<div class="cart-content-page">
 			<h2 class="title-shop-page">سبد خرید من</h2>
-			<form method="POST" action="{{url_for('usercartupdate')}}">
+			<form @submit.prevent="handleUpdate">
 				<div class="table-responsive">
 					<table cellspacing="0" class="shop_table cart table">
 						<thead>
@@ -66,7 +66,7 @@
 									<input v-model="coupon" type="text" placeholder="کد ۵ حرفی" value="" id="coupon_code" class="input-text" name="coupon_code">
 									<input @click="handleCoupon" type="button" value="درخواست" name="apply_coupon" class="button">
 								</div>
-								<input type="submit" value="به روزرسانی سبد" name="update_cart" class="button">
+								<input  type="submit" value="به روزرسانی سبد" name="update_cart" class="button">
 							</td>
 						</tr>
 					</table>
@@ -147,7 +147,21 @@ var app = new Vue({
   },
 
   methods:{
-	
+	handleUpdate: function(){
+		var self = this;
+
+		axios.post("{{url_for('usercartupdate')}}", {
+			user_orders: self.user_orders
+		})
+		.then((response) => {
+			console.log(response.data);
+			location.reload();
+		})
+		.catch((response) => {
+			console.log(response.data);
+		});
+	},
+
 	handleCoupon: function(){
 		var self = this;
 		axios.post("{{url_for('usercouponapply')}}", {
@@ -168,7 +182,8 @@ var app = new Vue({
 		"order_id": order_id
 		})
 		.then((response) => {
-			location.reload();
+			self.user_orders = response.data;
+			this.$forceUpdate();
 		})
 		.catch((response) => {
 			console.error(response);
@@ -185,6 +200,11 @@ var app = new Vue({
 		if (parseInt(this.quantities[order[0].id].current_quantity) - 1 > 0){
 			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) - 1;
 			console.log(this.quantities[order[0].id]);
+
+			this.user_orders.forEach(order => {
+				order[0].total = self.quantities[order[0].id].current_quantity;
+			});
+			
 		}
 			this.$forceUpdate();
 	},
@@ -192,6 +212,11 @@ var app = new Vue({
 		if (parseInt( this.quantities[order[0].id].current_quantity ) < parseInt(this.quantities[order[0].id].max_available_quantity)){
 			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) + 1;
 			console.log(this.quantities[order[0].id]);
+
+			this.user_orders.forEach(order => {
+				order[0].total = self.quantities[order[0].id].current_quantity;
+			});
+
 		}
 			this.$forceUpdate();
 	},
