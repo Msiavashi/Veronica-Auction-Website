@@ -5,7 +5,7 @@
 	<div class="container">
 		<div class="cart-content-page">
 			<h2 class="title-shop-page">سبد خرید من</h2>
-			<form method="post">
+			<form method="POST" action="{{url_for('usercartupdate')}}">
 				<div class="table-responsive">
 					<table cellspacing="0" class="shop_table cart table">
 						<thead>
@@ -19,29 +19,38 @@
 							</tr>
 						</thead>
 
-						<tbody data-bind="foreach:mycart">
+						<tbody v-for="order in user_orders">
 							<tr class="cart_item">
 								<td class="product-remove">
-									<a class="remove" href="#"><input type="hidden" data-bind="attr:{value:item.id}"><i class="fa fa-times"></i></a>
-								</td>
+									<input name="order[0].id" type="hidden" v-bind:vlaue="quantities[order[0].id].current_quantity">
+									<a @click="removeOrder(order[0].id)" class="remove" ><i class="fa fa-times"></i></a>
+								</td><input name="item_id" type="hidden" v-bind:value="order[0].item.id">
 								<td class="product-thumbnail">
-									<a href="#"><img  data-bind="attr:{src: product_image_path + ClearifyNames(item.images)[0] }" /></a>
+									<a href="#"><img  v-bind:src="productThumbnail(order)" /></a>
 								</td>
 								<td class="product-name">
-									<a href="#" data-bind="text:item.product.title+' '+item.title">f</a>
+									{%raw%}
+									<a href="#" >{{getProductTitle(order)}}</a>
+									{%endraw%}
 								</td>
 								<td class="product-price">
-									<span class="amount" data-bind="text:ToPersian(formatCurrency(item.price - item.discount))"></span> تومان
+									{%raw%}
+									<span class="amount">{{toPersian(convertToCurrency((order[0].item.price - order[0].item.discount) * order[0].total))}}</span> تومان
+									{%endraw%}
 								</td>
 								<td class="product-quantity">
 									<div class="detail-qty border radius">
-										<a href="#" id="caret_up" class="qty-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
-										<span class="" data-bind="text:total"></span>
-										<a href="#" id="caret_down" class="qty-up"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
+										{%raw%}
+										<a @click="caret_decrease(order)" id="caret_up" class="qty-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
+										<span class="">{{quantities[order[0].id].current_quantity}}</span>
+										<a @click="caret_increase(order)" id="caret_down" class="qty-up"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
+										{%endraw%}
 									</div>
 								</td>
 								<td class="product-subtotal">
-									<span class="amount" data-bind="text: ToPersian(formatCurrency((item.price - item.discount) * total))" >۴،۰۰۰،۰۰۰ تومان</span>
+									{%raw%}
+									<span class="amount">{{toPersian(convertToCurrency((order[0].item.price - order[0].item.discount) * quantities[order[0].id].current_quantity))}}</span> تومان
+									{%endraw%}
 								</td>
 							</tr>
 							<!-- ko text: triggerUpDownCart() -->
@@ -52,8 +61,8 @@
 							<td class="actions" colspan="6">
 								<div class="coupon">
 									<label for="coupon_code">کد تخفیف: </label>
-									<input type="text" placeholder="کد ۵ حرفی" value="" id="coupon_code" class="input-text" name="coupon_code">
-									<input type="submit" value="درخواست" name="apply_coupon" class="button">
+									<input v-model="coupon" type="text" placeholder="کد ۵ حرفی" value="" id="coupon_code" class="input-text" name="coupon_code">
+									<input @click="handleCoupon" type="button" value="درخواست" name="apply_coupon" class="button">
 								</div>
 								<input type="submit" value="به روزرسانی سبد" name="update_cart" class="button">
 							</td>
@@ -124,6 +133,8 @@ var app = new Vue({
     invitation_discount: 0,
     items_discount: 0,
 	total_items_price: 0,
+	quantities: {},
+	coupon: null
   },
 
   computed: {
@@ -133,9 +144,59 @@ var app = new Vue({
   },
 
   methods:{
+	
+	handleCoupon: function(){
+		var self = this;
+		axios.post("{{url_for('usercouponapply')}}", {
+			"coupon": self.coupon
+		})
+		.then((response) => {
+			location.reload();
+		})
+		.catch((response) => {
+			console.error(response);
+		});
+
+	},
+	
+	removeOrder: function(order_id){
+		var self = this;
+		axios.post("{{url_for('usercartorderdelete')}}", {
+		"order_id": order_id
+		})
+		.then((response) => {
+			location.reload();
+		})
+		.catch((response) => {
+			console.error(response);
+		});
+	},
+	convertToCurrency: function(number){
+		return formatCurrency(number);
+	},
+
     toPersian: function(data){
       return ToPersian(data);
+	},
+	caret_decrease: function(order){
+		if (parseInt(this.quantities[order[0].id].current_quantity) - 1 > 0){
+			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) - 1;
+		}
+	},
+	caret_increase: function(order){
+		if (parseInt( this.quantities[order[0].id].current_quantity ) < parseInt(this.quantities[order[0].id].max_available_quantity)){
+			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) + 1;
+		}
+	},
+
+	productThumbnail: function(order){
+		console.log(order);
+ 		return product_image_path + ClearifyNames(order[0].item.images)[0];
+	},
+	getProductTitle: function(order){
+		return order[0].item.product.title+' '+order[0].item.title;
 	}
+
   },
 
   created: function(){
@@ -146,7 +207,11 @@ var app = new Vue({
           response.data.forEach(order => {
 			self.total_items_price += parseInt(order[0].total_cost);
 			console.log(order[0]);
-            self.items_discount += parseInt(order[0].item.discount)*parseInt(order[0].total);
+			self.items_discount += parseInt(order[0].item.discount)*parseInt(order[0].total);
+			self.quantities[order[0].id] = {
+				current_quantity: order[0].total,
+				max_available_quantity: order[0].item.quantity
+			}
         });
       })
       .catch(function (error) {
@@ -159,46 +224,6 @@ var app = new Vue({
 
 
 
-ko.applyBindings();
-$(document).on('click','.remove',function(e) {
-	e.preventDefault();
-	item_id = $(this).find('input').val();
-
-	var data = JSON.stringify({
-		"item_id": item_id
-	});
-
-	var xhr = new XMLHttpRequest();
-	xhr.withCredentials = true;
-
-	xhr.open("post", "{{url_for('usercartorderdelete')}}");
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.setRequestHeader("Cache-Control", "no-cache");
-	xhr.send(data);
-	xhr.onreadystatechange = function (oEvent) {
-		if (xhr.readyState === 4) {
-				data = JSON.parse(xhr.responseText);
-				if (xhr.status === 200) {
-					carts = []
-					mycart([])
-					$.each(data,function(key,val) {
-						if(val[0])
-							 carts.push(val[0]);
-					});
-					console.log(carts);
-					mycart(carts);
-					total_carts(ToPersian(carts.length));
-					alert('محصول مورد نظر از سبد خرید حذف شد')
-				} else {
-					 alert(data.reason)
-				}
-			}
-		};
-});
-
-// $('#caret_up').click(function(event){
-
-// })
 
 </script>
 

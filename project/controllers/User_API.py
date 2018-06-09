@@ -13,6 +13,7 @@ from project import app
 from datetime import datetime
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.user_message import UserMessage
+from ..model.user_gift import *
 from ..model.order import OrderStatus
 import definitions
 from werkzeug.utils import secure_filename
@@ -218,6 +219,8 @@ class UserContactUs(Resource):
 parser = reqparse.RequestParser()
 parser.add_argument('item_id')
 
+
+
 class UserCartOrder(Resource):
     def get(self):
 
@@ -227,6 +230,7 @@ class UserCartOrder(Resource):
             order_schema = OrderSchema()
             for order in orders:
                 result.append(order_schema.dump(order))
+
             return make_response(jsonify(result), 200)
         else:
             if "orders" in session:
@@ -288,41 +292,63 @@ class UserCartOrder(Resource):
             else:
                 return make_response(jsonify({"reason": "حداکثر تعداد سبد خرید شما پر شده است"}), 400)
 
-    #TODO: fix this
-    # def patch(self):
-    #         data = request.get_json(force=True)
-    #         if current_user.is_authenticated:
-    #             order = Order.query.get(data['order_id'])
-    #             order.total = data['quantity']
-    #             order.total_cost = (order.total * (order.item.price - order.item.discount))
-    #             db.session.add(order)
-    #             db.session.commit()
-    #         else:
-    #             orders = session['orders']
-    #             order = filter(lambda order: order.id == data['order_id'], orders)
-    #             order.total = data['quantity']
-    #             order.total_cost = (order.total * (order.item.price - order.item.discount))
+
+class UserCouponApply(Resource):
+
+    @login_required
+    def post(self):
+        data = request.get_json(force=True)
+        coupon_id = int(data['coupon'])
+        user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=coupon_id).first()
+        if user_gift and user_gift.used==False:
+            user_gift.used = True
+            db.session.add(user_gift)
+            db.session.commit()
+            return make_response(jsonify({"success": True}), 200)
+        else:
+            return make_response(jsonify({"success": False, "message": {"error": "کد تخفیف قبلا استفاده شده است"}}), 406)
+        
+        
+
+#TODO: fix this
+class UserCartUpdate(Resource):
+
+    def post(self):
+
+        print request.form
+        data = request.form
+        if current_user.is_authenticated:
+            order = Order.query.get(data['order_id'])
+            order.total = data['quantity']
+            order.total_cost = (order.total * (order.item.price - order.item.discount))
+            db.session.add(order)
+            db.session.commit()
+        else:
+            orders = session['orders']
+            order = filter(lambda order: order.id == data['order_id'], orders)
+            order.total = data['quantity']
+            order.total_cost = (order.total * (order.item.price - order.item.discount))
+    
+    def delete(self):
+        print request
 
 class UserCartOrderDelete(Resource):
     def post(self):
         order_schema = OrderSchema(many=True)
-        item_id = request.get_json('item_id')['item_id']
-        item = Item.query.get(item_id)
+        print request.data
+        order_id = request.get_json(force=True)['order_id']
+        print order_id
 
         if current_user.is_authenticated:
-            last_order = Order.query.filter_by(user_id=current_user.id,item_id=item_id).delete()
+            order = Order.query.filter_by(id=order_id).first()
+            db.session.delete(order)
             db.session.commit()
             orders = Order.query.filter_by(user_id=current_user.id)
             return make_response(jsonify(order_schema.dump(orders)), 200)
         else:
             order_schema = OrderSchema(many=True)
-            temp = []
-            for order in session['orders']:
-                p = order_schema.load(order)
-                if (int(p.data[0]['item']['id']) != item.id):
-                    temp.append(order)
-
-            session['orders']= temp
+            new_orders = session['orders'].filter(lambda order: order.id != order_id)
+            session['orders']= new_orders
             return make_response(jsonify(session['orders']), 200)
 
 class UserAuctionLikes(Resource):

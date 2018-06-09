@@ -33,7 +33,7 @@ class Order(Base):
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'))
     item = db.relationship('Item')
 
-    shipmet = db.relationship('Shipment')
+    shipmet = db.relationship('Shipment', cascade="all, delete")
 
     # payments = db.relationship('Payment',secondary='payment_orders',back_populates='orders')
 
