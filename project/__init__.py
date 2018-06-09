@@ -124,3 +124,6 @@ api.add_resource(User_API.UserCheckoutConfirm, '/user/checkout/confirm/payment/<
 api.add_resource(User_API.UserUnpaidOrders, '/user/orders/unpaid' )
 api.add_resource(User_API.UserUnpaidPayments, '/user/payments/unpaids')
 api.add_resource(User_API.UserAuctionView, '/user/auction/view')
+api.add_resource(User_API.UserCartUpdate, '/user/cart/update')
+api.add_resource(User_API.UserCouponApply, '/user/copuon')
+api.add_resource(User_API.CheckOutInit, '/user/checkout/payment/init')
