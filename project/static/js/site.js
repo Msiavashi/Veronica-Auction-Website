@@ -418,3 +418,12 @@ function endLoading(){
         $(this).remove();
     });
 }
+
+
+function start_loading(element){
+	element.style.display = "block";
+}
+
+function stop_loading(element){ //spinner handler
+		element.style.display = "none";
+}

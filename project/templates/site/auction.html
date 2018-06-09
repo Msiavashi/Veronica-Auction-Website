@@ -214,7 +214,11 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-
+<div id="myModal" class="modal">
+    <div class="modals">
+        <div class="loader"></div>
+    </div>
+</div>
 <script>
 
 var auction_id = $('#auction').val();
@@ -230,8 +234,15 @@ var now_date = ko.observable();
 var auction_end_date = ko.observable();
 var auction_end_time = ko.observable();
 var auction = ko.observable();
+loading_element = document.getElementById('myModal')
 
-
+// function _handleSpinner(millisecond){ //spinner handler
+// 		start_loading(loading_element);
+// 		setTimeout(function () {
+// 			stop_loading(loading_element);
+// 		},millisecond)
+// }
+// _handleSpinner(3000);
 
 function Person(name,avatar,its_me,row,price) {
     var self = this;
@@ -288,7 +299,7 @@ $.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
 	now_date(now_date_date);
 	images(imgs);
 	active_image(imgs[0].url);
-	
+
   ko.applyBindings();
 
   if($('.detail-gallery').length>0){
@@ -337,6 +348,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
  socket.on('auction_status',function(data) {
    start_miliseconds = data.remained * 1000;
+
  });
 
  var days, hours, minutes, seconds; // variables for time units
@@ -344,11 +356,14 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  var countdown = document.getElementById("tiles"); // get tag element
 
  function BesideOfWS(){
-   updateTimer(start_miliseconds);
-   countdownTimer = setTimeout(function() {
-     start_miliseconds -= 100;
-    BesideOfWS();
-   }, 100);
+	 updateTimer(start_miliseconds);
+	 setTimeout(function() {
+		 start_miliseconds -= 100;
+		 if( start_miliseconds == 0){
+			 start_loading(loading_element);
+		 }
+		 BesideOfWS();
+	 }, 100);
  }
 
  BesideOfWS();
@@ -525,10 +540,12 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  						if(val[0])
  				      carts.push(val[0]);
  			    });
+
  					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
          } else {
             alert(data.reason)
          }
+
      	}
  		};
  	});

@@ -67,11 +67,11 @@
                                 </div>
                             </div>
 
-                            <div id="myModal" class="modal"> <!-- loader div -->
+                            <!-- <div id="myModal" class="modal">
                                 <div class="modals">
                                     <div class="loader"></div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- End Gallery -->
                             <div class="detail-without-sidebar">
@@ -135,7 +135,7 @@
                                             <p class="price-Bid">۱،۳۴۲،۰۰۰ تومان</p>
                                             <p class="name-price-Bid">احسان امینی</p>
                                         </div>
-                                        <input type="hidden" id="set-time" value="1" />
+                                        <input type="hidden" id="set-time" value="0.5" />
                                         <div id="countdown" style="width: 290px;">
                                             <div id='tiles' class="color-full"></div>
                                             <div class="countdown-label">دو شنبه ۱۳ فروردین ساعت ۱۴</div>
@@ -161,6 +161,7 @@
             </div>
         </div>
     </div>
+
     <!-- End Content -->
 </div>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
@@ -174,37 +175,30 @@
 <script type="text/javascript" src="js/libs/jquery.mCustomScrollbar.js"></script>
 <script type="text/javascript" src="js/libs/wow.js"></script>
 <script type="text/javascript" src="js/theme.js"></script>
+<div id="myModal" class="modal">
+    <div class="modals">
+        <div class="loader"></div>
+    </div>
+</div>
 <script>
     //countdown\
-
-
-
+    loading_element = document.getElementById('myModal');
+    
     function _handleSpinner(millisecond){ //spinner handler
-        let modal = document.getElementById('myModal');
-        let btn = document.getElementById("offer");
-        let span = document.getElementsByClassName("close")[0];
-        modal.style.display = "block";
-
+        start_loading(loading_element);
         setTimeout(function () {
-            modal.style.display = "none";
+          stop_loading(loading_element);
         },millisecond)
     }
 
+    function start_loading(element){
+      element.style.display = "block";
+    }
 
+    function stop_loading(element){ //spinner handler
+        element.style.display = "none";
+    }
 
-
-
-
-    var minutes = $('#set-time').val();
-
-    var target_date = new Date().getTime() + ((minutes * 70) * 1000); // set the countdown date
-    var time_limit = ((minutes * 70) * 1000);
-    //set actual timer
-    setTimeout( function() {
-        alert('حراجی به پایان رسید!');
-    }, time_limit);
-
-    var days, hours, minutes, seconds; // variables for time units
 
     var countdown = document.getElementById("tiles"); // get tag element
 
@@ -218,7 +212,7 @@
             if( start_miliseconds >= 0){
                 BesideOfWS();
             }else{
-                alert('حراجی به پایان رسید!');
+                _handleSpinner(1000);
             }
         }, 100);
     }
@@ -260,45 +254,11 @@
         if( start_miliseconds < 10 * 1000)
             start_miliseconds = 11 * 1000;
     });
-    
-    
+
+
     function showModal(millisecond , div) {
         $(div).modal('show')
         setTimeout(function() {$('#exampleModal').modal('hide');}, millisecond);
-    }
-
-
-
-    function getCountdown() {
-
-        // find the amount of "seconds" between now and target
-        var current_date = new Date().getTime();
-        var seconds_left = (target_date - current_date) / 1000;
-
-        if (seconds_left >= 0) {
-            console.log(time_limit);
-            if ((seconds_left * 1000) < (time_limit / 1)) {
-                $('#tiles').removeClass('color-full');
-                $('#tiles').addClass('color-half');
-
-            }
-            if ((seconds_left * 1000) < (time_limit / 6)) {
-                $('#tiles').removeClass('color-half');
-                $('#tiles').addClass('color-empty');
-            }
-
-            days = pad(parseInt(seconds_left / 86400));
-            seconds_left = seconds_left % 86400;
-
-            hours = pad(parseInt(seconds_left / 3600));
-            seconds_left = seconds_left % 3600;
-
-            minutes = pad(parseInt(seconds_left / 60));
-            seconds = pad(parseInt(seconds_left % 60));
-
-            // format countdown string + set tag value
-            countdown.innerHTML = "<span>" + hours + ":</span><span>" + minutes + ":</span><span>" + seconds + "</span>";
-        }
     }
 
     function pad(n) {
