@@ -306,7 +306,7 @@ class UserCouponApply(Resource):
             db.session.commit()
             return make_response(jsonify({"success": True}), 200)
         else:
-            return make_response(jsonify({"success": False, "message": {"error": "کد تخفیف قبلا استفاده شده است"}}), 406)
+            return make_response(jsonify({"success": False, "message": {"error": "کد تخفیف معتبر نمی باشد"}}), 406)
         
         
 
