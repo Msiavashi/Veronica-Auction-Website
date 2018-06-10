@@ -6,7 +6,7 @@
 	<div class="container">
 		<div class="bread-crumb radius">
 		{%raw%}
-			<a href="/">خانه</a> <span>{{auction.title}}</span>
+			<a href="/">خانه</a> <span>{{auctionTitle}}</span>
 		{%endraw%}
 		</div>
 		<!-- End Bread Crumb -->
@@ -66,7 +66,7 @@
 							<div class="col-md-8 col-sm-12 col-xs-12">
 								<div class="detail-info">
 											{%raw%}
-									<h2 class="title-detail">{{auction.title}}</h2>
+									<h2 class="title-detail">{{auctionTitle}}</h2>
 											{%endraw%}
 									<div class="product-price">
 										<!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
@@ -87,30 +87,34 @@
 										</div>
 									</div>
 									<div class="detail-extralink">
-										<div class="list-member-bid" data-bind="foreach: people">
-											<p class="item-Bid" data-bind="css: { 'YOU' : its_me  }">
-												<img data-bind="attr:{src: avatar}"/>
+										<div class="list-member-bid" v-for="(person, index) in people">
+											<p class="item-Bid" v-bind:style="{'YOU':person.its_me}">
+												<img v-bind:src="person.avatar"/>
 												<br class="resWd"/>
-												<label data-bind="text:name"></label>
-												<span data-bind="text:row"></span>
-												<b data-bind="text:offer_price"></b>
+											{%raw%}
+												<label>{{person.name}}</label>
+												<span>{{index}}</span>
+												<b>{{person.price}}</b>
+											{%endraw%}
 											</p>
 										</div>
 
 										<div class="product-extra-link2 resWi">
 											<div class="last-Bid-user">
+											{%raw%}
 												<p class="img-price-Bid"><img id="auction_current_winner_image"/></p>
-												<p class="price-Bid"><span id="auction_current_offer"></span> تومان</p>
-												<p class="name-price-Bid" id="auction_current_winner"></p>
+												<p class="price-Bid"><span id="auction_current_offer">{{auctionCurrentOffer}}</span>{{currentOfferPrice}} تومان</p>
+												<p class="name-price-Bid" id="auction_current_winner">{{auctionCurrentWinner}}</p>
+											{%endraw%}
 											</div>
 											<input type="hidden" id="set-time" value="1"/>
+											{%raw%}
 											<div id="countdown">
-												{%raw%}
 												<div id='tiles' class="color-full">{{remainingTime}}</div>
 												<div class="countdown-label">{{now_date}}</div>
-												{%endraw%}
 											</div>
-											<a class="addcart-link" href="#"  onclick="event.preventDefault();" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count" data-bind="text: offer_bid_count ? ToPersian(offer_bid_count) : ToPersian(0)"></div></a>
+											<a class="addcart-link" href="#" @click.prevent="handleBid" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">{{_ToPersian(offer_bid_count)}}</div></a>
+											{%endraw%}
 										</div>
 
 										<div class="alert alert-danger error_alert hide">
@@ -124,10 +128,13 @@
 										</div>
 
 										<div class="detail-countdowns">شروع حراجی : </span>
-			                <span data-bind="text:auction_end_date"></span>
-			                <i aria-hidden="true" class="fa fa-clock-o"></i><span data-bind="text:auction_end_time"></span>
+
+											{%raw%}
+			                <span>{{auction_end_date}}</span>
+			                <i aria-hidden="true" class="fa fa-clock-o"></i><span>{{auction_end_time}}</span>
+											{%endraw%}
 			              </div>
-									</div
+									</div>
 									<div class="detail-extralink mt-0">
 										<div class="product-extra-link2">
 											<a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" v-bind:value ="auction.item.id"></i> اضافه به سبد</a>
@@ -245,7 +252,13 @@ var app = new Vue({
 	el: "#app",
 
 	data:{
+		auctionCurrentWinnerImage: "#",
+		winnerUser: null,
+		auctionCurrentOffer: 0,
+		offer_bid_count: 0,
+		currentOfferPrice: 0,
 		interval: null,
+		timerSync: null,
 		remainingTime: null,
 		activeImage: null,
 		images: [],
@@ -257,10 +270,19 @@ var app = new Vue({
 		auctionMaxPrice: null,
 		auctionTitle: "",
 		auctionParticipants: [],
-		auction: null
+		auction: {},
+		users: [],
+		active_user: null
 	},
 
 	methods: {
+
+		handleBid: function(){
+			socket.emit("bid", {
+				auction_id: "{{auction_id}}",
+			});
+		},
+
 		_ToPersian: function(data){
 			return ToPersian(data);
 		},
@@ -291,7 +313,10 @@ var app = new Vue({
 		},
 
 		setPlanInformation: function(plan){
-			
+			console.log(plan);
+			if (plan){
+				this.offer_bid_count = plan.max_offers;
+			}
 		},
 
 		setProductInformation: function(product){
@@ -326,11 +351,11 @@ var app = new Vue({
 
 	computed: {
 		auction_end_date: function(){
-			// return new persianDate(new Date(this.remainingTime)).format("dddd DD MMMM YYYY");
+			// return full_date = new persianDate(new Date(this.remainingTime)).format("dddd DD MMMM YYYY");
 		},
 
 		auction_end_time: function(){
-
+			// return full_date = new persianDate(new Date(this.remainingTime)).format("dddd DD MMMM YYYY");
 		},
 
 		now_date: function(){
@@ -341,10 +366,15 @@ var app = new Vue({
 	// countdown
 	mounted: function(){
 			this.interval = setInterval(()=>{
-			var seconds = moment.duration(this.remainingTime).asSeconds() - 1;
-	 		this.remainingTime = moment.utc(seconds*1000).format('HH:mm:ss');
-		}, 1000);
-	}
+				var seconds = moment.duration(this.remainingTime).asSeconds() - 1;
+				this.remainingTime = moment.utc(seconds*1000).format('HH:mm:ss');
+			}, 1000);
+			
+			// sync timer with server every 3 seconds
+			this.timerSync = setInterval(() => {
+				socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
+			}, 3000);
+	},
 
 });
 
@@ -365,7 +395,6 @@ var app = new Vue({
 
 
 socket.on("remaining_time", function(seconds){
-	console.log(seconds);
 	const formatted = moment.utc(seconds*1000).format('HH:mm:ss');
 	app.remainingTime = formatted;
 });
@@ -373,13 +402,56 @@ socket.on("remaining_time", function(seconds){
 socket.on("update_view", function(data){
 	console.log("updating view ...");
 	console.log(data);
-	this.users = data.users[0];
-	this.active_user = users[0];
+	app.currentOfferPrice = data['current_offer_price'];
+	app.users = data.users[0];
+	app.active_user = app.users[0];
+
+	app.users.forEach(user => {
+		app.people.push({
+			name: user.username,
+			its_you: user.id == "{{current_user.id}}" ? true : false,
+			avatar: user.avatar ? avatar_path + ClearifyNames(user.avatar)[0] : "#",
+			price: ToPersian(formatCurrency(user.current_offer_price))
+		});
+	});
 
 	// TODO: update the dom
 
 });
 
+socket.on("unauthorized", function(data){
+	console.log("unauthorized");
+});
+
+socket.on("failed", function(data){
+	console.log("failed");
+});
+
+socket.on('accepted', function(data){
+	app.users = data.users[0];
+	app.winnerUser = app.users[0];
+	app.offerBidCount = data.users[0].filter((user)=>{return user.id == "{{current_user.id}}"})[0].current_bids;
+
+	
+	app.auctionCurrentOffer = data['total_price']
+
+	if (app.winnerUser){
+		app.auctionCurrentWinner = data.users[0][0].username;
+     	app.auctionCurrentWinnerImage = data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#";
+
+
+	}
+
+	console.log("accepted");
+
+
+
+});
+
+
+socket.on("auction_done", function(data){
+ console.log("auction end");
+});
 
 </script>
 

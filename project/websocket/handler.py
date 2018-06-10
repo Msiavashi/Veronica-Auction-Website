@@ -205,7 +205,6 @@ def get_remain_time(data):
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
     remained = (auction.start_date - datetime.now()).seconds
-    print remained
     if remained <= 0:
         emit("remaining_time", 0)
     emit("remaining_time", remained)
