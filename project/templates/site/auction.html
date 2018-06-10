@@ -2,10 +2,12 @@
 {% block title %} بردیتو | حراجی محصول {% endblock %}
 {% block content %}
 <input type="hidden" id="auction" value="{{auction_id}}">
-<div class="content-page">
+<div id="app" class="content-page">
 	<div class="container">
 		<div class="bread-crumb radius">
-			<a href="/">خانه</a> <span data-bind="text: auction.title">نام محصول</span>
+		{%raw%}
+			<a href="/">خانه</a> <span>{{auction.title}}</span>
+		{%endraw%}
 		</div>
 		<!-- End Bread Crumb -->
 		<div class="row">
@@ -16,18 +18,20 @@
 						<div class="row">
 							<div class="col-md-4 col-sm-12 col-xs-12">
 								<div class="product-extra-link2 rightList">
-									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times" data-bind="text:ToPersian(auction.ratio)">ضریب</i></a>
-			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span  data-bind="text: ToPersian(auction.participants.length)"></span> از <span data-bind="text: ToPersian(auction.max_members)"></span></a>
+									{%raw%}
+									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times">{{_ToPersian(auctionRatio)}}ضریب</i></a>
+			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span>{{_ToPersian(auctionParticipants.length)}}</span> از <span>{{_ToPersian(auctionMaxMembers)}}</span></a>
+									{%endraw%}
 			          </div>
 								<div class="detail-gallery">
 									<div class="mid">
-										<img data-bind="attr:{src: active_image}" alt=""/>
+										<img v-bind:src="activeImage" alt=""/>
 									</div>
 									<div class="gallery-control">
 										<a href="#" class="prev"><i class="fa fa-angle-left"></i></a>
 										<div class="carousel">
-											<ul data-bind="foreach: images">
-												<li><a href="#"><img data-bind="attr:{src: url}" alt=""/></a></li>
+											<ul v-for="image in images">
+												<li><a href="#"><img v-bind:src="image" alt=""/></a></li>
 											</ul>
 										</div>
 										<a href="#" class="next"><i class="fa fa-angle-right"></i></a>
@@ -61,17 +65,23 @@
 							</div>
 							<div class="col-md-8 col-sm-12 col-xs-12">
 								<div class="detail-info">
-									<h2 class="title-detail" data-bind="text: auction.title"></h2>
+											{%raw%}
+									<h2 class="title-detail">{{auction.title}}</h2>
+											{%endraw%}
 									<div class="product-price">
 										<!-- <a href="#" class="shopnow"><span>شرکت در حراجی</span></a> -->
 										<div class="textboX">
-											<div class="textboXX"><p> قیمت محصول : <span data-bind="text:ToPersian(formatCurrency(auction.item.price))"></span> تومان <div> &nbsp  </div></p></div>
+											{%raw%}
+											<div class="textboXX"><p> قیمت محصول : <span>{{_ToPersian(_formatCurrency(auction.item.price))}}</span> تومان <div> &nbsp  </div></p></div>
+											{%endraw%}
 											<div class="upArrow"></div>
 										</div>
 										<div class="textboX">
 											<div class="textboXX">
-												<p id="auction_register_price">شروع حراجی : <span data-bind="text: ToPersian(formatCurrency(auction.base_price))"></span> تومان
-												<div>  سقف حراجی : <span data-bind="text: ToPersian(formatCurrency(auction.max_price))"></span> تومان </p></div>
+											{%raw%}
+												<p id="auction_register_price">شروع حراجی : <span>{{_ToPersian(_formatCurrency(auctionBasePrice))}}</span> تومان
+												<div>  سقف حراجی : <span>{{_ToPersian(_formatCurrency(auctionMaxPrice))}}</span> تومان </p></div>
+											{%endraw%}
 											</div>
 											<div class="upArrow"></div>
 										</div>
@@ -95,8 +105,10 @@
 											</div>
 											<input type="hidden" id="set-time" value="1"/>
 											<div id="countdown">
-												<div id='tiles' class="color-full"></div>
-												<div class="countdown-label" data-bind="text:now_date"></div>
+												{%raw%}
+												<div id='tiles' class="color-full">{{remainingTime}}</div>
+												<div class="countdown-label">{{now_date}}</div>
+												{%endraw%}
 											</div>
 											<a class="addcart-link" href="#"  onclick="event.preventDefault();" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count" data-bind="text: offer_bid_count ? ToPersian(offer_bid_count) : ToPersian(0)"></div></a>
 										</div>
@@ -118,7 +130,7 @@
 									</div
 									<div class="detail-extralink mt-0">
 										<div class="product-extra-link2">
-											<a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" data-bind="attr:{value:auction.item.id}"></i> اضافه به سبد</a>
+											<a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" v-bind:value ="auction.item.id"></i> اضافه به سبد</a>
 											<a class="wishlist-link2" href="#"><i aria-hidden="true" class="fa fa-heart"></i></a>
 											<a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span> تومان</a>
 										</div>
@@ -145,10 +157,12 @@
 								<div class="hoz-tab-content">
 									<div class="content-detail-tab">
 										<div class="detail-tab-info">
-											<p class="desc" data-bind="text:auction.description"> توضیحات محصول
+											{%raw%}
+											<p class="desc">{{auction.desciption}}</p>
 												<ul>
-													<li data-bind="text:auction.item.product.desciption">توضیحات آیتم محصول</li>
+													<li>{{auction.item.product.desciption}}</li>
 											</ul>
+											{%endraw%}
 										</div>
 									</div>
 								</div>
@@ -157,10 +171,12 @@
 								<div class="hoz-tab-content">
 									<div class="content-detail-tab">
 										<div class="detail-tab-info">
-											<p class="desc" data-bind="text:auction.description"> توضیحات محصول
+											{%raw%}
+											<p class="desc">{{auction.desciption}}</p>
 												<ul>
-													<li data-bind="text:auction.item.product.desciption">توضیحات آیتم محصول</li>
+													<li>{{auction.item.product.desciption}}</li>
 											</ul>
+											{%endraw%}
 										</div>
 									</div>
 								</div>
@@ -169,10 +185,13 @@
 								<div class="hoz-tab-content">
 									<div class="content-detail-tab">
 										<div class="detail-tab-info">
-											<p class="desc" data-bind="text:auction.description"> توضیحات محصول
+											{%raw%}
+											<p class="desc" >{{auction.desciption}} </p>
 												<ul>
-													<li data-bind="text:auction.item.product.desciption">توضیحات آیتم محصول</li>
+													<li> {{auction.item.product.desciption}} </li>
 											</ul>
+
+											{%endraw%}
 										</div>
 									</div>
 								</div>
@@ -214,333 +233,154 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue-socket.io@2.1.1-b/dist/build.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vuex/3.0.1/vuex.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 <script>
-
-var auction_id = $('#auction').val();
-var people = ko.observableArray([]);
-var offer_bid_count = ko.observable();
-var current_user_id = '{{current_user.id}}';
-var target_date = ko.observable();
-var time_left = ko.observable();
-var time_difference = ko.observable();
-var active_image = ko.observable();
-var images = ko.observableArray([]);
-var now_date = ko.observable();
-var auction_end_date = ko.observable();
-var auction_end_time = ko.observable();
-var auction = ko.observable();
-
-
-
-function Person(name,avatar,its_me,row,price) {
-    var self = this;
-    self.name = ko.observable(name);
-    self.avatar = ko.observable(avatar);
-    self.its_me = ko.observable(its_me);
-    self.row = ko.observable(row);
-    self.offer_price = ko.observable(price);
-}
-
-$.getJSON( "/api/auction/"+auction_id+"/instantview", function( data ) {
-
-  product = data.product[0]
-  plan = data.plan[0]
-  current_auction = data.auction[0]
-
-  var full_date = null
-  var full_hour = null
-
-  if(isSafari()){
-    var deadline = new Date(current_auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
-    full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-    full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-  }else{
-    full_date = new persianDate(new Date(current_auction.remained_time)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-    full_hour = new persianDate(new Date(current_auction.remained_time)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-  }
-
-  var end_date_date = full_date;
-  var end_date_time =  " ساعت  " + full_hour;
-  var now_date_date = new persianDate(new Date()).format("dddd DD MMMM YYYY");
-
-  var images_temp = ClearifyNames(current_auction.item.images);
-  var imgs = [];
-  $.each(product.items,function(key,item) {
-    $.each(ClearifyNames(item.images),function(key1,val) {
-      imgs.push({url:images_path+val.trim(),active:false});
-    });
-  });
-
-  imgs[0].active=true;
-  if(plan){
-    offer_bid_count = plan.max_offers ;
-  }
-  else {
-    offer_bid_count = 0;
-  }
-  var item_id = current_auction.item.id;
-
-
-	auction = current_auction ;
-	auction_end_date(end_date_date);
-	auction_end_time(end_date_time);
-	now_date(now_date_date);
-	images(imgs);
-	active_image(imgs[0].url);
-	
-  ko.applyBindings();
-
-  if($('.detail-gallery').length>0){
-    $('.detail-gallery').each(function(){
-      $(this).find(".carousel").jCarouselLite({
-        btnNext: $(this).find(".gallery-control .next"),
-        btnPrev: $(this).find(".gallery-control .prev"),
-        speed: 800,
-        visible:3,
-      });
-      //Elevate Zoom
-      $(this).find('.mid img').elevateZoom({
-        zoomType: "inner",
-        cursor: "crosshair",
-        zoomWindowFadeIn: 500,
-        zoomWindowFadeOut: 750
-      });
-
-      $(this).find(".carousel a").on('click',function(event) {
-        event.preventDefault();
-        $(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
-        $(this).addClass('active');
-        $(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
-        var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
-        $('.zoomWindow').css('background-image','url("'+z_url+'")');
-      });
-    });
-  }
-});
 
 var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
+var app = new Vue({
+
+	el: "#app",
+
+	data:{
+		interval: null,
+		remainingTime: null,
+		activeImage: null,
+		images: [],
+		people: [],
+		auctionBasePrice: null,
+		auctionDescription: "",
+		auctionMaxMembers: null,
+		auctionRatio: null,
+		auctionMaxPrice: null,
+		auctionTitle: "",
+		auctionParticipants: [],
+		auction: null
+	},
+
+	methods: {
+		_ToPersian: function(data){
+			return ToPersian(data);
+		},
+
+		_formatCurrency: function(number){
+			return formatCurrency(number);
+		},
+
+		getRemainTime: function(){
+			socket.emit("get_remain_time", {auction_id: "{{auction_id}}"});
+		},
+
+		setAuctionInformation: function(auction){
+			this.images = [];
+			ClearifyNames(auction.item.images).forEach(image => {
+				this.images.push(images_path + image);
+			});
+			this.auction = auction;
+			this.activeImage = this.images[0];
+			this.auctionBasePrice = auction.base_price;
+			this.auctionDescription = auction.description;
+			this.auctionMaxPrice = auction.max_price
+			this.auctionRatio = auction.ratio;
+			this.auctionTitle = auction.title;
+			this.auctionMaxMembers = auction.max_members;
+			this.auctionParticipants = auction.participants;
+			
+		},
+
+		setPlanInformation: function(plan){
+			
+		},
+
+		setProductInformation: function(product){
+
+		}
+	},
+	beforeCreate: function(){
+		var self = this;
+		socket.emit("join", {auction_id: '{{auction_id}}'});
+		socket.emit("get_remain_time", {auction_id: "{{auction_id}}"});
+		
+
+
+		axios.get("{{url_for('auctioninstanceview', aid=auction_id)}}")
+			.then((response) => {
+				console.log(response.data);
+				this.setProductInformation(response.data.product[0]);
+				this.setPlanInformation(response.data.plan[0]);
+				this.setAuctionInformation(response.data.auction[0]);
+			})
+			.catch((response)=>{
+				console.error(response.data);
+			});
+			
+
+	},
+
+	created: function(){
+
+	},
+
+
+	computed: {
+		auction_end_date: function(){
+			// return new persianDate(new Date(this.remainingTime)).format("dddd DD MMMM YYYY");
+		},
+
+		auction_end_time: function(){
+
+		},
+
+		now_date: function(){
+			return new persianDate(new Date()).format("dddd DD MMMM YYYY");
+		}
+	},
+
+	// countdown
+	mounted: function(){
+			this.interval = setInterval(()=>{
+			var seconds = moment.duration(this.remainingTime).asSeconds() - 1;
+	 		this.remainingTime = moment.utc(seconds*1000).format('HH:mm:ss');
+		}, 1000);
+	}
+
+});
+
  socket.on('connect', function() {
 		 console.log('connected');
-     socket.emit('join', {'auction_id':auction_id});
  });
 
- var timer = setInterval(getStatus,5000);
- var countdownTimer = null
+// setInterval(()=>{
+// 	console.log('syncing...:' + "{{current_user.id}}");
+// 	socket.emit('status', {'auction_id': '{{auction_id}}'});
+// }, 5000);
 
- function getStatus() {
-	 console.log('syncing... : '+ "{{current_user.id}}" );
-   socket.emit('status',{'auction_id':auction_id});
- }
- var start_miliseconds = 0;
-
- socket.on('auction_status',function(data) {
-   start_miliseconds = data.remained * 1000;
- });
-
- var days, hours, minutes, seconds; // variables for time units
-
- var countdown = document.getElementById("tiles"); // get tag element
-
- function BesideOfWS(){
-   updateTimer(start_miliseconds);
-   countdownTimer = setTimeout(function() {
-     start_miliseconds -= 100;
-    BesideOfWS();
-   }, 100);
- }
-
- BesideOfWS();
- function updateTimer(millisecond){
-
-     if ( millisecond  >= 0) {
-
-         if ( millisecond  < (60 * 1000) && millisecond  > (10 * 1000) ) {
-             $('#tiles').removeClass('color-full');
-             $('#tiles').addClass('color-half');
-         } else{
-  					 $('#tiles').addClass('color-full');
-  					 $('#tiles').removeClass('color-half');
-  				}
-				 if ( millisecond  < (10 * 1000) ) {
-             $('#tiles').removeClass('color-half');
-             $('#tiles').addClass('color-empty');
-         }
-				 else{
- 					 $('#tiles').addClass('color-full');
- 					 $('#tiles').removeClass('color-empty');
- 				 }
-
-         var hours = parseInt(millisecond / (3600*1000));
-         var left_millisecond = millisecond - (hours * 3600*1000);
-
-         var minutes = parseInt(left_millisecond / (60*1000));
-         var left_millisecond = left_millisecond - (minutes * 60*1000);
-
-         var seconds = parseInt(left_millisecond / 1000);
-         var left_millisecond = left_millisecond - (seconds*1000);
-
-         if(left_millisecond < 10)
-           left_millisecond = '00'+left_millisecond;
-         else if(left_millisecond < 100)
-           left_millisecond = '0'+left_millisecond;
-
-         // format countdown string + set tag value
-         countdown.innerHTML = "<span>" + pad(hours) + ":</span><span>" + pad(minutes) + ":</span><span>" + pad(seconds) + ":</span><span>" + left_millisecond + "</span>";
-     }
- }
-
- function pad(n) {
-   return (n < 10 ? '0' : '') + n;
- }
-
- socket.on('join', function(data) {
-   console.log(data);
-   start_miliseconds = data.deadline * 1000;
-	 getStatus();
- });
-
- socket.on('update_view', function(data) {
-
-   users = data.users[0];
-   active_user = users[0];
-
-    $.each(users,function(key,user){
-      if(user.id =='{{current_user.id}}'){
-        if(user.current_bids)
-          $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
-          return;
-      }
-    });
-
-    $('#auction_current_offer').html(ToPersian(formatCurrency(data.current_offer_price)));
-    if(active_user){
-      $('#auction_current_winner').html(active_user.username);
-      $('#auction_current_winner_image').attr('src',avatar_path+ClearifyNames(active_user.avatar)[0])
-    }
-   if(users){
-		 console.log(users);
-     rowIndex = 0;
-     people([]);
-     $.each(users,function(key,val){
-       its_you = val.id == current_user_id ? true : false;
-       name = val.username ;
-       avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-       row = ToPersian(++rowIndex);
-       price = ToPersian(formatCurrency(val.current_offer_price)); //? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
-       person = new Person(name,avatar,its_you,row,price);
-       people.push(person);
-     });
-     people.valueHasMutated();
-   }
-
- });
-
- socket.on('accepted', function(data) {
-   users = data.users[0];
-   winner_user = users[0];
-
-   console.log(data);
-   $.each(users,function(key,user){
-     if(user.id =='{{current_user.id}}'){
-       if(user.current_bids)
-         $('#offer_count').html(ToPersian(formatCurrency(user.current_bids)));
-     }
-   });
-
-   $('#auction_current_offer').html(ToPersian(formatCurrency(data.total_price)));
-   if(winner_user){
-     $('#auction_current_winner').html(data.users[0][0].username);
-     $('#auction_current_winner_image').attr('src',data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#");
-   }
-   if(users){
-     rowIndex = 0;
-     people([]);
-     $.each(data.users[0],function(key,val){
-       its_you = val.id == current_user_id ? true : false;
-       name = val.username ;
-       avatar = val.avatar ? avatar_path + ClearifyNames(val.avatar)[0] : "#";
-			 row = ToPersian(++rowIndex);
-			 price = ToPersian(formatCurrency(val.current_offer_price)); //? ToPersian(formatCurrency(val.current_offer_price)) : ToPersian(0);
-       person = new Person(name,avatar,its_you,row,price);
-       people.push(person);
-     });
-     people.valueHasMutated();
-   }
-   getStatus();
- });
-
- socket.on('auction_done', function(data) {
-    clearInterval(timer);
-    clearInterval(countdownTimer);
-    countdown.innerHTML = "<span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + "</span>";
-    if(data.success){
-      $(".error_alert").addClass('hide');
-      $(".success_alert").removeClass('hide');
-      $(".success_container").html('حراجی این محصول به پایان رسیده است')
-      $('#offer').html(data.winner[0].username);
-      $('#discount').html(ToPersian(formatCurrency(data.discount)))
-    }else {
-      $(".error_alert").removeClass('hide');
-      $(".error_container").html(data.reason);
-    }
-
- });
-
- socket.on('failed', function(data) {
-   $(".error_alert").removeClass('hide');
-   $(".error_container").html(data.reason);
- });
-
- $("#offer").on("click", function(event) {
-   socket.emit('bid', {'auction_id':auction_id});
- });
+// socket.on('auction_status', function(data){
+// 	console.log(data);
+// });
 
 
- $(document).on('click','.addcart-link2',function(event) {
-  event.preventDefault();
 
- 	self = $(this);
- 	item_id = self.find('input').val();
 
- 	var data = JSON.stringify({
-   	"item_id": item_id,
- 		"total":1
- 	});
+socket.on("remaining_time", function(seconds){
+	console.log(seconds);
+	const formatted = moment.utc(seconds*1000).format('HH:mm:ss');
+	app.remainingTime = formatted;
+});
 
- 	var xhr = new XMLHttpRequest();
- 	xhr.withCredentials = true;
+socket.on("update_view", function(data){
+	console.log("updating view ...");
+	console.log(data);
+	this.users = data.users[0];
+	this.active_user = users[0];
 
- 	xhr.open("POST", "{{url_for('usercartorder')}}");
- 	xhr.setRequestHeader("Content-Type", "application/json");
- 	xhr.setRequestHeader("Cache-Control", "no-cache");
- 	xhr.send(data);
- 	xhr.onreadystatechange = function (oEvent) {
-     if (xhr.readyState === 4) {
- 				data = JSON.parse(xhr.responseText);
-         if (xhr.status === 200) {
- 					carts = []
- 			    $.each(data,function(key,val) {
- 						if(val[0])
- 				      carts.push(val[0]);
- 			    });
- 					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
-         } else {
-            alert(data.reason)
-         }
-     	}
- 		};
- 	});
-axios.post("{{url_for('userauctionview')}}", {
-  "aid": '{{auction_id}}'
-})
-	.then((response) => {
-		console.log(response);
-	})
-	.catch((respones)=>{
-		console.error(response);
-	});
+	// TODO: update the dom
+
+});
+
+
 </script>
 
 {% endblock scripts %}

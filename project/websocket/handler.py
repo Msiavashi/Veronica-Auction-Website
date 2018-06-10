@@ -47,7 +47,7 @@ def leave(data):
 def loadview(data):
     try:
         auction_id = data['auction_id']
-        auction = Auction.query.get(auction_id)
+        # auction = Auction.query.get(auction_id)
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
         result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
         users = []
@@ -198,3 +198,14 @@ def get_acution_status(data):
         auction_done(data)
     else:
         emit("auction_status", {"status": "running","remained":remained,"server_time":str(server_time),"auction_time":str(auction_time)},room=room)
+
+@socketio.on('get_remain_time')
+def get_remain_time(data):
+    room = data['auction_id']
+    auction_id = data['auction_id']
+    auction = Auction.query.get(auction_id)
+    remained = (auction.start_date - datetime.now()).seconds
+    print remained
+    if remained <= 0:
+        emit("remaining_time", 0)
+    emit("remaining_time", remained)
