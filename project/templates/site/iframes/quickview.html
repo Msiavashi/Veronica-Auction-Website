@@ -250,7 +250,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      socket.emit('join', {'auction_id':auction_id});
  });
 
- var timer = setInterval(getStatus,5000);
+ var timer = setInterval(getStatus,100);
  var countdownTimer = null
 
  function getStatus() {

@@ -140,7 +140,7 @@
                                             <div id='tiles' class="color-full"></div>
                                             <div class="countdown-label">دو شنبه ۱۳ فروردین ساعت ۱۴</div>
                                         </div>
-                                        <a class="addcart-link" href="#" id="offer" onclick="_handleSpinner(5000)">پیشنهاد <div class="detail-qty border radius">۱۲۲</div></a> <!-- handle spinner -->
+                                        <a class="addcart-link" href="#" id="offer">پیشنهاد <div class="detail-qty border radius">۱۲۲</div></a> <!-- handle spinner -->
                                     </div>
                                     <div class="detail-countdowns"><span>تاریخ اتمام حراجی : </span> سه شنبه ۷فروردین ۱۳۹۷
                                         <i aria-hidden="true" class="fa fa-clock-o"></i> ساعت: ۲۰:۲۵:۱۲
@@ -175,15 +175,17 @@
 <script type="text/javascript" src="js/libs/jquery.mCustomScrollbar.js"></script>
 <script type="text/javascript" src="js/libs/wow.js"></script>
 <script type="text/javascript" src="js/theme.js"></script>
+
 <div id="myModal" class="modal">
     <div class="modals">
         <div class="loader"></div>
     </div>
 </div>
+
 <script>
     //countdown\
     loading_element = document.getElementById('myModal');
-    
+
     function _handleSpinner(millisecond){ //spinner handler
         start_loading(loading_element);
         setTimeout(function () {
@@ -202,19 +204,19 @@
 
     var countdown = document.getElementById("tiles"); // get tag element
 
-    var start_miliseconds = 1*30*1000;
-    var time_limit = 1*30*1000;
+    var start_miliseconds = 1*11*1000;
+    var time_limit = 1*11*1000;
 
     function BesideOfWS(){
         updateTimer(start_miliseconds);
         setTimeout(function() {
-            start_miliseconds -= 100;
+            start_miliseconds -= 10;
             if( start_miliseconds >= 0){
                 BesideOfWS();
             }else{
                 _handleSpinner(1000);
             }
-        }, 100);
+        }, 10);
     }
 
     BesideOfWS();

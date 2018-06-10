@@ -23,10 +23,10 @@ class AuctionPlan(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
     def __str__(self):
-        # try:
-        #     # return self.plan.title + " " + self.auction.title
-        # except Exception as e:
-        return " بدون حراجی "
+        try:
+            return self.plan.title + " " + self.auction.title
+        except Exception as e:
+            return " بدون حراجی "
 
 
 class AuctionPlanSchema(Schema):

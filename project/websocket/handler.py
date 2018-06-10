@@ -76,7 +76,6 @@ def handle_bid(data):
     if not current_user.is_authenticated:
         emit('unauthorized', {"msg": "login required"})
         return 401
-
         # is_registered
     try:
         auction_id = data['auction_id']

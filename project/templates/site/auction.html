@@ -214,11 +214,11 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-<div id="myModal" class="modal">
+<!-- <div id="myModal" class="modal">
     <div class="modals">
         <div class="loader"></div>
     </div>
-</div>
+</div> -->
 <script>
 
 var auction_id = $('#auction').val();
@@ -337,18 +337,18 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      socket.emit('join', {'auction_id':auction_id});
  });
 
- var timer = setInterval(getStatus,5000);
+ // var timer = setInterval(getStatus,1000);
  var countdownTimer = null
 
  function getStatus() {
-	 console.log('syncing... : '+ "{{current_user.id}}" );
    socket.emit('status',{'auction_id':auction_id});
  }
+
  var start_miliseconds = 0;
 
  socket.on('auction_status',function(data) {
+	 console.log(data);
    start_miliseconds = data.remained * 1000;
-
  });
 
  var days, hours, minutes, seconds; // variables for time units
@@ -359,9 +359,6 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 	 updateTimer(start_miliseconds);
 	 setTimeout(function() {
 		 start_miliseconds -= 100;
-		 if( start_miliseconds == 0){
-			 start_loading(loading_element);
-		 }
 		 BesideOfWS();
 	 }, 100);
  }
@@ -402,7 +399,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
            left_millisecond = '0'+left_millisecond;
 
          // format countdown string + set tag value
-         countdown.innerHTML = "<span>" + pad(hours) + ":</span><span>" + pad(minutes) + ":</span><span>" + pad(seconds) + ":</span><span>" + left_millisecond + "</span>";
+				 countdown.innerHTML = "<span>" + pad(hours) + ":</span><span>" + pad(minutes) + ":</span><span>" + pad(seconds) + ":</span><span>" + left_millisecond + "</span>";
      }
  }
 
@@ -413,7 +410,6 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('join', function(data) {
    console.log(data);
    start_miliseconds = data.deadline * 1000;
-	 getStatus();
  });
 
  socket.on('update_view', function(data) {
@@ -453,6 +449,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  });
 
  socket.on('accepted', function(data) {
+
    users = data.users[0];
    winner_user = users[0];
 
@@ -483,22 +480,25 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
      });
      people.valueHasMutated();
    }
-   getStatus();
  });
 
  socket.on('auction_done', function(data) {
-    clearInterval(timer);
-    clearInterval(countdownTimer);
     countdown.innerHTML = "<span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + ":</span><span>" + pad(0) + "</span>";
     if(data.success){
       $(".error_alert").addClass('hide');
       $(".success_alert").removeClass('hide');
       $(".success_container").html('حراجی این محصول به پایان رسیده است')
+			start_miliseconds = -900;
+			clearInterval(timer);
+			clearInterval(countdownTimer);
       $('#offer').html(data.winner[0].username);
       $('#discount').html(ToPersian(formatCurrency(data.discount)))
     }else {
       $(".error_alert").removeClass('hide');
       $(".error_container").html(data.reason);
+			start_miliseconds = -900;
+			clearInterval(timer);
+			clearInterval(countdownTimer);
     }
 
  });
