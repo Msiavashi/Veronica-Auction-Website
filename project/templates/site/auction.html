@@ -113,14 +113,15 @@
 												<div id='tiles' class="color-full">{{remainingTime}}</div>
 												<div class="countdown-label">{{now_date}}</div>
 											</div>
-											<a class="addcart-link" href="#" @click.prevent="handleBid" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">{{_ToPersian(offer_bid_count)}}</div></a>
+											<a class="addcart-link" href="#" @click.prevent="handleBid" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">{{_ToPersian(offerBidCount)}}</div></a>
 											{%endraw%}
 										</div>
-
-										<div class="alert alert-danger error_alert hide">
+										<div v-if="error.show" class="alert alert-danger error_alert">
+										{%raw%}
 											<a href="#" class="close" aria-label="close">×</a>
-											<div class="error_container"></div>
+											<div class="error_container">{{error.message}}</div>
 										</div>
+										{%endraw%}
 
 										<div class="alert alert-success alert-dismissable success_alert hide">
 											<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
@@ -252,10 +253,14 @@ var app = new Vue({
 	el: "#app",
 
 	data:{
+		error: {
+			show: false,
+			message: ""
+		},
 		auctionCurrentWinnerImage: "#",
 		winnerUser: null,
 		auctionCurrentOffer: 0,
-		offer_bid_count: 0,
+		offerBidCount: 0,
 		currentOfferPrice: 0,
 		interval: null,
 		timerSync: null,
@@ -315,7 +320,7 @@ var app = new Vue({
 		setPlanInformation: function(plan){
 			console.log(plan);
 			if (plan){
-				this.offer_bid_count = plan.max_offers;
+				this.offerBidCount = plan.max_offers;
 			}
 		},
 
@@ -399,10 +404,14 @@ socket.on("remaining_time", function(seconds){
 	app.remainingTime = formatted;
 });
 
+
+
+
+
 socket.on("update_view", function(data){
 	console.log("updating view ...");
 	console.log(data);
-	app.currentOfferPrice = data['current_offer_price'];
+	app.currentOfferPrice = ToPersian(formatCurrency(parseInt(data['current_offer_price'])));
 	app.users = data.users[0];
 	app.active_user = app.users[0];
 
@@ -424,23 +433,34 @@ socket.on("unauthorized", function(data){
 });
 
 socket.on("failed", function(data){
+	app.error.show = true;
+	app.error.message = data.reason;
+	app.$forceUpdate();
 	console.log("failed");
 });
 
 socket.on('accepted', function(data){
 	app.users = data.users[0];
 	app.winnerUser = app.users[0];
-	app.offerBidCount = data.users[0].filter((user)=>{return user.id == "{{current_user.id}}"})[0].current_bids;
+	app.offerBidCount = ToPersian(data.users[0].filter((user)=>{return user.id == "{{current_user.id}}"})[0].current_bids);
 
 	
-	app.auctionCurrentOffer = data['total_price']
+	app.auctionCurrentOffer = ToPersian(formatCurrency(parseInt(data['total_price'])));
 
 	if (app.winnerUser){
 		app.auctionCurrentWinner = data.users[0][0].username;
      	app.auctionCurrentWinnerImage = data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#";
-
-
 	}
+	app.people = [];
+	app.users.forEach(user => {
+		app.people.push({
+			name: user.username,
+			its_you: user.id == "{{current_user.id}}" ? true : false,
+			avatar: user.avatar ? avatar_path + ClearifyNames(user.avatar)[0] : "#",
+			price: ToPersian(formatCurrency(user.current_offer_price))
+		});
+	});
+
 
 	console.log("accepted");
 
