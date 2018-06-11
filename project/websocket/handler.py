@@ -137,7 +137,7 @@ def handle_bid(data):
         db.session.commit()
 
         if(remained < 10):
-            auction.start_date = now + timedelta(seconds=12)
+            auction.start_date = now + timedelta(seconds=11)
             db.session.add(auction)
             db.session.commit()
 
@@ -175,7 +175,7 @@ def auction_done(data):
             winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
             user_schema = UserSchema()
             price -= last_offer.total_price
-            emit("auction_done", {"success":True, "winner": json.dumps(user_schema.dump(winner)),"discount":str(price)},room=room)
+            emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": user_schema.dump(winner),"discount":str(price)},room=room)
             return 200
         else:
             emit("auction_done", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
@@ -203,7 +203,13 @@ def get_remain_time(data):
     room = data['auction_id']
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
-    remained = (auction.start_date - datetime.now()).seconds
-    if remained <= 0:
-        emit("remaining_time", 0)
-    emit("remaining_time", remained)
+    # remained = (auction.start_date - datetime.now()).seconds
+    # print remained
+    # emit("remaining_time", remained)
+
+    if(auction.start_date < datetime.now()):
+        auction_done(data)
+    else:
+        remained = (auction.start_date - datetime.now()).seconds
+        print remained
+        emit("remaining_time", remained)
