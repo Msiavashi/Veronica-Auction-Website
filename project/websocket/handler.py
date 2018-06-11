@@ -35,7 +35,7 @@ def join(data):
     loadview(data)
     auction = Auction.query.get(data['auction_id'])
     auction_schema = AuctionSchema();
-    deadline = (auction.start_date - datetime.now()).seconds
+    deadline = (auction.start_date - datetime.now()).seconds + 1
     emit("join",{"msg": "new client joined auction","auction": auction_schema.dump(auction),"deadline":deadline} , room=room)
 
 @socketio.on('leave')
@@ -137,9 +137,11 @@ def handle_bid(data):
         db.session.commit()
 
         if(remained < 10):
-            auction.start_date = now + timedelta(seconds=11)
+            auction.start_date = now + timedelta(seconds=12)
             db.session.add(auction)
             db.session.commit()
+        if(remained <=0 ):
+            auction_done(data)
 
         result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
         users = []
@@ -203,13 +205,13 @@ def get_remain_time(data):
     room = data['auction_id']
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
-    # remained = (auction.start_date - datetime.now()).seconds
-    # print remained
-    # emit("remaining_time", remained)
-
     if(auction.start_date < datetime.now()):
         auction_done(data)
     else:
-        remained = (auction.start_date - datetime.now()).seconds
-        print remained
-        emit("remaining_time", remained)
+        remained = (auction.start_date - datetime.now()).seconds + 1
+        emit("remaining_time", remained,room=room)
+
+@socketio.on('keepAlive')
+def keepAlive(data):
+    room = data['auction_id']
+    emit("alive",room=room)

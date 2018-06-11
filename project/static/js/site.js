@@ -41,7 +41,6 @@ var product_image_path = '/static/images/products/';
 
 $('.close').on('click',function(event){
 	event.preventDefault();
-	alert('closing');
 	$(this).parent().removeClass('show').addClass('hide')
 });
 
