@@ -81,6 +81,9 @@ def handle_bid(data):
         auction_id = data['auction_id']
         user_id = current_user.id
         auction = Auction.query.get(auction_id)
+        if(auction.start_date < datetime.now()):
+            emit('failed',{"success":False,"reason":"وقت شرکت در حراجی به اتمام رسیده است"})
+            return 400
         user = User.query.get(user_id)
         user_plan = UserPlan.query.filter_by(user_id=user_id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
         auc_part = UserAuctionParticipation.query.filter_by(auction_id=auction_id,user_id=user_id).first()
