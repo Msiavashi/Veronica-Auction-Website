@@ -333,6 +333,8 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 		 getStatus();
  });
 
+ var sync_timer = setInterval(getStatus,10000);
+
  var timer = setInterval(check_seconds,1000);
  var timer_sentinal = 10000;
  var running_timer = true;
@@ -547,6 +549,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 
 	 $(".flash-countdown").TimeCircles().restart().stop();
 	 clearInterval(timer);
+	 clearInterval(sync_timer);
     if(data.success){
       $(".error_alert").addClass('hide');
       $(".success_alert").removeClass('hide');
