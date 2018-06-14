@@ -333,34 +333,36 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 		 getStatus();
  });
 
- var sync_timer = setInterval(getStatus,10000);
+ var sync_timer = setInterval(getStatus,1000);
 
  var timer = setInterval(check_seconds,1000);
+
  var timer_sentinal = 10000;
  var running_timer = true;
 
  function check_seconds() {
 	running_timer = true;
 	timer_sentinal -= 1000;
+	console.log('timer_sentinal');
 	console.log(timer_sentinal);
-	seconds = timer_sentinal / 1000;
-	if (( seconds  < 60  ) && (seconds  > 9) ) {
-		$('#tiles').removeClass('color-full');
-		$('#tiles').addClass('color-half');
-	} else{
-		$('#tiles').addClass('color-full');
-		$('#tiles').removeClass('color-half');
-	}
-	if ( seconds < 10 ) {
-		$('#tiles').removeClass('color-half');
-		$('#tiles').addClass('color-empty');
-	}
-	else{
-		$('#tiles').addClass('color-full');
-		$('#tiles').removeClass('color-empty');
-	}
+	// seconds = timer_sentinal / 1000;
+	// if (( seconds  < 60  ) && (seconds  > 9) ) {
+	// 	$('#tiles').removeClass('color-full');
+	// 	$('#tiles').addClass('color-half');
+	// } else{
+	// 	$('#tiles').addClass('color-full');
+	// 	$('#tiles').removeClass('color-half');
+	// }
+	// if ( seconds < 10 ) {
+	// 	$('#tiles').removeClass('color-half');
+	// 	$('#tiles').addClass('color-empty');
+	// }
+	// else{
+	// 	$('#tiles').addClass('color-full');
+	// 	$('#tiles').removeClass('color-empty');
+	// }
 
- 	if(timer_sentinal == 1000){
+ 	if(timer_sentinal == 0){
 		console.log('sentinal');
 		start_loading(loading_element);
 		getStatus();
@@ -385,7 +387,7 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
 	 stop_loading(loading_element);
    start_seconds = data.remained;
 	 timer_sentinal = start_seconds * 1000;
-	 console.log(timer_sentinal);
+
 	 if(timer_sentinal!=0 && !running_timer){
 		 running_timer = true;
 		 timer = setInterval(check_seconds,1000);
@@ -548,8 +550,8 @@ var socket = io.connect(location.protocol + '//' + document.domain + ':' + locat
  socket.on('auction_done', function(data) {
 
 	 $(".flash-countdown").TimeCircles().restart().stop();
-	 clearInterval(timer);
 	 clearInterval(sync_timer);
+	 clearInterval(timer);
     if(data.success){
       $(".error_alert").addClass('hide');
       $(".success_alert").removeClass('hide');

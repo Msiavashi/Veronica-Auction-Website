@@ -3,7 +3,6 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-import gevent
 from flask import url_for, redirect, render_template, request, abort ,redirect, session,jsonify
 from datetime import timedelta
 from flask_login import current_user,login_required,logout_user

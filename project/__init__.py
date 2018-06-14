@@ -14,7 +14,7 @@ from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 import websocket
 import eventlet
-eventlet.monkey_patch(socket=True)
+eventlet.monkey_patch()
 import redis
 from flask_login import current_user,LoginManager
 from definitions import SESSION_EXPIRE_TIME
