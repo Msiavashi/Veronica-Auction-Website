@@ -81,6 +81,7 @@ def handle_bid(data):
         auction_id = data['auction_id']
         user_id = current_user.id
         auction = Auction.query.get(auction_id)
+
         if(auction.start_date < datetime.now()):
             emit('failed',{"success":False,"reason":"وقت شرکت در حراجی به اتمام رسیده است"})
             return 400
@@ -99,7 +100,7 @@ def handle_bid(data):
             return 200
 
         now = datetime.now()
-        remained = (auction.start_date - now).seconds
+        remained = (auction.start_date + timedelta(seconds=1) - now).seconds
         if(remained > 60):
             emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
             return 400
@@ -139,12 +140,15 @@ def handle_bid(data):
         db.session.add(offer)
         db.session.commit()
 
-        if(remained < 10):
-            auction.start_date = now + timedelta(seconds=12)
+
+
+        if(remained < 10 and remained > 0):
+            auction.start_date = now + timedelta(seconds=11)
             db.session.add(auction)
             db.session.commit()
-        if(remained <=0 ):
-            auction_done(data)
+        elif(remained <=0 ):
+            print 'remained:',remained
+            return auction_done(data)
 
         result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
         users = []

@@ -14982,10 +14982,10 @@ a.protect-icon:hover {
   margin: 0 0 40px;
   text-transform: uppercase;
 }
-.protect-bordito {
+.protect-bidbazi {
   margin-top: 45px;
 }
-.protect-bordito h2 {
+.protect-bidbazi h2 {
   font-size: 24px;
   padding: 0 15px;
   margin-bottom: 40px;
@@ -17019,7 +17019,7 @@ td.product-info-total .product-info .desc {
 }
 .list-member-bid {
 	width: 62.9%;
-	height: 317px;
+	height: auto;
 	/* background: #f5f5f5; */
 	border-radius: 5px;
 	margin-right: 10px;

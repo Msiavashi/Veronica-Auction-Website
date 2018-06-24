@@ -1,0 +1,20 @@
+$TTL 86400
+$ORIGIN bidbazi.ir.
+
+@ IN SOA ns1.bidbazi.ir. info.bidbazi.ir. (
+        2018032701 ; serial
+        3600    ; refresh
+        1800    ; retry
+        604800  ; expire
+        86400   ; Minimum TTL
+)
+
+  IN  NS ns1.bidbazi.ir.
+  IN  NS ns2.bidbazi.ir.
+  IN  A  89.42.209.140
+ns1 IN A 89.42.209.140
+ns2 IN A 89.42.209.140
+www.bidbazi.ir. IN A 89.42.209.140
+ftp.bidbazi.ir. IN A 89.42.209.140
+mail.bidbazi.ir. IN A 89.42.209.140
+  IN MX 10 mail.bidbazi.ir.
