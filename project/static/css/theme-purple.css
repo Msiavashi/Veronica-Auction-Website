@@ -400,6 +400,9 @@ li.menu-item-has-children:hover > .sub-menu {
   -webkit-transform: translateX(-100%);
   opacity: 0;
 }
+.product-total span{
+  font-weight: bold;
+}
 /*End Product*/
 /*Begin Owl Carousel*/
 .wrap-item > div:not(:first-child) {

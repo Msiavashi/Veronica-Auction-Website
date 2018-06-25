@@ -23,22 +23,21 @@
 										<ul id="shipping_method" class="list-none">
 											<li>
 												<input type="radio" data-bind="attr:{id : plan.title } ,click : applyPrice(id,price),test" name="plan">
-												<label data-bind="text: plan.title,attr:{for: plan.title}"></label>
+												<label data-bind="text: plan.title ,attr:{for: plan.title}"></label>
 											</li>
 										</ul>
 									</td>
 									<td class="product-total">
-										<span class="amount"><span data-bind="text:ToPersian(formatCurrency(price))"></span> تومان</span> با <span data-bind="text:ToPersian(max_offers)"></span> عدد پیشنهاد
+										<span class="amount"><span data-bind="text:ToPersian(formatCurrency(price))"></span></span>  تومان با <span data-bind="text:ToPersian(max_offers)"></span> عدد پیشنهاد و کوپن تخفیف <span data-bind="text:ToPersian(formatCurrency(discount))"></span> تومانی
 									</td>
 								</tr>
 								<!-- ko text: triggerSelect() -->
 								<!-- /ko -->
 							</tbody>
-
 							<tfoot>
 								<tr class="cart-subtotal">
 									<th>هزینه بسته انتخابی</th>
-									<td><strong class="amount"><span id="selected_plan_price"></span>تومان</strong></td>
+									<td class="product-total"><span id="selected_plan_price"></span> تومان </td>
 								</tr>
 
 								<tr class="order-total">
