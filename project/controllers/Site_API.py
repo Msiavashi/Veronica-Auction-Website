@@ -40,7 +40,28 @@ class SiteCategoryAuctions(Resource):
 class SiteCategoryProducts(Resource):
     def get(self,cid):
         now = datetime.now()
-        result = Auction.query.filter(Auction.start_date >= now).join(Item).join(Product).join(Category).filter_by(id = cid)
+        result = Auction.query.filter(Auction.start_date >= now).join(Item).order_by("price").join(Product).join(Category).filter_by(id = cid)
+        auctions=[]
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - now).seconds
+            auction.left_from_created = (auction.created_at - now).seconds
+            auctions.append(auction)
+        category = Category.query.get(cid)
+        auction_schema = AuctionSchema(many=True)
+        category_schema = CategorySchema()
+        result ={'category':category_schema.dump(category),'auctions':auction_schema.dump(auctions)}
+        return make_response(jsonify(result),200)
+
+class SiteCategoryProductFilters(Resource):
+    def get(self,cid,order_by_price,total):
+        now = datetime.now()
+        result = None
+        if order_by_price=="price":
+            result = Auction.query.filter(Auction.start_date >= now).join(Item).order_by("price").join(Product).join(Category).filter_by(id = cid).limit(total)
+        else:
+            result = Auction.query.filter(Auction.start_date >= now).order_by("start_date").join(Item).join(Product).join(Category).filter_by(id = cid).limit(total)
+
         auctions=[]
         for a in result:
             auction = Auction.query.get(a.id)
@@ -57,6 +78,13 @@ class SiteCategoryProducts(Resource):
 class SiteAuctionCarouselAds(Resource):
     def get(self):
         auctions = Auction.query.join(Advertisement).filter(Advertisement.show==True)
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
+
+class SiteCategoryCarouselAds(Resource):
+    def get(self,cid):
+        now = datetime.now()
+        auctions = Auction.query.filter(Auction.start_date >= now).join(Advertisement).filter(Advertisement.show==True).join(Item).join(Product).join(Category).filter_by(id = cid)
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 

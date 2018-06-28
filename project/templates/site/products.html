@@ -37,19 +37,19 @@
 			<div class="pull-left">
 				<div class="sort-bar select-box">
 					<label>مرتب سازی بر اساس:</label>
-					<select>
-						<option value="">قیمت</option>
-						<option value="">زمان</option>
+					<select v-model="ordering" v-on:change="orderBy">
+						<option value="price">قیمت</option>
+						<option value="time">زمان</option>
 					</select>
 				</div>
 			</div>
 			<div class="pull-right">
 				<div class="show-bar select-box">
-					<label>تعداد نمایش:</label>
-					<select>
-						<option value="">۱۰</option>
-						<option value="">۲۰</option>
-						<option value="">۳۰</option>
+					<label>تعداد:</label>
+					<select v-model="sortingTotal" v-on:change="sortByTotal">
+						<option value="5">۵</option>
+						<option value="10">۱۰</option>
+						<option value="15">۱۵</option>
 					</select>
 				</div>
 			</div>
@@ -142,7 +142,11 @@ app = new Vue({
 		ads : [],
 		auctions : [] ,
 		category_title : " دسته بندی ",
+		order_by_index : 0,
+		total_index : 0,
 		interval:null,
+		sortingTotal :"10",
+		ordering :"price",
 	},
 
 	methods:{
@@ -153,7 +157,6 @@ app = new Vue({
 			return ToPersian(number);
 		},
 		installOwlCarousel: function(element){
-
 			$('.wrap-item').each(function(){
 
 				var data = $(this).data();
@@ -170,10 +173,81 @@ app = new Vue({
 				$(this).find('.owl-controls').css('left',data.control+'px');
 			});
 		},
+
+		sortByTotal: function() {
+        start_loading(loading_element);
+				this.auctions = []
+				var vm = this;
+				axios.get("/api/site/category/{{category_id}}/product/filters/"+this.ordering+"/"+this.sortingTotal+"")
+					.then((response) => {
+						response.data.auctions[0].forEach(auction => {
+							this.auctions.push({
+								id : auction.id,
+								title : auction.title ,
+								description : auction.description ,
+								remained_time : auction.remained_time,
+								from_created : auction.left_from_created,
+								remained_percent : "width:0%",
+								base_price : ToPersian(formatCurrency(auction.base_price)),
+								max_price : ToPersian(formatCurrency(auction.max_price)),
+								price : ToPersian(formatCurrency(auction.item.price)),
+								image : product_image_path + ClearifyNames(auction.item.images)[0],
+								instantview_link : "/instantview/"+ auction.id,
+								auctionview_link : "/view/auction/"+ auction.id,
+								item_id : auction.item.id,
+								likes : auction.likes
+							});
+						});
+
+						Vue.nextTick(function(){
+							vm.installOwlCarousel();
+						}.bind(vm));
+						stop_loading(loading_element);
+					})
+					.catch((response)=>{
+						console.log(response);
+					});
+    },
+
+		orderBy: function() {
+        start_loading(loading_element);
+				this.auctions = []
+				var vm = this;
+				axios.get("/api/site/category/{{category_id}}/product/filters/"+this.ordering+"/"+this.sortingTotal+"")
+					.then((response) => {
+						response.data.auctions[0].forEach(auction => {
+							this.auctions.push({
+								id : auction.id,
+								title : auction.title ,
+								description : auction.description ,
+								remained_time : auction.remained_time,
+								from_created : auction.left_from_created,
+								remained_percent : "width:0%",
+								base_price : ToPersian(formatCurrency(auction.base_price)),
+								max_price : ToPersian(formatCurrency(auction.max_price)),
+								price : ToPersian(formatCurrency(auction.item.price)),
+								image : product_image_path + ClearifyNames(auction.item.images)[0],
+								instantview_link : "/instantview/"+ auction.id,
+								auctionview_link : "/view/auction/"+ auction.id,
+								item_id : auction.item.id,
+								likes : auction.likes
+							});
+						});
+
+						Vue.nextTick(function(){
+							vm.installOwlCarousel();
+						}.bind(vm));
+						stop_loading(loading_element);
+					})
+					.catch((response)=>{
+						console.log(response);
+					});
+    },
+
 	},
 	mounted: function(){
 		var vm = this;
-		axios.get("{{url_for('sitecategoryproducts', cid=category_id)}}")
+		axios.get("/api/site/category/1/product/filters/price/10")
 			.then((response) => {
 				response.data.auctions[0].forEach(auction => {
 					this.auctions.push({
@@ -205,7 +279,7 @@ app = new Vue({
 				console.log(response);
 			});
 
-		axios.get("{{url_for('siteauctioncarouselads')}}")
+		axios.get("{{url_for('sitecategorycarouselads',cid=category_id)}}")
 			.then((response) => {
 				console.log(response.data[0]);
 				this.ads = response.data[0];
