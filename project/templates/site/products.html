@@ -247,7 +247,7 @@ app = new Vue({
 	},
 	mounted: function(){
 		var vm = this;
-		axios.get("/api/site/category/1/product/filters/price/10")
+		axios.get("/api/site/category/{{category_id}}/product/filters/price/10")
 			.then((response) => {
 				response.data.auctions[0].forEach(auction => {
 					this.auctions.push({
