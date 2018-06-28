@@ -15,7 +15,7 @@ class Category(Base):
     category = db.relationship('Category')
 
     products = db.relationship('Product', back_populates = 'category')
-    
+
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
@@ -27,5 +27,5 @@ class CategorySchema(Schema):
     title = fields.Str()
     description = fields.Str()
     icon = fields.Str()
-    products = fields.Nested('ProductSchema', many=True ,exclude=('category', ))
-    categories = fields.Nested('self', many=True,exclude=('categories', ))
+    # products = fields.Nested('ProductSchema', many=True ,exclude=('category', ))
+    # categories = fields.Nested('self', many=True,exclude=('categories', ))

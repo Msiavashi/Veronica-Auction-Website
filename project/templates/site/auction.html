@@ -256,7 +256,7 @@
     </div>
 </div>
 <script>
-loading_element = document.getElementById('myModal');
+
 start_loading(loading_element);
 
 var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
@@ -359,6 +359,7 @@ var app = new Vue({
 		},
 
 		setAuctionInformation: function(auction){
+			
 			this.images = [];
 			ClearifyNames(auction.item.images).forEach(image => {
 				this.images.push(images_path + image.trim());

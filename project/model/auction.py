@@ -18,7 +18,7 @@ class Auction(Base):
     max_price = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     max_members = db.Column(db.BigInteger,default=40,nullable=False)
     ratio = db.Column(db.Integer,default=3,nullable=False)
-    
+
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'),nullable=False)
     item = db.relationship('Item')
 
@@ -52,16 +52,17 @@ class AuctionSchema(Schema):
     max_price = fields.Int()
     max_members = fields.Int()
     ratio = fields.Int()
+    left_from_created = fields.Str()
     remained_time = fields.Str()
 
     item = fields.Nested('ItemSchema')
     participants = fields.Nested('UserSchema',many=True,exclude=('auctions',))
-    offers = fields.Nested('OfferSchema', many=True,exclude=('auction',))
-    likes = fields.Nested('LikeAuctionSchema', many=True,exclude=('auction',))
-    views = fields.Nested('ViewAuctionSchema', many=True,exclude=('auction',))
-
-    plans = fields.Nested('AuctionPlanSchema', many=True,exclude=('auction',))
-
-    event = fields.Nested('EventSchema',exclude=('auction',))
-
+    # offers = fields.Nested('OfferSchema', many=True,exclude=('auction',))
+    # likes = fields.Nested('LikeAuctionSchema', many=True,exclude=('auction',))
+    # views = fields.Nested('ViewAuctionSchema', many=True,exclude=('auction',))
+    #
+    # plans = fields.Nested('AuctionPlanSchema', many=True,exclude=('auction',))
+    #
+    # event = fields.Nested('EventSchema',exclude=('auction',))
+    #
     advertisement = fields.Nested('AdvertisementSchema',exclude=('auction',))

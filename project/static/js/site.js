@@ -269,6 +269,7 @@ function triggerFlashTimer() {
 
 function triggerSlider(element){
 	var data = element.data();
+	console.log(data);
 
 	setTimeout(function() {
 
@@ -428,3 +429,5 @@ function start_loading(element){
 function stop_loading(element){ //spinner handler
 		element.style.display = "none";
 }
+
+loading_element = document.getElementById('myModal');
