@@ -65,7 +65,7 @@ class SiteCategoryProductFilters(Resource):
         auctions=[]
         for a in result:
             auction = Auction.query.get(a.id)
-            auction.remained_time = (auction.start_date - now).seconds
+            auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
             auction.left_from_created = (auction.created_at - now).seconds
             auctions.append(auction)
         category = Category.query.get(cid)

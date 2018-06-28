@@ -145,7 +145,7 @@ app = new Vue({
 		order_by_index : 0,
 		total_index : 0,
 		interval:null,
-		sortingTotal :"10",
+		sortingTotal :"5",
 		ordering :"price",
 	},
 
@@ -386,7 +386,7 @@ app = new Vue({
 		},
 		flashtimer:{
 			inserted:function(el) {
-
+				console.log("timer inserted");
 				if($('.flash-countdown').length>0){
 					$(".flash-countdown").TimeCircles({
 						fg_width: 0.01,
