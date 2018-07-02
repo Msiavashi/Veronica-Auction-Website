@@ -1,8 +1,8 @@
 {% extends 'site/layout.html' %}
-{% block title %} بیدبازی | پنل کاربری {% endblock %}
+{% block title %} بردیتو | پنل کاربری {% endblock %}
 {% block content %}
 <div class="content-page woocommerce">
-	<div class="container" id="app">
+	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
 				<!-- <h2 class="title-shop-page">پنل کاربری</h2> -->
@@ -27,7 +27,6 @@
 					<section id="content1" class="tab-content">
 						<h3>داشبورد</h3>
 						<div class="row">
-							{%raw%}
 								<div class="col-lg-6 col-md-6">
 									<div class="panel panel-primary">
 									<div class="panel-heading">
@@ -36,7 +35,7 @@
 											<i class="fa fa-usd fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">{{_ToPersianCurrency(info.credit)}}</span> تومان</div>
+											<div class="huge"><span data-bind="text: ToPersian(formatCurrency(userInfo.info[0].credit))" ></span> تومان</div>
 											<div>موجودی</div>
 										</div>
 										</div>
@@ -56,13 +55,13 @@
 											<i class="fa fa-percent fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">{{_ToPersianCurrency(total_discount)}}تومان</div>
+											<div class="huge"><span data-bind="text:ToPersian(formatCurrency(userInfo.total_discount))"></span>تومان</div>
 											<div>تخفیف</div>
 										</div>
 										</div>
 									</div>
 										<div class="panel-footer">
-										<span class="pull-left">تخفیف های گرفته شده از بیدبازی</span>
+										<span class="pull-left">تخفیف های گرفته شده از بردیتو</span>
 										<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 										<div class="clearfix"></div>
 										</div>
@@ -76,7 +75,7 @@
 											<i class="fa fa-trophy fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">{{_ToPersian(won_auctions)}}</div>
+											<div class="huge" data-bind="text:ToPersian(userInfo.won_auctions)"></div>
 											<div>برنده</div>
 										</div>
 										</div>
@@ -96,7 +95,7 @@
 											<i class="fa fa-shopping-cart fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">{{_ToPersian(total_boughts)}}</div>
+											<div class="huge" data-bind="text : ToPersian(userInfo.total_boughts)"></div>
 											<div>خرید</div>
 										</div>
 										</div>
@@ -116,7 +115,7 @@
 											<i class="fa fa-gavel fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">{{_ToPersian(total_enrolled_auctions)}}</div>
+											<div class="huge" data-bind="text:ToPersian(userInfo.total_enrolled_auctions)"></div>
 											<div>حراجی ها</div>
 										</div>
 										</div>
@@ -136,7 +135,7 @@
 											<i class="fa fa-street-view fa-5x"></i>
 										</div>
 										<div class="col-xs-9 text-right">
-											<div class="huge">{{_ToPersian(total_invitations)}}</div>
+											<div class="huge" data-bind="text:ToPersian(userInfo.total_invitations)"></div>
 											<div>دعوت شدگان</div>
 										</div>
 										</div>
@@ -149,7 +148,6 @@
 									</div>
 								</div>
 								</div>
-							{%endraw%}
 					</section>
 
 					<section id="content2" class="tab-content">
@@ -159,28 +157,27 @@
 							<div class="row">
 								<div class="col-md-6 col-sm-6 col-ms-12">
 									<div class="check-billing">
-										{%raw%}
-											<p><input name="alias-name" v-bind:value="info.alias_name" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام مستعار" /></p>
-											<p class="clearfix box-col2">
-												<input name="last-name"  v-bind:value="info.last_name" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام خانوادگی"/>
-												<input name="first-name" v-bind:value="info.first_name" type="text"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام"/>
-											</p>
-											<p><input name="work-place" v-bind:value="info.work_place" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام محل کار"/></p>
-											<p class="clearfix box-col2">
-												<input name="email" v-bind:value="info.email" type="text"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="ایمیل"/>
-												<input name="mobile" v-bind:value="info.mobile" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شماره تلفن *"/>
-											</p>
-											<p>
-											<select name="state" id="state">
-													<option v-for="state in states" v-bind:value="state.id" :selected="info.address && info.address.state.id == state.id" >{{ state.title }}</option>
+
+										<p><input name="alias-name" data-bind="attr:{value: userInfo.info[0].alias_name}" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام مستعار" /></p>
+										<p class="clearfix box-col2">
+											<input name="last-name"  data-bind="attr:{value: userInfo.info[0].last_name}" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام خانوادگی"/>
+											<input name="first-name" data-bind="attr:{value: userInfo.info[0].first_name}" type="text"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام"/>
+										</p>
+										<p><input name="work-place" data-bind="attr:{value: userInfo.info[0].work_place}" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام محل کار"/></p>
+										<p class="clearfix box-col2">
+											<input name="email" data-bind="attr:{value: userInfo.info[0].email}" type="text"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="ایمیل"/>
+											<input name="mobile" data-bind="attr:{value: userInfo.info[0].mobile}" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شماره تلفن *"/>
+										</p>
+										<p>
+											<select name="state" id="state" data-bind="foreach:states">
+												<option value="" data-bind="text:title , attr:{value:id, selected: {if : userInfo.info[0].address && id == userInfo.info[0].address.state.id }}"></option>
 											</select>
-											</p>
-											<p><input name="address" type="text"  v-bind:value="info.address ? info.address.address : '' "  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
-											<p class="clearfix box-col2">
-												<input name="postal_code" type="text"  v-bind:value="info.address ? info.address.postal_code : '' " onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="کدپستی *"/>
-												<input name="city" type="text" v-bind:value="info.address ? info.address.city : '' "  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام شهر *"/>
-											</p>
-										{%endraw%}
+										</p>
+										<p><input name="address" type="text"  data-bind="attr:{value: userInfo.info[0].address ?  userInfo.info[0].address.address : ''}"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
+										<p class="clearfix box-col2">
+											<input name="postal_code" type="text"  data-bind="attr:{value: userInfo.info[0].address ? userInfo.info[0].address.postal_code : ''}" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="کدپستی *"/>
+											<input name="city" type="text" data-bind="attr:{value: userInfo.info[0].address ? userInfo.info[0].address.city : ''}"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="نام شهر *"/>
+										</p>
 
 								</div>
 							</div>
@@ -219,8 +216,9 @@
 						<h3>انتخاب آواتار</h3>
 						<input type="hidden" id="avatar_index" name="avatar-index" value="">
 						<div class="avatarUser">
-
-							<img v-for="avatar in avatars" v-bind:src="'/static/images/avatars/'+avatar.name " v-bind:class="{'current': avatar.name == _clearNames(info.avatar)}" />
+							<div data-bind="foreach:userInfo.avatars">
+								<img data-bind="attr:{src: avatar_path + name},css: { 'current' : name==ClearifyNames(userInfo.info[0].avatar)[0]  }"/>
+							</div>
 							<!-- ko text: triggerAvatars() -->
 							<!-- /ko -->
 						</div>
@@ -250,7 +248,7 @@
 
 									<div class="col-md-3 col-sm-4 col-xs-12">
 										<select name="subject" id="subjects" data-bind="foreach:userInfo.subjects">
-											<option v-for="subject in subjects" v-bind:value="subject.type">{%raw%}{{subject.title}}{%endraw%}</option>
+											<option data-bind="attr:{value:type},text:title"></option>
 										</select>
 									</div>
 
@@ -282,16 +280,13 @@
 										<th>شماره فاکتور</th>
 										<th>مبلغ</th>
 										<th>تاریخ</th>
-										<th>وضعیت</th>
 									</tr>
 								</thead>
-								{%raw%}
-								<tbody v-for="payment in paymentsinfo">
+								<tbody data-bind="foreach:paymentsinfo">
 									<tr class="view">
-										<td>{{_ToPersian(payment.GUID)}}</td>
-										<td>{{_ToPersianCurrency(payment.amount)}} تومان  </td>
-										<td>{{_toLocalDate(payment.created_at)}}</td>
-										<td>{{_convertStatus(payment.status)}}</td>
+										<td data-bind="text:ToPersian(GUID)"></td>
+										<td><span data-bind="text:ToPersian(formatCurrency(amount))" ></span> تومان  </td>
+										<td data-bind="text : new Date(created_at).toLocaleDateString('fa-IR')"></td>
 									</tr>
 									<!-- <tr class="fold">
 										<td colspan="7">
@@ -375,14 +370,13 @@
 								<!-- ko text: triggerPaymentTable() -->
 								<!-- /ko -->
 								</table>
-								{%endraw%}
 					</section>
 
 					<section id="content5" class="tab-content">
 						<h3>کد معرفی</h3>
-						<p>با دعوت از دوستان و آشنایان خود به بیدبازی از طریق کد معرف خود، ۲۰ هزار تومان هدیه دو طرف از ما دریافت کنید! </p>
+						<p>با دعوت از دوستان و آشنایان خود به بردیتو از طریق کد معرف خود، ۲۰ هزار تومان هدیه دو طرف از ما دریافت کنید! </p>
 						<p>هدیه کد معرف، پس از اولین شرکت در حراجی توسط شخصی که معرفی شده اعمال میشود.</p>
-						<div class="CodeM">کد معرف : {%raw%}{{info.username}}{%endraw%}</span></div>
+						<div class="CodeM">کد معرف : <span data-bind="text:userInfo.info[0].username"></span></div>
 					</section>
 					<section id="content6" class="tab-content">
 						<h3>شارژ موجودی</h3>
@@ -412,88 +406,20 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-<script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
-
 <script>
+var userInfo = ko.observable();
+var paymentsinfo = ko.observable();
+var states = ko.observable([]);
 
-start_loading(loading_element);
-
-var app = new Vue({
-	el : "#app",
-
-	data:{
-		avatars : [] ,
-		info : [] ,
-		states : [] ,
-		paymentsinfo : [] ,
-		subjects : [] ,
-		total_boughts : 0 ,
-		total_discount : 0 ,
-		total_enrolled_auctions: 0 ,
-		total_invitations: 0 ,
-		won_auctions: 0 ,
-		invitation_code : "",
-	},
-
-	mounted: function(){
-		var vm = this;
-		axios.get("{{url_for('userinformation')}}")
-			.then((response) => {
-				console.log(response.data);
-				this.avatars = response.data.avatars;
-				this.info = response.data.info[0];
-				this.states = response.data.states[0];
-				this.subjects = response.data.subjects;
-				this.total_boughts = response.data.total_boughts;
-				this.total_discount = response.data.total_discount;
-				this.total_enrolled_auctions = response.data.total_enrolled_auctions;
-				this.total_invitations = response.data.total_invitations;
-				this.won_auctions = response.data.won_auctions;
-				this.invitation_code = response.data.invitation_code;
-			})
-			.catch((response)=>{
-				console.error(response);
-			});
-
-		axios.get("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}")
-			.then((response) => {
-				this.paymentsinfo = response.data[0]
-			})
-			.catch((response)=>{
-				console.error(response);
-			});
-	},
-
-	methods:{
-		_ToPersian(number){
-			return ToPersian(number);
-		},
-		_ToPersianCurrency(number){
-			return ToPersian(formatCurrency(number));
-		},
-		_clearNames(input){
-			return ClearifyNames(input)[0];
-		},
-		_toLocalDate(date){
-			return full_date = new persianDate(new Date(date)).format("dddd DD MMMM YYYY ساعت HH:mm:ss a");
-		},
-		_convertStatus(status){
-			if(status==1)
-				return "پرداخت موفق";
-			return "پرداخت ناموفق";
-		},
-	},
-
-	updated:function() {
-		stop_loading(loading_element);
-		$('.avatarUser img').click( function(){
-		    if ( $(this).hasClass('current') ) {
-		    } else {
-		        $('img.current').removeClass('current');
-		        $(this).addClass('current');
-		    }
-		});
-	},
+$.getJSON("{{url_for('userinformation')}}", function(data){
+	userInfo = data;
+	states = data.states[0];
+	console.log(data);
+	$.getJSON("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}", function(data){
+		console.log(data);
+		paymentsinfo = data[0];
+		ko.applyBindings();
+	});
 });
 
 $(document).on('submit','#profile_form',function(event) {
