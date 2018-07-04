@@ -75,7 +75,7 @@
 							<a v-bind:href = "auction.instantview_link" class="quickview-link plus fancybox.iframe"><span>مشاهده سریع</span></a>
 
 							<div class="product-extra-link">
-								<a class="addcart-link" href="#"><input type="hidden" v-bind:value = "auction.item_id"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
+								<a class="addcart-link" href="#" v-on:click="addToCart(auction.item_id,$event)"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
 								<a href="#" class="wishlist-link"><input type="hidden" v-bind:value = "auction.id"><i class="fa fa-heart" aria-hidden="true"></i></a>
 							</div>
 						</div>
@@ -205,7 +205,7 @@ app = new Vue({
 						stop_loading(loading_element);
 					})
 					.catch((response)=>{
-						console.log(response);
+						console.error(response);
 					});
     },
 
@@ -240,9 +240,49 @@ app = new Vue({
 						stop_loading(loading_element);
 					})
 					.catch((response)=>{
-						console.log(response);
+						console.error(response);
 					});
     },
+		addToCart:function(item_id,event){
+			event.preventDefault();
+			axios.post("{{url_for('usercartorder')}}",
+				{
+					"item_id": item_id,
+					"total":1
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+					if(response.data.length > 0){
+						myapp.mycarts = []
+						console.log(response.data);
+						response.data.forEach(cart => {
+							myapp.mycarts.push({
+                id : cart[0].id,
+                item_title : cart[0].item.title,
+								product_title : cart[0].item.product.title,
+								item_id : cart[0].item.id ,
+                image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+                discounted_price : cart[0].item.price - cart[0].item.discount,
+								main_price : cart[0].item.price ,
+                min_quantity : 1,
+                max_quantity : cart[0].item.quantity,
+                current_quantity : cart[0].total,
+							});
+						});
+            myapp.total_carts = ToPersian(myapp.mycarts.length);
+						myapp.total_changed = true;
+						alert('محصول مورد نظر شما به سبد خرید اضافه شد');
+
+					}
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+		}
 
 	},
 	mounted: function(){
@@ -276,16 +316,15 @@ app = new Vue({
 
 			})
 			.catch((response)=>{
-				console.log(response);
+				console.error(response);
 			});
 
 		axios.get("{{url_for('sitecategorycarouselads',cid=category_id)}}")
 			.then((response) => {
-				console.log(response.data[0]);
 				this.ads = response.data[0];
 			})
 			.catch((response)=>{
-				console.log(response);
+				console.error(response);
 			});
 
 			this.interval = setInterval(()=>{
@@ -425,43 +464,6 @@ app = new Vue({
 
 
 });
-
-
-$(document).on('click','.addcart-link',function(event) {
-	self = $(this);
-	item_id = parseInt(self.find('input').val());
-
-	var data = JSON.stringify({
-  	"item_id": item_id,
-		"total":1
-	});
-
-	var xhr = new XMLHttpRequest();
-	xhr.withCredentials = true;
-
-	xhr.open("POST", "{{url_for('usercartorder')}}");
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.setRequestHeader("Cache-Control", "no-cache");
-	xhr.send(data);
-	xhr.onreadystatechange = function (oEvent) {
-    if (xhr.readyState === 4) {
-				data = JSON.parse(xhr.responseText);
-        if (xhr.status === 200) {
-					carts = []
-			    $.each(data,function(key,val) {
-						if(val[0])
-				      carts.push(val[0]);
-			    });
-			    console.log(carts);
-			    mycart(carts);
-			    total_carts(ToPersian(carts.length));
-					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
-        } else {
-           alert(data.reason)
-        }
-    	}
-		};
-	});
 
 $(document).on('click','.wishlist-link',function(event) {
 	self = $(this);

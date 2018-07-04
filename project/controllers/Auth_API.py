@@ -101,21 +101,20 @@ class UserLogin(Resource):
             '''
             # create order on registeration
             if "orders" in session:
-                founded = False
                 order_schema = OrderSchema(many=True)
                 for order in session['orders']:
-                    p = order_schema.load(order)
                     new_order = Order()
-                    item = Item.query.get(p.data[0]['item']['id'])
-                    new_order.item = item
-                    new_order.total_cost = (int(p.data[0]['item']['price']) * int(p.data[0]['total'])) - int(p.data[0]['item']['discount'])
-                    new_order.total = int(p.data[0]['total'])
-                    new_order.status = 0
-                    new_order.total_discount = int(p.data[0]['item']['discount'])
-                    new_order.user = current_user;
-                    print new_order
-                    db.session.add(new_order)
-                    db.session.commit()
+                    item = Item.query.get(order[0]['item']['id'])
+                    saved_before = Order.query.filter_by(user_id=current_user.id).join(Item).filter_by(id=item.id).first()
+                    if not saved_before:
+                        new_order.item = item
+                        new_order.total_cost = (int(order[0]['item']['price']) - int(order[0]['item']['discount'])) * int(order[0]['total'])
+                        new_order.total = int(order[0]['total'])
+                        new_order.status = 0
+                        new_order.total_discount = int(order[0]['item']['discount']) * int(order[0]['total'])
+                        new_order.user = current_user;
+                        db.session.add(new_order)
+                        db.session.commit()
                 session.pop('orders')
 
                 # for new_order in session['orders']:
