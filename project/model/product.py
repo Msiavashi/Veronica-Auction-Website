@@ -47,4 +47,4 @@ class ProductSchema(Schema):
     # events = fields.Nested('EventSchema',many=True,exclude=('products',))
     # manufacture = fields.Nested('ManufactureSchema',exclude=('products',))
     # garanties = fields.Nested('GarantySchema',many=True,exclude=('products',))
-    # advertisement = fields.Nested('AdvertisementSchema',exclude=('auction',))
+    advertisement = fields.Nested('AdvertisementSchema',exclude=('auction',))

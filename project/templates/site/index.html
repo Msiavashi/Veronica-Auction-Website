@@ -1,6 +1,8 @@
 {% extends 'site/layout.html' %}
 {% block content %}
-<div id="app" class="container">
+<div id="app">
+
+	<div class="container">
 	<div class="content-top1">
 		<div class="row">
 			<div class="col-md-3 hidden-sm hidden-xs" style="display:none">
@@ -10,40 +12,43 @@
 					</ul>
 				</div>
 			</div>
-
-			<div data-bind="if: ads.length" class="col-md-12 col-sm-12 col-xs-12">
+			<div v-if="ad_auctions" class="col-md-12 col-sm-12 col-xs-12">
 				<div class="wrap-banner-slider1">
 					<div class="banner-slider banner-slider1">
-						<div class="wrap-item" data-bind='foreach: ads' data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
-							 <div class="item-banner item-banner1">
-								<div class="banner-thumb">
-									<a href="#"><img data-bind="attr:{src : ad_image_path + ClearifyNames(advertisement.images)[0]}" alt="" /></a>
-								</div>
-								<div class="banner-info animated" data-bind="attr:{'data-animated' : 'lightSpeedIn' }" >
-									<h2 class="title30" data-bind="text: advertisement.title"></h2>
-									<h2 class="title30 color">تخفیف: <span>تا </span> <span data-bind="text:ToPersian(advertisement.discount)"></span>% <span> قیمت</span></h2>
-									<p data-bind="text: advertisement.description"></p>
-									<a data-bind="attr:{href : 'view/auction/'+id}" class="shopnow"><span data-bind="text: advertisement.link_title"></span></a>
-								</div>
-							  </div>
-							<!-- ko text: triggerSlider($($element.parentElement)) -->
-							<!-- /ko -->
+						<div class="wrap-item" data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
+							<template v-for="item in ad_auctions">
+								{%raw%}
+								<div class="item-banner item-banner1">
+ 								<div class="banner-thumb">
+ 									<a href="#"><img v-bind:src="prepare_ad_images(item.advertisement.images)" alt="" /></a>
+ 								</div>
+ 								<div class="banner-info animated" data-animated="lightSpeedIn" >
+ 									<h2 class="title30">{{item.advertisement.title}}</h2>
+ 									<h2 class="title30 color">تخفیف : تا {{_ToPersian(item.advertisement.discount)}}%  قیمت </h2>
+ 									<p>{{item.advertisement.description}}</p>
+ 									<a v-bind:href="_createAuctionLink(item.id)" class="shopnow">{{item.advertisement.link_title}}</a>
+ 								</div>
+ 							  </div>
+								{%endraw%}
+							</template>
 						</div>
 					</div>
 					<!-- End Banner -->
-					<div data-bind="if: productAds.length" class="sub-banner-slider">
-						<div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]" data-bind="foreach:productAds">
-							<div class="item-sub-banner">
-								<div class="product-thumb">
-									<a href="#"><img class="wobble-horizontal" data-bind="attr:{src : ad_image_path + ClearifyNames(advertisement.images)[0] }" alt="" /></a>
+					<div v-if="ad_products" class="sub-banner-slider">
+						<div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
+							<template v-for="item in ad_products">
+								{%raw%}
+								<div class="item-sub-banner">
+									<div class="product-thumb">
+										<a v-bind:href="_createAuctionLink(item.id)"><img class="wobble-horizontal" v-bind:src="prepare_ad_images(item.advertisement.images)" alt=""></a>
+									</div>
+									<div class="product-info">
+										<h3 class="product-title text-capitalize"><a v-bind:href=" _createAuctionLink(item.id)">{{item.advertisement.title}}</a></h3>
+										<strong class="color"> تا {{ _ToPersian(item.advertisement.discount)}} ٪ تخفیف</strong>
+									</div>
 								</div>
-								<div class="product-info">
-									<h3 class="product-title text-capitalize"><a data-bind="text:advertisement.title , attr:{href: '/view/product/'+id }"></a></h3>
-									<strong class="color"> تا <span data-bind="text:ToPersian(advertisement.discount)"></span> ٪ تخفیف</strong>
-								</div>
-							</div>
-							<!-- ko text: triggerSlider($($element.parentElement)) -->
-							<!-- /ko -->
+								{%endraw%}
+							</template>
 						</div>
 					</div>
 					<!-- End Sub Banner -->
@@ -51,79 +56,85 @@
 			</div>
 		</div>
 	</div>
-	<div class="events_container" data-bind="foreach:events">
-		<div class="intro-countdown">
-			<h2 class="title30"> ٪<strong class="color" data-bind="text: discount "></strong> <span data-bind="text:description"></span> <span class="color"> محدود </span></h2>
-			<div class="deals-cowndown timer" data-bind="attr:{ 'data-timer' : deadline}"></div>
-		</div>
-		<!-- ko text: triggerBigTimer () -->
-		<!-- /ko -->
+	<div v-if="events">
+		<template v-for="event in events">
+			{%raw%}
+			<div class="intro-countdown">
+				<h2 class="title30"> ٪<strong class="color" data-bind="text: discount ">{{_ToPersian(event.discount)}}</strong> {{event.description}} <span class="color"> محدود </span></h2>
+				<div v-bigtimer class="deals-cowndown" v-bind:data-date="_updateTimer(event.end_date)"></div>
+			</div>
+			{%endraw%}
+		</template>
 		<!-- End Intro Countown -->
 	</div>
 
 </div>
-<div class="list-flash">
-	<div class="container">
-		<h2 class="title24 title-flash"><span class="bg-color white">حراجی های امروز</span></h2>
-		<div class="row" data-bind="foreach:auctions">
-			<div class="col-md-4 col-sm-6 col-xs-12">
-				<div class="banner-flash">
-					<div class="banner-zoom">
-						<a data-bind="attr:{href : 'view/auction/'+id}" class="thumb-zoom"><img data-bind="attr:{src : image}" alt="" /></a>
-						<div class="flash-label">
-							<span class="text-uppercase white"><span data-bind="text:participant_count"></span> از <span data-bind="text:max_members"></span> </span>
-						</div>
-						<div class="flash-label right-time">
-							<span class="text-uppercase white"><div class="flash-countdown timer" data-bind = "attr:{'data-timer':deadline}" ></div></span>
+
+	<div class="list-flash">
+		<div class="container">
+			<h2 class="title24 title-flash"><span class="bg-color white">حراجی های امروز</span></h2>
+			<div class="row">
+				<template v-for="auction in today_auctions">
+					{%raw%}
+					<div class="col-md-4 col-sm-6 col-xs-12">
+						<div class="banner-flash">
+							<div class="banner-zoom">
+								<a v-bind:href="_createAuctionLink(auction.id)" class="thumb-zoom"><img v-bind:src="auction.image" alt="" /></a>
+								<div class="flash-label">
+									<span class="text-uppercase white">{{auction.participant_count}} از {{auction.max_members}} </span>
+								</div>
+								<div class="flash-label right-time">
+									<span class="text-uppercase white"><div v-flashtimer class="flash-countdown timer" v-bind:data-timer ="auction.deadline"></div></span>
+								</div>
+							</div>
+							<div class="flash-info">
+								<ul class="list-none clearfix">
+
+									<li>
+										<div class="flash-timer">
+											<p>{{auction.title}}</p>
+										</div>
+									</li>
+
+									<li>
+										<div class="flash-timer">
+											{%endraw%}
+
+											{%if current_user.is_authenticated%}
+											<div v-if="auction.is_participant">
+												<a v-bind:href="auction.link" class="btn-rect white bg-color radius"><span>نمایش حراجی</span></a>
+											</div>
+											<div v-if="!auction.is_participant">
+												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+											</div>
+											{%else%}
+												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
+											{%endif%}
+
+											{%raw%}
+										</div>
+									</li>
+
+									<li>
+										<div class="info-pro-hotdeal">
+											<div class="deal-percent"><span>شروع حراجی: </span>{{auction.base_price}}</div>
+											<div class="product-price"><label>قیمت محصول: </label><ins>{{auction.price}}</ins></div>
+										</div>
+									</li>
+
+								</ul>
+							</div>
 						</div>
 					</div>
-					<div class="flash-info">
-						<ul class="list-none clearfix">
-							<li>
-								<div class="flash-timer">
-									<p data-bind="text:title"></p>
-								</div>
-							</li>
-							<li>
-								<div class="flash-timer">
-
-									{%if current_user.is_authenticated%}
-									<div data-bind="if:is_participant">
-										<a data-bind="attr:{href:link}" class="btn-rect white bg-color radius"><span>نمایش حراجی</span></a>
-									</div>
-									<div data-bind="ifnot:is_participant">
-										<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-									</div>
-									{%else%}
-										<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
-									{%endif%}
-
-								</div>
-							</li>
-							<li>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span data-bind="text:base_price"></span>
-									</div>
-									<div class="product-price">
-										<label>قیمت محصول:</label>
-										<ins><span data-bind="text:price"></span></ins>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
+					{%endraw%}
+				</template>
+				<!-- End Intro Countown -->
 			</div>
-			<!-- ko text: triggerFlashTimer () -->
-			<!-- /ko -->
-			<!-- End Intro Countown -->
 		</div>
 	</div>
-</div>
-<!-- ENd Flash -->
-	<div class="product-hotdeal" >
+
+	<div v-if="popular_auctions.length > 0 || best_auctions.length > 0" class="product-hotdeal">
+
 		<div class="header-hotdeal">
 			<div class="container">
 				<div class="title-box1">
@@ -137,56 +148,59 @@
 		</div>
 		<!-- End Header Hotdeal -->
 		<div class="content-hotdeal tab-content">
+
 			<div id="hot1" class="tab-pane active">
 				<div class="hotdeal-slider">
-					<div class="wrap-item" data-bind='foreach:populars' data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
-						<div class="item-pro-hotdeal">
-							<div class="product-thumb">
-								<a href="#" class="product-thumb-link">
-									<img data-bind="attr:{src : image}" alt="">
-								</a>
-								<a data-bind="attr:{href:instance_link}" class="quickview-link pos-bottom fancybox.iframe"><span>مشاهده سریع</span></a>
-							</div>
-							<div class="product-info">
-								<h3 class="product-title"><a href="#" data-bind="text:title"></a></h3>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span data-bind="text:base_price"></span>
+					<div class="wrap-item" data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
+						<template v-for="auction in best_auctions">
+							{%raw%}
+							<div class="item-pro-hotdeal">
+								<div class="product-thumb">
+									<a href="#" v-on:click="$event.preventDefault()" class="product-thumb-link">
+										<img v-bind:src="auction.image" alt="">
+									</a>
+									<a v-bind:href="auction.instance_link" class="quickview-link pos-bottom fancybox.iframe"><span>مشاهده سریع</span></a>
+								</div>
+								<div class="product-info">
+									<h3 class="product-title"><a v-bind:href="_createAuctionLink(auction.id)">{{auction.title}}</a></h3>
+									<div class="info-pro-hotdeal">
+										<div class="deal-percent">
+											<span>شروع حراجی: </span>
+											{{auction.base_price}}
+										</div>
+										<div class="product-price">
+											<del><span>قیمت محصول</span></del>
+											<ins><span>{{auction.price}} تومان</span></ins>
+										</div>
 									</div>
-									<div class="product-price">
-										<del><span>قیمت محصول</span></del>
-										<ins><span><span data-bind="text : price"></span> تومان</span></ins>
+
+									<div class="product-extra-link2">
+										{%endraw%}
+
+										{%if current_user.is_authenticated%}
+										<div v-if="auction.is_participant">
+											<a v-bind:href="auction.link" class="addcart-link"><span>نمایش حراجی</span></a>
+											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+										</div>
+
+										<div v-if="!auction.is_participant">
+											<a v-bind:href="auction.link" class="addcart-link quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
+											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+										</div>
+
+										{%else%}
+											<a v-bind:href="auction.link" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
+										{%endif%}
+
+										{%raw%}
+
 									</div>
 								</div>
-								<div class="product-extra-link2">
-									{%if current_user.is_authenticated%}
-									<div data-bind="if:is_participant">
-										<a data-bind="attr:{href:link}" class="addcart-link"><span>نمایش حراجی</span></a>
-										<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
-
-									</div>
-									<div data-bind="ifnot:is_participant">
-										<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
-										<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
-									</div>
-
-									{%else%}
-										<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
-									{%endif%}
-
-									<!-- {% if current_user.is_authenticated %}
-									<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe">شرکت در حراجی</a>
-									<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
-									{% else %}
-									<a href="/ilogin" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
-									{% endif %} -->
-								</div>
 							</div>
-						</div>
 
-						<!-- ko text: triggerSlider($($element.parentElement)) -->
-						<!-- /ko -->
+							{%endraw%}
+						</template>
+
 						<!-- End Item -->
 					</div>
 
@@ -195,55 +209,65 @@
 			<!-- ENd Tab -->
 			<div id="hot2" class="tab-pane">
 				<div class="hotdeal-slider">
-					<div class="wrap-item" data-bind='foreach:views' data-itemscustom ="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]" data-pagination = "false" data-autoplay = "true"  data-navigation = "true">
-						<div class="item-pro-hotdeal">
-							<div class="product-thumb">
-								<a href="#" class="product-thumb-link">
-									<img data-bind="attr:{src : image}" alt="">
-								</a>
-								<a data-bind="attr:{href:instance_link}" class="quickview-link pos-bottom fancybox.iframe"><span>مشاهده سریع</span></a>
-							</div>
-							<div class="product-info">
-								<h3 class="product-title"><a href="#" data-bind="text:title"></a></h3>
-								<div class="info-pro-hotdeal">
-									<div class="deal-percent">
-										<span>شروع حراجی:</span>
-										<span data-bind="text:base_price"></span>
-									</div>
-									<div class="product-price">
-										<del><span>قیمت محصول</span></del>
-										<ins><span><span data-bind="text : price"></span> تومان</span></ins>
-									</div>
+					<div class="wrap-item" data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
+						<template v-for="auction in popular_auctions">
+							{%raw%}
+							<div class="item-pro-hotdeal">
+								<div class="product-thumb">
+									<a href="#" v-on:click="$event.preventDefault()" class="product-thumb-link">
+										<img v-bind:src="auction.image" alt="">
+									</a>
+									<a v-bind:href="auction.instance_link" class="quickview-link pos-bottom fancybox.iframe"><span>مشاهده سریع</span></a>
 								</div>
-								<div class="product-extra-link2">
-									{%if current_user.is_authenticated%}
-									<div data-bind="if:is_participant">
-										<a data-bind="attr:{href:link}" class="addcart-link"><span>نمایش حراجی</span></a>
-										<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
-
-									</div>
-									<div data-bind="ifnot:is_participant">
-										<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
-										<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+								<div class="product-info">
+									<h3 class="product-title"><a v-bind:href="_createAuctionLink(auction.id)">{{auction.title}}</a></h3>
+									<div class="info-pro-hotdeal">
+										<div class="deal-percent">
+											<span>شروع حراجی: </span>
+											{{auction.base_price}}
+										</div>
+										<div class="product-price">
+											<del><span>قیمت محصول</span></del>
+											<ins><span>{{auction.price}} تومان</span></ins>
+										</div>
 									</div>
 
-									{%else%}
-										<a data-bind="attr:{href:link}" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
-									{%endif%}
+									<div class="product-extra-link2">
+										{%endraw%}
+
+										{%if current_user.is_authenticated%}
+										<div v-if="auction.is_participant">
+											<a v-bind:href="auction.link" class="addcart-link"><span>نمایش حراجی</span></a>
+											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+										</div>
+										<div v-if="!auction.is_participant">
+											<a v-bind:href="auction.link" class="addcart-link quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
+											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
+										</div>
+
+										{%else%}
+											<a v-bind:href="auction.link" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
+										{%endif%}
+
+										{%raw%}
+
+									</div>
 								</div>
 							</div>
-						</div>
-						<!-- ko text: triggerSlider($($element.parentElement)) -->
-						<!-- /ko -->
+
+							{%endraw%}
+						</template>
+
 						<!-- End Item -->
-
 					</div>
+
 				</div>
 			</div>
 			<!-- ENd Tab -->
 		</div>
 		<!-- End Content Hot Deal -->
 	</div>
+
 	<div class="service-footer3 service-footer11">
 		<div class="container">
 			<div class="service-slider3">
@@ -282,56 +306,60 @@
 			</div>
 		</div>
 	</div>
-	<div class="container" data-bind="foreach:categories">
-		<div class="deal-box18">
-			<h2 class="white title30 text-center"><span data-bind="text:title"></span></h2>
-			<div class="deal-slider18 poly-slider border bg-white">
-				<div class="wrap-item" data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
-					<div class="deal-pro18">
-						<div class="product-thumb">
-							<a data-bind="attr:{href : '/instantview/'+id}" class="quickview-link fancybox.iframe product-thumb-link zoomout-thumb">
-								<img data-bind="attr:{src: image }" alt="">
-								<img data-bind="attr:{src: image }" alt="">
-							</a>
-							<a data-bind="attr:{href : '/instantview/'+id}" class="quickview-link plus pos-middle fancybox.iframe">مشاهده سریع</a>
-						</div>
-						<h2 class="title14"><a href="#" data-bind="text:title" ></a></h2>
-						<div class="product-info">
-							<div class="product-price">
-								<ins>شروع از : <span data-bind="text:base_price"></span></ins>
-								<!-- {% if current_user.is_authenticated %}
-								<a data-bind="attr:{href : '/participate/'+id}"  class="quickview-link fancybox.iframe addcart-link bg-color white radius">ثبت نام</a>
-								{% else %}
-								<a href="/ilogin" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
-								{% endif %} -->
 
-								{%if current_user.is_authenticated%}
-								<div data-bind="if:is_participant">
-									<a data-bind="attr:{href:link}" class="btn-rect white bg-color radius"><span>نمایش حراجی</span></a>
-								</div>
-								<div data-bind="ifnot:is_participant">
-									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
-								</div>
-								{%else%}
-									<a data-bind="attr:{href:link}" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
-								{%endif%}
+	<div v-if="categories.length > 0" class="container" data-bind="foreach:categories">
+		<template v-for="category in categories">
+			{%raw%}
+			<div class="deal-box18">
+				<h2 class="white title30 text-center"><span>{{category.title}}</span></h2>
 
+				<div class="deal-slider18 poly-slider border bg-white">
+					<div class="wrap-item" data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
+						<template v-for="auction in category.auctions">
+
+							<div class="deal-pro18">
+								<div class="product-thumb">
+									<a v-bind:href="auction.instance_link" class="quickview-link fancybox.iframe product-thumb-link zoomout-thumb">
+										<img v-bind:src="auction.image" alt="">
+										<img v-bind:src="auction.image" alt="">
+									</a>
+									<a v-bind:href="auction.instance_link" class="quickview-link plus pos-middle fancybox.iframe">مشاهده سریع</a>
+								</div>
+								<h2 class="title14"><a v-bind:href="auction.view_link">{{auction.title}}</a></h2>
+								<div class="product-info">
+									<div class="product-price">
+										<ins>شروع از : {{auction.base_price}}</ins>
+										{%endraw%}
+
+										{%if current_user.is_authenticated%}
+										<div v-if="auction.is_participant">
+											<a v-bind:href="auction.link" class="btn-rect white bg-color radius"><span>نمایش حراجی</span></a>
+										</div>
+										<div v-if="!auction.is_participant">
+											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+										</div>
+										{%else%}
+											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
+										{%endif%}
+										{%raw%}
+									</div>
+								</div>
+								<div class="deal-timer18 poly-box">
+									<div v-flashtimer class="flash-countdown" v-bind:data-date="auction.deadline"></div>
+								</div>
 							</div>
-						</div>
-						<div class="deal-timer18 poly-box">
-							<span data-bind='text : deadline '></span>
-						</div>
+						</template>
+
 					</div>
-					<!-- ko text: triggerSlider($($element.parentElement)) -->
-					<!-- /ko -->
-					<!-- ko text: triggerFlashTimer() -->
-					<!-- /ko -->
 				</div>
 			</div>
-		</div>
+			{%endraw%}
+		</template>
+
 		<!-- End Deal -->
 	</div>
 
+</div>
 {% endblock %}
 {% block scripts %}
 {{ super() }}
@@ -341,227 +369,312 @@
 
 <script>
 
-var today_auctions = ko.observableArray([]);
-var best_auctions = [];
-var ads = [];
-var events = [];
-var auctions = [];
-var populars = [];
-var views = [];
-var categories = [];
-var alldatareveived = false;
 
-function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,is_participant) {
-    var self = this;
-		self.id = id;
-		self.title = ko.observable(title);
-		self.description = ko.observable(description);
-		self.deadline = ko.observable(deadline);
-		self.participant_count = ko.observable(participant_count);
-		self.max_members = ko.observable(max_members);
-		self.base_price = ko.observable(base_price);
-		self.max_price = ko.observable(max_price);
-		self.price = ko.observable(price);
-		self.image = ko.observable(images);
-		self.link = ko.observable(link);
-		self.is_participant = ko.observable(is_participant);
-}
+	// $.getJSON("{{url_for('sitecategorymenuitems')}}", function(data){
+	// 	$.each(data[0],function(key,val){
+	// 		$.getJSON("api/site/category/"+val.id+"/auctions", function(innerData) {
+	// 			aucs = []
+	// 			$.each(innerData.auctions[0],function(ky,vl) {
+	// 				is_participant = false;
+	// 				$.each(vl.participants,function(k,v) {
+	// 					if(v.id=="{{current_user.id}}"){
+	// 						is_participant = true;
+	// 						return;
+	// 					}
+	// 				});
+	// 				console.log(vl.start_date);
+	//
+	// 		    var deadline = new Date(vl.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+	// 		    full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+	// 		    full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+	// 				auction_date = full_date + " ساعت : "+full_hour;
+	//
+	// 				auction = new Auction(
+	// 					vl.id,
+	// 					vl.title ,
+	// 					vl.description ,
+	// 					auction_date,
+	// 					ToPersian(vl.participants.length),
+	// 				  ToPersian(vl.max_members),
+	// 					ToPersian(formatCurrency(vl.base_price)),
+	// 					ToPersian(formatCurrency(vl.max_price)),
+	// 					ToPersian(formatCurrency(vl.item.price)),
+	// 					product_image_path + ClearifyNames(vl.item.images)[0],
+	// 					is_participant ? "/view/auction/"+vl.id : "/participate/"+ vl.id,
+	// 					is_participant,
+	// 				);
+	// 				aucs.push(auction)
+	// 			});
+	// 			category = new Category(val.title,aucs);
+	// 			OnDataReady(category);
+	// 		});
+	// 	});
+	// });
+	//
+	// function OnDataReady(data) {
+	// 	self.categories.push(data);
+	// }
 
-function Category(title,auctions) {
-	this.title = ko.observable(title);
-	this.auctions = ko.observableArray(auctions);
-}
 
-function dealModel() {
 
-	var self = this;
-	self.ads = ko.observableArray([]);
-	self.productAds = ko.observableArray([]);
-	self.events = ko.observableArray([]);
-	self.auctions =ko.observableArray(auctions);
-	self.populars = ko.observableArray([]);
-	self.views = ko.observableArray([]);
-	self.categories = ko.observableArray([]);
 
-	var categories = [];
-	$.getJSON("{{url_for('sitecategorymenuitems')}}", function(data){
-		$.each(data[0],function(key,val){
-			$.getJSON("api/site/category/"+val.id+"/auctions", function(innerData) {
-				aucs = []
-				$.each(innerData.auctions[0],function(ky,vl) {
-					is_participant = false;
-					$.each(vl.participants,function(k,v) {
-						if(v.id=="{{current_user.id}}"){
-							is_participant = true;
-							return;
+start_loading(loading_element);
+
+app = new Vue({
+
+	el : "#app",
+
+	data:{
+
+		ad_auctions : [],
+		ad_products : [],
+		events :[],
+		today_auctions : [] ,
+		best_auctions : [] ,
+		popular_auctions : [] ,
+		categories : [],
+	},
+
+	methods:{
+		prepare_ad_images(images){
+			return ad_image_path + ClearifyNames(images)[0];
+		},
+		prepare_auction_images(images){
+			return product_image_path + ClearifyNames(images)[0];
+		},
+		_ToPersian(number){
+			return ToPersian(number);
+		},
+
+		_createAuctionLink(id){
+			return "/view/auction/"+id;
+		},
+		_updateTimer(date){
+			return new Date(date).format("yyyy-M-d hh:mm:ss");
+		},
+	},
+	mounted: function(){
+
+			axios.get("{{url_for('siteauctioncarouselads')}}")
+				.then((response) => {
+					this.ad_auctions = response.data[0];
+				})
+				.catch((response)=>{
+					console.error(response);
+			});
+			axios.get("{{url_for('siteproductcarouselads')}}")
+				.then((response) => {
+					this.ad_products = response.data[0];
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+			axios.get("{{url_for('sitetodayevents')}}")
+				.then((response) => {
+					this.events = response.data[0];
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+			axios.get("{{url_for('sitetodayauctions')}}")
+				.then((response) => {
+					response.data[0].forEach( auction => {
+						participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+						this.today_auctions.push({
+							id : auction.id,
+							title : auction.title ,
+							description : auction.description ,
+							deadline : auction.remained_time,
+							participant_count :ToPersian(auction.participants.length),
+							max_members :ToPersian(auction.max_members),
+							base_price : ToPersian(formatCurrency(auction.base_price)),
+							max_price : ToPersian(formatCurrency(auction.max_price)),
+							price : ToPersian(formatCurrency(auction.item.price)),
+							image : product_image_path + ClearifyNames(auction.item.images)[0],
+							instance_link : "/instantview/"+ auction.id,
+							link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+							is_participant : participated,
+						});
+					});
+					console.log(this.today_auctions);
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+			axios.get("{{url_for('sitemostpopularauctions')}}")
+				.then((response) => {
+					response.data[0].forEach( auction => {
+						participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+						this.popular_auctions.push({
+							id : auction.id,
+							title : auction.title ,
+							description : auction.description ,
+							deadline : auction.remained_time,
+							participant_count :ToPersian(auction.participants.length),
+							max_members :ToPersian(auction.max_members),
+							base_price : ToPersian(formatCurrency(auction.base_price)),
+							max_price : ToPersian(formatCurrency(auction.max_price)),
+							price : ToPersian(formatCurrency(auction.item.price)),
+							image : product_image_path + ClearifyNames(auction.item.images)[0],
+							instance_link : "/instantview/"+ auction.id,
+							link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+							is_participant : participated,
+						});
+					});
+					console.log(this.popular_auctions);
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+			axios.get("{{url_for('sitemostviewedauctions')}}")
+				.then((response) => {
+					response.data[0].forEach( auction => {
+						participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+						this.best_auctions.push({
+							id : auction.id,
+							title : auction.title ,
+							description : auction.description ,
+							deadline : auction.remained_time,
+							participant_count :ToPersian(auction.participants.length),
+							max_members :ToPersian(auction.max_members),
+							base_price : ToPersian(formatCurrency(auction.base_price)),
+							max_price : ToPersian(formatCurrency(auction.max_price)),
+							price : ToPersian(formatCurrency(auction.item.price)),
+							image : product_image_path + ClearifyNames(auction.item.images)[0],
+							instance_link : "/instantview/"+ auction.id,
+							link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+							is_participant : participated,
+						});
+					});
+					console.log(this.best_auctions);
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+
+			axios.get("{{url_for('sitecategorymenuitems')}}")
+				.then((response) => {
+					response.data[0].forEach(category => {
+
+						axios.get("api/site/category/"+category.id+"/auctions")
+							.then((response) => {
+								auctions = [];
+								response.data.auctions[0].forEach(auction =>{
+									participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+									auctions.push({
+										id : auction.id,
+										title : auction.title,
+										deadline : new Date(auction.start_date).format("yyyy-M-d hh:mm:ss"),
+										image : product_image_path + ClearifyNames(auction.item.images)[0],
+										instance_link : "/instantview/"+ auction.id,
+										view_link : "/view/auction/"+ auction.id,
+										link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+										is_participant : participated,
+										base_price : ToPersian(formatCurrency(auction.base_price)),
+									});
+								});
+
+								this.categories.push({
+									title : category.title,
+									auctions : auctions,
+								});
+
+								console.log(this.categories);
+
+							})
+							.catch((response)=>{
+								console.error(response);
+						});
+
+
+
+					});
+				})
+				.catch((response)=>{
+					console.error(response);
+			});
+	},
+	updated:function() {
+		stop_loading(loading_element);
+	},
+
+	directives: {
+		carousel: {
+			inserted: function (el) {
+				triggerSlider($(el));
+			},
+		},
+		flashtimer:{
+			inserted:function(el) {
+				if($('.flash-countdown').length>0){
+					$(".flash-countdown").TimeCircles({
+						fg_width: 0.01,
+						bg_width: 1.2,
+						text_size: 0.07,
+						circle_bg_color: "#ffffff",
+						time: {
+							Days: {
+								show: true,
+								text: "",
+								color: "#f9bc02"
+							},
+							Hours: {
+								show: true,
+								text: "",
+								color: "#f9bc02"
+							},
+							Minutes: {
+								show: true,
+								text: "",
+								color: "#f9bc02"
+							},
+							Seconds: {
+								show: true,
+								text: "",
+								color: "#f9bc02"
+							}
 						}
 					});
-					console.log(vl.start_date);
-
-			    var deadline = new Date(vl.start_date).format("yyyy/M/d HH:mm:ss","UTC");
-			    full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-			    full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-					auction_date = full_date + " ساعت : "+full_hour;
-
-					auction = new Auction(
-						vl.id,
-						vl.title ,
-						vl.description ,
-						auction_date,
-						ToPersian(vl.participants.length),
-					  ToPersian(vl.max_members),
-						ToPersian(formatCurrency(vl.base_price)),
-						ToPersian(formatCurrency(vl.max_price)),
-						ToPersian(formatCurrency(vl.item.price)),
-						product_image_path + ClearifyNames(vl.item.images)[0],
-						is_participant ? "/view/auction/"+vl.id : "/participate/"+ vl.id,
-						is_participant,
-					);
-					aucs.push(auction)
-				});
-				category = new Category(val.title,aucs);
-				OnDataReady(category);
-			});
-		});
-	});
-
-	function OnDataReady(data) {
-		self.categories.push(data);
+				}
+			}
+		},
+		bigtimer:{
+			inserted:function(el) {
+				if($('.deals-cowndown').length>0){
+					 $(".deals-cowndown").TimeCircles({
+						 fg_width: 0.01,
+						 bg_width: 1.2,
+						 text_size: 0.07,
+						 circle_bg_color: "#ffffff",
+						 time: {
+							 Days: {
+								 show: true,
+								 text: "روز",
+								 color: "#f9bc02"
+							 },
+							 Hours: {
+								 show: true,
+								 text: "ساعت",
+								 color: "#f9bc02"
+							 },
+							 Minutes: {
+								 show: true,
+								 text: "دقیقه",
+								 color: "#f9bc02"
+							 },
+							 Seconds: {
+								 show: true,
+								 text: "ثانیه",
+								 color: "#f9bc02"
+							 }
+						 }
+					 });
+				 	}
+			}
+		},
 	}
 
-	$.getJSON("{{url_for('siteauctioncarouselads')}}", function(data) {
-		console.log(data[0]);
-		self.ads(data[0]);
-	})
-
-	$.getJSON("{{url_for('siteproductcarouselads')}}", function(data) {
-		self.productAds(data[0]);
-	})
-
-	$.getJSON( "{{url_for('sitetodayevents')}}", function( data ) {
-		$.each(data[0],function(key,val){
-			e = { title : val.title , description : val.description , deadline : new Date(val.end_date).format("yyyy-M-d hh:mm:ss TT","UTC"), discount :ToPersian(val.discount)};
-			events.push(e);
-		})
-		self.events(events)
-	});
-
-	$.getJSON( "{{url_for('sitetodayauctions')}}", function( data ) {
-
-		$.each(data[0],function(key,val){
-			is_participant = false;
-			$.each(val.participants,function(k,v) {
-				if(v.id=="{{current_user.id}}"){
-					is_participant = true;
-					return;
-				}
-			});
-
-			auction = new Auction(
-				val.id,
-				val.title ,
-				val.description ,
-				val.remained_time,
-				ToPersian(val.participants.length),
-			  ToPersian(val.max_members),
-				ToPersian(formatCurrency(val.base_price)),
-				ToPersian(formatCurrency(val.max_price)),
-				ToPersian(formatCurrency(val.item.price)),
-				product_image_path + ClearifyNames(val.item.images)[0],
-				is_participant ? "/view/auction/"+val.id : "/participate/"+ val.id,
-				is_participant,
-			);
-			auctions.push(auction);
-		});
-		self.auctions(auctions);
-	});
-
-	$.getJSON( "{{url_for('sitemostpopularauctions')}}", function( data ) {
-		$.each(data[0],function(key,val){
-			is_participant = false;
-			$.each(val.participants,function(k,v) {
-				if(v.id=="{{current_user.id}}"){
-					is_participant = true;
-					return;
-				}
-			});
-
-			auction =
-			{
-				title : val.title ,
-				description : val.description ,
-				deadline : val.remained_time,
-				participant_count :ToPersian(val.participants.length),
-				max_members :ToPersian(val.max_members),
-				base_price : ToPersian(formatCurrency(val.base_price)),
-				max_price : ToPersian(formatCurrency(val.max_price)),
-				price : ToPersian(formatCurrency(val.item.price)),
-				image : product_image_path + ClearifyNames(val.item.images)[0],
-				instance_link : "/instantview/"+ val.id,
-				link : is_participant ? "/view/auction/"+val.id : "/participate/"+ val.id,
-				is_participant,
-			};
-			populars.push(auction);
-		});
-		self.populars(populars);
-	});
-
-	$.getJSON( "{{url_for('sitemostviewedauctions')}}", function( data ) {
-		$.each(data[0],function(key,val){
-			is_participant = false;
-			$.each(val.participants,function(k,v) {
-				if(v.id=="{{current_user.id}}"){
-					is_participant = true;
-					return;
-				}
-			});
-
-			auction =
-			{
-				title : val.title ,
-				description : val.description ,
-				deadline : val.remained_time,
-				participant_count :ToPersian(val.participants.length),
-				max_members :ToPersian(val.max_members),
-				base_price : ToPersian(formatCurrency(val.base_price)),
-				max_price : ToPersian(formatCurrency(val.max_price)),
-				price : ToPersian(formatCurrency(val.item.price)),
-				image : product_image_path + ClearifyNames(val.item.images)[0],
-				instance_link : "/instantview/"+ val.id,
-				link : is_participant ? "/view/auction/"+val.id : "/participate/"+ val.id,
-				is_participant,
-			};
-			views.push(auction);
-		});
-		self.views(views)
-	});
-}
-
-ko.applyBindings(new dealModel());
-
-$(document).ready(function(){
-	sleep(1000);
 });
-
-
-// var app = new Vue({
-// 	el: "#app",
-// 	data:{
-// 		seen_auctions: []
-// 	},
-// 	created: function(){
-// 		var self = this;
-// 		axios.get("{{url_for('userauctionview')}}")
-// 			.then(function (response) {
-// 			self.seen_auctions = response.data;
-// 			console.log(response);
-// 			})
-// 			.catch(function (error) {
-// 				console.log("failed");
-// 				console.error(error);
-// 			});
-// 	}
-// });
 
 </script>
 {% endblock scripts %}
