@@ -301,12 +301,12 @@
 					console.error(response);
 				});
 
-				this.interval = setInterval(()=>{
-					this.auctions.forEach(auction => {
-						auction.remained_time -= 1;
-						auction.remained_percent = "width:"+ (auction.remained_time / auction.from_created)*100+"%";
-					});
-				}, 1000);
+			this.interval = setInterval(()=>{
+				this.auctions.forEach(auction => {
+					auction.remained_time -= 1;
+					auction.remained_percent = "width:"+ (auction.remained_time / auction.from_created)*100+"%";
+				});
+			}, 1000);
 		},
 
 		updated:function() {

@@ -17,15 +17,15 @@ from project import socketio
 from flask_socketio import emit, join_room, leave_room
 
 @socketio.on('sync_timers')
-def sync_timers():
-    room = 'index'
+def sync_timers(data):
+    room = data['room']
     join_room(room)
+    ids = data['auction_ids']
     now = datetime.now()
-    auctions = Auction.query.filter(Auction.start_date >= now).order_by('start_date')
+    auctions = Auction.query.filter(Auction.id.in_(ids)).all()
     result = []
     for auction in auctions:
-        keyValue = {"auction_id":auction.id,"remained_time":(auction.start_date - now).seconds}
-        result.append(keyValue)
+        result.append({"auction_id":auction.id,"remained_time":(auction.start_date - now).seconds,'expired':now > auction.start_date})
     emit("sync_timers",{"timers": result} , room=room)
 
 @socketio.on('join')

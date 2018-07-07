@@ -3,72 +3,72 @@
 <div id="app">
 
 	<div class="container">
-	<div class="content-top1">
-		<div class="row">
-			<div class="col-md-3 hidden-sm hidden-xs" style="display:none">
-				<div class="wrap-cat-icon wrap-cat-icon1">
-					<h2 class="title14 title-cat-icon">دسته بندی ها</h2>
-					<ul class="list-cat-icon">
-					</ul>
+		<div class="content-top1">
+			<div class="row">
+				<div class="col-md-3 hidden-sm hidden-xs" style="display:none">
+					<div class="wrap-cat-icon wrap-cat-icon1">
+						<h2 class="title14 title-cat-icon">دسته بندی ها</h2>
+						<ul class="list-cat-icon">
+						</ul>
+					</div>
 				</div>
-			</div>
-			<div v-if="ad_auctions" class="col-md-12 col-sm-12 col-xs-12">
-				<div class="wrap-banner-slider1">
-					<div class="banner-slider banner-slider1">
-						<div class="wrap-item" data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
-							<template v-for="item in ad_auctions">
-								{%raw%}
-								<div class="item-banner item-banner1">
- 								<div class="banner-thumb">
- 									<a href="#"><img v-bind:src="prepare_ad_images(item.advertisement.images)" alt="" /></a>
- 								</div>
- 								<div class="banner-info animated" data-animated="lightSpeedIn" >
- 									<h2 class="title30">{{item.advertisement.title}}</h2>
- 									<h2 class="title30 color">تخفیف : تا {{_ToPersian(item.advertisement.discount)}}%  قیمت </h2>
- 									<p>{{item.advertisement.description}}</p>
- 									<a v-bind:href="_createAuctionLink(item.id)" class="shopnow">{{item.advertisement.link_title}}</a>
- 								</div>
- 							  </div>
-								{%endraw%}
-							</template>
+				<div v-if="ad_auctions" class="col-md-12 col-sm-12 col-xs-12">
+					<div class="wrap-banner-slider1">
+						<div class="banner-slider banner-slider1">
+							<div class="wrap-item" data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
+								<template v-for="item in ad_auctions">
+									{%raw%}
+									<div class="item-banner item-banner1">
+	 								<div class="banner-thumb">
+	 									<a href="#"><img v-bind:src="prepare_ad_images(item.advertisement.images)" alt="" /></a>
+	 								</div>
+	 								<div class="banner-info animated" data-animated="lightSpeedIn" >
+	 									<h2 class="title30">{{item.advertisement.title}}</h2>
+	 									<h2 class="title30 color">تخفیف : تا {{_ToPersian(item.advertisement.discount)}}%  قیمت </h2>
+	 									<p>{{item.advertisement.description}}</p>
+	 									<a v-bind:href="_createAuctionLink(item.id)" class="shopnow">{{item.advertisement.link_title}}</a>
+	 								</div>
+	 							  </div>
+									{%endraw%}
+								</template>
+							</div>
 						</div>
-					</div>
-					<!-- End Banner -->
-					<div v-if="ad_products" class="sub-banner-slider">
-						<div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
-							<template v-for="item in ad_products">
-								{%raw%}
-								<div class="item-sub-banner">
-									<div class="product-thumb">
-										<a v-bind:href="_createAuctionLink(item.id)"><img class="wobble-horizontal" v-bind:src="prepare_ad_images(item.advertisement.images)" alt=""></a>
+						<!-- End Banner -->
+						<div v-if="ad_products" class="sub-banner-slider">
+							<div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
+								<template v-for="item in ad_products">
+									{%raw%}
+									<div class="item-sub-banner">
+										<div class="product-thumb">
+											<a v-bind:href="_createAuctionLink(item.id)"><img class="wobble-horizontal" v-bind:src="prepare_ad_images(item.advertisement.images)" alt=""></a>
+										</div>
+										<div class="product-info">
+											<h3 class="product-title text-capitalize"><a v-bind:href=" _createAuctionLink(item.id)">{{item.advertisement.title}}</a></h3>
+											<strong class="color"> تا {{ _ToPersian(item.advertisement.discount)}} ٪ تخفیف</strong>
+										</div>
 									</div>
-									<div class="product-info">
-										<h3 class="product-title text-capitalize"><a v-bind:href=" _createAuctionLink(item.id)">{{item.advertisement.title}}</a></h3>
-										<strong class="color"> تا {{ _ToPersian(item.advertisement.discount)}} ٪ تخفیف</strong>
-									</div>
-								</div>
-								{%endraw%}
-							</template>
+									{%endraw%}
+								</template>
+							</div>
 						</div>
+						<!-- End Sub Banner -->
 					</div>
-					<!-- End Sub Banner -->
 				</div>
 			</div>
 		</div>
-	</div>
-	<div v-if="events">
-		<template v-for="event in events">
-			{%raw%}
-			<div class="intro-countdown">
-				<h2 class="title30"> ٪<strong class="color" data-bind="text: discount ">{{_ToPersian(event.discount)}}</strong> {{event.description}} <span class="color"> محدود </span></h2>
-				<div v-bigtimer class="deals-cowndown" v-bind:data-date="_updateTimer(event.end_date)"></div>
-			</div>
-			{%endraw%}
-		</template>
-		<!-- End Intro Countown -->
-	</div>
+		<div v-if="events">
+			<template v-for="event in events">
+				{%raw%}
+				<div class="intro-countdown">
+					<h2 class="title30"> ٪<strong class="color" data-bind="text: discount ">{{_ToPersian(event.discount)}}</strong> {{event.description}} <span class="color"> محدود </span></h2>
+					<div v-bigtimer class="deals-cowndown" v-bind:data-date="_updateTimer(event.end_date)"></div>
+				</div>
+				{%endraw%}
+			</template>
+			<!-- End Intro Countown -->
+		</div>
 
-</div>
+	</div>
 
 	<div class="list-flash">
 		<div class="container">
@@ -84,7 +84,7 @@
 									<span class="text-uppercase white">{{auction.participant_count}} از {{auction.max_members}} </span>
 								</div>
 								<div class="flash-label right-time">
-									<span class="text-uppercase white"><div v-flashtimer class="flash-countdown timer" v-bind:data-timer ="auction.deadline"></div></span>
+									<span class="text-uppercase white"><div v-flashtimer class="flash-countdown timer auction" v-bind:id="auction.id" v-bind:data-timer ="auction.deadline"></div></span>
 								</div>
 							</div>
 							<div class="flash-info">
@@ -345,7 +345,7 @@
 									</div>
 								</div>
 								<div class="deal-timer18 poly-box">
-									<div v-flashtimer class="flash-countdown" v-bind:data-date="auction.deadline"></div>
+									<div v-flashtimer class="flash-countdown timer auction" v-bind:id="auction.id" v-bind:data-timer ="auction.deadline"></div>
 								</div>
 							</div>
 						</template>
@@ -369,56 +369,32 @@
 
 <script>
 
-
-	// $.getJSON("{{url_for('sitecategorymenuitems')}}", function(data){
-	// 	$.each(data[0],function(key,val){
-	// 		$.getJSON("api/site/category/"+val.id+"/auctions", function(innerData) {
-	// 			aucs = []
-	// 			$.each(innerData.auctions[0],function(ky,vl) {
-	// 				is_participant = false;
-	// 				$.each(vl.participants,function(k,v) {
-	// 					if(v.id=="{{current_user.id}}"){
-	// 						is_participant = true;
-	// 						return;
-	// 					}
-	// 				});
-	// 				console.log(vl.start_date);
-	//
-	// 		    var deadline = new Date(vl.start_date).format("yyyy/M/d HH:mm:ss","UTC");
-	// 		    full_date = new persianDate(new Date(deadline)).format("dddd DD MMMM YYYY"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-	// 		    full_hour = new persianDate(new Date(deadline)).format("HH:mm:ss"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
-	// 				auction_date = full_date + " ساعت : "+full_hour;
-	//
-	// 				auction = new Auction(
-	// 					vl.id,
-	// 					vl.title ,
-	// 					vl.description ,
-	// 					auction_date,
-	// 					ToPersian(vl.participants.length),
-	// 				  ToPersian(vl.max_members),
-	// 					ToPersian(formatCurrency(vl.base_price)),
-	// 					ToPersian(formatCurrency(vl.max_price)),
-	// 					ToPersian(formatCurrency(vl.item.price)),
-	// 					product_image_path + ClearifyNames(vl.item.images)[0],
-	// 					is_participant ? "/view/auction/"+vl.id : "/participate/"+ vl.id,
-	// 					is_participant,
-	// 				);
-	// 				aucs.push(auction)
-	// 			});
-	// 			category = new Category(val.title,aucs);
-	// 			OnDataReady(category);
-	// 		});
-	// 	});
-	// });
-	//
-	// function OnDataReady(data) {
-	// 	self.categories.push(data);
-	// }
-
-
-
-
 start_loading(loading_element);
+
+var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+socket.on('connect', function() {
+		console.log('connected');
+});
+socket.on('sync_timers', function(data) {
+
+	data.timers.forEach(item => {
+		auction = app.today_auctions.find(x => x.id == item.auction_id);
+		if (item.expired) {
+			var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
+			app.today_auctions.splice( elementPos, 1 );
+		}
+		else {
+			auction.deadline = item.remained_time;
+			$.each($(".auction#"+auction.id),function() {
+				console.log(this);
+				$(this).data('timer', auction.remained_time).TimeCircles({
+						"total_duration": auction.remained_time
+				}).restart();
+			});
+		}
+	});
+	console.log('syncing...');
+});
 
 app = new Vue({
 
@@ -433,6 +409,7 @@ app = new Vue({
 		best_auctions : [] ,
 		popular_auctions : [] ,
 		categories : [],
+		interval :null,
 	},
 
 	methods:{
@@ -452,6 +429,9 @@ app = new Vue({
 		_updateTimer(date){
 			return new Date(date).format("yyyy-M-d hh:mm:ss");
 		},
+		foo(){
+			console.log('fooooo');
+		}
 	},
 	mounted: function(){
 
@@ -551,7 +531,6 @@ app = new Vue({
 				.catch((response)=>{
 					console.error(response);
 				});
-
 			axios.get("{{url_for('sitecategorymenuitems')}}")
 				.then((response) => {
 					response.data[0].forEach(category => {
@@ -564,7 +543,7 @@ app = new Vue({
 									auctions.push({
 										id : auction.id,
 										title : auction.title,
-										deadline : new Date(auction.start_date).format("yyyy-M-d hh:mm:ss"),
+										deadline : auction.remained_time,
 										image : product_image_path + ClearifyNames(auction.item.images)[0],
 										instance_link : "/instantview/"+ auction.id,
 										view_link : "/view/auction/"+ auction.id,
@@ -593,17 +572,17 @@ app = new Vue({
 				.catch((response)=>{
 					console.error(response);
 			});
+
+			this.interval = setInterval(()=>{
+				ids = this.today_auctions.map(function(item) {return item.id; });
+				socket.emit('sync_timers',{auction_ids: ids,room:'index'});
+			}, 5000);
+
 	},
 	updated:function() {
 		stop_loading(loading_element);
 	},
-
 	directives: {
-		carousel: {
-			inserted: function (el) {
-				triggerSlider($(el));
-			},
-		},
 		flashtimer:{
 			inserted:function(el) {
 				if($('.flash-countdown').length>0){
@@ -636,7 +615,7 @@ app = new Vue({
 						}
 					});
 				}
-			}
+			},
 		},
 		bigtimer:{
 			inserted:function(el) {
@@ -672,7 +651,7 @@ app = new Vue({
 				 	}
 			}
 		},
-	}
+	},
 
 });
 
