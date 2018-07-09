@@ -84,7 +84,7 @@
 									<span class="text-uppercase white">{{auction.participant_count}} از {{auction.max_members}} </span>
 								</div>
 								<div class="flash-label right-time">
-									<span class="text-uppercase white"><div v-flashtimer class="flash-countdown timer auction" v-bind:id="auction.id" v-bind:data-timer ="auction.deadline"></div></span>
+									<span class="text-uppercase white"><div v-flashtimer class="flash-countdown timer auction"  v-bind:data-timer ="auction.deadline" v-bind:data-auctionid="auction.id"></div></span>
 								</div>
 							</div>
 							<div class="flash-info">
@@ -345,7 +345,7 @@
 									</div>
 								</div>
 								<div class="deal-timer18 poly-box">
-									<div v-flashtimer class="flash-countdown timer auction" v-bind:id="auction.id" v-bind:data-timer ="auction.deadline"></div>
+									<div v-flashtimer class="flash-countdown timer auction" v-bind:data-timer ="auction.deadline" v-bind:data-auctionid="auction.id"></div>
 								</div>
 							</div>
 						</template>
@@ -379,18 +379,29 @@
 
 		data.timers.forEach(item => {
 			auction = app.today_auctions.find(x => x.id == item.auction_id);
+
+			cat_temp = app.categories.find(x => x.auctions.find(y=> y.id == item.auction_id));
+			cat_auction = cat_temp.auctions.find(x => x.id == item.auction_id);
+
 			if (item.expired) {
+
 				var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
 				app.today_auctions.splice( elementPos, 1 );
+
+				var elementPos_cat = cat_temp.auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
+				cat_temp.auctions.splice( elementPos_cat, 1 );
 			}
 			else {
-				auction.deadline = item.remained_time;
-				$.each($(".auction#"+auction.id),function() {
 
-					$(this).data('timer', auction.remained_time).TimeCircles({
-							"total_duration": auction.remained_time
-					}).restart();
-				});
+					auction.deadline = item.remained_time;
+
+					$.each($("[data-auctionid="+auction.id+"]"),function(item,value) {
+
+						$(value).data('timer', auction.deadline).TimeCircles({
+								"total_duration": auction.deadline
+						}).restart();
+					});
+
 			}
 		});
 		console.log('syncing...');
