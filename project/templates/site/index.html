@@ -369,291 +369,286 @@
 
 <script>
 
-start_loading(loading_element);
+	start_loading(loading_element);
 
-var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-socket.on('connect', function() {
-		console.log('connected');
-});
-socket.on('sync_timers', function(data) {
-
-	data.timers.forEach(item => {
-		auction = app.today_auctions.find(x => x.id == item.auction_id);
-		if (item.expired) {
-			var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
-			app.today_auctions.splice( elementPos, 1 );
-		}
-		else {
-			auction.deadline = item.remained_time;
-			$.each($(".auction#"+auction.id),function() {
-				console.log(this);
-				$(this).data('timer', auction.remained_time).TimeCircles({
-						"total_duration": auction.remained_time
-				}).restart();
-			});
-		}
+	var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+	socket.on('connect', function() {
+			console.log('connected');
 	});
-	console.log('syncing...');
-});
+	socket.on('sync_timers', function(data) {
 
-app = new Vue({
+		data.timers.forEach(item => {
+			auction = app.today_auctions.find(x => x.id == item.auction_id);
+			if (item.expired) {
+				var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
+				app.today_auctions.splice( elementPos, 1 );
+			}
+			else {
+				auction.deadline = item.remained_time;
+				$.each($(".auction#"+auction.id),function() {
 
-	el : "#app",
-
-	data:{
-
-		ad_auctions : [],
-		ad_products : [],
-		events :[],
-		today_auctions : [] ,
-		best_auctions : [] ,
-		popular_auctions : [] ,
-		categories : [],
-		interval :null,
-	},
-
-	methods:{
-		prepare_ad_images(images){
-			return ad_image_path + ClearifyNames(images)[0];
-		},
-		prepare_auction_images(images){
-			return product_image_path + ClearifyNames(images)[0];
-		},
-		_ToPersian(number){
-			return ToPersian(number);
-		},
-
-		_createAuctionLink(id){
-			return "/view/auction/"+id;
-		},
-		_updateTimer(date){
-			return new Date(date).format("yyyy-M-d hh:mm:ss");
-		},
-		foo(){
-			console.log('fooooo');
-		}
-	},
-	mounted: function(){
-
-			axios.get("{{url_for('siteauctioncarouselads')}}")
-				.then((response) => {
-					this.ad_auctions = response.data[0];
-				})
-				.catch((response)=>{
-					console.error(response);
-			});
-			axios.get("{{url_for('siteproductcarouselads')}}")
-				.then((response) => {
-					this.ad_products = response.data[0];
-				})
-				.catch((response)=>{
-					console.error(response);
+					$(this).data('timer', auction.remained_time).TimeCircles({
+							"total_duration": auction.remained_time
+					}).restart();
 				});
-			axios.get("{{url_for('sitetodayevents')}}")
-				.then((response) => {
-					this.events = response.data[0];
-				})
-				.catch((response)=>{
-					console.error(response);
+			}
+		});
+		console.log('syncing...');
+	});
+
+	app = new Vue({
+
+		el : "#app",
+
+		data:{
+
+			ad_auctions : [],
+			ad_products : [],
+			events :[],
+			today_auctions : [] ,
+			best_auctions : [] ,
+			popular_auctions : [] ,
+			categories : [],
+			interval :null,
+		},
+
+		methods:{
+			prepare_ad_images(images){
+				return ad_image_path + ClearifyNames(images)[0];
+			},
+			prepare_auction_images(images){
+				return product_image_path + ClearifyNames(images)[0];
+			},
+			_ToPersian(number){
+				return ToPersian(number);
+			},
+
+			_createAuctionLink(id){
+				return "/view/auction/"+id;
+			},
+			_updateTimer(date){
+				return new Date(date).format("yyyy-M-d hh:mm:ss");
+			},
+
+		},
+		mounted: function(){
+
+				axios.get("{{url_for('siteauctioncarouselads')}}")
+					.then((response) => {
+						this.ad_auctions = response.data[0];
+					})
+					.catch((response)=>{
+						console.error(response);
 				});
-			axios.get("{{url_for('sitetodayauctions')}}")
-				.then((response) => {
-					response.data[0].forEach( auction => {
-						participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
-						this.today_auctions.push({
-							id : auction.id,
-							title : auction.title ,
-							description : auction.description ,
-							deadline : auction.remained_time,
-							participant_count :ToPersian(auction.participants.length),
-							max_members :ToPersian(auction.max_members),
-							base_price : ToPersian(formatCurrency(auction.base_price)),
-							max_price : ToPersian(formatCurrency(auction.max_price)),
-							price : ToPersian(formatCurrency(auction.item.price)),
-							image : product_image_path + ClearifyNames(auction.item.images)[0],
-							instance_link : "/instantview/"+ auction.id,
-							link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
-							is_participant : participated,
-						});
+				axios.get("{{url_for('siteproductcarouselads')}}")
+					.then((response) => {
+						this.ad_products = response.data[0];
+					})
+					.catch((response)=>{
+						console.error(response);
 					});
-					console.log(this.today_auctions);
-				})
-				.catch((response)=>{
-					console.error(response);
-				});
-			axios.get("{{url_for('sitemostpopularauctions')}}")
-				.then((response) => {
-					response.data[0].forEach( auction => {
-						participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
-						this.popular_auctions.push({
-							id : auction.id,
-							title : auction.title ,
-							description : auction.description ,
-							deadline : auction.remained_time,
-							participant_count :ToPersian(auction.participants.length),
-							max_members :ToPersian(auction.max_members),
-							base_price : ToPersian(formatCurrency(auction.base_price)),
-							max_price : ToPersian(formatCurrency(auction.max_price)),
-							price : ToPersian(formatCurrency(auction.item.price)),
-							image : product_image_path + ClearifyNames(auction.item.images)[0],
-							instance_link : "/instantview/"+ auction.id,
-							link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
-							is_participant : participated,
-						});
+				axios.get("{{url_for('sitetodayevents')}}")
+					.then((response) => {
+						this.events = response.data[0];
+					})
+					.catch((response)=>{
+						console.error(response);
 					});
-					console.log(this.popular_auctions);
-				})
-				.catch((response)=>{
-					console.error(response);
-				});
-			axios.get("{{url_for('sitemostviewedauctions')}}")
-				.then((response) => {
-					response.data[0].forEach( auction => {
-						participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
-						this.best_auctions.push({
-							id : auction.id,
-							title : auction.title ,
-							description : auction.description ,
-							deadline : auction.remained_time,
-							participant_count :ToPersian(auction.participants.length),
-							max_members :ToPersian(auction.max_members),
-							base_price : ToPersian(formatCurrency(auction.base_price)),
-							max_price : ToPersian(formatCurrency(auction.max_price)),
-							price : ToPersian(formatCurrency(auction.item.price)),
-							image : product_image_path + ClearifyNames(auction.item.images)[0],
-							instance_link : "/instantview/"+ auction.id,
-							link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
-							is_participant : participated,
+				axios.get("{{url_for('sitetodayauctions')}}")
+					.then((response) => {
+						response.data[0].forEach( auction => {
+							participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+							this.today_auctions.push({
+								id : auction.id,
+								title : auction.title ,
+								description : auction.description ,
+								deadline : auction.remained_time,
+								participant_count :ToPersian(auction.participants.length),
+								max_members :ToPersian(auction.max_members),
+								base_price : ToPersian(formatCurrency(auction.base_price)),
+								max_price : ToPersian(formatCurrency(auction.max_price)),
+								price : ToPersian(formatCurrency(auction.item.price)),
+								image : product_image_path + ClearifyNames(auction.item.images)[0],
+								instance_link : "/instantview/"+ auction.id,
+								link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+								is_participant : participated,
+							});
 						});
+					})
+					.catch((response)=>{
+						console.error(response);
 					});
-					console.log(this.best_auctions);
-				})
-				.catch((response)=>{
-					console.error(response);
-				});
-			axios.get("{{url_for('sitecategorymenuitems')}}")
-				.then((response) => {
-					response.data[0].forEach(category => {
+				axios.get("{{url_for('sitemostpopularauctions')}}")
+					.then((response) => {
+						response.data[0].forEach( auction => {
+							participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+							this.popular_auctions.push({
+								id : auction.id,
+								title : auction.title ,
+								description : auction.description ,
+								deadline : auction.remained_time,
+								participant_count :ToPersian(auction.participants.length),
+								max_members :ToPersian(auction.max_members),
+								base_price : ToPersian(formatCurrency(auction.base_price)),
+								max_price : ToPersian(formatCurrency(auction.max_price)),
+								price : ToPersian(formatCurrency(auction.item.price)),
+								image : product_image_path + ClearifyNames(auction.item.images)[0],
+								instance_link : "/instantview/"+ auction.id,
+								link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+								is_participant : participated,
+							});
+						});
 
-						axios.get("api/site/category/"+category.id+"/auctions")
-							.then((response) => {
-								auctions = [];
-								response.data.auctions[0].forEach(auction =>{
-									participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
-									auctions.push({
-										id : auction.id,
-										title : auction.title,
-										deadline : auction.remained_time,
-										image : product_image_path + ClearifyNames(auction.item.images)[0],
-										instance_link : "/instantview/"+ auction.id,
-										view_link : "/view/auction/"+ auction.id,
-										link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
-										is_participant : participated,
-										base_price : ToPersian(formatCurrency(auction.base_price)),
+					})
+					.catch((response)=>{
+						console.error(response);
+					});
+				axios.get("{{url_for('sitemostviewedauctions')}}")
+					.then((response) => {
+						response.data[0].forEach( auction => {
+							participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+							this.best_auctions.push({
+								id : auction.id,
+								title : auction.title ,
+								description : auction.description ,
+								deadline : auction.remained_time,
+								participant_count :ToPersian(auction.participants.length),
+								max_members :ToPersian(auction.max_members),
+								base_price : ToPersian(formatCurrency(auction.base_price)),
+								max_price : ToPersian(formatCurrency(auction.max_price)),
+								price : ToPersian(formatCurrency(auction.item.price)),
+								image : product_image_path + ClearifyNames(auction.item.images)[0],
+								instance_link : "/instantview/"+ auction.id,
+								link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+								is_participant : participated,
+							});
+						});
+
+					})
+					.catch((response)=>{
+						console.error(response);
+					});
+				axios.get("{{url_for('sitecategorymenuitems')}}")
+					.then((response) => {
+						response.data[0].forEach(category => {
+
+							axios.get("api/site/category/"+category.id+"/auctions")
+								.then((response) => {
+									auctions = [];
+									response.data.auctions[0].forEach(auction =>{
+										participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+										auctions.push({
+											id : auction.id,
+											title : auction.title,
+											deadline : auction.remained_time,
+											image : product_image_path + ClearifyNames(auction.item.images)[0],
+											instance_link : "/instantview/"+ auction.id,
+											view_link : "/view/auction/"+ auction.id,
+											link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+											is_participant : participated,
+											base_price : ToPersian(formatCurrency(auction.base_price)),
+										});
 									});
-								});
 
-								this.categories.push({
-									title : category.title,
-									auctions : auctions,
-								});
+									this.categories.push({
+										title : category.title,
+										auctions : auctions,
+									});
 
-								console.log(this.categories);
+								})
+								.catch((response)=>{
+									console.error(response);
+							});
 
-							})
-							.catch((response)=>{
-								console.error(response);
+
+
 						});
-
-
-
-					});
-				})
-				.catch((response)=>{
-					console.error(response);
-			});
-
-			this.interval = setInterval(()=>{
-				ids = this.today_auctions.map(function(item) {return item.id; });
-				socket.emit('sync_timers',{auction_ids: ids,room:'index'});
-			}, 5000);
-
-	},
-	updated:function() {
-		stop_loading(loading_element);
-	},
-	directives: {
-		flashtimer:{
-			inserted:function(el) {
-				if($('.flash-countdown').length>0){
-					$(".flash-countdown").TimeCircles({
-						fg_width: 0.01,
-						bg_width: 1.2,
-						text_size: 0.07,
-						circle_bg_color: "#ffffff",
-						time: {
-							Days: {
-								show: true,
-								text: "",
-								color: "#f9bc02"
-							},
-							Hours: {
-								show: true,
-								text: "",
-								color: "#f9bc02"
-							},
-							Minutes: {
-								show: true,
-								text: "",
-								color: "#f9bc02"
-							},
-							Seconds: {
-								show: true,
-								text: "",
-								color: "#f9bc02"
+					})
+					.catch((response)=>{
+						console.error(response);
+				});
+				this.interval = setInterval(()=>{
+					ids = this.today_auctions.map(function(item) {return item.id; });
+					socket.emit('sync_timers',{auction_ids: ids,room:'index'});
+				}, 5000);
+		},
+		updated:function() {
+			stop_loading(loading_element);
+		},
+		directives: {
+			flashtimer:{
+				inserted:function(el) {
+					if($('.flash-countdown').length>0){
+						$(".flash-countdown").TimeCircles({
+							fg_width: 0.01,
+							bg_width: 1.2,
+							text_size: 0.07,
+							circle_bg_color: "#ffffff",
+							time: {
+								Days: {
+									show: true,
+									text: "",
+									color: "#f9bc02"
+								},
+								Hours: {
+									show: true,
+									text: "",
+									color: "#f9bc02"
+								},
+								Minutes: {
+									show: true,
+									text: "",
+									color: "#f9bc02"
+								},
+								Seconds: {
+									show: true,
+									text: "",
+									color: "#f9bc02"
+								}
 							}
-						}
-					});
+						});
+					}
+				},
+			},
+			bigtimer:{
+				inserted:function(el) {
+					if($('.deals-cowndown').length>0){
+						 $(".deals-cowndown").TimeCircles({
+							 fg_width: 0.01,
+							 bg_width: 1.2,
+							 text_size: 0.07,
+							 circle_bg_color: "#ffffff",
+							 time: {
+								 Days: {
+									 show: true,
+									 text: "روز",
+									 color: "#f9bc02"
+								 },
+								 Hours: {
+									 show: true,
+									 text: "ساعت",
+									 color: "#f9bc02"
+								 },
+								 Minutes: {
+									 show: true,
+									 text: "دقیقه",
+									 color: "#f9bc02"
+								 },
+								 Seconds: {
+									 show: true,
+									 text: "ثانیه",
+									 color: "#f9bc02"
+								 }
+							 }
+						 });
+					 	}
 				}
 			},
-		},
-		bigtimer:{
-			inserted:function(el) {
-				if($('.deals-cowndown').length>0){
-					 $(".deals-cowndown").TimeCircles({
-						 fg_width: 0.01,
-						 bg_width: 1.2,
-						 text_size: 0.07,
-						 circle_bg_color: "#ffffff",
-						 time: {
-							 Days: {
-								 show: true,
-								 text: "روز",
-								 color: "#f9bc02"
-							 },
-							 Hours: {
-								 show: true,
-								 text: "ساعت",
-								 color: "#f9bc02"
-							 },
-							 Minutes: {
-								 show: true,
-								 text: "دقیقه",
-								 color: "#f9bc02"
-							 },
-							 Seconds: {
-								 show: true,
-								 text: "ثانیه",
-								 color: "#f9bc02"
-							 }
-						 }
-					 });
-				 	}
-			}
-		},
-	},
 
-});
+		},
+
+	});
 
 </script>
+
 {% endblock scripts %}

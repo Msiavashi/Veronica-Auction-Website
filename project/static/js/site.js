@@ -268,11 +268,9 @@ function triggerFlashTimer() {
 }
 
 function triggerSlider(element){
+
 	var data = element.data();
-	console.log(data);
-
 	setTimeout(function() {
-
 		element.owlCarousel({
 			addClassActive:true,
 			stopOnHover:true,
@@ -283,19 +281,18 @@ function triggerSlider(element){
 			afterAction:animated,
 			navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
 		});
-		element.find('.owl-controls').css('left',data.control+'px');
+	},500);
 
-		//BxSlider
-		if($('.bxslider-banner').length>0){
-			$('.bxslider-banner').each(function(){
-				$(this).find('.bxslider').bxSlider({
-					controls:false,
-					pagerCustom: $(this).find('.bx-pager')
-				});
+	element.find('.owl-controls').css('left',data.control+'px');
+	//BxSlider
+	if($('.bxslider-banner').length>0){
+		$('.bxslider-banner').each(function(){
+			$(this).find('.bxslider').bxSlider({
+				controls:false,
+				pagerCustom: $(this).find('.bx-pager')
 			});
-		}
-
-	}, 1000);
+		});
+	}
 }
 
 function triggerOwlcarousel() {

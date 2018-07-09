@@ -400,6 +400,7 @@ jQuery(document).ready(function(){
 	}
 });
 //Window Load
+console.log('onload');
 jQuery(window).on('load',function(){
 	//Custom ScrollBar
 	if($('.custom-scroll').length>0){
@@ -412,22 +413,33 @@ jQuery(window).on('load',function(){
 		});
 	}
 	//Owl Carousel
-	if($('.wrap-item').length>0){
-		$('.wrap-item').each(function(){
-			var data = $(this).data();
-			$(this).owlCarousel({
-				addClassActive:true,
-				stopOnHover:true,
-				itemsCustom:data.itemscustom,
-				autoPlay:data.autoplay,
-				transitionStyle:data.transition,
-				beforeInit:background,
-				afterAction:animated,
-				navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+
+	setTimeout(function() {
+		
+		if($('.wrap-item').length>0){
+
+			$('.wrap-item').each(function() {
+
+				var data = $(this).data();
+				$(this).owlCarousel({
+					addClassActive:true,
+					stopOnHover:true,
+					itemsCustom:data.itemscustom,
+					autoPlay:data.autoplay,
+					transitionStyle:data.transition,
+					beforeInit:background,
+					afterAction:animated,
+					navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+				});
+				$(this).find('.owl-controls').css('left',data.control+'px');
+
 			});
-			$(this).find('.owl-controls').css('left',data.control+'px');
-		});
-	}
+
+		}
+	},1000);
+
+
+
 	//BxSlider
 	if($('.bxslider-banner').length>0){
 		$('.bxslider-banner').each(function(){
