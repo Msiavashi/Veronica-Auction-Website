@@ -185,8 +185,6 @@
                                 </li>
                               </template>
 
-                            <!-- ko text: triggerUpDown() -->
-                            <!-- /ko -->
         										</ul>
       										<div class="mini-cart-total">
       											<label>قیمت نهایی</label>
@@ -335,46 +333,46 @@
       							<div class="mini-cart-box">
       								<a class="mini-cart-link" href="#">
       									<span class="mini-cart-icon"><i class="fa fa-shopping-basket" aria-hidden="true"></i></span>
-      									<span class="mini-cart-number"></span>
+      									<span class="mini-cart-number">{%raw%}{{total_carts}}{%endraw%}</span>
       								</a>
-      								<div class="mini-cart-content">
-                      {%raw%}
+                      <div class="mini-cart-content">
+                        {%raw%}
                         <h2>سبد خرید من ({{total_carts}}) </h2>
                           <ul class="list-mini-cart-item list-unstyled">
-                          <li>
-                            <div class="mini-cart-edit">
-                              <a class="delete-mini-cart-item" href="#"><input type="hidden" data-a="attr:{value:item.id}"><i class="fa fa-trash-o"></i></a>
-                              <!-- <a class="edit-mini-cart-item" href="#"><i class="fa fa-pencil"></i></a> -->
-                            </div>
-                            <div class="mini-cart-thumb">
-                              <a href="#"><img data-b="attr:{src: '/static/images/products/' + _clearNames(item.images)[0] }"></a>
-                            </div>
-                            <div class="mini-cart-info">
-                              <h3><a href="#" data-c="text:item.product.title+' '+item.title"></a></h3>
-                              <div class="info-price">
-                                <span data-d="text:ToPersian(formatCurrency(item.price - item.discount))"></span>
-                                <del data-e="text:ToPersian(formatCurrency(item.price))"></del>
-                              </div>
-                              <div class="qty-product">
-                                <span class="qty-down">-</span>
-                                <span class="qty-num" data-f="text:total"></span>
-                                <span class="qty-up">+</span>
-                              </div>
-                            </div>
-                          </li>
-                          <!-- ko text: triggerUpDown() -->
-                          <!-- /ko -->
+                            <template v-for="cart in mycarts">
+                             <li>
+                                <div class="mini-cart-edit">
+                                  <a class="delete-mini-cart-item" href="#" v-on:click="deleteFromCart(cart.id,$event)"><i class="fa fa-trash-o"></i></a>
+                                </div>
+                                <div class="mini-cart-thumb">
+                                  <a href="#"><img v-bind:src="cart.image"></a>
+                                </div>
+                                <div class="mini-cart-info">
+                                  <h3><a href="#">{{cart.product_title + " " + cart.item_title}}</a></h3>
+                                  <div class="info-price">
+                                    <span>{{_ToPersianCurrency(cart.discounted_price)}}</span>
+                                    <del>{{_ToPersianCurrency(cart.main_price)}}</del>
+                                  </div>
+                                  <div class="qty-product">
+                                    <span class="qty-down" v-on:click="decreaseTotal(cart.id)">-</span>
+                                    <span class="qty-num">{{_ToPersian(cart.current_quantity)}}</span>
+                                    <span class="qty-up" v-on:click="increaseTotal(cart.id)">+</span>
+                                  </div>
+                                </div>
+                              </li>
+                            </template>
+
                           </ul>
-      										<div class="mini-cart-total">
-      											<label>قیمت نهایی</label>
-      											<span>۶۴۰،۰۰۰ تومان</span>
-      										</div>
-      										<div class="mini-cart-button">
-      											<a class="mini-cart-view" href="#">مشاهده سبد خرید</a>
-      											<a class="mini-cart-checkout" href="#">پرداخت</a>
-      										</div>
-      									</div>
-                      {%endraw%}
+                        <div class="mini-cart-total">
+                          <label>قیمت نهایی</label>
+                          <span>{{_ToPersianCurrency(cart_final_price)}} تومان </span>
+                        </div>
+                        <div class="mini-cart-button">
+                          <a class="mini-cart-view" href="/cart">مشاهده سبد خرید</a>
+                          <a class="mini-cart-checkout" href="#">پرداخت</a>
+                        </div>
+                        {%endraw%}
+                      </div>
       							</div>
       							<!-- End Mini Cart -->
       						</div>
@@ -470,10 +468,10 @@
                     <h2 class="title14">تماس با بیدبازی</h2>
                     <p class="formule-address">
                       <!-- شهرک غرب – بلوار دادمان – نبش هرمزان – برج طوبی – طبقه شانزدهم – واحد ۳ -->
-                      تهران - تهران - تهران
+                    تهران - خیابان وزرا - کوچه ششم - کوچه دل افروز - پلاک ۴ واحد ۳
                     </p>
                     <!-- <p class="formule-phone">۰۲۱-۹۶۶۶۷۵۰۱</p> -->
-                    <p class="formule-phone">۰۲۱-۱۱۱۱۱۱۱۱۱۱۱۱۱۱۱</p>
+                    <p class="formule-phone">۰۲۱-۸۸۷۱۱۶۷</p>
                     <!-- <p class="formule-email"><a href="mailto:info@bidbazi.com">info@bidbazi.com</a></p> -->
                     <p class="formule-email"><a href="mailto:info@bidbazi.ir">info@bidbazi.ir</a></p>
                   </div>
@@ -502,7 +500,7 @@
         {% endblock %}
       </div>
   </div>
-  
+
   <a href="#" class="radius scroll-top active"><i class="fa fa-angle-up" aria-hidden="true"></i></a>
 
   <div id="myModal" class="modal">
