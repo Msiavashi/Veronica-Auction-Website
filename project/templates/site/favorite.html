@@ -1,29 +1,34 @@
 {% extends 'site/layout.html' %}
 {% block title %} بیدبازی | علاقمندی های شما{% endblock %}
 {% block content %}
+
 <div class="content-page page-product-hot-deal">
-	<div class="container">
-		<div class="boxed-slider radius">
-			<div class="wrap-item" data-itemscustom="[[0,1]]" data-pagination="false" data-navigation="true"  data-bind="foreach:ads">
-				<div class="banner-shop">
-					<div class="banner-shop-thumb">
-						<a href="#"><img data-bind="attr:{src : ad_image_path + ClearifyNames(advertisement.images)[0]}"></a>
-					</div>
-					<div class="banner-shop-info text-left">
-						<h2><a href="#" data-bind="text: advertisement.title"></a></h2>
-						<p class="title30 color">تخفیف: <span>تا </span> <span data-bind="text:ToPersian(advertisement.discount)"></span> ٪ <span> قیمت</span></p>
-						<a data-bind="attr:{href : '/view/auction/'+id},text:advertisement.link_title" class="btn-rect diswe white bg-color radius"><span>ثبت نام در حراجی</span></a>
-					</div>
+	<div class="container" id="app">
+		<div v-if="ads">
+			<div class="boxed-slider radius">
+				<div class="wrap-item" data-itemscustom="[[0,1]]" data-pagination="false" data-navigation="true">
+					<template v-for="item in ads">
+						{%raw%}
+						<div class="banner-shop">
+							<div class="banner-shop-thumb">
+								<a href="#"><img v-bind:src="prepare_ad_images(item.advertisement.images)"></a>
+							</div>
+							<div class="banner-shop-info text-left">
+								<h2><a href="#">{{item.advertisement.title}}</a></h2>
+								<p class="title30 color">تخفیف : تا {{_ToPersian(item.advertisement.discount)}}٪ قیمت </p>
+								<a v-bind:href= "'/view/auction/'+item.id" class="btn-rect diswe white bg-color radius">{{item.advertisement.link_title}}</a>
+							</div>
+						</div>
+						{%endraw%}
+					</template>
 				</div>
-				<!-- ko text: triggerSlider($($element.parentElement)) -->
-				<!-- /ko -->
 			</div>
 		</div>
 
 		<!-- End Banner -->
 
 		<div class="bread-crumb radius">
-			<a href="/">خانه</a><span>علاقمندی ها</span>
+			<a href="/">خانه</a><span>{%raw%}{{category_title}}{%endraw%}</span>
 		</div>
 
 		<!-- End Bread Crumb -->
@@ -32,19 +37,19 @@
 			<div class="pull-left">
 				<div class="sort-bar select-box">
 					<label>مرتب سازی بر اساس:</label>
-					<select>
-						<option value="">قیمت</option>
-						<option value="">زمان</option>
+					<select v-model="ordering" v-on:change="orderBy">
+						<option value="price">قیمت</option>
+						<option value="time">زمان</option>
 					</select>
 				</div>
 			</div>
 			<div class="pull-right">
 				<div class="show-bar select-box">
-					<label>تعداد نمایش:</label>
-					<select>
-						<option value="">۱۰</option>
-						<option value="">۲۰</option>
-						<option value="">۳۰</option>
+					<label>تعداد:</label>
+					<select v-model="sortingTotal" v-on:change="sortByTotal">
+						<option value="5">۵</option>
+						<option value="10">۱۰</option>
+						<option value="15">۱۵</option>
 					</select>
 				</div>
 			</div>
@@ -53,183 +58,315 @@
 		<!-- End Sort PagiBar -->
 
 		<div class="list-product-hot-deal">
-			<div class="row" data-bind="foreach:auctions">
-				<div class="col-md-3 col-sm-4 col-xs-12">
+			<div class="row">
+
+				<template v-for="auction in auctions">
+					<div class="col-md-3 col-sm-4 col-xs-12">
+					{%raw%}
 					<div class="item-product item-pro-hotdeal">
-						<div class="deal-clock bg-color" data-bind="if:{ deadline } ">
+						<div class="deal-clock bg-color">
 							<span>زمان باقیمانده: </span>
-							<div class="flash-countdown timer" data-bind="attr:{'data-timer':deadline}"></div>
+							<div v-flashtimer class="flash-countdown timer" v-bind:data-timer ="auction.remained_time"></div>
 						</div>
 						<div class="product-thumb">
 							<a href="#" class="product-thumb-link">
-								<img data-bind="attr:{src:image}" alt="">
+								<img v-bind:src="auction.image" alt="">
 							</a>
-							<a data-bind="attr:{href:link}" class="quickview-link plus fancybox.iframe"><span>مشاهده سریع</span></a>
+							<a v-bind:href = "auction.instantview_link" class="quickview-link plus fancybox.iframe"><span>مشاهده سریع</span></a>
 
 							<div class="product-extra-link">
-								<a class="addcart-link" href="#"><input type="hidden" data-bind="attr:{value : item_id}"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
-								<a href="#" class="wishlist-link"><input type="hidden" data-bind="attr:{value : id}"><i class="fa fa-heart-o" aria-hidden="true"></i></a>
+								<a class="addcart-link" href="#" v-on:click="addToCart(auction.item_id,$event)"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
+								<a href="#" v-on:click="addToWish(auction.id,$event)" class="wishlist-link"><i class="fa fa-heart-o" aria-hidden="true"></i></a>
 							</div>
 						</div>
 						<div class="product-info">
-							<h3 class="product-title"><a data-bind="attr:{href:showlink},text:title"></a></h3>
+							<h3 class="product-title"><a v-bind:href="auction.auctionview_link">{{auction.title}}</a></h3>
 							<div class="info-pro-hotdeal">
 								<div class="deal-percent">
 									<span>شروع حراجی:</span>
-									<span data-bind="text:base_price"></span>
+									<span>{{auction.base_price}}</span>
 								</div>
 								<div class="product-price">
 									<del><span>قیمت محصول</span></del>
-									<ins><span data-bind="text:price"></span> تومان </ins>
+									<ins><span>{{auction.price}}</span> تومان </ins>
 								</div>
 								<div class="store-process">
-									<div class="percent-store" style="width:45%"></div>
-									<span class="product-instock">۱۰ ثانیه</span>
+									<div class="percent-store" v-bind:style="auction.remained_percent"></div>
+									<span class="product-instock">{{_ToPersian(auction.remained_time)}} ثانیه</span>
 								</div>
 							</div>
 						</div>
 
 					</div>
-				</div>
-				<!-- ko text: triggerFlashTimer() -->
-				<!-- /ko -->
+					{%endraw%}
+					</div>
+				</template>
+
 			</div>
 
 		</div>
-		<div class="btn-loadmore"><a href="#"><i aria-hidden="true" class="fa fa-spinner fa-spin"></i></a></div>
+
+
+		<!-- <div class="btn-loadmore"><a href="#"><i aria-hidden="true" class="fa fa-spinner fa-spin"></i></a></div> -->
+
+		<!-- <div><i aria-hidden="true" class="fa fa-spinner fa-spin"></i></div>
+		element.style {
+    border: 1px dashed;
+    text-align: center;
+    opacity: 90;
+    margin: 0px;
+    padding: 0px;
+    background: #ddd;
+    /* width: auto; */
+    /* height: 100px; */
+    padding: 50px;
+    position: relative;
+    /* align-content: center; */
+		} -->
 	</div>
 </div>
-
-
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-
 <script>
 
-var ads = [];
-var auctions = [];
+	start_loading(loading_element);
 
+	app = new Vue({
 
-function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,showlink,item_id) {
-    var self = this;
-		self.id = id;
-		self.title = ko.observable(title);
-		self.description = ko.observable(description);
-		self.deadline = ko.observable(deadline);
-		self.participant_count = ko.observable(participant_count);
-		self.max_members = ko.observable(max_members);
-		self.base_price = ko.observable(base_price);
-		self.max_price = ko.observable(max_price);
-		self.price = ko.observable(price);
-		self.image = ko.observable(images);
-		self.link = ko.observable(link);
-		self.showlink = ko.observable(showlink);
-		self.item_id = ko.observable(item_id);
-}
+		el : "#app",
 
-function dealModel() {
+		data:{
+			ads : [],
+			auctions : [] ,
+			category_title : "علاقمندی های شما",
+			order_by_index : 0,
+			total_index : 0,
+			interval:null,
+			sortingTotal :"5",
+			ordering :"price",
+		},
+		methods:{
+			prepare_ad_images(images){
+				return ad_image_path + ClearifyNames(images)[0];
+			},
+			_ToPersian(number){
+				return ToPersian(number);
+			},
 
-	var self = this;
-	self.ads = ko.observableArray([]);
-	self.auctions = ko.observableArray(auctions);
+			sortByTotal: function() {
+	        start_loading(loading_element);
+					this.auctions = []
+					axios.get("/api/site/favorite/filters/"+this.ordering+"/"+this.sortingTotal+"")
+						.then((response) => {
+							response.data.auctions[0].forEach(auction => {
+								this.auctions.push({
+									id : auction.id,
+									title : auction.title ,
+									description : auction.description ,
+									remained_time : auction.remained_time,
+									from_created : auction.left_from_created,
+									remained_percent : "width:0%",
+									base_price : ToPersian(formatCurrency(auction.base_price)),
+									max_price : ToPersian(formatCurrency(auction.max_price)),
+									price : ToPersian(formatCurrency(auction.item.price)),
+									image : product_image_path + ClearifyNames(auction.item.images)[0],
+									instantview_link : "/instantview/"+ auction.id,
+									auctionview_link : "/view/auction/"+ auction.id,
+									item_id : auction.item.id,
+									likes : auction.likes
+								});
+							});
 
-	$.getJSON("{{url_for('siteauctioncarouselads')}}", function(data) {
-		self.ads(data[0]);
+							stop_loading(loading_element);
+						})
+						.catch((response)=>{
+							console.error(response);
+						});
+	    },
+
+			orderBy: function() {
+	        start_loading(loading_element);
+					this.auctions = []
+					axios.get("/api/user/favorite/filters/"+this.ordering+"/"+this.sortingTotal+"")
+						.then((response) => {
+							response.data.auctions[0].forEach(auction => {
+								this.auctions.push({
+									id : auction.id,
+									title : auction.title ,
+									description : auction.description ,
+									remained_time : auction.remained_time,
+									from_created : auction.left_from_created,
+									remained_percent : "width:0%",
+									base_price : ToPersian(formatCurrency(auction.base_price)),
+									max_price : ToPersian(formatCurrency(auction.max_price)),
+									price : ToPersian(formatCurrency(auction.item.price)),
+									image : product_image_path + ClearifyNames(auction.item.images)[0],
+									instantview_link : "/instantview/"+ auction.id,
+									auctionview_link : "/view/auction/"+ auction.id,
+									item_id : auction.item.id,
+									likes : auction.likes
+								});
+							});
+
+							stop_loading(loading_element);
+						})
+						.catch((response)=>{
+							console.error(response);
+						});
+	    },
+
+			addToCart:function(item_id,event){
+				event.preventDefault();
+				axios.post("{{url_for('usercartorder')}}",
+					{
+						"item_id": item_id,
+						"total":1
+					},
+					{
+						headers:
+						{
+							'Content-Type': 'application/json'
+						}
+					}).then((response) => {
+						if(response.data.length > 0){
+							myapp.mycarts = []
+							console.log(response.data);
+							response.data.forEach(cart => {
+								myapp.mycarts.push({
+	                id : cart[0].id,
+	                item_title : cart[0].item.title,
+									product_title : cart[0].item.product.title,
+									item_id : cart[0].item.id ,
+	                image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+	                discounted_price : cart[0].item.price - cart[0].item.discount,
+									main_price : cart[0].item.price ,
+	                min_quantity : 1,
+	                max_quantity : cart[0].item.quantity,
+	                current_quantity : cart[0].total,
+								});
+							});
+	            myapp.total_carts = ToPersian(myapp.mycarts.length);
+							myapp.total_changed = true;
+							alert('محصول مورد نظر شما به سبد خرید اضافه شد');
+
+						}
+					})
+					.catch((error)=>{
+						alert(error.response.data.reason)
+					});
+			},
+
+			addToWish:function(auction_id,event){
+				event.preventDefault();
+				axios.post("{{url_for('userauctionlikes')}}",
+					{
+						"auction_id": auction_id
+					},
+					{
+						headers:
+						{
+							'Content-Type': 'application/json'
+						}
+					}).then((response) => {
+						alert(response.data[0].message)
+						var elementPos = this.auctions.map(function(x) {return x.id; }).indexOf(auction_id);
+						this.auctions.splice( elementPos, 1 );
+					})
+					.catch((error)=>{
+						alert(error.response.data.message);
+					});
+			}
+		},
+		mounted: function(){
+			axios.get("/api/user/favorite/filters/"+this.ordering+"/"+this.sortingTotal+"")
+				.then((response) => {
+
+					response.data[0].forEach(auction => {
+						this.auctions.push({
+							id : auction.id,
+							title : auction.title ,
+							description : auction.description ,
+							remained_time : auction.remained_time,
+							from_created : auction.left_from_created,
+							remained_percent : "width:0%",
+							base_price : ToPersian(formatCurrency(auction.base_price)),
+							max_price : ToPersian(formatCurrency(auction.max_price)),
+							price : ToPersian(formatCurrency(auction.item.price)),
+							image : product_image_path + ClearifyNames(auction.item.images)[0],
+							instantview_link : "/instantview/"+ auction.id,
+							auctionview_link : "/view/auction/"+ auction.id,
+							item_id : auction.item.id,
+							likes : auction.likes
+						});
+					});
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+
+			axios.get("{{url_for('siteauctioncarouselads')}}")
+				.then((response) => {
+					this.ads = response.data[0];
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+
+			this.interval = setInterval(()=>{
+				this.auctions.forEach(auction => {
+					auction.remained_time -= 1;
+					auction.remained_percent = "width:"+ (auction.remained_time / auction.from_created)*100+"%";
+				});
+			}, 1000);
+		},
+
+		updated:function() {
+			stop_loading(loading_element);
+		},
+
+		directives: {
+
+			flashtimer:{
+				inserted:function(el) {
+
+					if($('.flash-countdown').length>0){
+						$(".flash-countdown").TimeCircles({
+							fg_width: 0.01,
+							bg_width: 1.2,
+							text_size: 0.07,
+							circle_bg_color: "#ffffff",
+							time: {
+								Days: {
+									show: true,
+									text: "",
+									color: "#f9bc02"
+								},
+								Hours: {
+									show: true,
+									text: "",
+									color: "#f9bc02"
+								},
+								Minutes: {
+									show: true,
+									text: "",
+									color: "#f9bc02"
+								},
+								Seconds: {
+									show: true,
+									text: "",
+									color: "#f9bc02"
+								}
+							}
+						});
+					}
+
+				}
+			},
+
+		}
+
 	});
-
-	$.getJSON("{{url_for('userauctionlikes')}}", function( data ) {
-		console.log(data);
-		$.each(data[0],function(key,val){
-			auction = new Auction(
-				val.id,
-				val.title ,
-				val.description ,
-				val.remained_time,
-				ToPersian(val.participants.length),
-			  ToPersian(val.max_members),
-				ToPersian(formatCurrency(val.base_price)),
-				ToPersian(formatCurrency(val.max_price)),
-				ToPersian(formatCurrency(val.item.price)),
-				product_image_path + ClearifyNames(val.item.images)[0],
-				"/instantview/"+ val.id,
-				"/view/auction/"+ val.id,
-				val.item.id,
-			);
-			auctions.push(auction);
-		});
-		self.auctions(auctions);
-	});
-}
-
-ko.applyBindings(new dealModel());
-
-$(document).on('click','.addcart-link',function(event) {
-	self = $(this);
-	item_id = parseInt(self.find('input').val());
-
-	var data = JSON.stringify({
-  	"item_id": item_id,
-		"total":1
-	});
-
-	var xhr = new XMLHttpRequest();
-	xhr.withCredentials = true;
-
-	xhr.open("POST", "{{url_for('usercartorder')}}");
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.setRequestHeader("Cache-Control", "no-cache");
-	xhr.send(data);
-	xhr.onreadystatechange = function (oEvent) {
-    if (xhr.readyState === 4) {
-				data = JSON.parse(xhr.responseText);
-        if (xhr.status === 200) {
-					carts = []
-			    $.each(data,function(key,val) {
-						if(val[0])
-				      carts.push(val[0]);
-			    });
-
-			    mycart(carts);
-			    total_carts(ToPersian(carts.length));
-					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
-        } else {
-           alert(data.reason)
-        }
-    	}
-		};
-	});
-
-
-	$(document).on('click','.wishlist-link',function(event) {
-		self = $(this);
-
-		var data = JSON.stringify({
-	  	"auction_id": parseInt(self.find('input').val()),
-		});
-
-		var xhr = new XMLHttpRequest();
-		xhr.withCredentials = true;
-
-		xhr.open("DELETE", "{{url_for('userauctionlikes')}}");
-		xhr.setRequestHeader("Content-Type", "application/json");
-		xhr.setRequestHeader("Cache-Control", "no-cache");
-		xhr.send(data);
-		xhr.onreadystatechange = function (oEvent) {
-	    if (xhr.readyState === 4) {
-					data = JSON.parse(xhr.responseText);
-	        if (xhr.status === 200) {
-						console.log(data);
-						console.log('success');
-	        } else {
-					console.log(data);
-					 console.log('error');
-					 alert(data.message)
-	        }
-	    	}
-			};
-		});
 
 </script>
-
 {% endblock scripts %}

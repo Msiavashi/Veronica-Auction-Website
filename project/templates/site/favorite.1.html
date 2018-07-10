@@ -1,0 +1,235 @@
+{% extends 'site/layout.html' %}
+{% block title %} بیدبازی | علاقمندی های شما{% endblock %}
+{% block content %}
+<div class="content-page page-product-hot-deal">
+	<div class="container">
+		<div class="boxed-slider radius">
+			<div class="wrap-item" data-itemscustom="[[0,1]]" data-pagination="false" data-navigation="true"  data-bind="foreach:ads">
+				<div class="banner-shop">
+					<div class="banner-shop-thumb">
+						<a href="#"><img data-bind="attr:{src : ad_image_path + ClearifyNames(advertisement.images)[0]}"></a>
+					</div>
+					<div class="banner-shop-info text-left">
+						<h2><a href="#" data-bind="text: advertisement.title"></a></h2>
+						<p class="title30 color">تخفیف: <span>تا </span> <span data-bind="text:ToPersian(advertisement.discount)"></span> ٪ <span> قیمت</span></p>
+						<a data-bind="attr:{href : '/view/auction/'+id},text:advertisement.link_title" class="btn-rect diswe white bg-color radius"><span>ثبت نام در حراجی</span></a>
+					</div>
+				</div>
+				<!-- ko text: triggerSlider($($element.parentElement)) -->
+				<!-- /ko -->
+			</div>
+		</div>
+
+		<!-- End Banner -->
+
+		<div class="bread-crumb radius">
+			<a href="/">خانه</a><span>علاقمندی ها</span>
+		</div>
+
+		<!-- End Bread Crumb -->
+
+		<div class="sort-pagi-bar clearfix">
+			<div class="pull-left">
+				<div class="sort-bar select-box">
+					<label>مرتب سازی بر اساس:</label>
+					<select>
+						<option value="">قیمت</option>
+						<option value="">زمان</option>
+					</select>
+				</div>
+			</div>
+			<div class="pull-right">
+				<div class="show-bar select-box">
+					<label>تعداد نمایش:</label>
+					<select>
+						<option value="">۱۰</option>
+						<option value="">۲۰</option>
+						<option value="">۳۰</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- End Sort PagiBar -->
+
+		<div class="list-product-hot-deal">
+			<div class="row" data-bind="foreach:auctions">
+				<div class="col-md-3 col-sm-4 col-xs-12">
+					<div class="item-product item-pro-hotdeal">
+						<div class="deal-clock bg-color" data-bind="if:{ deadline } ">
+							<span>زمان باقیمانده: </span>
+							<div class="flash-countdown timer" data-bind="attr:{'data-timer':deadline}"></div>
+						</div>
+						<div class="product-thumb">
+							<a href="#" class="product-thumb-link">
+								<img data-bind="attr:{src:image}" alt="">
+							</a>
+							<a data-bind="attr:{href:link}" class="quickview-link plus fancybox.iframe"><span>مشاهده سریع</span></a>
+
+							<div class="product-extra-link">
+								<a class="addcart-link" href="#"><input type="hidden" data-bind="attr:{value : item_id}"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
+								<a href="#" class="wishlist-link"><input type="hidden" data-bind="attr:{value : id}"><i class="fa fa-heart-o" aria-hidden="true"></i></a>
+							</div>
+						</div>
+						<div class="product-info">
+							<h3 class="product-title"><a data-bind="attr:{href:showlink},text:title"></a></h3>
+							<div class="info-pro-hotdeal">
+								<div class="deal-percent">
+									<span>شروع حراجی:</span>
+									<span data-bind="text:base_price"></span>
+								</div>
+								<div class="product-price">
+									<del><span>قیمت محصول</span></del>
+									<ins><span data-bind="text:price"></span> تومان </ins>
+								</div>
+								<div class="store-process">
+									<div class="percent-store" style="width:45%"></div>
+									<span class="product-instock">۱۰ ثانیه</span>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<!-- ko text: triggerFlashTimer() -->
+				<!-- /ko -->
+			</div>
+
+		</div>
+		<div class="btn-loadmore"><a href="#"><i aria-hidden="true" class="fa fa-spinner fa-spin"></i></a></div>
+	</div>
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+
+<script>
+
+var ads = [];
+var auctions = [];
+
+
+function Auction(id,title,description,deadline,participant_count,max_members,base_price,max_price,price,images,link,showlink,item_id) {
+    var self = this;
+		self.id = id;
+		self.title = ko.observable(title);
+		self.description = ko.observable(description);
+		self.deadline = ko.observable(deadline);
+		self.participant_count = ko.observable(participant_count);
+		self.max_members = ko.observable(max_members);
+		self.base_price = ko.observable(base_price);
+		self.max_price = ko.observable(max_price);
+		self.price = ko.observable(price);
+		self.image = ko.observable(images);
+		self.link = ko.observable(link);
+		self.showlink = ko.observable(showlink);
+		self.item_id = ko.observable(item_id);
+}
+
+function dealModel() {
+
+	var self = this;
+	self.ads = ko.observableArray([]);
+	self.auctions = ko.observableArray(auctions);
+
+	$.getJSON("{{url_for('siteauctioncarouselads')}}", function(data) {
+		self.ads(data[0]);
+	});
+
+	$.getJSON("{{url_for('userauctionlikes')}}", function( data ) {
+		console.log(data);
+		$.each(data[0],function(key,val){
+			auction = new Auction(
+				val.id,
+				val.title ,
+				val.description ,
+				val.remained_time,
+				ToPersian(val.participants.length),
+			  ToPersian(val.max_members),
+				ToPersian(formatCurrency(val.base_price)),
+				ToPersian(formatCurrency(val.max_price)),
+				ToPersian(formatCurrency(val.item.price)),
+				product_image_path + ClearifyNames(val.item.images)[0],
+				"/instantview/"+ val.id,
+				"/view/auction/"+ val.id,
+				val.item.id,
+			);
+			auctions.push(auction);
+		});
+		self.auctions(auctions);
+	});
+}
+
+ko.applyBindings(new dealModel());
+
+$(document).on('click','.addcart-link',function(event) {
+	self = $(this);
+	item_id = parseInt(self.find('input').val());
+
+	var data = JSON.stringify({
+  	"item_id": item_id,
+		"total":1
+	});
+
+	var xhr = new XMLHttpRequest();
+	xhr.withCredentials = true;
+
+	xhr.open("POST", "{{url_for('usercartorder')}}");
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.setRequestHeader("Cache-Control", "no-cache");
+	xhr.send(data);
+	xhr.onreadystatechange = function (oEvent) {
+    if (xhr.readyState === 4) {
+				data = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+					carts = []
+			    $.each(data,function(key,val) {
+						if(val[0])
+				      carts.push(val[0]);
+			    });
+
+			    mycart(carts);
+			    total_carts(ToPersian(carts.length));
+					alert('محصول مورد نظر شما به سبد خرید اضافه شد')
+        } else {
+           alert(data.reason)
+        }
+    	}
+		};
+	});
+
+
+	$(document).on('click','.wishlist-link',function(event) {
+		self = $(this);
+
+		var data = JSON.stringify({
+	  	"auction_id": parseInt(self.find('input').val()),
+		});
+
+		var xhr = new XMLHttpRequest();
+		xhr.withCredentials = true;
+
+		xhr.open("DELETE", "{{url_for('userauctionlikes')}}");
+		xhr.setRequestHeader("Content-Type", "application/json");
+		xhr.setRequestHeader("Cache-Control", "no-cache");
+		xhr.send(data);
+		xhr.onreadystatechange = function (oEvent) {
+	    if (xhr.readyState === 4) {
+					data = JSON.parse(xhr.responseText);
+	        if (xhr.status === 200) {
+						console.log(data);
+						console.log('success');
+	        } else {
+					console.log(data);
+					 console.log('error');
+					 alert(data.message)
+	        }
+	    	}
+			};
+		});
+
+</script>
+
+{% endblock scripts %}

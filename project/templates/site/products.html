@@ -1,11 +1,8 @@
 {% extends 'site/layout.html' %}
 {% block title %} بیدبازی | دسته بندی ها {% endblock %}
 {% block content %}
-<input type="hidden" id="category" value="{{category_id}}">
-
 <div class="content-page page-product-hot-deal">
 	<div class="container" id="app">
-
 		<div v-if="ads">
 			<div class="boxed-slider radius">
 				<div class="wrap-item" data-itemscustom="[[0,1]]" data-pagination="false" data-navigation="true">
@@ -78,7 +75,7 @@
 
 							<div class="product-extra-link">
 								<a class="addcart-link" href="#" v-on:click="addToCart(auction.item_id,$event)"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
-								<a href="#" class="wishlist-link"><input type="hidden" v-bind:value = "auction.id"><i class="fa fa-heart" aria-hidden="true"></i></a>
+								<a href="#" v-on:click="addToWish(auction.id,$event)" class="wishlist-link"><input type="hidden" v-bind:value = "auction.id"><i class="fa fa-heart" aria-hidden="true"></i></a>
 							</div>
 						</div>
 						<div class="product-info">
@@ -127,11 +124,9 @@
 		} -->
 	</div>
 </div>
-
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-
 <script>
 
 	start_loading(loading_element);
@@ -258,15 +253,34 @@
 
 						}
 					})
-					.catch((response)=>{
-						console.error(response);
+					.catch((error)=>{
+						alert(error.response.data.reason);
+					});
+			},
+
+			addToWish:function(auction_id,event){
+				event.preventDefault();
+				axios.post("{{url_for('userauctionlikes')}}",
+					{
+						"auction_id": auction_id
+					},
+					{
+						headers:
+						{
+							'Content-Type': 'application/json'
+						}
+					}).then((response) => {
+							alert('محصول موردنظر به علاقمندی های شما اضافه شد');
+					})
+					.catch((error)=>{
+						alert(error.response.data.message);
 					});
 			}
 
 		},
 		mounted: function(){
 			var vm = this;
-			axios.get("/api/site/category/{{category_id}}/product/filters/price/10")
+			axios.get("/api/site/category/{{category_id}}/product/filters/"+this.ordering+"/"+this.sortingTotal+"")
 				.then((response) => {
 					response.data.auctions[0].forEach(auction => {
 						this.auctions.push({
@@ -355,36 +369,6 @@
 		}
 
 	});
-
-	$(document).on('click','.wishlist-link',function(event) {
-		self = $(this);
-
-		var data = JSON.stringify({
-	  	"auction_id": parseInt(self.find('input').val()),
-		});
-
-
-		var xhr = new XMLHttpRequest();
-		xhr.withCredentials = true;
-
-		xhr.open("POST", "{{url_for('userauctionlikes')}}");
-		xhr.setRequestHeader("Content-Type", "application/json");
-		xhr.setRequestHeader("Cache-Control", "no-cache");
-		xhr.send(data);
-		xhr.onreadystatechange = function (oEvent) {
-	    if (xhr.readyState === 4) {
-					data = JSON.parse(xhr.responseText);
-	        if (xhr.status === 200) {
-						console.log(data);
-						console.log('success');
-	        } else {
-					console.log(data);
-					 console.log('error');
-					 alert(data.message)
-	        }
-	    	}
-			};
-		});
 
 </script>
 {% endblock scripts %}

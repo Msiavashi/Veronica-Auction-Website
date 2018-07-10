@@ -57,7 +57,7 @@ class User(Base,UserMixin):
     auctions = db.relationship('Auction', lazy='dynamic', secondary='user_auction_participations',back_populates='participants')
 
     auction_views = db.relationship('Auction', secondary ='user_auction_views', back_populates='views')
-    auction_likes = db.relationship('Auction', secondary ='user_auction_likes', back_populates='likes')
+    auction_likes = db.relationship('Auction', secondary ='user_auction_likes', back_populates='likes',lazy='dynamic')
 
     def __str__(self):
         if(self.first_name and self.last_name):

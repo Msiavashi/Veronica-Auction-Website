@@ -115,6 +115,7 @@ api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:
 api.add_resource(User_API.UserInformation, '/user/information')
 api.add_resource(User_API.UserContactUs, '/user/contactus')
 api.add_resource(User_API.UserAuctionLikes, '/user/auction/likes')
+api.add_resource(User_API.UserFavoriteFilters, '/user/favorite/filters/<order_by_price>/<int:total>')
 # api.add_resource(User_API.CartOrder, '/cart/order')
 api.add_resource(MellatPayment_API.MellatGateway, '/mellat/payment/gateway')
 api.add_resource(MellatPayment_API.MellatGatewayCallBack, '/user/mellat/callback')

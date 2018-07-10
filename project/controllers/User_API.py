@@ -10,7 +10,6 @@ from ..model import *
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash, session
 import json
 from project import app
-from datetime import datetime
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.user_message import UserMessage
 from ..model.user_gift import *
@@ -23,6 +22,8 @@ from definitions import MESSAGE_SUBJECTS
 from definitions import MAXIMUM_ORDERS
 import copy
 import random
+from datetime import datetime
+
 
 
 class PaymentsInfo(Resource):
@@ -397,10 +398,17 @@ class UserAuctionLikes(Resource):
             data = request.get_json(force=True)
             auction_id = data['auction_id']
             auction = Auction.query.get(auction_id)
-            auction.likes.append(current_user)
-            db.session.add(auction)
-            db.session.commit()
-            return make_response(jsonify({"success":"true","message":"حراجی به علاقمندی های شما اضافه شد"}),200)
+            if(not auction in current_user.auction_likes):
+                auction.likes.append(current_user)
+                db.session.add(auction)
+                db.session.commit()
+                return make_response(jsonify({"success":"true","message":"حراجی به علاقمندی های شما اضافه شد"}),200)
+            else:
+                auction.likes.remove(current_user)
+                db.session.add(auction)
+                db.session.commit()
+                msg = "حراجی از علاقمندی های شما حذف شد"
+                return make_response(jsonify({"success":"true","message":msg},200))
         else:
             return make_response(jsonify({"message":"برای لایک کردن باید به سایت وارد شوید"}),400)
 
@@ -417,6 +425,24 @@ class UserAuctionLikes(Resource):
         else:
             return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
 
+class UserFavoriteFilters(Resource):
+    def get(self,order_by_price,total):
+        now = datetime.now()
+        result = None
+        if order_by_price == "price":
+            result = current_user.auction_likes.filter(Auction.start_date >= now).join(Item).order_by("price").limit(total)
+        else:
+            result = current_user.auction_likes.filter(Auction.start_date >= now).order_by("start_date").limit(total)
+
+        auctions=[]
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
+            auction.left_from_created = (auction.created_at - now).seconds
+            auctions.append(auction)
+
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class CheckOutInit(Resource):
     @login_required
