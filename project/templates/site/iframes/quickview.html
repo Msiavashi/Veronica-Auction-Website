@@ -136,8 +136,8 @@
             </div>
             <div class="detail-extralink mt-0">
               <div class="product-extra-link2">
-                <a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" data-bind="attr:{value:auction.item.id}"></i> اضافه به سبد</a>
-                <a class="wishlist-link2" href="#" id="like_auction"><i aria-hidden="true" class="fa fa-heart"></i></a>
+                <a class="addcart-link2" href="#"  v-on:click="addToCart(auctionItemId,$event)"><i class="fa fa-shopping-basket" aria-hidden="true"></i> اضافه به سبد</a>
+                <a class="wishlist-link2" href="#" v-on:click="addToWish(auctionId,$event)"><i aria-hidden="true" class="fa fa-heart"></i></a>
                 <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span>تومان</a>
               </div>
             </div>
@@ -170,6 +170,8 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/vuex.js')}}"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue-socket.io@2.1.1-b/dist/build.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/TimeCircles.js')}}"></script>
+
 
 <script>
 
@@ -207,6 +209,8 @@ var app = new Vue({
 		auctionMaxMembers: 0,
 		auctionRatio: 0,
 		auctionMaxPrice: 0,
+		auctionId: 0,
+		auctionItemId: 0,
 		auctionTitle: "",
 		auctionParticipants: [],
 		auction: {},
@@ -249,6 +253,8 @@ var app = new Vue({
 			this.auctionDescription = auction.description;
 			this.auctionMaxPrice = auction.max_price
 			this.auctionRatio = auction.ratio;
+      this.auctionId = auction.id;
+      this.auctionItemId = auction.item.id;
 			this.auctionTitle = auction.title;
 			this.auctionMaxMembers = auction.max_members;
 			this.auctionParticipants = auction.participants;
@@ -264,7 +270,47 @@ var app = new Vue({
 
 		setProductInformation: function(product){
 
-		}
+		},
+    addToCart:function(item_id,event){
+      event.preventDefault();
+      axios.post("{{url_for('usercartorder')}}",
+        {
+          "item_id": item_id,
+          "total":1
+        },
+        {
+          headers:
+          {
+            'Content-Type': 'application/json'
+          }
+        }).then((response) => {
+          if(response.data.length > 0){
+            alert('محصول مورد نظر شما به سبد خرید اضافه شد');
+          }
+        })
+        .catch((error)=>{
+          alert(error.response.data.reason);
+        });
+    },
+
+    addToWish:function(auction_id,event){
+      event.preventDefault();
+      axios.post("{{url_for('userauctionlikes')}}",
+        {
+          "auction_id": auction_id
+        },
+        {
+          headers:
+          {
+            'Content-Type': 'application/json'
+          }
+        }).then((response) => {
+            alert('محصول موردنظر به علاقمندی های شما اضافه شد');
+        })
+        .catch((error)=>{
+          alert(error.response.data.message);
+        });
+    }
 	},
 
 	beforeCreate: function(){
@@ -333,6 +379,36 @@ var app = new Vue({
 
 	// countdown
 	mounted: function(){
+    if($('.flash-countdown').length>0){
+  		$(".flash-countdown").TimeCircles({
+  			fg_width: 0.01,
+  			bg_width: 1.2,
+  			text_size: 0.07,
+  			circle_bg_color: "#ffffff",
+  			time: {
+  				Days: {
+  					show: false,
+  					text: "",
+  					color: "#f9bc02"
+  				},
+  				Hours: {
+  					show: true,
+  					text: "",
+  					color: "#f9bc02"
+  				},
+  				Minutes: {
+  					show: true,
+  					text: "",
+  					color: "#f9bc02"
+  				},
+  				Seconds: {
+  					show: true,
+  					text: "",
+  					color: "#f9bc02"
+  				}
+  			}
+  		});
+  	}
 			// this.interval = setInterval(()=>{
 			// 	var seconds = moment.duration(this.remainingTime).asSeconds() - 1;
 			// 	this.remainingTime = moment.utc(seconds*1000).format('HH:mm:ss');

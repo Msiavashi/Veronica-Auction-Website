@@ -145,8 +145,8 @@
 									</div>
 									<div class="detail-extralink mt-0">
 										<div class="product-extra-link2">
-											<a class="addcart-link2" href="#"><i class="fa fa-shopping-basket" aria-hidden="true" id="add_to_bag"><input type="hidden" v-bind:value ="auctionItemId"></i> اضافه به سبد</a>
-											<a class="wishlist-link2" href="#"><i aria-hidden="true" class="fa fa-heart"></i></a>
+											<a class="addcart-link2" href="#" v-on:click="addToCart(auctionItemId,$event)"><i class="fa fa-shopping-basket" aria-hidden="true"></i> اضافه به سبد</a>
+											<a class="wishlist-link2" href="#" v-on:click="addToWish(auctionId,$event)"><i aria-hidden="true" class="fa fa-heart"></i></a>
 											<a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span> تومان</a>
 										</div>
 									</div>
@@ -286,6 +286,7 @@ var app = new Vue({
 		auctionBasePrice: 0,
 		auctionItemPrice: 0,
 		itemProductDesciption:"",
+		auctionId: 0,
 		auctionItemId: 0,
 		auctionDescription: "",
 		auctionMaxMembers: 0,
@@ -328,6 +329,7 @@ var app = new Vue({
 			this.activeImage = this.images[0];
 			this.auctionBasePrice = auction.base_price;
 			this.auctionItemPrice = auction.item.price;
+			this.auctionId = auction.id;
 			this.auctionItemId = auction.item.id;
 			this.itemProductDesciption = auction.item.product.desciption;
 			this.auctionDescription = auction.description;
@@ -348,6 +350,65 @@ var app = new Vue({
 
 		setProductInformation: function(product){
 
+		},
+		addToCart:function(item_id,event){
+			event.preventDefault();
+			axios.post("{{url_for('usercartorder')}}",
+				{
+					"item_id": item_id,
+					"total":1
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+					if(response.data.length > 0){
+						myapp.mycarts = []
+						console.log(response.data);
+						response.data.forEach(cart => {
+							myapp.mycarts.push({
+								id : cart[0].id,
+								item_title : cart[0].item.title,
+								product_title : cart[0].item.product.title,
+								item_id : cart[0].item.id ,
+								image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+								discounted_price : cart[0].item.price - cart[0].item.discount,
+								main_price : cart[0].item.price ,
+								min_quantity : 1,
+								max_quantity : cart[0].item.quantity,
+								current_quantity : cart[0].total,
+							});
+						});
+						myapp.total_carts = ToPersian(myapp.mycarts.length);
+						myapp.total_changed = true;
+						alert('محصول مورد نظر شما به سبد خرید اضافه شد');
+
+					}
+				})
+				.catch((error)=>{
+					alert(error.response.data.reason);
+				});
+		},
+
+		addToWish:function(auction_id,event){
+			event.preventDefault();
+			axios.post("{{url_for('userauctionlikes')}}",
+				{
+					"auction_id": auction_id
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+						alert('محصول موردنظر به علاقمندی های شما اضافه شد');
+				})
+				.catch((error)=>{
+					alert(error.response.data.message);
+				});
 		}
 	},
 
