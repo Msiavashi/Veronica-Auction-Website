@@ -2,7 +2,7 @@
 {% block title %} بیدبازی | برندگان گذشته {% endblock %}
 {% block content %}
 <div class="content-page">
-	<div class="container">
+	<div class="container" id="app">
 		<div class="top-selling15">
 				<div class="container">
 					<div class="text-center title-box15 wow zoomIn">
@@ -10,35 +10,40 @@
 						<p class="desc wow zoomIn">لیست مشاهده برندگان گذشته در بیدبازی</p>
 					</div>
 					<div class="list-topsale15">
-						<div class="row" data-bind="foreach:offers">
-							<div class="col-md-6 col-sm-6 col-xs-12">
-								<div class="item-product15 wow slideInUp">
-									<div class="row">
-										<div class="col-md-6 col-sm-12 col-xs-6">
-											<div class="product-thumb">
-												<a data-bind="attr:{href: '/view/auction/'+auction.id}" class="product-thumb-link">
-													<img data-bind="attr:{src : images_path+ClearifyNames(auction.item.images)[0]}" alt="">
-												</a>
-											</div>
-										</div>
-										<div class="col-md-6 col-sm-12 col-xs-6">
-											<div class="product-info">
-												<h3 class="product-title"><a data-bind="attr:{href: '/view/auction/'+auction.id},text:auction.title">نام محصول حراجی</a></h3>
-												<div class="product-price">
-													<ins><span data-bind="text: ToPersian(formatCurrency(total_price))"></span>تومان</ins>
-													<del><span data-bind="text : ToPersian(formatCurrency(auction.item.price))"></span>تومان</del>
+						<div class="row">
+							<template v-for="offer in offers">
+								{%raw%}
+									<div class="col-md-6 col-sm-6 col-xs-12">
+									<div class="item-product15 wow slideInUp">
+										<div class="row">
+											<div class="col-md-6 col-sm-12 col-xs-6">
+												<div class="product-thumb">
+													<a v-bind:href="_createAuctionLink(offer.auction.id)" class="product-thumb-link">
+														<img v-bind:src="_prepare_auction_images(offer.auction.item.images)" alt="">
+													</a>
 												</div>
-												<p class="desc">تاریخ برگزاری : <span data-bind = "text : new Date(auction.start_date).toLocaleDateString('fa-IR')"></span></p>
-												<p class="desc">تخفیف محصول :<span data-bind="text : ToPersian(formatCurrency(auction.item.price - total_price))"></span></p>
-												<div class="product-extra-link5">
-													<a class="addcart-link" href="#">نام برنده :<span data-bind="text: winner"></span></a>
-													<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-user"></i><span data-bind=" text:ToPersian(auction.participants.length)"></span></a>
+											</div>
+											<div class="col-md-6 col-sm-12 col-xs-6">
+												<div class="product-info">
+													<h3 class="product-title"><a v-bind:href="_createAuctionLink(offer.id)">{{offer.auction.title}}</a></h3>
+													<div class="product-price">
+														<ins>{{_ToPersianCurrency(offer.auction.base_price)}}تومان</ins>
+														<del>{{_ToPersianCurrency(offer.auction.item.price)}}تومان</del>
+													</div>
+													<p class="desc">تاریخ برگزاری : {{_generateDate(offer.auction.start_date)}}</p>
+													<p class="desc">تخفیف محصول :{{_ToPersianCurrency(offer.auction.item.price - offer.total_price)}}</p>
+													<div class="product-extra-link5">
+														<a class="addcart-link" href="#">نام برنده :{{offer.winner}}</a>
+														<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-user"></i>{{_ToPersian(offer.auction.participants.length)}}</a>
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
-							</div>
+								{%endraw%}
+							</template>
+
 						</div>
 					</div>
 				</div>
@@ -50,15 +55,176 @@
 {% block scripts %}
 {{ super() }}
 <script type="text/javascript" src="{{url_for('static',filename='js/libs/masonry.pkgd.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
+
 <script>
 
-var offers = ko.observableArray([]);
-$.getJSON("{{url_for('auctionviewfinished')}}", function(data){
-	console.log(data);
-	offers(data[0]);
-	ko.applyBindings();
-});
+	start_loading(loading_element);
 
+	app = new Vue({
+
+		el : "#app",
+
+		data:{
+			offers : []
+		},
+		methods:{
+			_prepare_auction_images(images){
+				return product_image_path + ClearifyNames(images)[0];
+			},
+			_ToPersianCurrency(number){
+				return ToPersian(formatCurrency(number));
+			},
+			_ToPersian(number){
+				return ToPersian(number);
+			},
+			_generateDate(date){
+				return new persianDate(new Date(date)).format("dddd DD MMMM YYYY");
+			},
+			_createAuctionLink(id){
+				return "/view/auction/"+id;
+			},
+
+			sortByTotal: function() {
+	        start_loading(loading_element);
+					this.auctions = []
+					axios.get("/api/site/favorite/filters/"+this.ordering+"/"+this.sortingTotal+"")
+						.then((response) => {
+							response.data.auctions[0].forEach(auction => {
+								this.auctions.push({
+									id : auction.id,
+									title : auction.title ,
+									description : auction.description ,
+									remained_time : auction.remained_time,
+									from_created : auction.left_from_created,
+									remained_percent : "width:0%",
+									base_price : ToPersian(formatCurrency(auction.base_price)),
+									max_price : ToPersian(formatCurrency(auction.max_price)),
+									price : ToPersian(formatCurrency(auction.item.price)),
+									image : product_image_path + ClearifyNames(auction.item.images)[0],
+									instantview_link : "/instantview/"+ auction.id,
+									auctionview_link : "/view/auction/"+ auction.id,
+									item_id : auction.item.id,
+									likes : auction.likes
+								});
+							});
+
+							stop_loading(loading_element);
+						})
+						.catch((response)=>{
+							console.error(response);
+						});
+	    },
+
+			orderBy: function() {
+	        start_loading(loading_element);
+					this.auctions = []
+					axios.get("/api/user/favorite/filters/"+this.ordering+"/"+this.sortingTotal+"")
+						.then((response) => {
+							response.data.auctions[0].forEach(auction => {
+								this.auctions.push({
+									id : auction.id,
+									title : auction.title ,
+									description : auction.description ,
+									remained_time : auction.remained_time,
+									from_created : auction.left_from_created,
+									remained_percent : "width:0%",
+									base_price : ToPersian(formatCurrency(auction.base_price)),
+									max_price : ToPersian(formatCurrency(auction.max_price)),
+									price : ToPersian(formatCurrency(auction.item.price)),
+									image : product_image_path + ClearifyNames(auction.item.images)[0],
+									instantview_link : "/instantview/"+ auction.id,
+									auctionview_link : "/view/auction/"+ auction.id,
+									item_id : auction.item.id,
+									likes : auction.likes
+								});
+							});
+
+							stop_loading(loading_element);
+						})
+						.catch((response)=>{
+							console.error(response);
+						});
+	    },
+
+			addToCart:function(item_id,event){
+				event.preventDefault();
+				axios.post("{{url_for('usercartorder')}}",
+					{
+						"item_id": item_id,
+						"total":1
+					},
+					{
+						headers:
+						{
+							'Content-Type': 'application/json'
+						}
+					}).then((response) => {
+						if(response.data.length > 0){
+							myapp.mycarts = []
+							console.log(response.data);
+							response.data.forEach(cart => {
+								myapp.mycarts.push({
+	                id : cart[0].id,
+	                item_title : cart[0].item.title,
+									product_title : cart[0].item.product.title,
+									item_id : cart[0].item.id ,
+	                image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+	                discounted_price : cart[0].item.price - cart[0].item.discount,
+									main_price : cart[0].item.price ,
+	                min_quantity : 1,
+	                max_quantity : cart[0].item.quantity,
+	                current_quantity : cart[0].total,
+								});
+							});
+	            myapp.total_carts = ToPersian(myapp.mycarts.length);
+							myapp.total_changed = true;
+							alert('محصول مورد نظر شما به سبد خرید اضافه شد');
+
+						}
+					})
+					.catch((error)=>{
+						alert(error.response.data.reason)
+					});
+			},
+
+			addToWish:function(auction_id,event){
+				event.preventDefault();
+				axios.post("{{url_for('userauctionlikes')}}",
+					{
+						"auction_id": auction_id
+					},
+					{
+						headers:
+						{
+							'Content-Type': 'application/json'
+						}
+					}).then((response) => {
+						alert(response.data[0].message)
+						var elementPos = this.auctions.map(function(x) {return x.id; }).indexOf(auction_id);
+						this.auctions.splice( elementPos, 1 );
+					})
+					.catch((error)=>{
+						alert(error.response.data.message);
+					});
+			}
+		},
+		mounted: function(){
+
+			axios.get("{{url_for('auctionviewfinished')}}")
+				.then((response) => {
+					this.offers = response.data[0];
+				})
+				.catch((response)=>{
+					console.error(response);
+				});
+		},
+
+		updated:function() {
+			stop_loading(loading_element);
+		},
+
+	});
 
 </script>
 {% endblock scripts %}

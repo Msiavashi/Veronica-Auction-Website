@@ -87,31 +87,33 @@ function animated(){
 }
 //Detail Gallery
 function detail_gallery(){
-	if($('.detail-gallery').length>0){
-		$('.detail-gallery').each(function(){
-			$(this).find(".carousel").jCarouselLite({
-				btnNext: $(this).find(".gallery-control .next"),
-				btnPrev: $(this).find(".gallery-control .prev"),
-				speed: 800,
-				visible:3,
+	setTimeout(function() {
+		if($('.detail-gallery').length>0){
+				$('.detail-gallery').each(function(){
+				$(this).find(".carousel").jCarouselLite({
+					btnNext: $(this).find(".gallery-control .next"),
+					btnPrev: $(this).find(".gallery-control .prev"),
+					speed: 800,
+					visible:3,
+				});
+				//Elevate Zoom
+				$(this).find('.mid img').elevateZoom({
+					zoomType: "inner",
+					cursor: "crosshair",
+					zoomWindowFadeIn: 500,
+					zoomWindowFadeOut: 750
+				});
+				$(this).find(".carousel a").on('click',function(event) {
+					event.preventDefault();
+					$(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
+					$(this).addClass('active');
+					$(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
+					var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
+					$('.zoomWindow').css('background-image','url("'+z_url+'")');
+				});
 			});
-			//Elevate Zoom
-			$(this).find('.mid img').elevateZoom({
-				zoomType: "inner",
-				cursor: "crosshair",
-				zoomWindowFadeIn: 500,
-				zoomWindowFadeOut: 750
-			});
-			$(this).find(".carousel a").on('click',function(event) {
-				event.preventDefault();
-				$(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
-				$(this).addClass('active');
-				$(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
-				var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
-				$('.zoomWindow').css('background-image','url("'+z_url+'")');
-			});
-		});
-	}
+		}
+	},1000);
 }
 //Document Ready
 jQuery(document).ready(function(){
@@ -415,7 +417,7 @@ jQuery(window).on('load',function(){
 	//Owl Carousel
 
 	setTimeout(function() {
-		
+
 		if($('.wrap-item').length>0){
 
 			$('.wrap-item').each(function() {
@@ -436,6 +438,7 @@ jQuery(window).on('load',function(){
 			});
 
 		}
+
 	},1000);
 
 

@@ -20,7 +20,7 @@
 								<div class="product-extra-link2 rightList">
 									{%raw%}
 									<a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times">{{_ToPersian(auctionRatio)}}ضریب</i></a>
-			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i><span>{{_ToPersian(auctionParticipants.length)}}</span> از <span>{{_ToPersian(auctionMaxMembers)}}</span></a>
+			            <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i>{{_ToPersian(auctionParticipants.length)}} از {{_ToPersian(auctionMaxMembers)}} </a>
 									{%endraw%}
 			          </div>
 
@@ -32,8 +32,8 @@
 										<a href="#" class="prev"><i class="fa fa-angle-left"></i></a>
 										<div class="carousel">
 											<ul>
-												<template v-for="image in images">
-													<li><a href="#"><img v-bind:src="image" alt=""/></a></li>
+												<template v-for="(image, index) in images">
+													<li><a href="#" v-bind:class="{'active':index==1}"><img v-bind:src="image" alt=""/></a></li>
 												</template>
 
 											</ul>
@@ -81,6 +81,7 @@
 											{%endraw%}
 											<div class="upArrow"></div>
 										</div>
+
 										<div class="textboX">
 											<div class="textboXX">
 											{%raw%}
@@ -107,7 +108,7 @@
 												<p class="name-price-Bid" id="auction_current_winner">{{auctionCurrentWinner}}</p>
 											{%endraw%}
 											</div>
-											<input type="hidden" id="set-time" value="1"/>
+
 											{%raw%}
 											<div id="countdown">
 												<div id='tiles' class="flash-countdown color-full" data-timer="0" ></div>
@@ -238,11 +239,10 @@
 {% block scripts %}
 {{ super() }}
 
-<script type="text/javascript" src="{{ url_for('static',filename='js/libs/owl.carousel.js')}} "></script>
-<script type="text/javascript" src="{{ url_for('static',filename='js/libs/jquery.jcarousellite.js')}} "></script>
-<script type="text/javascript" src="{{ url_for('static',filename='js/libs/jquery.elevatezoom.js')}} "></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/owl.carousel.js')}} "></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.jcarousellite.js')}} "></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.elevatezoom.js')}} "></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/js_config.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/persian-date.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/axios.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/moment.min.js')}}"></script>
@@ -297,48 +297,7 @@ var app = new Vue({
 		users: [],
 		active_user: null
 	},
-	watch: {
-			 // call again the method if the route changes
-			 'images': 'update_images'
-	 },
 	methods: {
-
-		update_images:function() {
-			if($('.detail-gallery').length>0){
-
-				$('.detail-gallery').each(function(){
-					console.log($(this).find(".carousel"));
-
-					$(this).find(".carousel").jCarouselLite({
-						btnNext: $(this).find(".gallery-control .next"),
-						btnPrev: $(this).find(".gallery-control .prev"),
-						speed: 800,
-						visible:3,
-					});
-
-					//Elevate Zoom
-					$(this).find('.mid img').elevateZoom({
-						zoomType: "inner",
-						cursor: "crosshair",
-						zoomWindowFadeIn: 500,
-						zoomWindowFadeOut: 750
-					});
-
-					console.log($(this).find(".carousel a"));
-
-					$(this).find(".carousel a").on('click',function(event) {
-						console.log('here new...');
-						event.preventDefault();
-						$(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
-						$(this).addClass('active');
-						$(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
-						var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
-						$('.zoomWindow').css('background-image','url("'+z_url+'")');
-					});
-
-				});
-			}
-		},
 
 		handleBid: function(){
 			socket.emit("bid", {
@@ -359,7 +318,7 @@ var app = new Vue({
 		},
 
 		setAuctionInformation: function(auction){
-			
+
 			this.images = [];
 			ClearifyNames(auction.item.images).forEach(image => {
 				this.images.push(images_path + image.trim());
