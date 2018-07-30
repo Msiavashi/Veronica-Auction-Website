@@ -17751,3 +17751,6 @@ ul.checkout-bar a {
   padding: 0px;
   margin: 0px;
 }
+[v-cloak] {
+  display: none;
+}

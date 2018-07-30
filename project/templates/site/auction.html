@@ -1,12 +1,12 @@
 {% extends 'site/layout.html' %}
 {% block title %} بیدبازی | حراجی محصول {% endblock %}
 {% block content %}
-<input type="hidden" id="auction" value="{{auction_id}}">
+
 <div id="app" class="content-page">
-	<div class="container">
+	<div v-cloak class="container">
 		<div class="bread-crumb radius">
 		{%raw%}
-			<a href="/">خانه</a> <span>{{auctionTitle}}</span>
+			<a href="/">خانه</a><span>{{auctionTitle}}</span>
 		{%endraw%}
 		</div>
 		<!-- End Bread Crumb -->
