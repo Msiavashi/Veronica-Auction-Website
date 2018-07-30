@@ -526,7 +526,7 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.jcarousellite.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.elevatezoom.js')}}"></script>
   <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script> -->
-  <script type="text/javascript" src="{{ url_for('static', filename='js/libs/vue.js')}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/libs/vue.min.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/axios.min.js')}}"></script>
 
   <script>
@@ -676,48 +676,6 @@
         this.total_carts = this.mycarts.length;
         this.total_changed = true;
 
-        // var data = JSON.stringify({
-        // 	"order_id": id
-      	// });
-        //
-        // var xhr = new XMLHttpRequest();
-      	// xhr.withCredentials = true;
-        //
-      	// xhr.open("post", "{{url_for('usercartorderdelete')}}");
-      	// xhr.setRequestHeader("Content-Type", "application/json");
-      	// xhr.setRequestHeader("Cache-Control", "no-cache");
-      	// xhr.send(data);
-      	// xhr.onreadystatechange = function (oEvent) {
-        //   if (xhr.readyState === 4) {
-      	// 			data = JSON.parse(xhr.responseText);
-        //       if (xhr.status === 200) {
-        //         console.log(data);
-        //         myapp.mycarts = [];
-        //         if(data.length > 0)
-        //         {
-        //             data.forEach(cart => {
-      	// 						myapp.mycarts.push({
-        //               id : cart.id,
-        //               item_title : cart.item.title,
-      	// 							product_title : cart.item.product.title,
-      	// 							item_id : cart.item.id ,
-        //               image : '/static/images/products/' + ClearifyNames(cart.item.images)[0],
-        //               discounted_price : cart.item.price - cart.item.discount,
-      	// 							main_price : cart.item.price ,
-        //               min_quantity : 1,
-        //               max_quantity : cart.item.quantity,
-        //               current_quantity : cart.total,
-      	// 						});
-      	// 					});
-        //           myapp.total_carts = ToPersian(this.mycarts.length);
-        //         }
-        //         myapp.total_changed = true;
-      	// 				alert('محصول مورد نظر از سبد خرید حذف شد')
-        //       } else {
-        //          alert(data.reason)
-        //       }
-        //   	}
-      	// 	};
       }
     },
     updated:function() {
