@@ -39,12 +39,14 @@ class AuctionViewFinished(Resource):
 
 class AuctionUserParticipation(Resource):
     def post(self):
-        plan_id = request.form.get('plan_id')
-        auction_id = request.form.get('auction_id')
-        payment_method_id = request.form.get('method_id')
-        payment_method = PaymentMethod.query.get(payment_method_id)
+        data = request.get_json(force=True)
 
-        amount = request.form.get('amount')
+        plan_id = int(data.get("plan_id", None))
+        auction_id = int(data.get("auction_id", None))
+        method_id = int(data.get("method_id", None))
+        amount = int(data.get("amount", None))
+
+        payment_method = PaymentMethod.query.get(method_id)
         if not amount:
             return make_response(jsonify({'success':False,"reason":"پلنی برای این حراجی تعریف نشده است"}),400)
 

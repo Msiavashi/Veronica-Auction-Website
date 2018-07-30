@@ -1,10 +1,8 @@
 {% extends 'site/iframes/ilayout.html' %}
 {% block title %} بیدبازی | شرکت در حراجی {% endblock %}
 {% block content %}
-<input type="hidden" id="auction_id" value="{{auction_id}}">
-<input type="hidden" value="{{next}}" id="next">
 <div class="Package">
-	<div class="container">
+	<div class="container" id="app">
 		<div class="product-quickview woocommerce">
 			<div class="row">
 				<h3 class="order_review_heading">ثبت نام در حراجی</h3>
@@ -17,42 +15,44 @@
 									<th class="product-total"> هزینه و تعداد پیشنهاد</th>
 								</tr>
 							</thead>
-							<tbody data-bind="foreach:plans">
-								<tr class="cart_item">
-									<td class="product-name">
-										<ul id="shipping_method" class="list-none">
-											<li>
-												<input type="radio" data-bind="attr:{id : plan.title } ,click : applyPrice(id,price),test" name="plan">
-												<label data-bind="text: plan.title ,attr:{for: plan.title}"></label>
-											</li>
-										</ul>
-									</td>
-									<td class="product-total">
-										<span class="amount"><span data-bind="text:ToPersian(formatCurrency(price))"></span></span>  تومان با <span data-bind="text:ToPersian(max_offers)"></span> عدد پیشنهاد و کوپن تخفیف <span data-bind="text:ToPersian(formatCurrency(discount))"></span> تومانی
-									</td>
-								</tr>
-								<!-- ko text: triggerSelect() -->
-								<!-- /ko -->
+							<tbody>
+								<template v-for="(item,index) in plans">
+									{%raw%}
+										<tr class="cart_item">
+										<td class="product-name">
+											<ul id="shipping_method" class="list-none">
+												<li>
+													<input v-planradio type="radio" v-on:click="_updatePrices(item.id,item.price)" class="shipping_method" value="free_shipping" v-bind:id="item.plan.id" v-bind:data-index="index" name="plan">
+													<label v-bind:for="item.plan.id">{{item.plan.title}}</label>
+												</li>
+											</ul>
+										</td>
+										<td class="product-total">
+											<span class="amount">{{_ToPersian(_formatCurrency(item.price))}} تومان با  {{_ToPersian(item.max_offers)}} عدد پیشنهاد و کوپن تخفیف {{_ToPersian(_formatCurrency(item.discount))}} تومانی </span>
+										</td>
+									</tr>
+									{%endraw%}
+								</template>
 							</tbody>
 							<tfoot>
 								<tr class="cart-subtotal">
 									<th>هزینه بسته انتخابی</th>
-									<td class="product-total"><span id="selected_plan_price"></span> تومان </td>
+									<td class="product-total">{%raw%}{{_ToPersian(_formatCurrency(selected_plan_price))}}{%endraw%} تومان </td>
 								</tr>
 
 								<tr class="order-total">
 									<th>موجودی حساب شما</th>
-									<td><strong><span class="amount"><span data-bind="text:ToPersian(formatCurrency(credit))"></span> تومان </span></strong> </td>
+									<td><strong><span class="amount">{%raw%}{{_ToPersian(_formatCurrency(credit))}}{%endraw%} تومان </span></strong> </td>
 								</tr>
 
 								<tr class="cart-subtotal">
 									<th class="text-orange">کسر موجودی</th>
-									<td><strong class="amount text-orange" id="credit_fraction">۰</strong></td>
+									<td><strong class="amount text-orange">{%raw%}{{_ToPersian(_formatCurrency(credit_fraction))}}{%endraw%}</strong></td>
 								</tr>
 
 								<tr class="order-total">
 									<th>مبلغ پرداختی نهایی</th>
-									<td><strong><span class="amount"><span id="total_plan_price"></span> تومان </span></strong> </td>
+									<td><strong><span class="amount">{%raw%}{{_ToPersian(_formatCurrency(total_plan_price))}}{%endraw%} تومان </span></strong> </td>
 								</tr>
 
 							</tfoot>
@@ -60,17 +60,20 @@
 					</div>
 					<div class="woocommerce-checkout-payment" id="payment">
 
-						<ul class="payment_methods methods list-none" data-bind="foreach:payment_methods">
-							<li class="payment_method_cheque">
-								<input type="radio" data-order_button_text="" data-bind="click : select_method(id)" name="method" class="input-radio">
-								<label data-bind="text: title,attr:{for: title}">(<span data-bind="text:ToPersian(formatCurrency(credit))"></span>) </label>
-							</li>
-							<!-- ko text: triggerSelect() -->
-							<!-- /ko -->
+						<ul class="payment_methods methods list-none">
+							<template v-for="(method,index) in payment_methods">
+								<li class="payment_method_cheque">
+									<input v-methodradio v-bind:id="method.id" type="radio" data-order_button_text="" v-on:click="_select_method(method.id)" name="method" class="input-radio">
+									{%raw%}
+										<label v-if="index==0" v-bind:for="method.id">{{method.title}}({{_ToPersian(_formatCurrency(credit))}}) </label>
+										<label v-else v-bind:for="method.id">{{method.title}}</label>
+									{%endraw%}
+								</li>
+							</template>
 						</ul>
 
 						<div class="form-row place-order">
-							<input type="submit" value="تایید پرداختی" id="place_order" name="woocommerce_checkout_place_order" class="button alt fixed-bottom">
+							<input type="submit" value="تایید پرداختی" v-on:click="_placePlanOrder" name="woocommerce_checkout_place_order" class="button alt fixed-bottom">
 						</div>
 					</div>
 				</div>
@@ -78,95 +81,132 @@
 		</div>
 	</div>
 </div>
+
+<div id="myModal" class="modal">
+    <div class="modals">
+        <div class="loader"></div>
+    </div>
+</div>
 {% endblock %}
 {% block scripts %}
 {{ super() }}
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script>
-next = $('#next').val();
-var auction_id = $('#auction_id').val();
-var plan_id = ko.observable();
-var payment_method_id = ko.observable();
-var payment_methods = ko.observableArray([]);
-var plans = ko.observableArray([]);
-var price = ko.observable();
-var amount = ko.observable();
 
-function MyViewModel() {
-	self = this;
-	self.plan_id = ko.observable();
-	self.payment_method_id = ko.observable();
-	self.payment_methods = ko.observableArray([]);
-	self.plans = ko.observableArray([]);
-	self.price = ko.observable();
-	self.amount = ko.observable();
-	self.credit = '{{current_user.credit}}';
-}
-var avm = new MyViewModel();
-ko.applyBindings(avm);
+var app = new Vue({
 
-$.getJSON( "/api/auction/get/plans/"+auction_id, function( data ) {
-		console.log(data);
-		avm.plans(data.plans[0]);
-		avm.payment_methods(data.methods[0])
-	});
+	el: "#app",
 
-function applyPrice(id,selected_price){
-	$('#selected_plan_price').html(ToPersian(formatCurrency(selected_price)));
-	total_price = selected_price - avm.credit;
-	if(total_price < 0){
-		$('#total_plan_price').html(ToPersian(formatCurrency(0)));
-	}
-	else {
-		$('#total_plan_price').html(ToPersian(formatCurrency(selected_price - avm.credit)));
-	}
-	$('#credit_fraction').html(ToPersian(formatCurrency(avm.credit - selected_price)));
-
-	plan_id = id;
-	price = selected_price;
-}
-
-function select_method(method_id) {
-	payment_method_id = method_id;
-}
-
-function triggerSelect() {
-	$("input:radio[name=plan]:first").click();
-	$("input:radio[name=method]:first").click();
-}
-
-$('#place_order').on('click',function(){
-
-	if (amount > avm.credit && $("#payment_method_cheque").is(':checked') ){
-		alert('مبلغ حساب شما برای پرداخت کافی نمیباشد. لطفا حساب خود را شارژ کنید');
-		return;
-	}
-
-	$.ajax({
-    url: "{{url_for('auctionuserparticipation')}}",
-    type: 'post',
-    data: {
-				plan_id:plan_id,
-				auction_id:auction_id,
-				method_id:payment_method_id,
-				amount:price
-    },
-    dataType: 'json',
-		error:function(data){
-			console.log(data);
-			alert(data.responseJSON.reason);
+	data :{
+		auction_id : "{{auction_id}}",
+		plan_id : 0,
+		payment_method_id : 0,
+		payment_methods : [],
+		plans :[],
+		price : 0,
+		amount : 0,
+		credit : "{{current_user.credit}}",
+		next : "{{next}}" ,
+		selected_plan_price : 0,
+		credit_fraction : 0,
+		total_plan_price : 0,
+	},
+	methods:{
+		_ToPersian: function(data){
+			return ToPersian(data);
 		},
-		success:function(data) {
-			console.log(data);
-				alert(data.message)
-				if(data.type=="redirect_to_bank"){
-					window.parent.location = "/confirm/payment/"+data.pid;
-				}
-				else {
-					window.parent.location = "/view/auction/"+auction_id;
-				}
-    }
-	});
+
+		_formatCurrency: function(number){
+			return formatCurrency(number);
+		},
+		_updatePrices(id,selected_price){
+			this.selected_plan_price = selected_price ;
+			total_price = selected_price - this.credit;
+			if(total_price < 0){
+				this.total_plan_price = 0;
+			}
+			else {
+				this.total_plan_price = selected_price - this.credit;
+			}
+			this.credit_fraction = this.credit - selected_price ;
+
+			this.plan_id = id;
+			this.price = selected_price;
+		},
+		_select_method(method_id) {
+	 		this.payment_method_id = method_id;
+		},
+		_placePlanOrder(){
+			if (this.amount > this.credit && $("#payment_method_cheque").is(':checked') ){
+					alert('مبلغ حساب شما برای پرداخت کافی نمیباشد. لطفا حساب خود را شارژ کنید');
+					return;
+			}
+
+			console.clear();
+
+			console.log(this.plan_id);
+			console.log(this.auction_id);
+			console.log(this.payment_method_id);
+			console.log(this.price);
+
+			axios.post("{{url_for('auctionuserparticipation')}}",
+				{
+					"plan_id":this.plan_id,
+					"auction_id":this.auction_id,
+					"method_id":this.payment_method_id,
+					"amount":this.price
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+						alert(response.data.message)
+						if(response.data.type=="redirect_to_bank"){
+							window.parent.location = "/confirm/payment/"+response.data.pid;
+						}
+						else {
+							window.parent.location = "/view/auction/"+this.auction_id;
+						}
+				})
+				.catch((error)=>{
+					alert(error.response.data.reason);
+				});
+
+		},
+	},
+	mounted: function(){
+		axios.get("{{url_for('auctiongetplans', aid = auction_id )}}")
+			.then((response) => {
+
+				this.plans = response.data.plans[0];
+				this.payment_methods = response.data.methods[0];
+
+				stop_loading(loading_element);
+			})
+			.catch((response)=>{
+				console.error(response);
+			});
+	},
+	updated: function () {
+  	this.$nextTick(function () {
+  	})
+	},
+
+	directives: {
+
+		planradio:{
+			inserted:function(el) {
+				$("input:radio[name=plan]:first").click();
+			}
+		},
+		methodradio:{
+			inserted:function(el) {
+				$("input:radio[name=method]:first").click();
+			}
+		},
+	}
 });
 
 </script>

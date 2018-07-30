@@ -37,7 +37,7 @@ params = {
 socketio = SocketIO(**params)
 socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet')
 jwt = JWTManager(app)
-app.debug = False
+app.debug = True
 toolbar = DebugToolbarExtension(app)
 
 #login manager
