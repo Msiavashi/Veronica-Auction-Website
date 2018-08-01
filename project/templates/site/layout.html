@@ -90,7 +90,7 @@
       							<div class="smart-search smart-search4">
       								<div class="select-category">
       									<a class="category-toggle-link" href="#"><span>همه دسته بندی ها</span></a>
-      									<ul class="list-category-toggle list-unstyled">
+      									<ul v-cloak class="list-category-toggle list-unstyled">
                           <template v-for="cat in allcategories">
                             {%raw%}
                             <li><a v-bind:href="_generateCategoryLink(cat.id)">{{cat.title}}</a></li>
@@ -153,11 +153,11 @@
       						</div>
       						<div class=".col-12 .col-md-12">
       							<div class="check-cart check-cart4">
-      								<div class="mini-cart-box">
+      								<div v-cloak class="mini-cart-box">
       									<a class="mini-cart-link" href="#">
       										<span class="mini-cart-icon"><i class="fa fa-shopping-basket" aria-hidden="true"></i></span>
                           {%raw%}
-      										  <span v-cloak class="mini-cart-number">{{total_carts}}</span>
+      										  <span class="mini-cart-number">{{total_carts}}</span>
                           {%endraw%}
       									</a>
       									<div class="mini-cart-content">
@@ -244,7 +244,7 @@
       			</div>
       			<!-- End Main Header -->
       			<div class="header-nav6" id="myApp">
-      					<div class="container">
+      					<div v-cloak class="container">
       						<div class="row">
       							<div class="col-md-3 hidden-sm hidden-xs">
       								<div class="wrap-cat-icon wrap-cat-icon-hover wrap-cat-icon6">
@@ -332,11 +332,11 @@
       							</div>
 
       							<!-- End Wishlist -->
-      							<div class="mini-cart-box">
+      							<div v-cloak class="mini-cart-box">
       								<a class="mini-cart-link" href="#">
       									<span class="mini-cart-icon"><i class="fa fa-shopping-basket" aria-hidden="true"></i></span>
                         {%raw%}
-                          <span style="display:none" class="mini-cart-number">{{total_carts}}</span>
+                          <span class="mini-cart-number">{{total_carts}}</span>
                         {%endraw%}
       								</a>
                       <div class="mini-cart-content">
