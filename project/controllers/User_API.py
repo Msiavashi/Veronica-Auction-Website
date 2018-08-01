@@ -407,8 +407,8 @@ class UserAuctionLikes(Resource):
                 auction.likes.remove(current_user)
                 db.session.add(auction)
                 db.session.commit()
-                msg = "حراجی از علاقمندی های شما حذف شد"
-                return make_response(jsonify({"success":"true","message":msg},200))
+                return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
+
         else:
             return make_response(jsonify({"message":"برای لایک کردن باید به سایت وارد شوید"}),400)
 
@@ -426,13 +426,13 @@ class UserAuctionLikes(Resource):
             return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
 
 class UserFavoriteFilters(Resource):
-    def get(self,order_by_price,total):
+    def get(self,order_by_price,order_by,total):
         now = datetime.now()
         result = None
         if order_by_price == "price":
-            result = current_user.auction_likes.filter(Auction.start_date >= now).join(Item).order_by("price").limit(total)
+            result = current_user.auction_likes.join(Item).order_by("price "+order_by).limit(total)
         else:
-            result = current_user.auction_likes.filter(Auction.start_date >= now).order_by("start_date").limit(total)
+            result = current_user.auction_likes.order_by("start_date "+order_by).limit(total)
 
         auctions=[]
         for a in result:

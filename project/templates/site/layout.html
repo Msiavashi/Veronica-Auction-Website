@@ -14,7 +14,9 @@
     {% block head_css %}
 
       <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
-    	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/font-awesome.min.css') }}"/>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/solid.css" integrity="sha384-wnAC7ln+XN0UKdcPvJvtqIH3jOjs9pnKnq9qX68ImXvOGz2JuFoEiCjT8jyZQX2z" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/fontawesome.css" integrity="sha384-HbmWTHay9psM8qyzEKPc8odH4DsOuzdejtnr+OFtDmOcIVnhgReQ4GZBH7uwcjf6" crossorigin="anonymous">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/font-awesome.min.css') }}"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/bootstrap.min.css') }}"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/bootstrap-theme.css') }}"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/jquery.fancybox.css') }}"/>
@@ -98,55 +100,24 @@
                           </template>
       									</ul>
       								</div>
-      								<form class="smart-search-form ajax-search">
-      									<input type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" value="جستجو کنید...">
+      								<form class="smart-search-form ajax-search" action="/search">
+      									<input type="text"  v-model="search_keyword" value="جستجو کنید..." name="keyword"> <!--onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" value="جستجو کنید..."> -->
       									<input type="submit" value="">
+
       									<div class="list-product-search">
-      										<div class="item-search-pro">
-      											<div class="search-ajax-thumb product-thumb">
-      												<a href="#" class="product-thumb-link"><img src="/static/images/photos/electronics/4.jpg" alt="" /></a>
-      											</div>
-      											<div class="search-ajax-title"><h3 class="title14"><a href="#">نام محصول</a></h3></div>
-      											<div class="search-ajax-price">
-      												<span>۲،۳۰۰،۰۰۰ تومان</span>
-      											</div>
-      										</div>
-      										<div class="item-search-pro">
-      											<div class="search-ajax-thumb product-thumb">
-      												<a href="#" class="product-thumb-link"><img src="/static/images/photos/electronics/12.jpg" alt="" /></a>
-      											</div>
-      											<div class="search-ajax-title"><h3 class="title14"><a href="#">نام محصول</a></h3></div>
-      											<div class="search-ajax-price">
-      												<span>۲،۳۰۰،۰۰۰ تومان</span>
-      											</div>
-      										</div>
-      										<div class="item-search-pro">
-      											<div class="search-ajax-thumb product-thumb">
-      												<a href="#" class="product-thumb-link"><img src="/static/images/photos/electronics/13.jpg" alt="" /></a>
-      											</div>
-      											<div class="search-ajax-title"><h3 class="title14"><a href="#">نام محصول</a></h3></div>
-      											<div class="search-ajax-price">
-      												<span>۲،۳۰۰،۰۰۰ تومان</span>
-      											</div>
-      										</div>
-      										<div class="item-search-pro">
-      											<div class="search-ajax-thumb product-thumb">
-      												<a href="#" class="product-thumb-link"><img src="/static/images/photos/electronics/15.jpg" alt="" /></a>
-      											</div>
-      											<div class="search-ajax-title"><h3 class="title14"><a href="#">نام محصول</a></h3></div>
-      											<div class="search-ajax-price">
-      												<span>۲،۳۰۰،۰۰۰ تومان</span>
-      											</div>
-      										</div>
-      										<div class="item-search-pro">
-      											<div class="search-ajax-thumb product-thumb">
-      												<a href="#" class="product-thumb-link"><img src="/static/images/photos/electronics/3.jpg" alt="" /></a>
-      											</div>
-      											<div class="search-ajax-title"><h3 class="title14"><a href="#">نام محصول</a></h3></div>
-      											<div class="search-ajax-price">
-      												<span>۲،۳۰۰،۰۰۰ تومان</span>
-      											</div>
-      										</div>
+                          <template v-for="auction in searhed_auctions">
+                            {%raw%}
+                              <div class="item-search-pro">
+          											<div class="search-ajax-thumb product-thumb">
+          												<a v-bind:href="_generateAuctionLink(auction.id)" class="product-thumb-link"><img v-bind:src="_generateAuctionImage(auction.item.images)" alt="" /></a>
+          											</div>
+          											<div class="search-ajax-title"><h3 class="title14"><a v-bind:href="_generateAuctionLink(auction.id)">{{auction.title}}</a></h3></div>
+          											<div class="search-ajax-price">
+          												<span> شروع از {{_ToPersianCurrency(auction.base_price)}} تومان </span>
+          											</div>
+          										</div>
+                            {%endraw%}
+                          </template>
       									</div>
       								</form>
       							</div>
@@ -543,6 +514,9 @@
       total_carts : ToPersian(0),
       cart_final_price : 0,
       total_changed : false,
+      searhed_auctions : [] ,
+      search_keyword : "",
+      category :"{{category_id}}",
     },
     watch:{
       total_changed:function() {
@@ -551,7 +525,29 @@
           this.cart_final_price += cart.discounted_price * cart.current_quantity;
         });
         this.total_changed = false;
-      }
+      },
+      search_keyword:function() {
+        if(this.category != ""){
+          axios.get("/api/site/search/auctions/category/"+this.category+"/"+this.search_keyword)
+      			.then((response) => {
+      				this.searhed_auctions = response.data[0];
+      			})
+      			.catch((response)=>{
+      				console.error(response);
+      			});
+        }
+        else {
+          axios.get("/api/site/search/auctions/"+this.search_keyword)
+      			.then((response) => {
+      				this.searhed_auctions = response.data[0];
+      			})
+      			.catch((response)=>{
+      				console.error(response);
+      			});
+        }
+
+
+      },
     },
 
     mounted: function(){
@@ -596,6 +592,9 @@
       },
       _generateCategoryImage(icon){
         return "/static/images/icons/category/"+ClearifyNames(icon)[0];
+      },
+      _generateAuctionImage(images){
+        return product_image_path +ClearifyNames(images)[0];
       },
       _generateAuctionLink(id){
         return "/view/auction/"+id;
@@ -724,7 +723,7 @@
       },
       _clearNames(input){
         return ClearifyNames(input)[0];
-      }
+      },
     },
     updated:function() {
     }

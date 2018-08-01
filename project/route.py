@@ -76,6 +76,11 @@ class Route():
     def favorite():
         return render_template('site/favorite.html')
 
+    @app.route("/search")
+    def search():
+        keyword = request.args.get('keyword')
+        return render_template('site/search.html',keyword=keyword)
+
     @app.route("/participate/<int:aid>")
     @login_required
     def participate(aid):

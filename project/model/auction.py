@@ -7,7 +7,6 @@ from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
-
 class Auction(Base):
     __tablename__ = 'auctions'
     id = db.Column(db.BigInteger, primary_key=True)
@@ -65,4 +64,6 @@ class AuctionSchema(Schema):
     #
     # event = fields.Nested('EventSchema',exclude=('auction',))
     #
+
+    liked = fields.Boolean()
     advertisement = fields.Nested('AdvertisementSchema',exclude=('auction',))

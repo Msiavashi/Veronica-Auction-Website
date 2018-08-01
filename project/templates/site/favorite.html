@@ -41,12 +41,14 @@
 						<option value="price">قیمت</option>
 						<option value="time">زمان</option>
 					</select>
+					<a href="#" v-on:click="_changeKey($event)"><i v-bind:class="orderkeyclass"></i></a>
+
 				</div>
 			</div>
 			<div class="pull-right">
 				<div class="show-bar select-box">
 					<label>تعداد:</label>
-					<select v-model="sortingTotal" v-on:change="sortByTotal">
+					<select v-model="sortingTotal" v-on:change="orderBy">
 						<option value="5">۵</option>
 						<option value="10">۱۰</option>
 						<option value="15">۱۵</option>
@@ -64,9 +66,12 @@
 					<div class="col-md-3 col-sm-4 col-xs-12">
 					{%raw%}
 					<div class="item-product item-pro-hotdeal">
-						<div class="deal-clock bg-color">
+						<div v-if="auction.remained_time > 0" class="deal-clock bg-color">
 							<span>زمان باقیمانده: </span>
 							<div v-flashtimer class="flash-countdown timer" v-bind:data-timer ="auction.remained_time"></div>
+						</div>
+						<div v-else class="deal-clock bg-color">
+							<span> حراجی به اتمام رسیده است </span>
 						</div>
 						<div class="product-thumb">
 							<a href="#" class="product-thumb-link">
@@ -76,7 +81,7 @@
 
 							<div class="product-extra-link">
 								<a class="addcart-link" href="#" v-on:click="addToCart(auction.item_id,$event)"><i aria-hidden="true" class="fa fa-shopping-basket"></i></a>
-								<a href="#" v-on:click="addToWish(auction.id,$event)" class="wishlist-link"><i class="fa fa-heart-o" aria-hidden="true"></i></a>
+								<a href="#" v-on:click="addToWish(auction.id,$event)" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 							</div>
 						</div>
 						<div class="product-info">
@@ -90,7 +95,7 @@
 									<del><span>قیمت محصول</span></del>
 									<ins><span>{{auction.price}}</span> تومان </ins>
 								</div>
-								<div class="store-process">
+								<div v-if="auction.remained_time > 0" class="store-process">
 									<div class="percent-store" v-bind:style="auction.remained_percent"></div>
 									<span class="product-instock">{{_ToPersian(auction.remained_time)}} ثانیه</span>
 								</div>
@@ -143,6 +148,8 @@
 			interval:null,
 			sortingTotal :"5",
 			ordering :"price",
+			orderkey : "ASC",
+			orderkeyclass :"fas fa-sort-alpha-down",
 		},
 		methods:{
 			prepare_ad_images(images){
@@ -151,44 +158,19 @@
 			_ToPersian(number){
 				return ToPersian(number);
 			},
-
-			sortByTotal: function() {
-	        start_loading(loading_element);
-					this.auctions = []
-					axios.get("/api/site/favorite/filters/"+this.ordering+"/"+this.sortingTotal+"")
-						.then((response) => {
-							response.data.auctions[0].forEach(auction => {
-								this.auctions.push({
-									id : auction.id,
-									title : auction.title ,
-									description : auction.description ,
-									remained_time : auction.remained_time,
-									from_created : auction.left_from_created,
-									remained_percent : "width:0%",
-									base_price : ToPersian(formatCurrency(auction.base_price)),
-									max_price : ToPersian(formatCurrency(auction.max_price)),
-									price : ToPersian(formatCurrency(auction.item.price)),
-									image : product_image_path + ClearifyNames(auction.item.images)[0],
-									instantview_link : "/instantview/"+ auction.id,
-									auctionview_link : "/view/auction/"+ auction.id,
-									item_id : auction.item.id,
-									likes : auction.likes
-								});
-							});
-
-							stop_loading(loading_element);
-						})
-						.catch((response)=>{
-							console.error(response);
-						});
-	    },
+			_changeKey(event){
+				event.preventDefault();
+				this.orderkey = this.orderkey == "DESC" ? "ASC" : "DESC";
+				this.orderkeyclass = this.orderkey == "DESC" ? "fas fa-sort-alpha-down" : "fas fa-sort-alpha-up";
+				this.orderBy();
+			},
 
 			orderBy: function() {
 	        start_loading(loading_element);
 					this.auctions = []
-					axios.get("/api/user/favorite/filters/"+this.ordering+"/"+this.sortingTotal+"")
+					axios.get("/api/user/favorite/filters/"+this.ordering+"/"+this.orderkey+"/"+this.sortingTotal+"")
 						.then((response) => {
-							response.data.auctions[0].forEach(auction => {
+							response.data[0].forEach(auction => {
 								this.auctions.push({
 									id : auction.id,
 									title : auction.title ,
@@ -267,7 +249,8 @@
 							'Content-Type': 'application/json'
 						}
 					}).then((response) => {
-						alert(response.data[0].message)
+						console.log(response.data);
+						alert(response.data.message)
 						var elementPos = this.auctions.map(function(x) {return x.id; }).indexOf(auction_id);
 						this.auctions.splice( elementPos, 1 );
 					})
@@ -277,9 +260,9 @@
 			}
 		},
 		mounted: function(){
-			axios.get("/api/user/favorite/filters/"+this.ordering+"/"+this.sortingTotal+"")
+			axios.get("/api/user/favorite/filters/"+this.ordering+"/"+this.orderkey+"/"+this.sortingTotal+"")
 				.then((response) => {
-
+					this.auctions = []
 					response.data[0].forEach(auction => {
 						this.auctions.push({
 							id : auction.id,

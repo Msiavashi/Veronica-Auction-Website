@@ -132,7 +132,7 @@ class UserSchema(Schema):
     # auctions = fields.Nested('AuctionSchema', many=True,exclude=('participants',))
     # user_plans = fields.Nested('UserPlanSchema', many=True,exclude=('user',))
     #
-    # auction_likes = fields.Nested('LikeAuctionSchema',many=True,exclude=('user',))
+    auction_likes = fields.Nested('LikeAuctionSchema',many=True,exclude=('user',))
     # auction_views = fields.Nested('ViewAuctionSchema', many=True,exclude=('user',))
     # product_likes = fields.Nested('LikeProductSchema',many=True,exclude=('user',))
     # product_views = fields.Nested('ViewProductSchema', many=True,exclude=('user',))

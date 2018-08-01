@@ -2958,13 +2958,12 @@ margin-bottom: 0;
   padding-right: 31px;
   position: relative;
 }
-.sort-bar.select-box::after {
+
+.sort-bar.select-box a {
   background: #fafafa none repeat scroll 0 0;
   border: 1px solid #e5e5e5;
   border-radius: 4px;
   color: #666;
-  content: "";
-  font-family: fontawesome;
   height: 30px;
   line-height: 30px;
   position: absolute;

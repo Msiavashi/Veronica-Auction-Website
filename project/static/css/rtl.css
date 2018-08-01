@@ -2751,7 +2751,7 @@ th {
   padding-left: 31px;
   padding-right: 0;
 }
-.sort-bar.select-box::after {
+.sort-bar.select-box a {
   left: 0;
   right: auto;
 }
@@ -3266,7 +3266,7 @@ th {
   right: auto;
 }
 /****************************************************************************************************
-										Responsive				
+										Responsive
 *****************************************************************************************************/
 @media (max-width: 1024px) {
   .main-nav.main-nav-ontop > ul > li {

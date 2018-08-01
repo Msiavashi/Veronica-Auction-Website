@@ -12,9 +12,43 @@ from datetime import datetime
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 import os
+from sqlalchemy import or_
 
 from ..model.guest_message import GuestMessage
 
+
+class SiteSearchFilters(Resource):
+    def get(self,order_by_price,order_by,total,keyword):
+        now = datetime.now()
+        result = None
+        if order_by_price == "price":
+            result = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).join(Item).order_by("price " + order_by).limit(total)
+        else:
+            result = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).order_by("start_date " + order_by).limit(total)
+
+        auctions=[]
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
+            auction.left_from_created = (auction.created_at - now).seconds
+            if current_user.is_authenticated:
+                auction.liked = auction in current_user.auction_likes
+            auctions.append(auction)
+
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
+
+class SiteSearchAuctions(Resource):
+    def get(self,keyword):
+        auctions = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).all()
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
+
+class SiteSearchAuctionsCategory(Resource):
+    def get(self,cid,keyword):
+        auctions = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).join(Item).join(Product).join(Category).filter_by(id = cid)
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class SiteCategoryMenuItems(Resource):
     def get(self):
@@ -54,19 +88,21 @@ class SiteCategoryProducts(Resource):
         return make_response(jsonify(result),200)
 
 class SiteCategoryProductFilters(Resource):
-    def get(self,cid,order_by_price,total):
+    def get(self,cid,order_by_price,order_by,total):
         now = datetime.now()
         result = None
         if order_by_price=="price":
-            result = Auction.query.filter(Auction.start_date >= now).join(Item).order_by("price").join(Product).join(Category).filter_by(id = cid).limit(total)
+            result = Auction.query.join(Item).order_by("price "+ order_by).join(Product).join(Category).filter_by(id = cid).limit(total)
         else:
-            result = Auction.query.filter(Auction.start_date >= now).order_by("start_date").join(Item).join(Product).join(Category).filter_by(id = cid).limit(total)
+            result = Auction.query.order_by("start_date "+ order_by).join(Item).join(Product).join(Category).filter_by(id = cid).limit(total)
 
         auctions=[]
         for a in result:
             auction = Auction.query.get(a.id)
             auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
             auction.left_from_created = (auction.created_at - now).seconds
+            if current_user.is_authenticated:
+                auction.liked = auction in current_user.auction_likes
             auctions.append(auction)
         category = Category.query.get(cid)
         auction_schema = AuctionSchema(many=True)

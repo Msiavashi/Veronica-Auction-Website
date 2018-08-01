@@ -1,39 +1,21 @@
 {% extends 'site/layout.html' %}
-{% block title %} بیدبازی | دسته بندی ها {% endblock %}
+{% block title %} بیدبازی | علاقمندی های شما{% endblock %}
 {% block content %}
+
 <div class="content-page page-product-hot-deal">
-	<div v-cloak class="container" id="app">
-		<div v-if="ads">
-			<div class="boxed-slider radius">
-				<div class="wrap-item" data-itemscustom="[[0,1]]" data-pagination="false" data-navigation="true">
-					<template v-for="item in ads">
-						{%raw%}
-						<div class="banner-shop">
-							<div class="banner-shop-thumb">
-								<a href="#"><img v-bind:src="prepare_ad_images(item.advertisement.images)"></a>
-							</div>
-							<div class="banner-shop-info text-left">
-								<h2><a href="#">{{item.advertisement.title}}</a></h2>
-								<p class="title30 color">تخفیف : تا {{_ToPersian(item.advertisement.discount)}}٪ قیمت </p>
-								<a v-bind:href= "'/view/auction/'+item.id" class="btn-rect diswe white bg-color radius">{{item.advertisement.link_title}}</a>
-							</div>
-						</div>
-						{%endraw%}
-					</template>
-				</div>
-			</div>
-		</div>
+	<div class="container" id="app">
 
 		<!-- End Banner -->
 
 		<div class="bread-crumb radius">
-			<a href="/">خانه</a><span>{%raw%}{{category_title}}{%endraw%}</span>
+			<a href="/">خانه</a><span> نتیجه جستجوی شما </span>
 		</div>
 
 		<!-- End Bread Crumb -->
 
 		<div class="sort-pagi-bar clearfix">
 			<div class="pull-left">
+
 				<div class="sort-bar select-box">
 					<label>مرتب سازی بر اساس:</label>
 					<select v-model="ordering" v-on:change="orderBy">
@@ -42,6 +24,7 @@
 					</select>
 					<a href="#" v-on:click="_changeKey($event)"><i v-bind:class="orderkeyclass"></i></a>
 				</div>
+
 			</div>
 			<div class="pull-right">
 				<div class="show-bar select-box">
@@ -108,8 +91,6 @@
 			</div>
 
 		</div>
-
-
 		<!-- <div class="btn-loadmore"><a href="#"><i aria-hidden="true" class="fa fa-spinner fa-spin"></i></a></div> -->
 
 		<!-- <div><i aria-hidden="true" class="fa fa-spinner fa-spin"></i></div>
@@ -142,12 +123,12 @@
 		data:{
 			ads : [],
 			auctions : [] ,
-			category_title : " دسته بندی ",
 			order_by_index : 0,
 			total_index : 0,
 			interval:null,
 			sortingTotal :"5",
 			ordering :"price",
+			keyword : "{{keyword}}",
 			orderkey : "ASC",
 			orderkeyclass :"fas fa-sort-alpha-down",
 		},
@@ -158,19 +139,22 @@
 			_ToPersian(number){
 				return ToPersian(number);
 			},
+
 			_changeKey(event){
 				event.preventDefault();
 				this.orderkey = this.orderkey == "DESC" ? "ASC" : "DESC";
 				this.orderkeyclass = this.orderkey == "DESC" ? "fas fa-sort-alpha-down" : "fas fa-sort-alpha-up";
 				this.orderBy();
 			},
+
 			orderBy: function() {
 	        start_loading(loading_element);
+
 					this.auctions = []
-					var vm = this;
-					axios.get("/api/site/category/{{category_id}}/product/filters/"+this.ordering+"/"+this.orderkey+"/"+this.sortingTotal+"")
+					axios.get("/api/site/search/filters/"+this.ordering+"/"+this.orderkey+"/"+this.sortingTotal+"/"+this.keyword)
 						.then((response) => {
-							response.data.auctions[0].forEach(auction => {
+
+							response.data[0].forEach(auction => {
 								this.auctions.push({
 									id : auction.id,
 									title : auction.title ,
@@ -188,8 +172,6 @@
 									likeflag: auction.liked ? "fa fa-heart" : "fa fa-heart-o",
 								});
 							});
-
-							stop_loading(loading_element);
 						})
 						.catch((response)=>{
 							console.error(response);
@@ -211,7 +193,7 @@
 					}).then((response) => {
 						if(response.data.length > 0){
 							myapp.mycarts = []
-							console.log(response.data);
+
 							response.data.forEach(cart => {
 								myapp.mycarts.push({
 	                id : cart[0].id,
@@ -233,7 +215,7 @@
 						}
 					})
 					.catch((error)=>{
-						alert(error.response.data.reason);
+						alert(error.response.data.reason)
 					});
 			},
 
@@ -257,13 +239,12 @@
 						alert(error.response.data.message);
 					});
 			}
-
 		},
 		mounted: function(){
-			var vm = this;
-			axios.get("/api/site/category/{{category_id}}/product/filters/"+this.ordering+"/"+this.orderkey+"/"+this.sortingTotal+"")
+			axios.get("/api/site/search/filters/"+this.ordering+"/"+this.orderkey+"/"+this.sortingTotal+"/"+this.keyword)
 				.then((response) => {
-					response.data.auctions[0].forEach(auction => {
+
+					response.data[0].forEach(auction => {
 						this.auctions.push({
 							id : auction.id,
 							title : auction.title ,
@@ -282,19 +263,12 @@
 						});
 					});
 
-					this.category_title = response.data.category[0].title;
 				})
 				.catch((response)=>{
 					console.error(response);
 				});
 
-			axios.get("{{url_for('sitecategorycarouselads',cid=category_id)}}")
-				.then((response) => {
-					this.ads = response.data[0];
-				})
-				.catch((response)=>{
-					console.error(response);
-				});
+			stop_loading(loading_element);
 
 			this.interval = setInterval(()=>{
 				this.auctions.forEach(auction => {
@@ -306,6 +280,7 @@
 
 		updated:function() {
 			stop_loading(loading_element);
+
 		},
 
 		directives: {
