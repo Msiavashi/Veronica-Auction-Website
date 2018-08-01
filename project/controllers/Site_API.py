@@ -15,6 +15,7 @@ import os
 from sqlalchemy import or_
 
 from ..model.guest_message import GuestMessage
+from definitions import MAX_SEARCH_RESULT
 
 
 class SiteSearchFilters(Resource):
@@ -40,7 +41,7 @@ class SiteSearchFilters(Resource):
 
 class SiteSearchAuctions(Resource):
     def get(self,keyword):
-        auctions = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).all()
+        auctions = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).limit(MAX_SEARCH_RESULT)
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
