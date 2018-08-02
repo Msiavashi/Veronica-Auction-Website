@@ -226,7 +226,7 @@ class UserCartOrder(Resource):
     def get(self):
 
         if current_user.is_authenticated:
-            orders = Order.query.filter_by(user_id=current_user.id)
+            orders = Order.query.filter_by(user_id=current_user.id).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:

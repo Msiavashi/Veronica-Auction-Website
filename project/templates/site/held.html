@@ -27,7 +27,7 @@
 												<div class="product-info">
 													<h3 class="product-title"><a v-bind:href="_createAuctionLink(offer.id)">{{offer.auction.title}}</a></h3>
 													<div class="product-price">
-														<ins>{{_ToPersianCurrency(offer.auction.base_price)}}تومان</ins>
+														<ins>{{_ToPersianCurrency(offer.total_price)}}تومان</ins>
 														<del>{{_ToPersianCurrency(offer.auction.item.price)}}تومان</del>
 													</div>
 													<p class="desc">تاریخ برگزاری : {{_generateDate(offer.auction.start_date)}}</p>

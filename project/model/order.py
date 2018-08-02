@@ -13,6 +13,7 @@ class OrderStatus:
     INAUCTION = 1
     AUCTIONWINNER = 2
     EXPIRED = 3
+    PAID = 100
 
 
 
