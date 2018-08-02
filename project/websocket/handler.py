@@ -16,6 +16,25 @@ import time
 from project import socketio
 from flask_socketio import emit, join_room, leave_room
 
+@socketio.on('sync_carts')
+def sync_carts(data):
+    room = data['room']
+    join_room(room)
+    if current_user.is_authenticated:
+        orders = Order.query.filter_by(user_id=current_user.id)
+        result = []
+        order_schema = OrderSchema()
+        for order in orders:
+            result.append(order_schema.dump(order))
+
+        emit("sync_carts",result , room=room)
+    else:
+        if "orders" in session:
+            emit("sync_carts", session['orders'] , room=room)
+        else:
+            emit("sync_carts",[] , room=room)
+
+
 @socketio.on('sync_timers')
 def sync_timers(data):
     room = data['room']
@@ -168,29 +187,55 @@ def handle_bid(data):
 
 
 def auction_done(data):
-    room=data['auction_id']
-    try:
-        auction_id = data['auction_id']
-        auction = Auction.query.get(auction_id)
-        price = auction.item.price
+    room = data['auction_id']
+    # try:
+    auction_id = data['auction_id']
+    auction = Auction.query.get(auction_id)
+    price = auction.item.price
 
-        total_bids = Offer.query.filter_by(auction_id=auction_id).count()
-        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
+    total_bids = Offer.query.filter_by(auction_id=auction_id).count()
+    last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
 
-        if(last_offer):
-            last_offer.win = True
-            db.session.add(last_offer)
+    if(last_offer):
+
+        last_offer.win = True
+        db.session.add(last_offer)
+        db.session.commit()
+        winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
+        print "winner :",winner
+        user_schema = UserSchema()
+        price -= last_offer.total_price
+
+        #set the order for winner in he/she's carts
+
+        last_order = Order.query.filter_by(user_id=winner.id,item_id=auction.item.id).first()
+
+        if last_order :
+            last_order.total_cost = auction.item.price - auction.item.discount
+            last_order.status = 1
+            last_order.total_discount = price
+            db.session.add(last_order)
             db.session.commit()
-            winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
-            user_schema = UserSchema()
-            price -= last_offer.total_price
-            emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": user_schema.dump(winner),"discount":str(price)},room=room)
-            return 200
         else:
-            emit("auction_done", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
-            return 400
-    except Exception as e:
-        return "{'error':"+str(e)+"}"
+            new_order = Order()
+            new_order.user = winner
+            new_order.item = auction.item
+            new_order.total_cost = last_offer.total_price
+            new_order.status = 1
+            new_order.total = 1
+            new_order.total_discount = auction.item.price - last_offer.total_price
+            db.session.add(new_order)
+            db.session.commit()
+
+
+        emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": user_schema.dump(winner),"discount":str(price)},room=room)
+
+        return 200
+    else:
+        emit("auction_done", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
+        return 400
+    # except Exception as e:
+    #     return "{'error':"+str(e)+"}"
 
 
 @socketio.on('status')

@@ -40,7 +40,7 @@ class User(Base,UserMixin):
 
     avatar = db.Column(db.Text,default="['001.png']") #avatar path
 
-    user_plans = db.relationship('UserPlan')
+    user_plans = db.relationship('UserPlan',lazy='dynamic')
 
     payments = db.relationship('Payment')
 

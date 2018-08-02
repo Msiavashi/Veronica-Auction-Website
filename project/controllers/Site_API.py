@@ -80,7 +80,7 @@ class SiteCategoryProducts(Resource):
         for a in result:
             auction = Auction.query.get(a.id)
             auction.remained_time = (auction.start_date - now).seconds
-            auction.left_from_created = (auction.created_at - now).seconds
+            auction.left_from_created = (now.replace(hour=0,minute=0,second=0,microsecond=0) - now).seconds
             auctions.append(auction)
         category = Category.query.get(cid)
         auction_schema = AuctionSchema(many=True)
@@ -101,7 +101,7 @@ class SiteCategoryProductFilters(Resource):
         for a in result:
             auction = Auction.query.get(a.id)
             auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
-            auction.left_from_created = (auction.created_at - now).seconds
+            auction.left_from_created = (now.replace(hour=0,minute=0,second=0,microsecond=0) - now).seconds
             if current_user.is_authenticated:
                 auction.liked = auction in current_user.auction_likes
             auctions.append(auction)

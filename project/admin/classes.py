@@ -144,7 +144,7 @@ class AuctionAdmin(ModelView):
     page_size = 10
     can_view_details = True
     column_searchable_list = ['title', 'description']
-    column_editable_list = ['title', 'description']
+    column_editable_list = ['title', 'description','start_date']
     column_exclude_list = ['description', ]
     form_widget_args = {
     'description': {

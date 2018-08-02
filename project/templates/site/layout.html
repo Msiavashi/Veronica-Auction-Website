@@ -504,6 +504,7 @@
   <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script> -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/vue.min.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/axios.min.js')}}"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 
   <script>
 
@@ -518,6 +519,8 @@
       searhed_auctions : [] ,
       search_keyword : "جستجو کنید...",
       category :"{{category_id}}",
+      interval :null,
+      base_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
     },
     watch:{
       total_changed:function() {
@@ -526,6 +529,9 @@
           this.cart_final_price += cart.discounted_price * cart.current_quantity;
         });
         this.total_changed = false;
+      },
+      mycarts:function() {
+
       },
       search_keyword:function() {
         if(this.category != ""){
@@ -546,21 +552,19 @@
       				console.error(response);
       			});
         }
-
-
       },
     },
-
     mounted: function(){
-  		axios.get("{{url_for('sitecategorymenuitems')}}")
-  			.then((response) => {
-  				this.allcategories = response.data[0];
-  			})
-  			.catch((response)=>{
-  				console.error(response);
-  			});
 
-      axios.get("{{url_for('usercartorder')}}")
+    		axios.get("{{url_for('sitecategorymenuitems')}}")
+    			.then((response) => {
+    				this.allcategories = response.data[0];
+    			})
+    			.catch((response)=>{
+    				console.error(response);
+    			});
+
+        axios.get("{{url_for('usercartorder')}}")
   			.then((response) => {
           if(response.data.length > 0)
           {
@@ -571,7 +575,7 @@
 								product_title : cart[0].item.product.title,
 								item_id : cart[0].item.id ,
                 image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
-                discounted_price : cart[0].item.price - cart[0].item.discount,
+                discounted_price : cart[0].total_cost,
 								main_price : cart[0].item.price ,
                 min_quantity : 1,
                 max_quantity : cart[0].item.quantity,
@@ -586,6 +590,41 @@
   				console.error(response);
   			});
   	},
+
+    created:function() {
+      this.interval = setInterval(()=>{
+        this.base_socket.emit('sync_carts',{room:'index'});
+      }, 2000);
+
+      this.base_socket.on('connect', function() {
+          console.log('connected base_socket');
+      });
+
+      this.base_socket.on('sync_carts', function(data) {
+        myapp.mycarts = [];
+        console.log(data);
+        if(data && data.length > 0){
+             data.forEach(cart => {
+               myapp.mycarts.push({
+                id : cart[0].id,
+                item_title : cart[0].item.title,
+                product_title : cart[0].item.product.title,
+                item_id : cart[0].item.id ,
+                image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+                discounted_price : cart[0].total_cost,
+                main_price : cart[0].item.price ,
+                min_quantity : 1,
+                max_quantity : cart[0].item.quantity,
+                current_quantity : cart[0].total,
+              });
+            });
+          }
+        myapp.total_carts = ToPersian(myapp.mycarts.length);
+        myapp.total_changed = true;
+
+        console.log('syncing carts...');
+      });
+    },
 
     methods:{
       _generateCategoryLink(id){
@@ -677,10 +716,10 @@
           });
         var elementPos = this.mycarts.map(function(x) {return x.id; }).indexOf(id);
         this.mycarts.splice( elementPos, 1 );
-        this.total_carts = this.mycarts.length;
+        this.total_carts = ToPersian(this.mycarts.length);
         this.total_changed = true;
 
-      }
+      },
     },
     updated:function() {
     }

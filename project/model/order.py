@@ -7,10 +7,12 @@ from project.database import db, Base
 from marshmallow import Schema, fields ,post_load
 import datetime
 
+# each order has a status for servicing
 class OrderStatus:
-    UNPAID = 0
-    PAID = 1
-    PAYING = 2
+    REGULAR = 0
+    INAUCTION = 1
+    AUCTIONWINNER = 2
+    EXPIRED = 3
 
 
 

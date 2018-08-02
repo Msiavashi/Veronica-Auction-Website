@@ -7,7 +7,7 @@ from flask_restful import Resource, reqparse
 from project.model.user import *
 from flask_jwt_extended import (create_access_token,create_refresh_token,set_access_cookies,set_refresh_cookies)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
-from ..model import Item, Payment
+from ..model import *
 from ..model.order import *
 import json
 from ..database import db
@@ -107,11 +107,33 @@ class UserLogin(Resource):
                     item = Item.query.get(order[0]['item']['id'])
                     saved_before = Order.query.filter_by(user_id=current_user.id).join(Item).filter_by(id=item.id).first()
                     if not saved_before:
+                        #calculate price base on auction participation
+                        total = int(order[0]['total'])
+                        item_price = (item.price - item.discount) * total
+                        status = OrderStatus.REGULAR
+                        discount = item.discount * total
+
+                        auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
+                        if auction:
+                            offer = Offer.query.join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
+                            status = OrderStatus.INAUCTION
+                            if offer and offer.win:
+                                item_price = offer.total_price
+                                status = OrderStatus.AUCTIONWINNER
+                                total = 1
+                                discount = item.price - offer.total_price
+                            else:
+                                userplan = current_user.user_plans.join(Auction).filter_by(id=auction.id).first()
+                                auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=userplan.id).first()
+                                item_price = item.price - auctionplan.discount
+                                total = 1
+                                discount = auctionplan.discount
+
                         new_order.item = item
-                        new_order.total_cost = (int(order[0]['item']['price']) - int(order[0]['item']['discount'])) * int(order[0]['total'])
-                        new_order.total = int(order[0]['total'])
-                        new_order.status = 0
-                        new_order.total_discount = int(order[0]['item']['discount']) * int(order[0]['total'])
+                        new_order.total_cost = item_price
+                        new_order.total = total
+                        new_order.status = status
+                        new_order.total_discount = discount
                         new_order.user = current_user;
                         db.session.add(new_order)
                         db.session.commit()

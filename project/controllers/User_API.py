@@ -7,7 +7,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 from ..model import *
-from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash, session
+from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session, flash
 import json
 from project import app
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
@@ -23,7 +23,6 @@ from definitions import MAXIMUM_ORDERS
 import copy
 import random
 from datetime import datetime
-
 
 
 class PaymentsInfo(Resource):
@@ -252,14 +251,35 @@ class UserCartOrder(Resource):
             if(last_order):
                 msg = " این محصول در سبد خرید شما از قبل موجود است"
                 return make_response(jsonify({"reason":msg}),400)
+
+            #calculate price base on auction participation
+            item_price = (item.price - item.discount) * total
+            status = OrderStatus.REGULAR
+            discount = item.discount
+
+            auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
+            if auction:
+                offer = Offer.query.join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
+                status = OrderStatus.INAUCTION
+                if offer and offer.win:
+                    item_price = offer.total_price
+                    status = OrderStatus.AUCTIONWINNER
+                    total = 1
+                    discount = item.price - offer.total_price
+                else:
+                    userplan = current_user.user_plans.join(Auction).filter_by(id=auction.id).first()
+                    auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=userplan.id).first()
+                    item_price = item.price - auctionplan.discount
+                    total = 1
+                    discount = auctionplan.discount
+
             new_order = Order()
             new_order.user = current_user
             new_order.item = item
-            new_order.total_cost = item.price - item.discount
-            new_order.status = 0
+            new_order.total_cost = item_price
+            new_order.status = status
             new_order.total = total
-            new_order.total_discount = item.discount
-
+            new_order.total_discount = discount
             db.session.add(new_order)
             db.session.commit()
             orders = Order.query.filter_by(user_id=current_user.id).all()
@@ -284,9 +304,9 @@ class UserCartOrder(Resource):
                 new_order = Order()
                 new_order.id = random.randint(1,1000)
                 new_order.item = item;
-                new_order.total_cost = item.price
+                new_order.total_cost = (item.price - item.discount) * total
                 new_order.total = total
-                new_order.status = 0
+                new_order.status = OrderStatus.REGULAR
                 new_order.total_discount = item.discount
                 order_schema = OrderSchema()
                 session['orders'].append(order_schema.dump(new_order))
@@ -301,10 +321,32 @@ class UserCartOrder(Resource):
 
         if current_user.is_authenticated:
             new_order = Order.query.get(order_id)
-            new_order.total_cost = (new_order.item.price - new_order.item.discount) * total
-            new_order.status = 0
+            item = new_order.item
+            #calculate price base on auction participation
+            item_price = (item.price - item.discount) * total
+            status = OrderStatus.REGULAR
+            discount = item.discount
+
+            auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
+            if auction:
+                offer = Offer.query.join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
+                status = OrderStatus.INAUCTION
+                if offer and offer.win:
+                    item_price = offer.total_price
+                    status = OrderStatus.AUCTIONWINNER
+                    total = 1
+                    discount = item.price - offer.total_price
+                else:
+                    userplan = current_user.user_plans.join(Auction).filter_by(id=auction.id).first()
+                    auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=userplan.id).first()
+                    item_price = item.price - auctionplan.discount
+                    total = 1
+                    discount = auctionplan.discount
+
+            new_order.total_cost = item_price
+            new_order.status = status
             new_order.total = total
-            new_order.total_discount = new_order.item.discount * total
+            new_order.total_discount = discount
             db.session.add(new_order)
             db.session.commit()
             msg = " تغییرات موردنظر با موفقیت انجام شد "

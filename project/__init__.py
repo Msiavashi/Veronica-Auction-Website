@@ -18,12 +18,14 @@ eventlet.monkey_patch()
 import redis
 from flask_login import current_user,LoginManager
 from definitions import SESSION_EXPIRE_TIME
+from flask_session import Session
 
 REDIS_URL = "redis://localhost:6379/0"
 
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+Session(app)
 auto = Autodoc(app)
 
 params = {
@@ -35,7 +37,7 @@ params = {
 
 
 socketio = SocketIO(**params)
-socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet')
+socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet',manage_session=False)
 jwt = JWTManager(app)
 app.debug = True
 toolbar = DebugToolbarExtension(app)

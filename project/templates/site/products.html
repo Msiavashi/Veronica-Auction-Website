@@ -298,8 +298,12 @@
 
 			this.interval = setInterval(()=>{
 				this.auctions.forEach(auction => {
+
+					var remained = (auction.remained_time / auction.from_created) * 100;
+
+					auction.remained_percent = "width:"+ remained +"%";
+
 					auction.remained_time -= 1;
-					auction.remained_percent = "width:"+ (auction.remained_time / auction.from_created)*100+"%";
 				});
 			}, 1000);
 		},
