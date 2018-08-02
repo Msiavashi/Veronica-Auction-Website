@@ -21,7 +21,7 @@ admin = Admin(
 )
 
 admin.add_view(UserAdmin(User, db.session,name='کاربران',menu_icon_type='fa', menu_icon_value='fa fa-user'))
-admin.add_view(RoleAdmin(Role, db.session,name='نقش',menu_icon_type='fa', menu_icon_value='fa fa-group'))
+admin.add_view(RoleAdmin(Role, db.session,name='نقش',menu_icon_type='fa', menu_icon_value='fa fa-user'))
 admin.add_view(CategoryAdmin(Category, db.session,name='دسته بندی',menu_icon_type='fa', menu_icon_value='fa fa-user'))
 admin.add_view(ProductAdmin(Product, db.session,name='محصولات',menu_icon_type='fa', menu_icon_value='fa fa-user'))
 admin.add_view(ItemAdmin(Item, db.session,name='آیتم های محصولات',menu_icon_type='fa', menu_icon_value='fa fa-user'))

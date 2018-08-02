@@ -10,17 +10,38 @@ from .utils import MultipleImageUploadField
 from . import app
 from PIL import Image
 import ast
+from ..model import User,Auction,Payment,Order
 
 class MyAdminIndexView(AdminIndexView):
+
+    @expose('/admin/', methods=('GET', 'POST'))
+    def edit_view(self):
+         users = User.query.count()
+         print "users :",users
+         return super(AdminIndexView, users=users).edit_view()
+
     def is_accessible(self):
         # return True
         return current_user.has_role('admin')
 
     @expose('/')
     def index(self):
+        auctions = Auction.query.count()
+        users = User.query.count()
+        payments = Payment.query.count()
+        orders = Order.query.count()
+        self._template_args['auctions'] = auctions
+        self._template_args['users'] = users
+        self._template_args['payments'] = payments
+        self._template_args['orders'] = orders
         return super(MyAdminIndexView, self).index()
 
 class UserAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['first_name', 'last_name','alias_name','username']
+    column_editable_list = ['first_name', 'last_name','credit']
+    column_exclude_list = ['email','updated_at']
     def is_accessible(self):
         # return True
         return current_user.has_role('admin')
@@ -120,6 +141,17 @@ class ProductAdmin(ModelView):
         # return True
 
 class AuctionAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['title', 'description']
+    column_editable_list = ['title', 'description']
+    column_exclude_list = ['description', ]
+    form_widget_args = {
+    'description': {
+    'rows': 10,
+    'style': 'color: black'
+    }
+    }
     def is_accessible(self):
         return current_user.has_role('admin')
 

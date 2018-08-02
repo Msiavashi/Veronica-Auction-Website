@@ -101,7 +101,7 @@
       									</ul>
       								</div>
       								<form class="smart-search-form ajax-search" action="/search">
-      									<input type="text"  v-model="search_keyword" value="جستجو کنید..." name="keyword"> <!--onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" value="جستجو کنید..."> -->
+      									<input type="text"  v-model="search_keyword" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" value="جستجو کنید..." name="keyword"> <!--onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" value="جستجو کنید..."> -->
       									<input type="submit" value="">
 
       									<div class="list-product-search">
@@ -516,7 +516,7 @@
       cart_final_price : 0,
       total_changed : false,
       searhed_auctions : [] ,
-      search_keyword : "",
+      search_keyword : "جستجو کنید...",
       category :"{{category_id}}",
     },
     watch:{
