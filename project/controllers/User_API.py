@@ -255,7 +255,7 @@ class UserCartOrder(Resource):
             #calculate price base on auction participation
             item_price = (item.price - item.discount) * total
             status = OrderStatus.REGULAR
-            discount = item.discount
+            discount = item.discount * total
 
             auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
             if auction:
@@ -282,7 +282,8 @@ class UserCartOrder(Resource):
             new_order.total_discount = discount
             db.session.add(new_order)
             db.session.commit()
-            orders = Order.query.filter_by(user_id=current_user.id).all()
+
+            orders = Order.query.filter_by(user_id=current_user.id).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:
@@ -307,7 +308,7 @@ class UserCartOrder(Resource):
                 new_order.total_cost = (item.price - item.discount) * total
                 new_order.total = total
                 new_order.status = OrderStatus.REGULAR
-                new_order.total_discount = item.discount
+                new_order.total_discount = item.discount * total
                 order_schema = OrderSchema()
                 session['orders'].append(order_schema.dump(new_order))
                 return make_response(jsonify(session['orders']), 200)
@@ -325,7 +326,7 @@ class UserCartOrder(Resource):
             #calculate price base on auction participation
             item_price = (item.price - item.discount) * total
             status = OrderStatus.REGULAR
-            discount = item.discount
+            discount = item.discount * total
 
             auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
             if auction:
@@ -349,16 +350,20 @@ class UserCartOrder(Resource):
             new_order.total_discount = discount
             db.session.add(new_order)
             db.session.commit()
-            msg = " تغییرات موردنظر با موفقیت انجام شد "
-            return make_response(jsonify({"reason":msg}),200)
+            orders = Order.query.filter_by(user_id=current_user.id).order_by('created_at DESC')
+            result = []
+            order_schema = OrderSchema()
+            for order in orders:
+                result.append(order_schema.dump(order))
+            return make_response(jsonify(result), 200)
         else:
             order = next(x for x in session['orders'] if x[0]['id'] == order_id)
             if (order):
                 order[0]['total_cost'] = (order[0]['item']['price'] - order[0]['item']['discount']) * total
                 order[0]['total'] = total
                 order[0]['total_discount'] = order[0]['item']['discount'] * total
-                msg = " تغییرات موردنظر با موفقیت انجام شد "
-                return make_response(jsonify({"reason":msg}),200)
+
+                return make_response(jsonify(session['orders']), 200)
 
     def delete(self):
         data = request.get_json(force=True)
@@ -509,9 +514,6 @@ class CheckOutInit(Resource):
             db.session.commit()
 
         return redirect(url_for('checkout_payment', pid=payment.id))
-
-
-
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
