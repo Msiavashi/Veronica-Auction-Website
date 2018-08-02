@@ -258,8 +258,6 @@
 
 start_loading(loading_element);
 
-var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
 var app = new Vue({
 
 	el: "#app",
@@ -295,12 +293,14 @@ var app = new Vue({
 		auctionParticipants: [],
 		auction: {},
 		users: [],
-		active_user: null
+		active_user: null,
+		socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port ,{resource:'A/socket.io', 'force new connection': true}),
+
 	},
 	methods: {
 
 		handleBid: function(){
-			socket.emit("bid", {
+			app.socket.emit("bid", {
 				auction_id: "{{auction_id}}",
 			});
 		},
@@ -314,7 +314,7 @@ var app = new Vue({
 		},
 
 		getRemainTime: function(){
-			socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
+			app.socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 		},
 
 		setAuctionInformation: function(auction){
@@ -411,24 +411,21 @@ var app = new Vue({
 		}
 	},
 
-	beforeCreate: function(){
+	created: function(){
 		var self = this;
-		socket.emit("join", {auction_id: '{{auction_id}}'});
-		socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
+
+		self.socket.emit("join", {auction_id: '{{auction_id}}'});
+		self.socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 
 		axios.get("{{url_for('auctioninstanceview', aid=auction_id)}}")
 			.then((response) => {
-				this.setProductInformation(response.data.product[0]);
-				this.setPlanInformation(response.data.plan[0]);
-				this.setAuctionInformation(response.data.auction[0]);
+				self.setProductInformation(response.data.product[0]);
+				self.setPlanInformation(response.data.plan[0]);
+				self.setAuctionInformation(response.data.auction[0]);
 			})
 			.catch((response)=>{
 				console.error(response.data);
 			});
-	},
-
-	created: function(){
-
 	},
 
 	computed: {
@@ -463,7 +460,7 @@ var app = new Vue({
 
 
 
- socket.on('connect', function() {
+ app.socket.on('connect', function() {
 		 console.log('connected');
  });
 
@@ -498,7 +495,7 @@ var app = new Vue({
  	if(timer_sentinal == 0){
 		console.log('sentinal');
 		start_loading(loading_element);
-		socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
+		app.socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 		clearInterval(timer);
 		running_timer = false;
 	}
@@ -506,15 +503,15 @@ var app = new Vue({
 
 
 
-socket.on("remaining_time", function(seconds){
+	app.socket.on("remaining_time", function(seconds){
 
 
-	stop_loading(loading_element);
+		stop_loading(loading_element);
 
-	timer_sentinal = seconds * 1000;
-	if(timer_sentinal!=0 && !running_timer){
-		running_timer = true;
-		timer = setInterval(check_seconds,1000);
+		timer_sentinal = seconds * 1000;
+		if(timer_sentinal!=0 && !running_timer){
+			running_timer = true;
+			timer = setInterval(check_seconds,1000);
 	}
 	// if (( seconds  < 60 ) && (seconds  > 9) ) {
 	// 	$('#tiles').removeClass('color-full');
@@ -542,7 +539,7 @@ socket.on("remaining_time", function(seconds){
 
 });
 
-socket.on("update_view", function(data){
+app.socket.on("update_view", function(data){
 
 	if(data.users[0].length==0)
 		return ;
@@ -566,11 +563,11 @@ socket.on("update_view", function(data){
 
 });
 
-socket.on("unauthorized", function(data){
+app.socket.on("unauthorized", function(data){
 	console.log("unauthorized");
 });
 
-socket.on("failed", function(data){
+app.socket.on("failed", function(data){
 	// app.error.show = true;
 	// app.error.message = data.reason;
 	// app.$forceUpdate();
@@ -579,7 +576,7 @@ socket.on("failed", function(data){
 	$(".error_container").html(data.reason);
 });
 
-socket.on('accepted', function(data){
+app.socket.on('accepted', function(data){
 	app.users = data.users[0];
 	app.winnerUser = app.users[0];
 
@@ -609,11 +606,11 @@ socket.on('accepted', function(data){
 		});
 	});
 	app.$forceUpdate();
-	socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
+	app.socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 	console.log("accepted");
 });
 
-socket.on("auction_done", function(data){
+app.socket.on("auction_done", function(data){
 
  	 clearInterval(timer);
 
@@ -630,8 +627,8 @@ socket.on("auction_done", function(data){
 		 $(".error_alert").removeClass('hide');
 		 $(".error_container").html(data.reason);
 	 }
-	  stop_loading(loading_element);
-		socket.disconnect();
+	  stop_loading(loading_element);		
+		app.socket.disconnect();
 });
 
 $('.close').on('click',function(event){

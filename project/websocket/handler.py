@@ -166,7 +166,6 @@ def handle_bid(data):
             db.session.add(auction)
             db.session.commit()
         elif(remained <=0 ):
-            print 'remained:',remained
             return auction_done(data)
 
         result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
@@ -188,10 +187,8 @@ def handle_bid(data):
 
 def auction_done(data):
     room = data['auction_id']
-    # try:
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
-    price = auction.item.price
 
     total_bids = Offer.query.filter_by(auction_id=auction_id).count()
     last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
@@ -201,19 +198,21 @@ def auction_done(data):
         last_offer.win = True
         db.session.add(last_offer)
         db.session.commit()
+
         winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
         print "winner :",winner
         user_schema = UserSchema()
-        price -= last_offer.total_price
+        discounted_price = auction.item.price - last_offer.total_price
 
         #set the order for winner in he/she's carts
 
         last_order = Order.query.filter_by(user_id=winner.id,item_id=auction.item.id).first()
 
         if last_order :
-            last_order.total_cost = auction.item.price - auction.item.discount
-            last_order.status = 1
-            last_order.total_discount = price
+            last_order.total_cost = last_offer.total_price
+            last_order.status = OrderStatus.AUCTIONWINNER
+            last_order.total_discount = discounted_price
+            last_order.total = 1
             db.session.add(last_order)
             db.session.commit()
         else:
@@ -221,14 +220,13 @@ def auction_done(data):
             new_order.user = winner
             new_order.item = auction.item
             new_order.total_cost = last_offer.total_price
-            new_order.status = 1
+            new_order.status = OrderStatus.AUCTIONWINNER
             new_order.total = 1
-            new_order.total_discount = auction.item.price - last_offer.total_price
+            new_order.total_discount = discounted_price
             db.session.add(new_order)
             db.session.commit()
 
-
-        emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": user_schema.dump(winner),"discount":str(price)},room=room)
+        emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": user_schema.dump(winner),"discount":str(discounted_price)},room=room)
 
         return 200
     else:

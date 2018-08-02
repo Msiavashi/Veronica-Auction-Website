@@ -519,7 +519,7 @@
       searhed_auctions : [] ,
       search_keyword : "جستجو کنید...",
       category :"{{category_id}}",
-      interval :null,
+      intervalTimer :null,
       base_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
     },
     watch:{
@@ -593,7 +593,8 @@
   	},
 
     created:function() {
-      this.interval = setInterval(()=>{
+      
+      this.intervalTimer = setInterval(()=>{
         this.base_socket.emit('sync_carts',{room:'index'});
       }, 2000);
 
