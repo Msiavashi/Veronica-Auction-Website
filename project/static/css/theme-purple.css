@@ -15613,6 +15613,20 @@ a.protect-icon:hover {
 .woocommerce .cart-content-page table.shop_table .product-thumbnail img {
   max-width: 70px;
 }
+.button_class{
+  border: medium none;
+  color: #fff;
+  height: 40px;
+  padding: 0 20px;
+  transition: all 0.5s ease-out 0s;
+  -webkit-transition: all 0.5s ease-out 0s;
+  background: #8507f2;
+  line-height: normal;
+  font: inherit;
+}
+.button_class:hover{
+  background: #333;
+}
 .cart-collaterals .cart_totals > h2 {
   background: #fff none repeat scroll 0 0;
   border: 1px solid #e5e5e5;
@@ -17734,7 +17748,7 @@ ul.checkout-bar a {
 	color: #fff;
 }
 .huge {
-	font-size: 40px;
+	font-size: 30px;
 }
 .panel-footer {
 	color: #565656;

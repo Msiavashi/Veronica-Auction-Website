@@ -997,6 +997,9 @@ a:hover {
 .text-orange {
     color:#f36 !important
 }
+.text-green {
+    color:rgb(20, 175, 98) !important
+}
 .item-cat13 a:hover img.shadow-icon {
     filter: drop-shadow(0 0 3px #8507f2)
 }
@@ -1037,7 +1040,6 @@ a:hover {
 .woocommerce table.shop_table td.actions input[type=submit] {
     background: #8507f2
 }
-
 .title-tab-special>li.active>a {
     color: #8507f2
 }

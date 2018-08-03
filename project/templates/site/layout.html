@@ -161,7 +161,7 @@
         										</ul>
       										<div class="mini-cart-total">
       											<label>قیمت نهایی</label>
-      											<span>{{_ToPersianCurrency(cart_final_price)}} تومان </span>
+      											<span>{{cart_final_price}} تومان </span>
       										</div>
       										<div class="mini-cart-button">
       											<a class="mini-cart-view" href="/cart">مشاهده سبد خرید</a>
@@ -341,7 +341,7 @@
                           </ul>
                         <div class="mini-cart-total">
                           <label>قیمت نهایی</label>
-                          <span>{{_ToPersianCurrency(cart_final_price)}} تومان </span>
+                          <span>{{cart_final_price}} تومان </span>
                         </div>
                         <div class="mini-cart-button">
                           <a class="mini-cart-view" href="/cart">مشاهده سبد خرید</a>
@@ -513,9 +513,6 @@
     data:{
       allcategories : [],
       mycarts : [],
-      total_carts : ToPersian(0),
-      cart_final_price : 0,
-      total_changed : false,
       searhed_auctions : [] ,
       search_keyword : "جستجو کنید...",
       category :"{{category_id}}",
@@ -523,16 +520,6 @@
       base_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
     },
     watch:{
-      total_changed:function() {
-        this.cart_final_price = 0;
-        this.mycarts.forEach(cart => {
-          this.cart_final_price += cart.discounted_price * cart.current_quantity;
-        });
-        this.total_changed = false;
-      },
-      mycarts:function() {
-
-      },
       search_keyword:function() {
         if(this.category != ""){
           axios.get("/api/site/search/auctions/category/"+this.category+"/"+this.search_keyword)
@@ -554,6 +541,7 @@
         }
       },
     },
+
     mounted: function(){
 
     		axios.get("{{url_for('sitecategorymenuitems')}}")
@@ -583,9 +571,7 @@
                 status : cart[0].status,
 							});
 						});
-            this.total_carts = ToPersian(this.mycarts.length);
           }
-          this.total_changed = true;
   			})
   			.catch((response)=>{
   				console.error(response);
@@ -593,7 +579,7 @@
   	},
 
     created:function() {
-      
+
       this.intervalTimer = setInterval(()=>{
         this.base_socket.emit('sync_carts',{room:'index'});
       }, 2000);
@@ -604,7 +590,6 @@
 
       this.base_socket.on('sync_carts', function(data) {
         myapp.mycarts = [];
-        console.log(data);
         if(data && data.length > 0){
              data.forEach(cart => {
                myapp.mycarts.push({
@@ -622,9 +607,6 @@
               });
             });
           }
-        myapp.total_carts = ToPersian(myapp.mycarts.length);
-        myapp.total_changed = true;
-
         console.log('syncing carts...');
       });
     },
@@ -655,7 +637,7 @@
   			return ClearifyNames(input)[0];
   		},
       decreaseTotal(id){
-        cart = myapp.mycarts.find(x => x.id == id);
+        cart = this.mycarts.find(x => x.id == id);
         if(cart.current_quantity ==1){
           return ;
         }
@@ -664,10 +646,9 @@
       },
 
       increaseTotal(id){
-        cart = myapp.mycarts.find(x => x.id == id);
+        cart = this.mycarts.find(x => x.id == id);
         if(cart.max_quantity - cart.current_quantity == 0 )
           return;
-
 
         if (cart.status == 0) {
           cart.current_quantity++ ;
@@ -691,6 +672,7 @@
           }).then((response) => {
             if(response){
               this.mycarts = [];
+              app.user_orders = [];
               if(response.data && response.data.length > 0){
                    response.data.forEach(cart => {
                      this.mycarts.push({
@@ -708,9 +690,8 @@
                     });
                   });
                 }
-              this.total_carts = ToPersian(myapp.mycarts.length);
-              this.total_changed = true;
             }
+            app.user_orders = this.mycarts;
           })
           .catch((response)=>{
             console.log(response);
@@ -740,12 +721,22 @@
           });
         var elementPos = this.mycarts.map(function(x) {return x.id; }).indexOf(id);
         this.mycarts.splice( elementPos, 1 );
-        this.total_carts = ToPersian(this.mycarts.length);
-        this.total_changed = true;
-
+        var elementPos = app.user_orders.map(function(x) {return x.id; }).indexOf(id);
+        app.user_orders.splice( elementPos, 1 );
       },
     },
-    updated:function() {
+
+    computed:{
+      cart_final_price:function() {
+        final_price = 0;
+        this.mycarts.forEach(cart => {
+          final_price += parseInt(cart.discounted_price);
+        });
+        return ToPersian(formatCurrency(final_price));
+      },
+      total_carts:function() {
+        return ToPersian(this.mycarts.length);
+      },
     }
   });
 

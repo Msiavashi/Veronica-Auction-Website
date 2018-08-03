@@ -430,17 +430,17 @@ var app = new Vue({
 
 	computed: {
 		auction_end_date: function(){
-			return full_date = new persianDate(new Date(this.deadline)).format("dddd DD MMMM YYYY");
+			return  new persianDate(new Date(this.deadline)).format("dddd DD MMMM YYYY");
 		},
 
 		auction_end_time: function(){
-			return full_hour = new persianDate(new Date(this.deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+			return  new persianDate(new Date(this.deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
 
 		},
 
 		now_date: function(){
 			return new persianDate(new Date()).format("dddd DD MMMM YYYY");
-		}
+		},
 
 	},
 
@@ -627,7 +627,7 @@ app.socket.on("auction_done", function(data){
 		 $(".error_alert").removeClass('hide');
 		 $(".error_container").html(data.reason);
 	 }
-	  stop_loading(loading_element);		
+	  stop_loading(loading_element);
 		app.socket.disconnect();
 });
 

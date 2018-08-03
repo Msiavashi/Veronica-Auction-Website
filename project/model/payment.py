@@ -16,6 +16,7 @@ class Payment(Base):
     id = db.Column(db.Integer, primary_key=True)
     GUID = db.Column(db.String(length=50))
     amount = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    discount = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     status = db.Column(db.Integer,default=PaymentStatus.UNPAID,nullable=False)
     details = db.Column(db.Text)
 

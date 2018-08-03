@@ -5,8 +5,8 @@
 	<div class="container">
 		<div class="cart-content-page">
 			<h2 class="title-shop-page">سبد خرید من</h2>
-			<form @submit.prevent="handleUpdate">
-				<div class="table-responsive">
+
+			<div class="table-responsive">
 					<table cellspacing="0" class="shop_table cart table">
 						<thead>
 							<tr>
@@ -14,63 +14,57 @@
 								<th class="product-thumbnail">&nbsp;</th>
 								<th class="product-name">محصولات</th>
 								<th class="product-price">قیمت</th>
+								<th class="product-price">تخفیف</th>
 								<th class="product-quantity">تعداد</th>
-								<th class="product-subtotal">کل</th>
+								<th class="product-subtotal">جمع کل</th>
 							</tr>
 						</thead>
 
-						<tbody v-for="order in user_orders">
-							<tr class="cart_item">
-								<td class="product-remove">
-									<input name="order[0].id" type="hidden" v-bind:vlaue="quantities[order[0].id].current_quantity">
-									<a @click="removeOrder(order[0].id)" class="remove" ><i class="fa fa-times"></i></a>
-								</td><input name="item_id" type="hidden" v-bind:value="order[0].item.id">
-								<td class="product-thumbnail">
-									<a href="#"><img  v-bind:src="productThumbnail(order)" /></a>
-								</td>
-								<td class="product-name">
-									{%raw%}
-									<a href="#" >{{getProductTitle(order)}}</a>
-									{%endraw%}
-								</td>
-								<td class="product-price">
-									{%raw%}
-									<span class="amount">{{toPersian(convertToCurrency((order[0].item.price - order[0].item.discount) * order[0].total))}}</span> تومان
-									{%endraw%}
-								</td>
-								<td class="product-quantity">
-									<div class="detail-qty border radius">
-										{%raw%}
-										<a @click="caret_decrease(order)" id="caret_up" class="qty-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
-										<!-- <a @click="" id="caret_up" class="qty-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a> -->
-										<span class="">{{quantities[order[0].id].current_quantity}}</span>
-										<!-- <span class="">{{test}}</span> -->
-										<a @click="caret_increase(order)" id="caret_down" class="qty-up"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
-										{%endraw%}
-									</div>
-								</td>
-								<td class="product-subtotal">
-									{%raw%}
-									<span class="amount">{{toPersian(convertToCurrency((order[0].item.price - order[0].item.discount) * quantities[order[0].id].current_quantity))}}</span> تومان
-									{%endraw%}
+						<tbody>
+							<template v-for="cart in user_orders">
+								{%raw%}
+								<tr class="cart_item">
+									<td class="product-remove">
+										<a class="remove" href="#" v-on:click="deleteFromCart(cart.id,$event)"><i class="fa fa-times"></i></a>
+									</td>
+									<td class="product-thumbnail">
+										<a href="#"><img  v-bind:src="cart.image" alt=""/></a>
+									</td>
+									<td class="product-name">
+										<a href="#">{{cart.product_title +" - "+ cart.item_title}}</a>
+									</td>
+									<td class="product-price">
+										<span class="amount">{{_ToPersianCurrency(cart.main_price)}} تومان</span>
+									</td>
+									<td class="text-orange">
+										<span class="amount">{{_ToPersianCurrency( cart.main_price - cart.discounted_price)}} تومان</span>
+										<a href="#" data-toggle="tooltip" v-bind:title="_generateTitle(cart.status)"><i class="fas fa-question-circle"></i></a>
+									</td>
+									<td class="product-quantity">
+										<div class="detail-qty border radius">
+											<a href="#" class="qty-down" v-on:click="decreaseTotal(cart.id,$event)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
+											<span class="qty-val">{{_ToPersian(cart.current_quantity)}}</span>
+											<a href="#" class="qty-up" v-on:click="increaseTotal(cart.id,$event)"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
+										</div>
+									</td>
+									<td class="product-subtotal text-green">
+										<span class="amount">{{_ToPersianCurrency(cart.discounted_price)}} تومان </span>
+									</td>
+								</tr>
+								{%endraw%}
+							</template>
+							<tr>
+								<td class="actions" colspan="7">
+									<span value="کد تخفیف دارید‌؟" name="update_cart" class="button">
+									<span >کد تخفیف دارید‌؟</span>
+										<input v-model="coupon" type="text" placeholder="کد تخفیف ..." value="" class="input-text">
+										<input type="button" @click="handleCoupon" value="اعمال کد تخفیف" class="button_class">
+									</span>
 								</td>
 							</tr>
-						
 						</tbody>
-						<tr>
-							<td class="actions" colspan="6">
-								<div class="coupon">
-									<label for="coupon_code">کد تخفیف: </label>
-									<input v-model="coupon" type="text" placeholder="کد ۵ حرفی" value="" id="coupon_code" class="input-text" name="coupon_code">
-									<input @click="handleCoupon" type="button" value="درخواست" name="apply_coupon" class="button">
-								</div>
-								<input  type="submit" value="به روزرسانی سبد" name="update_cart" class="button">
-							</td>
-						</tr>
 					</table>
 				</div>
-			</form>
-
 			<div class="cart-collaterals">
 				<div class="cart_totals ">
 					<h2>مجموع پرداختی</h2>
@@ -80,25 +74,22 @@
 								<tr class="cart-subtotal">
 									<th>کل مبلغ سفارش</th>
 									{%raw%}
-									<td><strong class="amount">{{toPersian(total_items_price)}} تومان</strong></td>
+									<td><strong class="amount">{{total_items_price}} تومان</strong></td>
 									{%endraw%}
 								</tr>
-								<tr class="cart-subtotal">
-									<th class="text-orange">تخفیف داده شده (کد تخفیف)</th>
-									{%raw%}
-									<td><strong class="amount text-orange">{{toPersian(invitation_discount)}} تومان</strong></td>
-									{%endraw%}
-								</tr>
-								<tr class="cart-subtotal">
-									<th class="text-orange">تخفیف داده شده (محصول)</th>
-									{%raw%}
-									<td><strong class="amount text-orange">{{toPersian(items_discount)}} تومان</strong></td>
-									{%endraw%}
-								</tr>
+
+								<template v-for="item in discounts">
+									<tr class="cart-subtotal">
+										{%raw%}
+											<th class="text-orange">{{item.title}}</th>
+											<td><strong class="amount text-orange">{{_ToPersianCurrency(item.discount)}} تومان</strong></td>
+										{%endraw%}
+									</tr>
+								</template>
 								<tr class="order-total">
 									<th>مبلغ پرداختی نهایی</th>
 									{%raw%}
-									<td><strong><span class="amount">{{toPersian(final_price)}} تومان</span></strong> </td>
+									<td><strong><span class="amount">{{_ToPersianCurrency(final_price)}} تومان</span></strong> </td>
 									{%endraw%}
 								</tr>
 							</tbody>
@@ -118,132 +109,203 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
-
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
 var app = new Vue({
 
   el: '#app',
 
   data:{
-    user_orders: [],
-    user: "{{current_user.id}}",
-    invitation_discount: 0,
+    user_orders: myapp.mycarts,
+    coupon_discount: 0,
     items_discount: 0,
-	total_items_price: 0,
-	quantities: {},
-	coupon: null
-	// test: 0
+		quantities: {},
+		coupon: null,
+		total_price : 0,
+		discounts : [],
   },
+	watch:{
+		mycarts:function() {
+			console.log('mycarts');
+			this.user_orders = myapp.mycarts;
+		},
+		user_orders:function() {
 
+			coupon_discounts = [];
+			this.discounts.forEach(discount=>{
+				if(discount.id == 0)
+					coupon_discounts.push(discount);
+			});
+
+			this.discounts = [];
+
+			this.user_orders.forEach(cart=>{
+				this.discounts.push({id: cart.id, code :cart.item_title, title : this._generateTitle(cart.status) + ": " + cart.product_title + " - " + cart.item_title , discount: (cart.main_price - cart.discounted_price)});
+			});
+
+			if (coupon_discounts)
+				coupon_discounts.forEach(discount=>{
+					this.discounts.push(discount);
+				});
+
+		},
+		discounts:function() {
+			console.log(this.discounts);
+		}
+	},
   computed: {
     final_price: function(){
-      return parseInt(this.total_items_price)  - parseInt(this.invitation_discount) - parseInt(this.items_discount);
-	}
+      return  this.total_price - this.items_discount - this.coupon_discount;
+		},
+		total_items_price:function() {
+			this.total_price = 0;
+			this.items_discount = 0;
+			this.user_orders.forEach(cart=>{
+				this.total_price += cart.main_price;
+				this.items_discount +=  (cart.main_price - cart.discounted_price);
+			});
+			return ToPersian(formatCurrency(this.total_price));
+		},
   },
 
   methods:{
-	handleUpdate: function(){
-		var self = this;
 
-		axios.post("{{url_for('usercartupdate')}}", {
-			user_orders: self.user_orders
-		})
-		.then((response) => {
-			console.log(response.data);
-			location.reload();
-		})
-		.catch((response) => {
-			console.log(response.data);
-		});
-	},
+		handleCoupon: function(){
+			axios.post("{{url_for('usercouponapply')}}", {
+				"coupon": this.coupon
+			})
+			.then((response) => {
+				alert(response.data.reason)
+				if (response.data.success){
+					this.coupon_discount = parseInt(response.data.amount);
+					already_applied = this.discounts.find(x=> x.code == response.data.title);
+					if(!already_applied){
+						this.discounts.push({id : 0, code:response.data.title, title:'تخفیف داده شده کوپن تخفیف : '+ response.data.title , discount:  parseInt(response.data.amount)});
+					}
+				}
+			})
+			.catch((response) => {
 
-	handleCoupon: function(){
-		var self = this;
-		axios.post("{{url_for('usercouponapply')}}", {
-			"coupon": self.coupon
-		})
-		.then((response) => {
-			location.reload();
-		})
-		.catch((response) => {
-			console.error(response);
-		});
-
-	},
-
-	removeOrder: function(order_id){
-		var self = this;
-		axios.post("{{url_for('usercartorderdelete')}}", {
-		"order_id": order_id
-		})
-		.then((response) => {
-			self.user_orders = response.data;
-			this.$forceUpdate();
-		})
-		.catch((response) => {
-			console.error(response);
-		});
-	},
-	convertToCurrency: function(number){
-		return formatCurrency(number);
-	},
-
-    toPersian: function(data){
-      return ToPersian(data);
-	},
-	caret_decrease: function(order){
-		if (parseInt(this.quantities[order[0].id].current_quantity) - 1 > 0){
-			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) - 1;
-			console.log(this.quantities[order[0].id]);
-
-			this.user_orders.forEach(order => {
-				order[0].total = self.quantities[order[0].id].current_quantity;
 			});
 
-		}
-			this.$forceUpdate();
-	},
-	caret_increase: function(order){
-		if (parseInt( this.quantities[order[0].id].current_quantity ) < parseInt(this.quantities[order[0].id].max_available_quantity)){
-			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) + 1;
-			console.log(this.quantities[order[0].id]);
+		},
 
-			this.user_orders.forEach(order => {
-				order[0].total = self.quantities[order[0].id].current_quantity;
-			});
+		_ToPersianCurrency(number){
+			return ToPersian(formatCurrency(number));
+		},
 
-		}
-			this.$forceUpdate();
-	},
+		_ToPersian(number){
+			return ToPersian(number);
+		},
 
-	productThumbnail: function(order){
-		console.log(order);
- 		return product_image_path + ClearifyNames(order[0].item.images)[0];
-	},
-	getProductTitle: function(order){
-		return order[0].item.product.title+' '+order[0].item.title;
-	},
-  },
-
-  created: function(){
-   	self = this;
-    axios.get("{{url_for('usercartorder')}}")
-      .then(function (response) {
-          self.user_orders = response.data;
-          response.data.forEach(order => {
-			self.total_items_price += parseInt(order[0].total_cost);
-			self.items_discount += parseInt(order[0].item.discount)*parseInt(order[0].total);
-			self.quantities[order[0].id] = {
-				current_quantity: parseInt(order[0].total),
-				max_available_quantity: parseInt(order[0].item.quantity)
+		_generateTitle:function(status) {
+			switch (status) {
+				case "0":
+					return "تخفیف داده شده محصول";
+					break;
+				case "1":
+					return "تخفیف مخصوص خرید پلن حراجی";
+					break;
+				case "2":
+					return "تخفیف حاصل از بردن حراجی";
+					break;
 			}
-        });
-      })
-      .catch(function (error) {
-        console.error(error);
-    });
-  }
+		},
+
+		decreaseTotal(id,e){
+			e.preventDefault();
+			cart = this.user_orders.find(x => x.id == id);
+			if(cart.current_quantity ==1){
+				return ;
+			}
+			cart.current_quantity-- ;
+			this.updateCarts();
+		},
+
+		increaseTotal(id,e){
+			e.preventDefault();
+			cart = this.user_orders.find(x => x.id == id);
+			if(cart.max_quantity - cart.current_quantity == 0 )
+				return;
+
+			if (cart.status == 0) {
+				cart.current_quantity++ ;
+				this.updateCarts();
+			}
+			else {
+				alert("تخفیف داده شده برای این محصول فقط برای یک آیتم است");
+			}
+		},
+
+		updateCarts(){
+			axios.patch("{{url_for('usercartorder')}}",
+				{
+					"order_id": cart.id,
+					"total": cart.current_quantity
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+					if(response){
+						myapp.mycarts = [];
+						this.user_orders = [];
+						if(response.data && response.data.length > 0){
+								 response.data.forEach(cart => {
+									 myapp.mycarts.push({
+										id : cart[0].id,
+										item_title : cart[0].item.title,
+										product_title : cart[0].item.product.title,
+										item_id : cart[0].item.id ,
+										image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+										discounted_price : cart[0].total_cost,
+										main_price : cart[0].item.price * cart[0].total ,
+										min_quantity : 1,
+										max_quantity : cart[0].item.quantity,
+										current_quantity : cart[0].total,
+										status : cart[0].status,
+									});
+								});
+							}
+					}
+					this.user_orders = myapp.mycarts;
+				})
+				.catch((response)=>{
+					console.log(response);
+				});
+
+		},
+
+		deleteFromCart:function(id,event){
+			event.preventDefault();
+			cart = this.user_orders.find(x => x.id == id);
+			console.log(id);
+			console.log(cart);
+			axios.delete("{{url_for('usercartorder')}}",
+				{
+					data:{"order_id": cart.id},
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+					if(response){
+						console.log(response);
+					}
+				})
+				.catch((response)=>{
+					console.log(response);
+				});
+			var elementPos = this.user_orders.map(function(x) {return x.id; }).indexOf(id);
+			this.user_orders.splice( elementPos, 1 );
+		},
+
+  },
 
 });
 

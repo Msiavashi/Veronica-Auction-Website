@@ -55,7 +55,7 @@ class UserInformation(Resource):
         enrolled_auctions = UserAuctionParticipation.query.filter_by(user_id=current_user.id).count()
         invitations = User.query.filter_by(invitor=current_user.username).count()
 
-        bought_items = [item for order in Order.query.filter_by(user_id = current_user.id, status=1).all() for item in order.items]
+        bought_items = Order.query.filter_by(user_id = current_user.id, status=OrderStatus.PAID).count()
 
         won_offers = Offer.query.filter_by(win=True).join(UserPlan).filter_by(user_id = current_user.id).all()
 
@@ -77,9 +77,9 @@ class UserInformation(Resource):
                 avatars.append({"name":filename})
 
         info = {
-            "total_discount": total_discount,
-            "won_auctions": len(won_auctions),
-            "total_boughts": len(bought_items),
+            "total_discount": str(total_discount),
+            "won_auctions": len(won_offers),
+            "total_boughts": bought_items,
             "total_enrolled_auctions": enrolled_auctions,
             "total_invitations": invitations,
             "invitation_code": current_user.username,
@@ -145,10 +145,10 @@ class UserInformation(Resource):
 
             current_user.password = User.generate_hash(new_password)
 
+        #handle invitor copun code
         invitor_code = request.form.get('invitor-code',None)
 
         if(invitor_code):
-            print invitor_code
 
             invitor = User.query.filter_by(username=invitor_code).first()
 
@@ -160,6 +160,7 @@ class UserInformation(Resource):
                 return make_response(jsonify({"message":{"error":msg}}),500)
 
             already_invited = current_user.gifts.filter_by(title='invitor').first()
+
             if(already_invited):
                 msg = "جایزه کد معرفی شما قبلا استفاده شده است"
                 return make_response(jsonify({"message":{"error":msg}}),400)
@@ -395,43 +396,34 @@ class UserCouponApply(Resource):
     @login_required
     def post(self):
         data = request.get_json(force=True)
-        coupon_id = int(data.get("coupon", None))
-        user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=coupon_id).first()
-        if user_gift and user_gift.used==False:
-            user_gift.used = True
-            db.session.add(user_gift)
-            db.session.commit()
-            return make_response(jsonify({"success": True}), 200)
-        else:
-            return make_response(jsonify({"success": False, "message": {"error": "کد تخفیف معتبر نمی باشد"}}), 406)
-
-#TODO: fix this
-class UserCartUpdate(Resource):
-
-    def post(self):
-        data = request.get_json(force=True)["user_orders"]
-        if current_user.is_authenticated:
-            for order in data:
-                order = order[0]
-                db_order = Order.query.get(order["id"])
-                db_order.total = order.get("total")
-                db_order.total_cost = (int(order['total']) * int((order['item']['price']) - int(order['item']['discount'])))
-                db.session.add(db_order)
+        coupon_code = data.get("coupon", None)
+        #handle invitor copun code
+        if(coupon_code):
+            coupon = Gift.query.filter_by(title = coupon_code).first()
+            if(not coupon):
+                msg ="کد تخفیف شما معتبر نمی باشد"
+                return make_response(jsonify({"reason":msg, "success":False}),200)
+            if coupon.expired:
+                msg =  "کوپن تخفیف مورد نظر منقضی شده است"
+                return make_response(jsonify({"reason":msg, "success":False}),200)
+            
+            gift_user = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=coupon.id).first()
+            if gift_user:
+                if gift_user.used:
+                    msg = "کد تخفیف قبلا توسط شما استفاده شده است"
+                    return make_response(jsonify({"reason":msg, "success":False}),200)
+                else:
+                    msg = "این کوپن تخفیف قبلا برای سبد خرید شما ثبت شده است"
+                    return make_response(jsonify({"amount":str(coupon.amount),"title":coupon.title,"reason":msg, "success":True}),200)
+            else:
+                current_user.gifts.append(coupon)
+                db.session.add(current_user)
                 db.session.commit()
-            return make_response(jsonify({"success": True}), 200)
-        else:
-            orders = session['orders']
-            order = filter(lambda order: order.id == data['order_id'], orders)
-            order.total = data['quantity']
-            order.total_cost = (order.total * (order.item.price - order.item.discount))
+                msg ="کد تخفیف مورد نظر شما با موفقیت اعمال شد"
+                return make_response(jsonify({"amount":str(coupon.amount),"title":coupon.title,"reason":msg,"success":True}),200)
 
-    def delete(self):
-        print request
-
-class UserCartOrderDelete(Resource):
-    def post(arg):
-        pass
-
+        msg ="لطفا کد تخفیف خود را وارد کنید"
+        return make_response(jsonify({"reason":msg, "success":False}),200)
 
 class UserAuctionLikes(Resource):
     def get(self):

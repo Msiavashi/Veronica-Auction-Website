@@ -9,6 +9,7 @@ class Gift(Base):
     title = db.Column(db.String(length=100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     amount = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
+    expired = db.Column(db.Boolean,default=False)
 
     users = db.relationship('User', secondary='user_gifts', back_populates='gifts')
 
