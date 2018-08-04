@@ -395,7 +395,7 @@ class UserCartOrder(Resource):
             return make_response(jsonify(session['orders']), 200)
 
 class UserCoupons(Resource):
-    @jwt_required
+    @jwt_refresh_token_required
     def get(self):
         if "coupons" in session:
             return make_response(jsonify(session['coupons']), 200)

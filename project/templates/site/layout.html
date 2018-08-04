@@ -732,7 +732,17 @@
         axios.post("{{url_for('userlogout')}}")
           .then((response) => {
             if(response.data){
-              window.location = '/logout';
+
+              axios.post("{{url_for('userlogoutrefresh')}}")
+                .then((response) => {
+                  if(response.data){
+                    window.location = '/logout';
+                  }
+                })
+                .catch((response)=>{
+                  console.error(response);
+                  window.location = '/logout';
+                });
             }
           })
           .catch((response)=>{
