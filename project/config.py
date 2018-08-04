@@ -31,7 +31,7 @@ JWT_TOKEN_LOCATION = 'cookies'
 # they aren't needed.
 
 JWT_ACCESS_COOKIE_PATH = '/api/'
-JWT_REFRESH_COOKIE_PATH = '/token/refresh'
+JWT_REFRESH_COOKIE_PATH = '/api/'
 
 # Disable CSRF protection for this example. In almost every case,
 # this is a bad idea. See examples/csrf_protection_with_cookies.py

@@ -23,7 +23,7 @@ from definitions import MAXIMUM_ORDERS
 import copy
 import random
 from datetime import datetime
-from flask_jwt_extended import JWTManager,jwt_required
+from flask_jwt_extended import JWTManager,jwt_required,jwt_refresh_token_required
 
 parser_user_address = reqparse.RequestParser()
 parser_user_address.add_argument('state', help = 'ورود استان ضروری است', required = True)
@@ -400,7 +400,7 @@ class UserCoupons(Resource):
         if "coupons" in session:
             return make_response(jsonify(session['coupons']), 200)
         else:
-            return make_response(jsonify({"msg":"no coupons"}), 200)
+            return make_response(jsonify([]), 200)
 
 
 class UserCouponApply(Resource):

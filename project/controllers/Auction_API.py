@@ -70,6 +70,7 @@ class AuctionUserParticipation(Resource):
             payment.sale_refrence_id = current_user.id
             payment.GUID = random.randint(100000,100000000)
             payment.amount = amount
+            payment.discount = 0
             payment.payment_method = payment_method
             payment.status = PaymentStatus.PAID
 

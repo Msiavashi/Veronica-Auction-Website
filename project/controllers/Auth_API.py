@@ -67,7 +67,8 @@ class UserLogin(Resource):
             return make_response(jsonify({"message" :{"error" :'کاربری با نام کاربری مورد نظر شما پیدا نشد'}}),400)
 
         if User.verify_hash(data['password'], current_user.password):
-            access_token = create_access_token(identity = data['username'])
+
+            access_token = create_access_token(identity = data['username'],fresh=True)
             refresh_token = create_refresh_token(identity = data['username'])
 
             login_user(current_user,remember=True)
@@ -138,15 +139,8 @@ class UserLogin(Resource):
                         db.session.commit()
                 session.pop('orders')
 
-                # for new_order in session['orders']:
-                #     new_order.user_id = current_user.id
-                #     new_order.id = None
-                #     db.session.add(new_order)
-                #     db.session.commit()
-                # session.pop('orders')       # clearing the session
-
-            set_access_cookies(resp, access_token)
             set_refresh_cookies(resp, refresh_token)
+            set_access_cookies(resp, access_token)
             return make_response(resp,200)
         else:
             return make_response(jsonify({'message':{"error" : 'رمز عبور شما نادرست است'}}),401)
@@ -158,7 +152,7 @@ class Logout(object):
     def post(self):
         resp = jsonify({'logout': True})
         unset_jwt_cookies(resp)
-        return resp, 200
+        return make_response(resp,200)
 
 class UserLogout(Resource):
     @jwt_required
@@ -188,6 +182,10 @@ class UserTokenRefresh(Resource):
     def post(self):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity = current_user)
-        resp = jsonify({'refresh': True})
+        resp = jsonify({'access_token': access_token})
+        resp = jsonify({
+            'message': 'Token refreshed for {}'.format(current_user),
+            'access_token': access_token,
+            })
         set_access_cookies(resp, access_token)
-        return resp, 200
+        return make_response(resp,200)
