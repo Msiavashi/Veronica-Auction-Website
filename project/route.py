@@ -7,12 +7,18 @@ from flask import url_for, redirect, render_template, request, abort ,redirect, 
 from datetime import timedelta
 from flask_login import current_user,login_required,logout_user
 from .model import *
-from . import app,login_manager,auto
+from . import app,login_manager
 from urlparse import urlparse, urljoin
 from .controllers.PyMellat.PyMellat import *
 from .controllers.MellatPayment_API import MellatGateway
 from definitions import *
 import time
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    jwt_refresh_token_required, create_refresh_token,
+    get_jwt_identity, set_access_cookies,
+    set_refresh_cookies, unset_jwt_cookies
+)
 # from .model.payment import *
 
 
@@ -22,9 +28,9 @@ class Route():
     def load_user(user_id):
         return User.query.get(user_id)
 
-    @app.route('/documentation')
-    def documentation():
-        return auto.html()
+    # @app.route('/documentation')
+    # def documentation():
+    #     return auto.html()
 
     @app.route('/')
     def site():
@@ -63,6 +69,8 @@ class Route():
     @app.route("/logout")
     @login_required
     def logout():
+        resp = jsonify({'logout': True})
+        unset_jwt_cookies(resp)
         logout_user()
         return redirect('/')
 
@@ -130,10 +138,10 @@ class Route():
     def about():
         return render_template('site/about.html')
 
-    @app.route('/user/<int:id>')
-    @auto.doc()
-    def show_user(id):
-        return id
+    # @app.route('/user/<int:id>')
+    # @auto.doc()
+    # def show_user(id):
+    #     return id
 
     @app.route('/confirm/payment/<int:pid>')
     @login_required
@@ -181,7 +189,7 @@ class Route():
         return render_template('/socket.html')
 
     @app.route('/checkout/payment/<int:pid>')
-    @login_required
+    # @login_required
     def checkout_payment(pid):
         return render_template('site/checkout.html', pid=pid)
 

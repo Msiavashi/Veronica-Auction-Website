@@ -10,13 +10,13 @@
 					<table cellspacing="0" class="shop_table cart table">
 						<thead>
 							<tr>
-								<th class="product-remove">&nbsp;</th>
-								<th class="product-thumbnail">&nbsp;</th>
-								<th class="product-name">محصولات</th>
-								<th class="product-price">قیمت</th>
-								<th class="product-price">تخفیف</th>
-								<th class="product-quantity">تعداد</th>
-								<th class="product-subtotal">جمع کل</th>
+								<th class="product-remove" style="width: 5%">حذف</th>
+								<th class="product-thumbnail" style="width: 5%">تصویر</th>
+								<th class="product-name" style="width: 30%">عنوان محصول</th>
+								<th class="product-price" style="width: 20%">قیمت</th>
+								<th class="product-price" style="width: 20%">تخفیف</th>
+								<th class="product-quantity" style="width: 10%">تعداد</th>
+								<th class="product-subtotal" style="width: 10%">جمع کل</th>
 							</tr>
 						</thead>
 
@@ -38,7 +38,7 @@
 									</td>
 									<td class="text-orange">
 										<span class="amount">{{_ToPersianCurrency( cart.main_price - cart.discounted_price)}} تومان</span>
-										<a href="#" data-toggle="tooltip" v-bind:title="_generateTitle(cart.status)"><i class="fas fa-question-circle"></i></a>
+										<a href="#" data-toggle="tooltip" v-bind:title="_generateTitle(cart.discount_status)"><i class="fas fa-question-circle"></i></a>
 									</td>
 									<td class="product-quantity">
 										<div class="detail-qty border radius">
@@ -81,7 +81,10 @@
 								<template v-for="item in discounts">
 									<tr class="cart-subtotal">
 										{%raw%}
-											<th class="text-orange">{{item.title}}</th>
+											<th class="text-orange">
+												{{item.title}}
+												<a class="remove" v-if="item.id == 0" href="#" v-on:click="deleteCoupon(item.code,$event)"><i class="fa fa-times"></i></a>
+											</th>
 											<td><strong class="amount text-orange">{{_ToPersianCurrency(item.discount)}} تومان</strong></td>
 										{%endraw%}
 									</tr>
@@ -97,8 +100,8 @@
 					</div>
 					<div class="wc-proceed-to-checkout">
 						<!-- <a class="checkout-button button alt wc-forward" href="checkout.html">مرحله بعد تایید نهایی</a> -->
-						<form id="confirm" action="{{url_for('checkoutinit')}}">
-							<input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order"  class="button alt">
+						<form method="post" action="{{url_for('checkoutinit')}}">
+							<input type="submit" value="پرداخت و تایید نهایی"  class="button alt">
 						</form>
 					</div>
 				</div>
@@ -109,8 +112,13 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 <script>
+start_loading(loading_element);
+
 $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
 });
@@ -126,6 +134,7 @@ var app = new Vue({
 		coupon: null,
 		total_price : 0,
 		discounts : [],
+		coupon_discounts : [],
   },
 	watch:{
 		mycarts:function() {
@@ -134,22 +143,15 @@ var app = new Vue({
 		},
 		user_orders:function() {
 
-			coupon_discounts = [];
-			this.discounts.forEach(discount=>{
-				if(discount.id == 0)
-					coupon_discounts.push(discount);
-			});
-
 			this.discounts = [];
 
-			this.user_orders.forEach(cart=>{
-				this.discounts.push({id: cart.id, code :cart.item_title, title : this._generateTitle(cart.status) + ": " + cart.product_title + " - " + cart.item_title , discount: (cart.main_price - cart.discounted_price)});
+			this.user_orders.forEach(cart =>{
+				this.discounts.push({id: cart.id, code :cart.item_title, title : this._generateTitle(cart.discount_status) + " : " + cart.product_title + " - " + cart.item_title , discount: (cart.main_price - cart.discounted_price)});
 			});
 
-			if (coupon_discounts)
-				coupon_discounts.forEach(discount=>{
-					this.discounts.push(discount);
-				});
+			this.coupon_discounts.forEach(cart =>{
+				this.discounts.push({id: cart.id, code :cart.code, title : cart.title , discount: cart.discount });
+			});
 
 		},
 		discounts:function() {
@@ -180,10 +182,10 @@ var app = new Vue({
 			.then((response) => {
 				alert(response.data.reason)
 				if (response.data.success){
-					this.coupon_discount = parseInt(response.data.amount);
-					already_applied = this.discounts.find(x=> x.code == response.data.title);
+					this.coupon_discount += parseInt(response.data.amount);
+					already_applied = this.discounts.find(x=> x.code == response.data.code);
 					if(!already_applied){
-						this.discounts.push({id : 0, code:response.data.title, title:'تخفیف داده شده کوپن تخفیف : '+ response.data.title , discount:  parseInt(response.data.amount)});
+						this.discounts.push({id : 0, code:response.data.code, title:'تخفیف داده شده کوپن تخفیف : '+ response.data.title , discount:  parseInt(response.data.amount)});
 					}
 				}
 			})
@@ -201,8 +203,9 @@ var app = new Vue({
 			return ToPersian(number);
 		},
 
-		_generateTitle:function(status) {
-			switch (status) {
+		_generateTitle:function(discount_status) {
+
+			switch (discount_status) {
 				case "0":
 					return "تخفیف داده شده محصول";
 					break;
@@ -269,6 +272,7 @@ var app = new Vue({
 										max_quantity : cart[0].item.quantity,
 										current_quantity : cart[0].total,
 										status : cart[0].status,
+										discount_status : cart[0].discount_status,
 									});
 								});
 							}
@@ -284,8 +288,6 @@ var app = new Vue({
 		deleteFromCart:function(id,event){
 			event.preventDefault();
 			cart = this.user_orders.find(x => x.id == id);
-			console.log(id);
-			console.log(cart);
 			axios.delete("{{url_for('usercartorder')}}",
 				{
 					data:{"order_id": cart.id},
@@ -305,13 +307,54 @@ var app = new Vue({
 			this.user_orders.splice( elementPos, 1 );
 		},
 
+		deleteCoupon:function(code,event){
+			event.preventDefault();
+			item = this.discounts.find(x=>x.code == code);
+
+			axios.delete("{{url_for('usercouponapply')}}",
+				{
+					data:{"coupon_code": code},
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+					if(response){
+						console.log(response);
+					}
+				})
+				.catch((response)=>{
+					console.log(response);
+				});
+			this.coupon_discount -= item.discount;
+			this.discounts.splice( this.discounts.map(function(x) {return x.code; }).indexOf(code), 1 );
+			this.coupon_discounts.splice( this.coupon_discounts.map(function(x) {return x.code; }).indexOf(code), 1 );
+		},
+
   },
 
+	mounted:function() {
+
+		axios.get("{{url_for('usercoupons')}}")
+			.then((response) => {
+				response.data.forEach(discount =>{
+					this.coupon_discount += parseInt(discount.amount);
+					this.discounts.push({id: 0, code :discount.code, title :'تخفیف داده شده کوپن تخفیف : '+ discount.title , discount: parseInt(discount.amount) });
+					this.coupon_discounts.push({id: 0, code :discount.code, title :'تخفیف داده شده کوپن تخفیف : '+ discount.title , discount: parseInt(discount.amount) });
+				});
+			})
+			.catch((response)=>{
+				console.error(response);
+			});
+
+		stop_loading(loading_element);
+	},
+
+	updated:function() {
+		stop_loading(loading_element);
+	}
+
 });
-
-
-
-
 
 </script>
 

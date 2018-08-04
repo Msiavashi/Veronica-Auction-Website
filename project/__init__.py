@@ -6,7 +6,6 @@ sys.setdefaultencoding("utf-8")
 __version__ = '0.1'
 from flask import Flask , session , Response , render_template
 from flask_restful import reqparse, abort, Api, Resource
-from flask_selfdoc import Autodoc
 from datetime import timedelta
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_jwt_extended import JWTManager
@@ -25,8 +24,15 @@ REDIS_URL = "redis://localhost:6379/0"
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+
+
+jwt = JWTManager(app)
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return model.Revoked.is_jti_blacklisted(jti)
+
 Session(app)
-auto = Autodoc(app)
 
 params = {
 	'ping_timeout': 60,
@@ -38,7 +44,9 @@ params = {
 
 socketio = SocketIO(**params)
 socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet',manage_session=False)
-jwt = JWTManager(app)
+
+
+
 app.debug = True
 toolbar = DebugToolbarExtension(app)
 
@@ -89,8 +97,10 @@ def custom_401(error):
 api = Api(app,'/api')
 
 api.add_resource(Auth_API.UserRegistration,'/register')
-api.add_resource(Auth_API.UserLogin, '/login')
-# api.add_resource(Auth_API.UserLogout, '/logout')
+api.add_resource(Auth_API.UserLogin, '/user/login')
+api.add_resource(Auth_API.UserLogout, '/user/logout')
+api.add_resource(Auth_API.UserTokenRefresh, '/token/refresh')
+api.add_resource(Auth_API.UserLogoutRefresh, '/logout/refresh')
 
 api.add_resource(Site_API.SiteCategoryMenuItems, '/site/category/menu/items')
 api.add_resource(Site_API.SiteSearchAuctions, '/site/search/auctions/<keyword>')
@@ -132,5 +142,6 @@ api.add_resource(User_API.UserCheckoutConfirm, '/user/checkout/confirm/payment/<
 api.add_resource(User_API.UserUnpaidOrders, '/user/orders/unpaid' )
 api.add_resource(User_API.UserUnpaidPayments, '/user/payments/unpaids')
 api.add_resource(User_API.UserAuctionView, '/user/auction/view')
+api.add_resource(User_API.UserCoupons, '/user/coupons')
 api.add_resource(User_API.UserCouponApply, '/user/copuon')
 api.add_resource(User_API.CheckOutInit, '/user/checkout/payment/init')

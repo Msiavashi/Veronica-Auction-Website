@@ -5,13 +5,13 @@ sys.setdefaultencoding("utf-8")
 
 from flask_restful import Resource, reqparse
 from project.model.user import *
-from flask_jwt_extended import (create_access_token,create_refresh_token,set_access_cookies,set_refresh_cookies)
+from flask_jwt_extended import (set_refresh_cookies,create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt,set_access_cookies)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 from ..model import *
 from ..model.order import *
 import json
 from ..database import db
-from project import app ,auto
+from project import app
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 
 parser_register = reqparse.RequestParser()
@@ -69,6 +69,7 @@ class UserLogin(Resource):
         if User.verify_hash(data['password'], current_user.password):
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
+
             login_user(current_user,remember=True)
 
             # Set the JWT cookies in the response
@@ -96,10 +97,7 @@ class UserLogin(Resource):
                     'refresh_token': refresh_token
                     })
 
-            '''
-                TODO: FIX THIS
-            '''
-            # create order on registeration
+            # create orders from session on login
             if "orders" in session:
                 order_schema = OrderSchema(many=True)
                 for order in session['orders']:
@@ -110,16 +108,16 @@ class UserLogin(Resource):
                         #calculate price base on auction participation
                         total = int(order[0]['total'])
                         item_price = (item.price - item.discount) * total
-                        status = OrderStatus.REGULAR
+                        discount_status = OrderDiscountStatus.REGULAR
                         discount = item.discount * total
 
                         auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
                         if auction:
                             offer = Offer.query.join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
-                            status = OrderStatus.INAUCTION
+                            discount_status = OrderDiscountStatus.INAUCTION
                             if offer and offer.win:
                                 item_price = offer.total_price
-                                status = OrderStatus.AUCTIONWINNER
+                                discount_status = OrderDiscountStatus.AUCTIONWINNER
                                 total = 1
                                 discount = item.price - offer.total_price
                             else:
@@ -132,7 +130,8 @@ class UserLogin(Resource):
                         new_order.item = item
                         new_order.total_cost = item_price
                         new_order.total = total
-                        new_order.status = status
+                        new_order.status = OrderStatus.UNPAID
+                        new_order.discount_status = discount_status
                         new_order.total_discount = discount
                         new_order.user = current_user;
                         db.session.add(new_order)
@@ -155,40 +154,40 @@ class UserLogin(Resource):
     def get(self):
         return make_response(jsonify({"message":"online resources login"}),404)
 
-# class Logout(object):
-#     def post(self):
-#         resp = jsonify({'logout': True})
-#         unset_jwt_cookies(resp)
-#         return resp, 200
+class Logout(object):
+    def post(self):
+        resp = jsonify({'logout': True})
+        unset_jwt_cookies(resp)
+        return resp, 200
 
-# class UserLogout(Resource):
-#     @jwt_required
-#     def post(self):
-#         jti = get_raw_jwt()['jti']
-#         try:
-#             revoked_token = RevokedTokenModel(jti = jti)
-#             revoked_token.add()
-#             return make_response(jsonify({'message': 'Access token has been revoked'}),200)
-#         except Exception as e:
-#             return make_response(jsonify({'message':{ 'error' : str(e)}}), 500)
-#
+class UserLogout(Resource):
+    @jwt_required
+    def post(self):
+        jti = get_raw_jwt()['jti']
+        try:
+            revoked_token = Revoked(jti = jti)
+            revoked_token.add()
+            return make_response(jsonify({'message': 'Access token has been revoked'}),200)
+        except Exception as e:
+            return make_response(jsonify({'message':{ 'error' : str(e)}}), 500)
 
-# class UserLogoutRefresh(Resource):
-#     @jwt_refresh_token_required
-#     def post(self):
-#         jti = get_raw_jwt()['jti']
-#         try:
-#             revoked_token = RevokedTokenModel(jti = jti)
-#             revoked_token.add()
-#             return {'message': 'Refresh token has been revoked'}
-#         except:
-#             return {'message': 'Something went wrong'}, 500
-#
-# class TokenRefresh(Resource):
-#     @jwt_refresh_token_required
-#     def post(self):
-#         current_user = get_jwt_identity()
-#         access_token = create_access_token(identity = current_user)
-#         resp = jsonify({'refrech':True})
-#         set_access_cookies(resp, access_token)
-#         return resp,200
+
+class UserLogoutRefresh(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        jti = get_raw_jwt()['jti']
+        try:
+            revoked_token = Revoked(jti = jti)
+            revoked_token.add()
+            return {'message': 'Refresh token has been revoked'}
+        except:
+            return {'message': 'Something went wrong'}, 500
+
+class UserTokenRefresh(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        current_user = get_jwt_identity()
+        access_token = create_access_token(identity = current_user)
+        resp = jsonify({'refresh': True})
+        set_access_cookies(resp, access_token)
+        return resp, 200

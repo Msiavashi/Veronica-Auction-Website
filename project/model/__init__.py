@@ -1,3 +1,4 @@
+from  .revoked import *
 from  .address import *
 from  .state import *
 from  .advertisement import *

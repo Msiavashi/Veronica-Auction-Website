@@ -187,7 +187,7 @@
                           <li><a href="/profile"><i class="fa fa-user"></i> مشاهده پنل</a></li>
                           <li><a href="/favorite"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
                           <li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
-                          <li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>خروج</a></li>
+                          <li><a @click="_logout"><i class="fa fa-sign-out" aria-hidden="true"></i>خروج</a></li>
                           {% endif%}
       									</ul>
       								</div>
@@ -569,6 +569,7 @@
                 max_quantity : cart[0].item.quantity,
                 current_quantity : cart[0].total,
                 status : cart[0].status,
+                discount_status : cart[0].discount_status,
 							});
 						});
           }
@@ -604,6 +605,7 @@
                 max_quantity : cart[0].item.quantity,
                 current_quantity : cart[0].total,
                 status : cart[0].status,
+                discount_status : cart[0].discount_status,
               });
             });
           }
@@ -687,6 +689,7 @@
                       max_quantity : cart[0].item.quantity,
                       current_quantity : cart[0].total,
                       status : cart[0].status,
+                      discount_status : cart[0].discount_status,
                     });
                   });
                 }
@@ -723,6 +726,19 @@
         this.mycarts.splice( elementPos, 1 );
         var elementPos = app.user_orders.map(function(x) {return x.id; }).indexOf(id);
         app.user_orders.splice( elementPos, 1 );
+      },
+
+      _logout(){
+        axios.post("{{url_for('userlogout')}}")
+          .then((response) => {
+            if(response.data){
+              window.location = '/logout';
+            }
+          })
+          .catch((response)=>{
+            console.error(response);
+            window.location = '/logout';
+          });
       },
     },
 
@@ -779,6 +795,7 @@
       _clearNames(input){
         return ClearifyNames(input)[0];
       },
+
     },
     updated:function() {
     }

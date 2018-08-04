@@ -210,7 +210,7 @@ def auction_done(data):
 
         if last_order :
             last_order.total_cost = last_offer.total_price
-            last_order.status = OrderStatus.AUCTIONWINNER
+            last_order.discount_status = OrderDiscountStatus.AUCTIONWINNER
             last_order.total_discount = discounted_price
             last_order.total = 1
             db.session.add(last_order)
@@ -220,7 +220,8 @@ def auction_done(data):
             new_order.user = winner
             new_order.item = auction.item
             new_order.total_cost = last_offer.total_price
-            new_order.status = OrderStatus.AUCTIONWINNER
+            new_order.status = OrderStatus.UNPAID
+            new_order.discount_status = OrderDiscountStatus.AUCTIONWINNER
             new_order.total = 1
             new_order.total_discount = discounted_price
             db.session.add(new_order)

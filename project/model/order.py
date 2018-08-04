@@ -9,11 +9,15 @@ import datetime
 
 # each order has a status for servicing
 class OrderStatus:
+    UNPAID = 0
+    PAYONG = 1
+    PAID = 2
+
+class OrderDiscountStatus:
     REGULAR = 0
     INAUCTION = 1
     AUCTIONWINNER = 2
     EXPIRED = 3
-    PAID = 100
 
 
 
@@ -24,6 +28,7 @@ class Order(Base):
     desciption = db.Column(db.Text)
 
     status = db.Column(db.Integer, default=0)
+    discount_status = db.Column(db.Integer, default=0)
 
     total = db.Column(db.Integer,nullable=False)
 
@@ -52,6 +57,7 @@ class Order(Base):
 class OrderSchema(Schema):
     id = fields.Int()
     desciption = fields.Str()
+    discount_status = fields.Str()
     status = fields.Str()
     register_user = fields.Boolean()
     total = fields.Str()

@@ -13,7 +13,7 @@ from project import app
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
 from ..model.user_message import UserMessage
 from ..model.user_gift import *
-from ..model.order import OrderStatus
+from ..model.order import *
 import definitions
 from werkzeug.utils import secure_filename
 from ..utils import Payload
@@ -23,14 +23,7 @@ from definitions import MAXIMUM_ORDERS
 import copy
 import random
 from datetime import datetime
-
-
-class PaymentsInfo(Resource):
-    @login_required
-    def get(self,pagenum,pagesize):
-        payments = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').paginate(pagenum, pagesize, True).items
-        paymentSchema = PaymentSchema(many=True)
-        return make_response(jsonify(paymentSchema.dump(payments)),200)
+from flask_jwt_extended import JWTManager,jwt_required
 
 parser_user_address = reqparse.RequestParser()
 parser_user_address.add_argument('state', help = 'ورود استان ضروری است', required = True)
@@ -46,6 +39,12 @@ parser_user_message.add_argument('subject', help = 'ورود موضوع پیام
 parser_user_message.add_argument('title', help = 'ورود عنوان پیام ضروری است', required = True)
 parser_user_message.add_argument('message', help = 'متنی برای پیام وارد نکرده اید', required = True)
 
+class PaymentsInfo(Resource):
+    @login_required
+    def get(self,pagenum,pagesize):
+        payments = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').paginate(pagenum, pagesize, True).items
+        paymentSchema = PaymentSchema(many=True)
+        return make_response(jsonify(paymentSchema.dump(payments)),200)
 
 class UserInformation(Resource):
     @login_required
@@ -227,7 +226,7 @@ class UserCartOrder(Resource):
     def get(self):
 
         if current_user.is_authenticated:
-            orders = Order.query.filter_by(user_id=current_user.id).order_by('created_at DESC')
+            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:
@@ -255,16 +254,16 @@ class UserCartOrder(Resource):
 
             #calculate price base on auction participation
             item_price = (item.price - item.discount) * total
-            status = OrderStatus.REGULAR
+            discount_status = OrderDiscountStatus.REGULAR
             discount = item.discount * total
 
             auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
             if auction:
                 offer = Offer.query.join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
-                status = OrderStatus.INAUCTION
+                discount_status = OrderDiscountStatus.INAUCTION
                 if offer and offer.win:
                     item_price = offer.total_price
-                    status = OrderStatus.AUCTIONWINNER
+                    discount_status = OrderDiscountStatus.AUCTIONWINNER
                     total = 1
                     discount = item.price - offer.total_price
                 else:
@@ -278,13 +277,14 @@ class UserCartOrder(Resource):
             new_order.user = current_user
             new_order.item = item
             new_order.total_cost = item_price
-            new_order.status = status
+            new_order.discount_status = discount_status
+            new_order.status = OrderStatus.UNPAID
             new_order.total = total
             new_order.total_discount = discount
             db.session.add(new_order)
             db.session.commit()
 
-            orders = Order.query.filter_by(user_id=current_user.id).order_by('created_at DESC')
+            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:
@@ -308,7 +308,8 @@ class UserCartOrder(Resource):
                 new_order.item = item;
                 new_order.total_cost = (item.price - item.discount) * total
                 new_order.total = total
-                new_order.status = OrderStatus.REGULAR
+                new_order.status = OrderStatus.UNPAID
+                new_order.discount_status = OrderDiscountStatus.REGULAR
                 new_order.total_discount = item.discount * total
                 order_schema = OrderSchema()
                 session['orders'].append(order_schema.dump(new_order))
@@ -326,16 +327,16 @@ class UserCartOrder(Resource):
             item = new_order.item
             #calculate price base on auction participation
             item_price = (item.price - item.discount) * total
-            status = OrderStatus.REGULAR
+            discount_status = OrderDiscountStatus.REGULAR
             discount = item.discount * total
 
             auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
             if auction:
                 offer = Offer.query.join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
-                status = OrderStatus.INAUCTION
+                discount_status = OrderDiscountStatus.INAUCTION
                 if offer and offer.win:
                     item_price = offer.total_price
-                    status = OrderStatus.AUCTIONWINNER
+                    discount_status = OrderDiscountStatus.AUCTIONWINNER
                     total = 1
                     discount = item.price - offer.total_price
                 else:
@@ -346,12 +347,13 @@ class UserCartOrder(Resource):
                     discount = auctionplan.discount
 
             new_order.total_cost = item_price
-            new_order.status = status
+            new_order.status = OrderStatus.UNPAID
+            new_order.discount_status = discount_status
             new_order.total = total
             new_order.total_discount = discount
             db.session.add(new_order)
             db.session.commit()
-            orders = Order.query.filter_by(user_id=current_user.id).order_by('created_at DESC')
+            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:
@@ -392,9 +394,25 @@ class UserCartOrder(Resource):
                 session['orders'].remove(order)
             return make_response(jsonify(session['orders']), 200)
 
+class UserCoupons(Resource):
+    @jwt_required
+    def get(self):
+        if "coupons" in session:
+            return make_response(jsonify(session['coupons']), 200)
+        else:
+            return make_response(jsonify({"msg":"no coupons"}), 200)
+
+
 class UserCouponApply(Resource):
-    @login_required
+    @jwt_required
     def post(self):
+        if not "coupons" in session:
+            session['coupons'] = []
+
+        if(not current_user.is_authenticated):
+            msg = "کوپن تخفیف فقط برای کاربران عضو تعریف شده است"
+            return make_response(jsonify({"reason":msg, "success":False}),200)
+
         data = request.get_json(force=True)
         coupon_code = data.get("coupon", None)
         #handle invitor copun code
@@ -406,7 +424,7 @@ class UserCouponApply(Resource):
             if coupon.expired:
                 msg =  "کوپن تخفیف مورد نظر منقضی شده است"
                 return make_response(jsonify({"reason":msg, "success":False}),200)
-            
+
             gift_user = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=coupon.id).first()
             if gift_user:
                 if gift_user.used:
@@ -414,96 +432,69 @@ class UserCouponApply(Resource):
                     return make_response(jsonify({"reason":msg, "success":False}),200)
                 else:
                     msg = "این کوپن تخفیف قبلا برای سبد خرید شما ثبت شده است"
-                    return make_response(jsonify({"amount":str(coupon.amount),"title":coupon.title,"reason":msg, "success":True}),200)
+                    return make_response(jsonify({"code":coupon.id, "title":coupon.title, "amount":str(coupon.amount), "reason":msg,"success":True}),200)
             else:
                 current_user.gifts.append(coupon)
                 db.session.add(current_user)
                 db.session.commit()
+                session['coupons'].append({"code":coupon.id,"title":coupon.title ,"amount":str(coupon.amount)})
                 msg ="کد تخفیف مورد نظر شما با موفقیت اعمال شد"
-                return make_response(jsonify({"amount":str(coupon.amount),"title":coupon.title,"reason":msg,"success":True}),200)
+                return make_response(jsonify({"code":coupon.id, "title":coupon.title, "amount":str(coupon.amount), "reason":msg,"success":True}),200)
 
         msg ="لطفا کد تخفیف خود را وارد کنید"
         return make_response(jsonify({"reason":msg, "success":False}),200)
 
-class UserAuctionLikes(Resource):
-    def get(self):
-        if(current_user.is_authenticated):
-            return make_response(jsonify(AuctionSchema(many=True).dump(current_user.auction_likes)),200)
-        else:
-            return make_response(jsonify({"success":False,"message":"برای مشاهده علاقمندی ها باید لاگین کنید"}),400)
-
-    def post(self):
-        if current_user.is_authenticated:
-            data = request.get_json(force=True)
-            auction_id = data['auction_id']
-            auction = Auction.query.get(auction_id)
-            if(not auction in current_user.auction_likes):
-                auction.likes.append(current_user)
-                db.session.add(auction)
-                db.session.commit()
-                return make_response(jsonify({"success":"true","message":"حراجی به علاقمندی های شما اضافه شد"}),200)
-            else:
-                auction.likes.remove(current_user)
-                db.session.add(auction)
-                db.session.commit()
-                return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
-
-        else:
-            return make_response(jsonify({"message":"برای لایک کردن باید به سایت وارد شوید"}),400)
-
-    #TODO: create new Route for this
+    @jwt_required
     def delete(self):
-        if current_user.is_authenticated:
-            data = request.get_json(force=True)
-            auction_id = data['auction_id']
-            auction = Auction.query.get(auction_id)
-            auction.likes.remove(current_user)
-            db.session.add(auction)
+        data = request.get_json(force=True)
+        coupon_code = data.get("coupon_code", None)
+        coupon = None
+        for x in session['coupons']:
+            if x['code'] == coupon_code:
+                coupon = x
+                break
+        if coupon:
+            session['coupons'].remove(coupon)
+            db_coupon = Gift.query.get(coupon_code)
+            user = db_coupon.users.filter_by(id=current_user.id).first()
+            db_coupon.users.remove(user)
+            db.session.add(db_coupon)
             db.session.commit()
-            return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
-        else:
-            return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
-
-class UserFavoriteFilters(Resource):
-    def get(self,order_by_price,order_by,total):
-        now = datetime.now()
-        result = None
-        if order_by_price == "price":
-            result = current_user.auction_likes.join(Item).order_by("price "+order_by).limit(total)
-        else:
-            result = current_user.auction_likes.order_by("start_date "+order_by).limit(total)
-
-        auctions=[]
-        for a in result:
-            auction = Auction.query.get(a.id)
-            auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
-            auction.left_from_created = (auction.created_at - now).seconds
-            auctions.append(auction)
-
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+            return make_response(jsonify({"msg":"کوپن خرید شما با موفقیت حذف شد"}), 200)
 
 class CheckOutInit(Resource):
-    @login_required
     def post(self):
-        unpaid_orders = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).all()
-        payment = Payment()
-        payment.amount = 0
+        if (not current_user.is_authenticated):
+            if "orders" in session:
+                unpaid_orders = session['orders']
+                payment = Payment()
+                payment.amount = 0
+                payment.discount = 0
+                payment_method = PaymentMethod.query.all()[0]
+                payment.payment_method = payment_method
+                db.session.add(payment)
+                db.session.commit()
+        else:
+            unpaid_orders = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).all()
 
-        # TODO: make PaymentMethod nullable in database
-        payment_method = PaymentMethod.query.all()[0]
-        payment.payment_method = payment_method
+            payment = Payment()
+            payment.amount = 0
+            payment.discount = 0
 
-        db.session.add(payment)
-        db.session.commit()
-        current_user.payments.append(payment)
-        db.session.add(current_user)
-        for order in unpaid_orders:
-            payment.amount += order.total_cost
-            order.payment = payment
-            order.payment_id = payment.id
-            db.session.add(order)
+            # TODO: make PaymentMethod nullable in database
+            payment_method = PaymentMethod.query.all()[0]
+            payment.payment_method = payment_method
+
+            db.session.add(payment)
             db.session.commit()
+            current_user.payments.append(payment)
+            db.session.add(current_user)
+            for order in unpaid_orders:
+                payment.amount += order.total_cost
+                order.payment = payment
+                order.payment_id = payment.id
+                db.session.add(order)
+                db.session.commit()
 
         return redirect(url_for('checkout_payment', pid=payment.id))
 
@@ -599,6 +590,64 @@ class UserUnpaidPayments(Resource):
         unpaid_payments = Payment.query.filter_by(user_id=current_user.id, status=PaymentStatus.UNPAID).all()
         payment_schema = PaymentSchema(many=True)
         return make_response(jsonify(payment_schema.dump(unpaid_payments)), 200)
+
+class UserAuctionLikes(Resource):
+    def get(self):
+        if(current_user.is_authenticated):
+            return make_response(jsonify(AuctionSchema(many=True).dump(current_user.auction_likes)),200)
+        else:
+            return make_response(jsonify({"success":False,"message":"برای مشاهده علاقمندی ها باید لاگین کنید"}),400)
+
+    def post(self):
+        if current_user.is_authenticated:
+            data = request.get_json(force=True)
+            auction_id = data['auction_id']
+            auction = Auction.query.get(auction_id)
+            if(not auction in current_user.auction_likes):
+                auction.likes.append(current_user)
+                db.session.add(auction)
+                db.session.commit()
+                return make_response(jsonify({"success":"true","message":"حراجی به علاقمندی های شما اضافه شد"}),200)
+            else:
+                auction.likes.remove(current_user)
+                db.session.add(auction)
+                db.session.commit()
+                return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
+
+        else:
+            return make_response(jsonify({"message":"برای لایک کردن باید به سایت وارد شوید"}),400)
+
+    #TODO: create new Route for this
+    def delete(self):
+        if current_user.is_authenticated:
+            data = request.get_json(force=True)
+            auction_id = data['auction_id']
+            auction = Auction.query.get(auction_id)
+            auction.likes.remove(current_user)
+            db.session.add(auction)
+            db.session.commit()
+            return make_response(jsonify({"success":"true","message":"حراجی از علاقمندی های شما حذف شد"}),200)
+        else:
+            return make_response(jsonify({"message":"برای حذف لایک باید به سایت وارد شوید"}),400)
+
+class UserFavoriteFilters(Resource):
+    def get(self,order_by_price,order_by,total):
+        now = datetime.now()
+        result = None
+        if order_by_price == "price":
+            result = current_user.auction_likes.join(Item).order_by("price "+order_by).limit(total)
+        else:
+            result = current_user.auction_likes.order_by("start_date "+order_by).limit(total)
+
+        auctions=[]
+        for a in result:
+            auction = Auction.query.get(a.id)
+            auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
+            auction.left_from_created = (auction.created_at - now).seconds
+            auctions.append(auction)
+
+        auction_schema = AuctionSchema(many=True)
+        return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class UserAuctionView(Resource):
 

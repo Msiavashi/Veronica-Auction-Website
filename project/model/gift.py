@@ -11,7 +11,7 @@ class Gift(Base):
     amount = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     expired = db.Column(db.Boolean,default=False)
 
-    users = db.relationship('User', secondary='user_gifts', back_populates='gifts')
+    users = db.relationship('User', secondary='user_gifts', back_populates='gifts',lazy='dynamic')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
