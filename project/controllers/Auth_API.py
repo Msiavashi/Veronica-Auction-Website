@@ -30,8 +30,6 @@ def can_access(f):
         return True
     return _eval_access(**f.access_control) == AccessResult.ALLOWED
 
-
-
 class UserRegistration(Resource):
     def post(self):
         data = parser_register.parse_args()
@@ -49,13 +47,14 @@ class UserRegistration(Resource):
 
         try:
             new_user.save_to_db()
-            access_token = create_access_token(identity = data['username'])
+            access_token = create_access_token(identity = data['username'],fresh=True,expires_delta=False)
             refresh_token = create_refresh_token(identity = data['username'])
             return make_response(jsonify({'success': True,'access_token': access_token,'refresh_token': refresh_token}),200)
         except Exception as e:
             return make_response(jsonify({"message":{"error" : str(e)}}), 500)
     def get(self):
         return make_response(jsonify({"message":"online resources register"}),404)
+
 
 class UserLogin(Resource):
     def post(self):
@@ -68,10 +67,10 @@ class UserLogin(Resource):
 
         if User.verify_hash(data['password'], current_user.password):
 
-            access_token = create_access_token(identity = data['username'],fresh=True)
+            access_token = create_access_token(identity = data['username'],fresh=True,expires_delta=False)
             refresh_token = create_refresh_token(identity = data['username'])
 
-            login_user(current_user,remember=True)
+
 
             # Set the JWT cookies in the response
             redirect_to_auction = False
@@ -139,6 +138,7 @@ class UserLogin(Resource):
                         db.session.commit()
                 session.pop('orders')
 
+            login_user(current_user,remember=True)
             set_refresh_cookies(resp, refresh_token)
             set_access_cookies(resp, access_token)
             return make_response(resp,200)

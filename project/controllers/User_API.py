@@ -376,6 +376,14 @@ class UserCartOrder(Resource):
         if current_user.is_authenticated:
             Order.query.filter_by(id=order_id).delete()
             db.session.commit()
+
+            if len(current_user.orders) == 0:
+                for gift in current_user.gifts:
+                    user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=gift.id).first()
+                    if not user_gift.used:
+                        current_user.gifts.remove(gift)
+
+            db.session.commit()
             orders = Order.query.filter_by(user_id=current_user.id)
             result = []
             order_schema = OrderSchema()
@@ -397,17 +405,21 @@ class UserCartOrder(Resource):
 class UserCoupons(Resource):
     @jwt_refresh_token_required
     def get(self):
-        if "coupons" in session:
-            return make_response(jsonify(session['coupons']), 200)
-        else:
-            return make_response(jsonify([]), 200)
+        data = []
+        for gift in current_user.gifts:
+            user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=gift.id).first()
+            if not user_gift.used:
+                data.append({"code":gift.id,"title":gift.title ,"amount":str(gift.amount)})
+            # update extra field for relationship
+            # stmt = user_gifts.update().where(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id).values(used=False)
+            # db.engine.execute(stmt)
+
+        return make_response(jsonify(data), 200)
 
 
 class UserCouponApply(Resource):
     @jwt_required
     def post(self):
-        if not "coupons" in session:
-            session['coupons'] = []
 
         if(not current_user.is_authenticated):
             msg = "کوپن تخفیف فقط برای کاربران عضو تعریف شده است"
@@ -437,7 +449,6 @@ class UserCouponApply(Resource):
                 current_user.gifts.append(coupon)
                 db.session.add(current_user)
                 db.session.commit()
-                session['coupons'].append({"code":coupon.id,"title":coupon.title ,"amount":str(coupon.amount)})
                 msg ="کد تخفیف مورد نظر شما با موفقیت اعمال شد"
                 return make_response(jsonify({"code":coupon.id, "title":coupon.title, "amount":str(coupon.amount), "reason":msg,"success":True}),200)
 
@@ -448,13 +459,7 @@ class UserCouponApply(Resource):
     def delete(self):
         data = request.get_json(force=True)
         coupon_code = data.get("coupon_code", None)
-        coupon = None
-        for x in session['coupons']:
-            if x['code'] == coupon_code:
-                coupon = x
-                break
-        if coupon:
-            session['coupons'].remove(coupon)
+        if coupon_code:
             db_coupon = Gift.query.get(coupon_code)
             user = db_coupon.users.filter_by(id=current_user.id).first()
             db_coupon.users.remove(user)

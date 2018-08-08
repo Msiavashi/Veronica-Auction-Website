@@ -16,8 +16,8 @@ class Gift(Base):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
 
-    def __str__(self):
-        return self.title
+    # def __str__(self):
+    #     return self.title
 
 class GiftSchema(Schema):
     id = fields.Int()

@@ -5,107 +5,108 @@
 	<div class="container">
 		<div class="cart-content-page">
 			<h2 class="title-shop-page">سبد خرید من</h2>
-
-			<div class="table-responsive">
-					<table cellspacing="0" class="shop_table cart table">
-						<thead>
-							<tr>
-								<th class="product-remove" style="width: 5%">حذف</th>
-								<th class="product-thumbnail" style="width: 5%">تصویر</th>
-								<th class="product-name" style="width: 30%">عنوان محصول</th>
-								<th class="product-price" style="width: 20%">قیمت</th>
-								<th class="product-price" style="width: 20%">تخفیف</th>
-								<th class="product-quantity" style="width: 10%">تعداد</th>
-								<th class="product-subtotal" style="width: 10%">جمع کل</th>
-							</tr>
-						</thead>
-
-						<tbody>
-							<template v-for="cart in user_orders">
-								{%raw%}
-								<tr class="cart_item">
-									<td class="product-remove">
-										<a class="remove" href="#" v-on:click="deleteFromCart(cart.id,$event)"><i class="fa fa-times"></i></a>
-									</td>
-									<td class="product-thumbnail">
-										<a href="#"><img  v-bind:src="cart.image" alt=""/></a>
-									</td>
-									<td class="product-name">
-										<a href="#">{{cart.product_title +" - "+ cart.item_title}}</a>
-									</td>
-									<td class="product-price">
-										<span class="amount">{{_ToPersianCurrency(cart.main_price)}} تومان</span>
-									</td>
-									<td class="text-orange">
-										<span class="amount">{{_ToPersianCurrency( cart.main_price - cart.discounted_price)}} تومان</span>
-										<a href="#" data-toggle="tooltip" v-bind:title="_generateTitle(cart.discount_status)"><i class="fas fa-question-circle"></i></a>
-									</td>
-									<td class="product-quantity">
-										<div class="detail-qty border radius">
-											<a href="#" class="qty-down" v-on:click="decreaseTotal(cart.id,$event)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
-											<span class="qty-val">{{_ToPersian(cart.current_quantity)}}</span>
-											<a href="#" class="qty-up" v-on:click="increaseTotal(cart.id,$event)"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
-										</div>
-									</td>
-									<td class="product-subtotal text-green">
-										<span class="amount">{{_ToPersianCurrency(cart.discounted_price)}} تومان </span>
-									</td>
+			<template v-if="user_orders.length != 0">
+				<div class="table-responsive">
+						<table cellspacing="0" class="shop_table cart table">
+							<thead>
+								<tr>
+									<th class="product-remove" style="width: 5%">حذف</th>
+									<th class="product-thumbnail" style="width: 5%">تصویر</th>
+									<th class="product-name" style="width: 30%">عنوان محصول</th>
+									<th class="product-price" style="width: 20%">قیمت</th>
+									<th class="product-price" style="width: 20%">تخفیف</th>
+									<th class="product-quantity" style="width: 10%">تعداد</th>
+									<th class="product-subtotal" style="width: 10%">جمع کل</th>
 								</tr>
-								{%endraw%}
-							</template>
-							<tr>
-								<td class="actions" colspan="7">
-									<span value="کد تخفیف دارید‌؟" name="update_cart" class="button">
-									<span >کد تخفیف دارید‌؟</span>
-										<input v-model="coupon" type="text" placeholder="کد تخفیف ..." value="" class="input-text">
-										<input type="button" @click="handleCoupon" value="اعمال کد تخفیف" class="button_class">
-									</span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			<div class="cart-collaterals">
-				<div class="cart_totals ">
-					<h2>مجموع پرداختی</h2>
-					<div class="table-responsive">
-						<table cellspacing="0" class="table">
+							</thead>
+
 							<tbody>
-								<tr class="cart-subtotal">
-									<th>کل مبلغ سفارش</th>
+								<template v-for="cart in user_orders">
 									{%raw%}
-									<td><strong class="amount">{{total_items_price}} تومان</strong></td>
-									{%endraw%}
-								</tr>
-
-								<template v-for="item in discounts">
-									<tr class="cart-subtotal">
-										{%raw%}
-											<th class="text-orange">
-												{{item.title}}
-												<a class="remove" v-if="item.id == 0" href="#" v-on:click="deleteCoupon(item.code,$event)"><i class="fa fa-times"></i></a>
-											</th>
-											<td><strong class="amount text-orange">{{_ToPersianCurrency(item.discount)}} تومان</strong></td>
-										{%endraw%}
+									<tr class="cart_item">
+										<td class="product-remove">
+											<a class="remove" href="#" v-on:click="deleteFromCart(cart.id,$event)"><i class="fa fa-times"></i></a>
+										</td>
+										<td class="product-thumbnail">
+											<a href="#"><img  v-bind:src="cart.image" alt=""/></a>
+										</td>
+										<td class="product-name">
+											<a href="#">{{cart.product_title +" - "+ cart.item_title}}</a>
+										</td>
+										<td class="product-price">
+											<span class="amount">{{_ToPersianCurrency(cart.main_price)}} تومان</span>
+										</td>
+										<td class="text-orange">
+											<span class="amount">{{_ToPersianCurrency( cart.main_price - cart.discounted_price)}} تومان</span>
+											<a href="#" data-toggle="tooltip" v-bind:title="_generateTitle(cart.discount_status)"><i class="fas fa-question-circle"></i></a>
+										</td>
+										<td class="product-quantity">
+											<div class="detail-qty border radius">
+												<a href="#" class="qty-down" v-on:click="decreaseTotal(cart.id,$event)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
+												<span class="qty-val">{{_ToPersian(cart.current_quantity)}}</span>
+												<a href="#" class="qty-up" v-on:click="increaseTotal(cart.id,$event)"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
+											</div>
+										</td>
+										<td class="product-subtotal text-green">
+											<span class="amount">{{_ToPersianCurrency(cart.discounted_price)}} تومان </span>
+										</td>
 									</tr>
-								</template>
-								<tr class="order-total">
-									<th>مبلغ پرداختی نهایی</th>
-									{%raw%}
-									<td><strong><span class="amount">{{_ToPersianCurrency(final_price)}} تومان</span></strong> </td>
 									{%endraw%}
+								</template>
+								<tr>
+									<td class="actions" colspan="7">
+										<span value="کد تخفیف دارید‌؟" name="update_cart" class="button">
+										<span >کد تخفیف دارید‌؟</span>
+											<input v-model="coupon" type="text" placeholder="کد تخفیف ..." value="" class="input-text">
+											<input type="button" @click="handleCoupon" value="اعمال کد تخفیف" class="button_class">
+										</span>
+									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
-					<div class="wc-proceed-to-checkout">
-						<!-- <a class="checkout-button button alt wc-forward" href="checkout.html">مرحله بعد تایید نهایی</a> -->
-						<form method="post" action="{{url_for('checkoutinit')}}">
-							<input type="submit" value="پرداخت و تایید نهایی"  class="button alt">
-						</form>
+				<div class="cart-collaterals">
+					<div class="cart_totals ">
+						<h2>مجموع پرداختی</h2>
+						<div class="table-responsive">
+							<table cellspacing="0" class="table">
+								<tbody>
+									<tr class="cart-subtotal">
+										<th>کل مبلغ سفارش</th>
+										{%raw%}
+										<td><strong class="amount">{{total_items_price}} تومان</strong></td>
+										{%endraw%}
+									</tr>
+
+									<template v-for="item in discounts">
+										<tr class="cart-subtotal">
+											{%raw%}
+												<th class="text-orange">
+													{{item.title}}
+													<a class="remove" v-if="item.id == 0" href="#" v-on:click="deleteCoupon(item.code,$event)"><i class="fa fa-times"></i></a>
+												</th>
+												<td><strong class="amount text-orange">{{_ToPersianCurrency(item.discount)}} تومان</strong></td>
+											{%endraw%}
+										</tr>
+									</template>
+									<tr class="order-total">
+										<th>مبلغ پرداختی نهایی</th>
+										{%raw%}
+										<td><strong><span class="amount">{{_ToPersianCurrency(final_price)}} تومان</span></strong> </td>
+										{%endraw%}
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="wc-proceed-to-checkout">
+							<!-- <a class="checkout-button button alt wc-forward" href="checkout.html">مرحله بعد تایید نهایی</a> -->
+							<form method="post" action="{{url_for('checkoutinit')}}">
+								<input type="submit" value="پرداخت و تایید نهایی"  class="button alt">
+							</form>
+						</div>
 					</div>
 				</div>
-			</div>
+			</template>
 		</div>
 	</div>
 </div>

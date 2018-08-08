@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 __version__ = '0.1'
-from flask import Flask , session , Response , render_template
+from flask import Flask , session , Response , render_template ,request
 from flask_restful import reqparse, abort, Api, Resource
 from datetime import timedelta
 from flask_debugtoolbar import DebugToolbarExtension
@@ -32,7 +32,8 @@ def check_if_token_in_blacklist(decrypted_token):
     jti = decrypted_token['jti']
     return model.Revoked.is_jti_blacklisted(jti)
 
-Session(app)
+# after production comment this
+# Session(app)
 
 params = {
 	'ping_timeout': 60,
