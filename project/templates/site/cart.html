@@ -53,12 +53,18 @@
 									</tr>
 									{%endraw%}
 								</template>
-								<tr>
+								<tr v-if="coupon_discounts">
 									<td class="actions" colspan="7">
 										<span value="کد تخفیف دارید‌؟" name="update_cart" class="button">
 										<span >کد تخفیف دارید‌؟</span>
 											<input v-model="coupon" type="text" placeholder="کد تخفیف ..." value="" class="input-text">
 											<input type="button" @click="handleCoupon" value="اعمال کد تخفیف" class="button_class">
+										</span>
+									</td>
+								</tr>
+								<tr v-else>
+									<td class="actions" colspan="7">
+											<a href="/login"> اهراز هویت برای اعمال کوپن تخفیف ضروری است !</a>
 										</span>
 									</td>
 								</tr>
@@ -348,7 +354,7 @@ var app = new Vue({
 				});
 			})
 			.catch((response)=>{
-				console.error(response);
+				this.coupon_discounts = null;
 			});
 
 		stop_loading(loading_element);

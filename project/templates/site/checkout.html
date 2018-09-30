@@ -1,11 +1,14 @@
 {% extends 'site/layout.html' %}
 {% block title %} بیدبازی | برندگان گذشته {% endblock %}
 {% block content %}
-<div id="app" class="content-page woocommerce">
+<div v-cloak id="app" class="content-page woocommerce">
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <h2 class="title-shop-page">ثبت نام</h2>
+
+        <h2 class="title-shop-page" v-if="current_user" >ثبت نام</h2>
+        <h2 class="title-shop-page" v-else="current_user" > اطلاعات حساب شما</h2>
+
         <div  class="row">
           <div class="col-md-6 col-sm-6 col-ms-12">
             <div class="check-billing">
@@ -22,11 +25,8 @@
                 </p>
                 <p>
                   <select name="country" id="country">
-                    <option value="">استان *</option>
-                    <option value="">تهران</option>
-                    <option value="">قم</option>
-                    <option value="">رشت</option>
-                    <option value="">لرستان</option>
+                    <option value="null">استان *</option>
+                    <option v-for="state in states" v-bind:value="state.id" :selected="info && info.address && info.address.state.id == state.id" >{%raw%}{{ state.title }}{%endraw%}</option>
                   </select>
                 </p>
                 <p><input type="text" value="آدرس *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
@@ -35,7 +35,9 @@
                   <input type="text" value="شهر / روستا *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
                 </p>
                 <p>
-                  <input type="checkbox"  id="remember" /> <label for="remember">ایجاد یک حساب کاربری؟</label>
+                  <input type="checkbox"  id="remember" />
+                  <label for="remember" v-if="current_user">ایجاد یک حساب کاربری؟</label>
+                  <label for="remember" v-else> بروز رسانی اطلاعات حساب </label>
                 </p>
               </form>
             </div>
@@ -51,6 +53,7 @@
             </div>
           </div>
         </div>
+
         <h3 class="order_review_heading">سفارش شما</h3>
         <div class="woocommerce-checkout-review-order" id="order_review">
           <div class="table-responsive">
@@ -163,8 +166,6 @@
 {% block scripts %}
 {{ super() }}
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
 
 var app = new Vue({
@@ -172,8 +173,11 @@ var app = new Vue({
   el: '#app',
 
   data:{
+    info : null,
+    current_user : "{{current_user.is_authenticated}}",
     shipment_methods: [],
     payment_methods: [],
+    states :[],
     payment_method_id: null,
     shipment_method_id: null,
     shipment_price: 0,
@@ -229,8 +233,25 @@ var app = new Vue({
     }
   },
 
-  created: function(){
+  mounted: function(){
    self = this;
+
+   axios.get("{{url_for('sitestates')}}")
+     .then(function (response) {
+       self.states = response.data[0]
+       console.log(response.data[0]);
+     })
+     .catch(function (error) {
+       console.error(error);
+   });
+   axios.get("{{url_for('userbasicinfo')}}")
+     .then(function (response) {
+       self.info = response.data[0]
+       console.log(response.data[0]);
+     })
+     .catch(function (error) {
+       console.error(error);
+   });
 
     axios.get("{{url_for('paymentmethods')}}")
       .then(function (response) {

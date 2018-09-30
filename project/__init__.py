@@ -33,7 +33,7 @@ def check_if_token_in_blacklist(decrypted_token):
     return model.Revoked.is_jti_blacklisted(jti)
 
 # after production comment this
-# Session(app)
+Session(app)
 
 params = {
 	'ping_timeout': 60,
@@ -59,6 +59,8 @@ login_manager.login_view = 'site.login'
 
 @app.before_request
 def make_session_permanent():
+    print request.remote_addr
+    print request.headers.get('User-Agent')
     session.permanent = True
     permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
     session.modified = True
@@ -120,6 +122,7 @@ api.add_resource(Site_API.SiteMostpopularAuctions, '/site/mostpopular/auctions')
 api.add_resource(Site_API.SiteMostviewedAuctions, '/site/mostviewed/auctions')
 api.add_resource(Site_API.ShipmentMethods, '/site/shipment/methods')
 api.add_resource(Site_API.PaymentMethods, '/site/payment/methods')
+api.add_resource(Site_API.SiteStates, '/site/address/states')
 
 api.add_resource(Auction_API.AuctionInstanceView, '/auction/<int:aid>/instantview')
 api.add_resource(Auction_API.AuctionGetPlans, '/auction/get/plans/<int:aid>')
@@ -130,6 +133,7 @@ api.add_resource(Auction_API.AuctionViewFinished, '/auction/view/finished')
 
 api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:pagesize>')
 api.add_resource(User_API.UserInformation, '/user/information')
+api.add_resource(User_API.UserBasicInfo, '/user/basic/information')
 api.add_resource(User_API.UserContactUs, '/user/contactus')
 api.add_resource(User_API.UserAuctionLikes, '/user/auction/likes')
 api.add_resource(User_API.UserFavoriteFilters, '/user/favorite/filters/<order_by_price>/<order_by>/<int:total>')

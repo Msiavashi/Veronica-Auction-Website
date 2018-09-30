@@ -18,6 +18,12 @@ from ..model.guest_message import GuestMessage
 from definitions import MAX_SEARCH_RESULT
 
 
+class SiteStates(Resource):
+    def get(self):
+        states = State.query.order_by('title DESC').distinct().all()
+        state_schema = StateSchema(many=True)
+        return make_response(jsonify(state_schema.dump(states)),200)
+
 class SiteSearchFilters(Resource):
     def get(self,order_by_price,order_by,total,keyword):
         now = datetime.now()

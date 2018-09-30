@@ -46,6 +46,103 @@ class PaymentsInfo(Resource):
         paymentSchema = PaymentSchema(many=True)
         return make_response(jsonify(paymentSchema.dump(payments)),200)
 
+class UserBasicInfo(Resource):
+    @jwt_required
+    def get(self):
+        return make_response(jsonify(UserSchema.dump(current_user)),200)
+
+    @login_required
+    def post(self):
+        # json_data = request.get_json(force=True)
+
+        user_data = parser_user_account.parse_args()
+
+        current_user.alias_name = request.form.get('alias-name')
+        current_user.first_name = request.form.get('first-name')
+        current_user.last_name = request.form.get('last-name')
+        current_user.work_place = request.form.get('work-place')
+        current_user.mobile = user_data['mobile']
+        current_user.email = request.form.get('email')
+
+        address_data = parser_user_address.parse_args()
+
+        if(not current_user.address):
+            address = Address()
+            address.city = address_data['city']
+            address.address = address_data['address']
+            state = State.query.get(address_data['state'])
+            address.state = state
+            address.postal_code = address_data['postal_code']
+            try:
+                db.session.add(address)
+                db.session.commit()
+                current_user.address = address
+            except Exception as e:
+                return make_response(jsonify({"message": e.message}), 500)
+        else:
+            current_user.address.city = address_data['city']
+            current_user.address.address = address_data['address']
+            state = State.query.get(address_data['state'])
+            current_user.address.state = state
+            current_user.address.postal_code = address_data['postal_code']
+
+        avatar_index = request.form.get('avatar-index',None)
+        if(avatar_index):
+            current_user.avatar = "['"+request.form.get('avatar-index')+"']"
+
+        old_password = request.form.get('current-password',None)
+        new_password = request.form.get('password',None)
+        repeat_password = request.form.get('c_password',None)
+
+        if new_password :
+            if not User.verify_hash(old_password, current_user.password):
+                msg = " رمز عبور قبلی شما نادرست است"
+                return  make_response(jsonify({"message":{"error":msg}}),403)
+
+            if new_password != repeat_password:
+                msg = "رمز عبور جدید با تکرار رمز عبور همخوانی ندارد"
+                return make_response(jsonify({"message": {"confirm-password":msg}}),403)
+
+            current_user.password = User.generate_hash(new_password)
+
+        #handle invitor copun code
+        invitor_code = request.form.get('invitor-code',None)
+
+        if(invitor_code):
+
+            invitor = User.query.filter_by(username=invitor_code).first()
+
+            if(not invitor):
+                msg ="کد معرف مورد نظر موجود نمی باشد"
+                return make_response(jsonify({"message":{"error":msg}}),500)
+            if(invitor.id == current_user.id):
+                msg ="شما قادر به معرفی خود نیستید"
+                return make_response(jsonify({"message":{"error":msg}}),500)
+
+            already_invited = current_user.gifts.filter_by(title='invitor').first()
+
+            if(already_invited):
+                msg = "جایزه کد معرفی شما قبلا استفاده شده است"
+                return make_response(jsonify({"message":{"error":msg}}),400)
+
+            gift = Gift.query.filter_by(title='invitor').first()
+            current_user.gifts.append(gift)
+            current_user.credit += gift.amount
+            current_user.invitor = invitor.username
+            invitor.credit += gift.amount
+            db.session.add(invitor)
+            db.session.commit()
+
+        try:
+            db.session.add(current_user)
+            db.session.commit()
+            msg = " اطلاعات شما با موفقیت ذخیره شد "
+            if new_password :
+                logout_user()
+            return make_response(jsonify({"message":{"success":msg}}),200)
+        except Exception as e:
+            return make_response(jsonify({"message":{"error":e.message}}), 500)
+
 class UserInformation(Resource):
     @login_required
     def get(self):
@@ -472,11 +569,14 @@ class CheckOutInit(Resource):
         if (not current_user.is_authenticated):
             if "orders" in session:
                 unpaid_orders = session['orders']
+                amount = 0
+                discount = 0
+                for order in unpaid_orders:
+                    amount += float(order[0]['total_cost'])
+                    discount += float(order[0]['total_discount'])
                 payment = Payment()
-                payment.amount = 0
-                payment.discount = 0
-                payment_method = PaymentMethod.query.all()[0]
-                payment.payment_method = payment_method
+                payment.amount = amount
+                payment.discount = discount
                 db.session.add(payment)
                 db.session.commit()
         else:
