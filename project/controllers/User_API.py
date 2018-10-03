@@ -164,7 +164,7 @@ class UserInformation(Resource):
             item = Item.query.filter_by(id = auction.item_id).first()
             offer = Offer.query.filter_by(auction_id = auction.id, win=True).first()
             total_discount += item.price - offer.total_price
-        states = State.query.order_by('title DESC').distinct().all()
+        states = State.query.order_by('title').distinct().all()
         state_schema = StateSchema(many=True)
 
         avatars = []

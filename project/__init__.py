@@ -48,7 +48,7 @@ socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet',manage_sess
 
 
 
-app.debug = True
+app.debug = False
 toolbar = DebugToolbarExtension(app)
 
 #login manager

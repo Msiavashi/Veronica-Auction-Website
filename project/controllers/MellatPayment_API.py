@@ -78,7 +78,7 @@ class MellatGateway(Resource):
         payment = Payment.query.get(pid)
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
         payment.GUID = int(time.time())
-        pay_token = bml.request_pay_ref( payment.GUID, int(payment.amount) * 10, "http://bidbazi.ir/api/user/mellat/callback", "درگاه پرداخت بیدبازی")
+        pay_token = bml.request_pay_ref( payment.GUID, int(payment.amount) * 10, "http://bidbazi.ir/api/user/mellat/callback", "درگاه پرداخت یونی بید")
         payment.ref_id = pay_token
         db.session.add(payment)
         db.session.commit()

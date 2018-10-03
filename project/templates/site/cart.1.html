@@ -1,5 +1,5 @@
 {% extends 'site/layout.html' %}
-{% block title %} بیدبازی | سبد خرید  {% endblock %}
+{% block title %} یونی بید | سبد خرید  {% endblock %}
 {% block content %}
 <div v-cloak id="app" class="content-page woocommerce">
 	<div class="container">
@@ -205,7 +205,7 @@ var app = new Vue({
 	caret_increase: function(order){
 		if (parseInt( this.quantities[order[0].id].current_quantity ) < parseInt(this.quantities[order[0].id].max_available_quantity)){
 			this.quantities[order[0].id].current_quantity = parseInt(this.quantities[order[0].id].current_quantity) + 1;
-			
+
 			this.user_orders.forEach(order => {
 				order[0].total = self.quantities[order[0].id].current_quantity;
 			});
