@@ -9,8 +9,7 @@ from flask_login import current_user,login_required,logout_user
 from .model import *
 from . import app,login_manager
 from urlparse import urlparse, urljoin
-from .controllers.PyMellat.PyMellat import *
-from .controllers.MellatPayment_API import MellatGateway
+from .controllers.Payment_API import MellatGateway
 from definitions import *
 import time
 from flask_jwt_extended import (

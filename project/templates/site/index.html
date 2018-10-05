@@ -404,7 +404,7 @@
 
 			}
 		});
-		console.log('syncing...');
+		//console.log('syncing...');
 	});
 
 	app = new Vue({
@@ -584,7 +584,9 @@
 				}, 5000);
 		},
 		updated:function() {
-			stop_loading(loading_element);
+			setTimeout(function() {
+				stop_loading(loading_element);
+			},2000);
 		},
 		directives: {
 			flashtimer:{

@@ -3,7 +3,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 from flask_restful import Resource
-from PyMellat.PyMellat import BMLPaymentAPI
+from Payment.PyMellat import BMLPaymentAPI
+from Payment.Zarinpal import ZarinpalPaymentAPI
 from flask_login import login_required, current_user
 from flask import make_response, jsonify, url_for, request, render_template ,redirect
 from definitions import BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID, BANK_MELLAT_USERNAME
@@ -12,6 +13,7 @@ from ..model.payment import *
 from ..model.order import *
 from ..model.user import *
 import time
+from flask_jwt_extended import jwt_required
 
 '''
 # Request Payment Token:
@@ -32,13 +34,14 @@ bml.settle_payment(long(SaleOrderId), SaleReferenceId)
 
 class MellatGatewayCallBack(Resource):
     def post(self):
-        print request.form
         print "mellat callback"
+        print request.form
         data = request.form
         ref_id = data['RefId']
         res_code = data['ResCode']
         sale_order_id = data['SaleOrderId']
         sale_refrence_id = data['SaleReferenceId']
+
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
         verify_res = bml.verify_payment(sale_order_id,sale_refrence_id)
 
@@ -66,10 +69,8 @@ class MellatGatewayCallBack(Resource):
         # return make_response(jsonify({"success": True, "message": {"success": "پرداخت با موفقیت انجام شد"}}), 200)
         # return make_response(jsonify({"success": False, "message": {"error": "پرداخت با خطا مواجه شد"}}), 400)
 
-
-
 class MellatGateway(Resource):
-    @login_required
+    @jwt_required
     def post(self):
         # current_user = User.query.filter_by(username="mohammad").first()
         # if not request.is_json:
@@ -78,7 +79,7 @@ class MellatGateway(Resource):
         payment = Payment.query.get(pid)
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
         payment.GUID = int(time.time())
-        pay_token = bml.request_pay_ref( payment.GUID, int(payment.amount) * 10, "http://bidbazi.ir/api/user/mellat/callback", "درگاه پرداخت یونی بید")
+        pay_token = bml.request_pay_ref( payment.GUID, int(payment.amount) * 10, "http://unibid.ir/api/user/mellat/callback", "درگاه پرداخت یونی بید")
         payment.ref_id = pay_token
         db.session.add(payment)
         db.session.commit()
@@ -87,3 +88,44 @@ class MellatGateway(Resource):
             return make_response(jsonify({'success':True,"ref_id": pay_token}), 200)
         else:
             return make_response(jsonify({'success':False,"pay_token":pay_token,"message":"خطای بانک"}),400)
+
+class ZarinpalGateway(Resource):
+    @jwt_required
+    def post(self):
+        data = request.get_json(force=True)
+        pid = int(data.get("pid", None))
+        print "pid",pid
+        payment = Payment.query.get(pid)
+        zpl = ZarinpalPaymentAPI()
+        payment.GUID = int(time.time())
+        pay_token = zpl.send_request(int(payment.amount),current_user.email,current_user.mobile,"http://unibid.ir/api/user/zarinpal/gateway/callback" ,"درگاه پرداخت یونی بید")
+        payment.ref_id = pay_token.Authority
+        db.session.add(payment)
+        db.session.commit()
+        print pay_token
+        if pay_token.Status==100:
+            return make_response(jsonify({'success':True,"ref_id": pay_token.Authority}), 200)
+        else:
+            return make_response(jsonify({'success':False,"pay_token":pay_token.Authority,"message":"خطای پرداخت"}),400)
+
+
+class ZarinpalGatewayCallback(Resource):
+    def get(self):
+        status = request.args.get('Status')
+        authority = request.args.get('Authority')
+
+        payment = Payment.query.filter_by(ref_id=authority).first()
+
+        zpl = ZarinpalPaymentAPI()
+        verify_res = zpl.verify(status,authority,payment.amount)
+
+        if verify_res == 100:
+            payment.status = PaymentStatus.PAID
+            payment.sale_refrence_id = str(sale_refrence_id)
+        else:
+            payment.status = PaymentStatus.ERROR
+
+        db.session.add(payment)
+        db.session.commit()
+
+        return redirect('/callback/payment/'+str(payment.id))

@@ -48,7 +48,7 @@ socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet',manage_sess
 
 
 
-app.debug = False
+app.debug = True
 toolbar = DebugToolbarExtension(app)
 
 #login manager
@@ -138,8 +138,12 @@ api.add_resource(User_API.UserContactUs, '/user/contactus')
 api.add_resource(User_API.UserAuctionLikes, '/user/auction/likes')
 api.add_resource(User_API.UserFavoriteFilters, '/user/favorite/filters/<order_by_price>/<order_by>/<int:total>')
 # api.add_resource(User_API.CartOrder, '/cart/order')
-api.add_resource(MellatPayment_API.MellatGateway, '/mellat/payment/gateway')
-api.add_resource(MellatPayment_API.MellatGatewayCallBack, '/user/mellat/callback')
+api.add_resource(Payment_API.MellatGateway, '/mellat/gateway')
+api.add_resource(Payment_API.MellatGatewayCallBack, '/user/mellat/gateway/callback')
+
+api.add_resource(Payment_API.ZarinpalGateway, '/zarinpal/gateway')
+api.add_resource(Payment_API.ZarinpalGatewayCallback, '/user/zarinpal/gateway/callback')
+
 api.add_resource(User_API.UserApplyPayment, '/user/apply/payment/<int:pid>')
 api.add_resource(User_API.UserCartOrder, '/user/cart/order')
 

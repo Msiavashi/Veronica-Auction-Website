@@ -32,3 +32,4 @@ class PaymentMethodSchema(Schema):
     title = fields.Str()
     description = fields.Str()
     details = fields.Str()
+    type = fields.Int()

@@ -65,7 +65,7 @@
 								<li class="payment_method_cheque">
 									<input v-methodradio v-bind:id="method.id" type="radio" data-order_button_text="" v-on:click="_select_method(method.id)" name="method" class="input-radio">
 									{%raw%}
-										<label v-if="index==0" v-bind:for="method.id">{{method.title}}({{_ToPersian(_formatCurrency(credit))}}) </label>
+										<label v-if="method.type==0" v-bind:for="method.id">{{method.title}}({{_ToPersian(_formatCurrency(credit))}}) </label>
 										<label v-else v-bind:for="method.id">{{method.title}}</label>
 									{%endraw%}
 								</li>
@@ -122,12 +122,12 @@ var app = new Vue({
 		_updatePrices(id,selected_price){
 			this.selected_plan_price = selected_price ;
 			total_price = selected_price - this.credit;
-			if(total_price < 0){
-				this.total_plan_price = 0;
-			}
-			else {
-				this.total_plan_price = selected_price - this.credit;
-			}
+			// if(total_price < 0){
+			// 	this.total_plan_price = 0;
+			// }
+			// else {
+			this.total_plan_price = selected_price ;
+			// }
 			this.credit_fraction = this.credit - selected_price ;
 
 			this.plan_id = id;

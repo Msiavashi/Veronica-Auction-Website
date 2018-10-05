@@ -1,26 +1,26 @@
 {% extends 'site/layout.html' %}
 {% block title %}یونی بید | وضعیت پرداخت شما {% endblock %}
 {% block content %}
-<input type="hidden" id="pid" value="{{pid}}">
-<div class="Package" id="app">
+<div class="content-page" id="app">
+	<div class="Package">
 	<div class="container">
 		<div class="product-quickview woocommerce">
 			<div class="row">
 				<h3 class="order_review_heading">وضعیت پرداخت</h3>
 				<div class="woocommerce-checkout-review-order" id="order_review">
 					<div class="table-responsive">
-						<table class="shop_table woocommerce-checkout-review-order-table">
+						<table v-cloak class="shop_table woocommerce-checkout-review-order-table">
 
 							<tfoot>
 								{% raw %}
 									<tr v-if="payment_status" class="order-total">
 										<th>{{payment_message}}</th>
-										<td><strong><span class="amount">شماره پیگیری :<span>{{payment_ref_id}}</span></span></strong> </td>
+										<td><strong><span class="amount"><span>{{payment_ref_id}}</span></span></strong> </td>
 									</tr>
 
 										<tr v-else  class="cart-subtotal">
 											<th class="text-orange">{{payment_message}}</th>
-											<td><strong><span class="amount text-orange">شماره پیگیری :<span>{{payment_ref_id}}</span></span></strong> </td>
+											<td><strong><span class="amount text-orange"><span>{{payment_ref_id}}</span></span></strong> </td>
 										</tr>
 									{% endraw %}
 							</tfoot>
@@ -32,10 +32,11 @@
 		</div>
 	</div>
 </div>
+</div>
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+
 <script>
 
 var app = new Vue({
@@ -44,31 +45,22 @@ var app = new Vue({
 		payment_status:false,
 		payment_message:"",
 		payment_ref_id:"",
+		payment_id : {{pid}}
+	},
+	mounted:function() {
+		axios.get("{{url_for('userapplypayment',pid=pid)}}")
+		.then((response) => {
+			console.log(response.data);
+			this.payment_status = response.data.success;
+			this.payment_ref_id =  "کد پیگیری : " + response.data.token;
+			this.payment_message = response.data.message;
+		})
+		.catch((response)=>{
+			console.error(response);
+		});
+
 	}
 });
-
-pid = $('#pid').val()
-
-function applyPayment() {
-	pid = $('#pid').val();
-	$.ajax({
-		url: "/api/user/apply/payment/"+ pid,
-		type: 'get',
-		dataType: 'json',
-		error:function(data){
-			console.log(data);
-			app.payment_status = false;
-			app.payment_ref_id = data.responseJSON.token;
-			app.payment_message = data.responseJSON.message;
-		},
-		success:function(data) {
-			app.payment_status = true;
-			app.payment_ref_id = data.responseJSON.token;
-			app.payment_message = data.responseJSON.message;
-		}
-	});
-}
-applyPayment();
 
 </script>
 {% endblock scripts %}

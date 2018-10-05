@@ -652,7 +652,7 @@ class UserCheckoutConfirm(Resource):
 
 
 class UserApplyPayment(Resource):
-    @login_required
+    @jwt_required
     def get(self,pid):
         payment = Payment.query.get(pid)
 
@@ -677,7 +677,7 @@ class UserApplyPayment(Resource):
             unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).delete()
             db.session.commit()
             msg = "پرداخت شما موفقیت آمیز نبود"
-            return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),400)
+            return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),200)
 
 class UserUnpaidOrders(Resource):
 

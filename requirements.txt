@@ -14,4 +14,6 @@ flask_restful
 flask_security
 flask_admin
 psycopg2
-suds
+MarkupSafe==0.23
+itsdangerous==0.24
+wsgiref==0.1.2

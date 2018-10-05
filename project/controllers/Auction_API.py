@@ -99,6 +99,7 @@ class AuctionUserParticipation(Resource):
             payment.amount = amount
             payment.payment_method = payment_method
             payment.status = PaymentStatus.UNPAID
+            payment.discount = 0
 
             plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
             auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
@@ -144,6 +145,6 @@ class AuctionGetPlans(Resource):
         auction=Auction.query.get(aid)
         plans = auction.plans.order_by('price DESC')
         plan_schema = AuctionPlanSchema(many=True)
-        payment_methods = PaymentMethod.query.all()
+        payment_methods = PaymentMethod.query.order_by('type')
         payment_method_schema = PaymentMethodSchema(many=True)
         return make_response(jsonify({"plans":plan_schema.dump(plans),"methods":payment_method_schema.dump(payment_methods)}),200)

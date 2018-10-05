@@ -420,8 +420,7 @@ jQuery(window).on('load',function(){
 			});
 
 		}
-
-	},1000);
+	},2000);
 
 
 
