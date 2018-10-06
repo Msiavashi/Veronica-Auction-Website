@@ -433,8 +433,8 @@ var app = new Vue({
  function check_seconds() {
 	running_timer = true;
 	timer_sentinal -= 1000;
-	console.log('timer_sentinal');
-	console.log(timer_sentinal);
+	// console.log('timer_sentinal');
+	// console.log(timer_sentinal);
 
 	seconds = timer_sentinal / 1000;
 	if (( seconds  < 60  ) && (seconds  > 10) ) {
@@ -529,10 +529,7 @@ socket.on("unauthorized", function(data){
 });
 
 socket.on("failed", function(data){
-	// app.error.show = true;
-	// app.error.message = data.reason;
-	// app.$forceUpdate();
-	// console.log("failed");
+
 	$(".error_alert").removeClass('hide');
 	$(".error_container").html(data.reason);
 });
@@ -596,11 +593,6 @@ $('.close').on('click',function(event){
 	event.preventDefault();
 	$(this).parent().removeClass('show').addClass('hide')
 });
-
-
-
-
-
 
 </script>
 

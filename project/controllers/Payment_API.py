@@ -121,7 +121,6 @@ class ZarinpalGatewayCallback(Resource):
 
         if verify_res == 100:
             payment.status = PaymentStatus.PAID
-            payment.sale_refrence_id = str(sale_refrence_id)
         else:
             payment.status = PaymentStatus.ERROR
 

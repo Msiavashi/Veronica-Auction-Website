@@ -121,7 +121,6 @@ jQuery(document).ready(function(){
 	$('.login-to-register').on('click',function(event){
 		event.preventDefault();
 		$(this).toggleClass('login-status');
-		console.log($(this).hasClass('login-status'));
 		if($(this).hasClass('login-status')){
 			$(this).text($(this).attr('data-login'));
 			$(this).parents('.register-content-box').find('.block-login').hide();
@@ -384,7 +383,7 @@ jQuery(document).ready(function(){
 	}
 });
 //Window Load
-console.log('onload');
+
 jQuery(window).on('load',function(){
 	//Custom ScrollBar
 	if($('.custom-scroll').length>0){

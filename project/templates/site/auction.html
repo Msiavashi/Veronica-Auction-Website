@@ -472,8 +472,8 @@ var app = new Vue({
  function check_seconds() {
 	running_timer = true;
 	timer_sentinal -= 1000;
-	console.log('timer_sentinal');
-	console.log(timer_sentinal);
+	// console.log('timer_sentinal');
+	// console.log(timer_sentinal);
 
 	seconds = timer_sentinal / 1000;
 	if (( seconds  < 60  ) && (seconds  > 10) ) {
@@ -501,10 +501,7 @@ var app = new Vue({
 	}
  }
 
-
-
 	app.socket.on("remaining_time", function(seconds){
-
 
 		stop_loading(loading_element);
 
@@ -513,25 +510,6 @@ var app = new Vue({
 			running_timer = true;
 			timer = setInterval(check_seconds,1000);
 	}
-	// if (( seconds  < 60 ) && (seconds  > 9) ) {
-	// 	$('#tiles').removeClass('color-full');
-	// 	$('#tiles').addClass('color-half');
-	// } else{
-	// 	$('#tiles').addClass('color-full');
-	// 	$('#tiles').removeClass('color-half');
-	// }
-	// if ( seconds < 10 ) {
-	// 	$('#tiles').removeClass('color-half');
-	// 	$('#tiles').addClass('color-empty');
-	// }
-	// else{
-	// 	$('#tiles').addClass('color-full');
-	// 	$('#tiles').removeClass('color-empty');
-	// }
-
-	//
-	// const formatted = moment.utc(seconds*1000).format('HH:mm:ss');
-	// app.remainingTime = formatted;
 
 	$(".flash-countdown").data('timer', seconds).TimeCircles({
 			"total_duration": seconds
@@ -568,10 +546,7 @@ app.socket.on("unauthorized", function(data){
 });
 
 app.socket.on("failed", function(data){
-	// app.error.show = true;
-	// app.error.message = data.reason;
-	// app.$forceUpdate();
-	// console.log("failed");
+
 	$(".error_alert").removeClass('hide');
 	$(".error_container").html(data.reason);
 });

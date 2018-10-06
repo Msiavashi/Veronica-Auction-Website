@@ -72,6 +72,18 @@ class RoleAdmin(ModelView):
         return current_user.has_role('admin')
 
 class ItemAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['title', 'description']
+    column_editable_list = ['title', 'description','price','quantity','discount']
+    column_exclude_list = ['description', ]
+    form_widget_args = {
+    'description': {
+    'rows': 10,
+    'style': 'color: black'
+    }
+    }
+
     def is_accessible(self):
         return current_user.has_role('admin')
 
@@ -136,6 +148,18 @@ class CategoryAdmin(ModelView):
                                                             thumbnail_size=(64, 64, 1))}
 
 class ProductAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['title', 'desciption']
+    column_editable_list = ['title', 'desciption']
+    column_exclude_list = ['desciption', ]
+    form_widget_args = {
+    'desciption': {
+    'rows': 10,
+    'style': 'color: black'
+    }
+    }
+
     def is_accessible(self):
         return current_user.has_role('admin')
         # return True

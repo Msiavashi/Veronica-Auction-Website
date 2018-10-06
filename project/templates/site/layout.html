@@ -610,7 +610,7 @@
                 });
             });
           }
-        console.log('syncing carts...');
+        //console.log('syncing carts...');
       });
     },
 
@@ -697,8 +697,8 @@
             }
             app.user_orders = this.mycarts;
           })
-          .catch((response)=>{
-            console.log(response);
+          .catch((error)=>{
+            console.log(error);
           });
 
       },
@@ -706,8 +706,7 @@
       deleteFromCart:function(id,event){
         event.preventDefault();
         cart = this.mycarts.find(x => x.id == id);
-        console.log(id);
-        console.log(cart);
+
         axios.delete("{{url_for('usercartorder')}}",
           {
             data:{"order_id": cart.id},
