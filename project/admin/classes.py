@@ -54,8 +54,7 @@ class UserAdmin(ModelView):
             return None
 
         def gen_img(filename):
-            return '<img src="{}">'.format(url_for('static',
-                                                   filename="images/avatars/" + form.thumbgen_filename(model.avatar)))
+            return '<img src="{}">'.format(url_for('static',filename="images/avatars/" + form.thumbgen_filename(model.avatar).split("'")[1]))
 
         return Markup("<br />".join(gen_img(model.avatar) for image in ast.literal_eval(model.avatar)))
 
@@ -93,7 +92,7 @@ class ItemAdmin(ModelView):
 
         def gen_img(filename):
             return '<img src="{}">'.format(url_for('static',
-                                                   filename="images/products/" + form.thumbgen_filename(model.images)))
+                                                   filename="images/products/" + form.thumbgen_filename(model.images).split("'")[1]))
 
         return Markup("<br />".join(gen_img(model.images) for image in ast.literal_eval(model.images)))
 

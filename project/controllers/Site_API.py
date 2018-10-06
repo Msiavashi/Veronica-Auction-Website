@@ -20,7 +20,7 @@ from definitions import MAX_SEARCH_RESULT
 
 class SiteStates(Resource):
     def get(self):
-        states = State.query.order_by('title DESC').distinct().all()
+        states = State.query.order_by('title').distinct().all()
         state_schema = StateSchema(many=True)
         return make_response(jsonify(state_schema.dump(states)),200)
 
@@ -206,15 +206,15 @@ class UserContactUs(Resource):
         return redirect(url_for('index'))
 
 
-class PaymentMethods(Resource):
+class SitePaymentMethods(Resource):
 
     def get(self):
-        payment_methods = PaymentMethod.query.all()
+        payment_methods = PaymentMethod.query.order_by('type').all()
         payment_methods_schema = PaymentMethodSchema(many=True)
         return make_response(jsonify(payment_methods_schema.dump(payment_methods)), 200)
 
 
-class ShipmentMethods(Resource):
+class SiteShipmentMethods(Resource):
 
     def get(self):
         shipment_methods = ShipmentMethod.query.all()

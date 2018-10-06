@@ -17767,3 +17767,13 @@ ul.checkout-bar a {
 [v-cloak] {
   display: none;
 }
+
+.payment_gateway{
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+}
+.payment_gateway:hover{
+  border: 1px solid #8507f2;
+  cursor: pointer;
+}

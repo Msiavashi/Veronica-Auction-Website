@@ -1,3 +1,5 @@
+import os
+import os.path as op
 from PIL import Image
 from wtforms.widgets import html_params, HTMLString
 import ast
@@ -6,6 +8,7 @@ from flask_admin._compat import string_types, urljoin
 from wtforms.utils import unset_value
 from flask_admin.helpers import get_url
 from flask_admin.form.upload import ImageUploadField
+import datetime
 
 class MultipleImageUploadInput(object):
     empty_template = "<input %(file)s multiple>"
@@ -80,6 +83,7 @@ class MultipleImageUploadField(ImageUploadField):
 
             for filename in filenames[:]:
                 if filename + "-delete" in self.formdata:
+                    print "delete",filename
                     self._delete_file(filename)
                     filenames.remove(filename)
         else:
@@ -90,6 +94,12 @@ class MultipleImageUploadField(ImageUploadField):
                 self.image = Image.open(data)
 
                 filename = self.generate_name(obj, data)
+                ext = filename.split(".")[-1]
+                main_name = filename.split(".")[0]
+
+                suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
+                filename = "_".join([main_name, suffix]) + "." + ext
+
                 filename = self._save_file(data, filename)
 
                 data.filename = filename
@@ -97,3 +107,14 @@ class MultipleImageUploadField(ImageUploadField):
                 filenames.append(filename)
 
         setattr(obj, name, str(filenames))
+
+    def _delete_file(self, filename):
+        path = self._get_path(filename)
+        thumb_path = self._get_path(form.thumbgen_filename(filename))
+        print "delete thumb path :",thumb_path
+        if op.exists(path):
+            print "prepare for delete main file"
+            os.remove(path)
+        if op.exists(thumb_path):
+            print "prepare for delete thumb file"
+            os.remove(thumb_path)

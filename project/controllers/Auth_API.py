@@ -19,6 +19,7 @@ parser_register.add_argument('username', help = 'ورود نام کاربری ض
 parser_register.add_argument('mobile', help = 'ورود شماره همراه ضروری است', required = True)
 parser_register.add_argument('password', help = 'ورود رمز عبور ضروری است', required = True)
 parser_register.add_argument('c_password', help = 'ورود تکرار رمز عبور ضروری است', required = True)
+parser_register.add_argument('accept_roles', help = 'تایید مقررات سایت الزامی است', required = True)
 
 parser_login = reqparse.RequestParser()
 parser_login.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)

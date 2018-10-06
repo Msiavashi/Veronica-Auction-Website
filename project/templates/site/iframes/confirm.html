@@ -5,7 +5,7 @@
 	<div class="Package">
 		<div class="container">
 			<div class="product-quickview woocommerce">
-				<div class="row">
+
 					<h3 class="order_review_heading">تایید پرداخت</h3>
 					<div class="woocommerce-checkout-review-order" id="order_review">
 						<div class="table-responsive">
@@ -27,22 +27,20 @@
 							</table>
 						</div>
 						<div class="woocommerce-checkout-payment" id="payment">
-							<div class="form-row place-order">
-								<form id="confirm1" action="https://bpm.shaparak.ir/pgwchannel/startpay.mellat" method="post">
-									{%raw%}
-									<input type="hidden" name="RefId" id="RefId" value="{{ref_id}}">
-									{%endraw%}
-									<input type="submit" value="درگاه پرداخت ملت" class="button alt">
-								</form>
+							<div class="form-row place-order" style="text-align:center">
+								<!-- <form style="display:inline-block" id="confirm1" action="https://bpm.shaparak.ir/pgwchannel/startpay.mellat" method="post">
+									{%raw%}<input type="hidden" name="RefId" id="RefId" value="{{ref_id}}">{%endraw%}
+									<img src="/static/img/mellat.jpg" class="payment_gateway" onclick="$(this).parent().submit()">
+								</form> -->
 								{%raw%}
-								<form id="confirm2" v-bind:action="'https://www.zarinpal.com/pg/StartPay/'+ref_id" method="get">
-									<input type="submit" value="درگاه پرداخت زرین پال" class="button alt">
+								<form style="display:inline-block" id="confirm2" v-bind:action="'https://www.zarinpal.com/pg/StartPay/'+ref_id" method="get">
+									<img src="/static/img/zarinpal.png" class="payment_gateway" onclick="$(this).parent().submit()">
 								</form>
 								{%endraw%}
 							</div>
 						</div>
 					</div>
-				</div>
+
 			</div>
 		</div>
 	</div>

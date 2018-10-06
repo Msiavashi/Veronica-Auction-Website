@@ -577,6 +577,7 @@ class CheckOutInit(Resource):
                 payment = Payment()
                 payment.amount = amount
                 payment.discount = discount
+                payment.payment_method = PaymentMethod.query.filter_by(type=0).first()
                 db.session.add(payment)
                 db.session.commit()
         else:
@@ -671,12 +672,12 @@ class UserApplyPayment(Resource):
 
             db.session.add(current_user)
             db.session.commit()
-            msg = "پرداخت شما با موفقیت انجام شد"
+            msg = "پرداخت موفق"
             return make_response(jsonify({"success":True,"message":msg,"token":payment.ref_id}),200)
         else:
             unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).delete()
             db.session.commit()
-            msg = "پرداخت شما موفقیت آمیز نبود"
+            msg = "پرداخت ناموفق"
             return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),200)
 
 class UserUnpaidOrders(Resource):

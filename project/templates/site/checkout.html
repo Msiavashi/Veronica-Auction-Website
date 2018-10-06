@@ -94,7 +94,7 @@
                   <td>
                     <ul  id="shipping_method" class="list-none">
                       <li v-for="(shipment, index) in shipment_methods">
-                        <input type="radio" @click="update_shipment_data(shipment.price ,shipment.id)" class="shipping_method" value="local_delivery" :id="index" data-index="0" name="shipping_method[0]">
+                        <input v-shipmentradio type="radio" @click="update_shipment_data(shipment.price ,shipment.id)" class="shipping_method" value="local_delivery" :id="index" data-index="0" name="shipping_method">
                         <label :for="index">{%raw%} {{shipment.title}} {%endraw%}</label>
                       </li>
                     </ul>
@@ -122,7 +122,7 @@
           <div class="woocommerce-checkout-payment" id="payment">
             <ul v-for="payment_method in payment_methods" class="payment_methods methods list-none">
               <li class="payment_method_bacs">
-                <input @click="update_payment_id(payment_method.id)" type="radio" data-order_button_text=""  name="payment_method" class="input-radio" id="payment_method_bacs" checked="checked">
+                <input v-paymentradio @click="update_payment_id(payment_method.id)" type="radio" data-order_button_text=""  name="payment_method" class="input-radio" id="payment_method_bacs" checked="checked">
                 <label for="payment_method_bacs">{%raw%} {{payment_method.title}} {%endraw%}</label>
                 <div class="payment_box payment_method_bacs">
                   <p>{%raw%}{{payment_method.description}}{%endraw%}</p>
@@ -217,7 +217,7 @@ var app = new Vue({
       bodyFormData.set('shipment_method_id', this.shipment_method_id);
       axios({
         method: 'POST',
-        url: '/api/user/checkout/confirm/payment/{{pid}}',
+        url: "{{url_for('usercheckoutconfirm',pid=pid)}}",
         data: bodyFormData,
         config: { headers: {'Content-Type': 'multipart/form-data' }}
       })
@@ -253,7 +253,7 @@ var app = new Vue({
        console.error(error);
    });
 
-    axios.get("{{url_for('paymentmethods')}}")
+    axios.get("{{url_for('sitepaymentmethods')}}")
       .then(function (response) {
         self.payment_methods = response.data[0];
         self.payment_method_id = self.payment_methods[0].id
@@ -264,7 +264,7 @@ var app = new Vue({
     });
 
 
-    axios.get("{{url_for('shipmentmethods')}}")
+    axios.get("{{url_for('siteshipmentmethods')}}")
       .then(function (response) {
         self.shipment_methods = response.data[0];
         self.shipment_method_id = self.shipment_methods[0].id
@@ -302,7 +302,21 @@ var app = new Vue({
     //   });
 
     // });
-  }
+  },
+
+  directives: {
+
+		shipmentradio:{
+			inserted:function(el) {
+				$("input:radio[name=shipping_method]:first").click();
+			}
+		},
+		paymentradio:{
+			inserted:function(el) {
+				$("input:radio[name=payment_method]:first").click();
+			}
+		},
+	}
 
 
 
