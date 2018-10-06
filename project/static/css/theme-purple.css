@@ -17240,7 +17240,7 @@ td.product-info-total .product-info .desc {
 /*Media query*/
 @media only screen and (max-width: 900px) {
   #tabMenu label.tablabel span {
-    display: none;
+    /*display: none;*/
   }
 
   #tabMenu.tab_container {

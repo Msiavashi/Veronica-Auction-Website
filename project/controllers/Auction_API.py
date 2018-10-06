@@ -104,6 +104,7 @@ class AuctionUserParticipation(Resource):
             plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
             auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
             unpain_user_plan = UserPlan.query.filter_by(auction_plan_id = auction_plan.id,user_id=current_user.id,auction_id=auction.id).delete()
+
             db.session.commit()
 
 

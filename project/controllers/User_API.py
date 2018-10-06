@@ -317,8 +317,6 @@ class UserContactUs(Resource):
 parser = reqparse.RequestParser()
 parser.add_argument('item_id')
 
-
-
 class UserCartOrder(Resource):
     def get(self):
 
@@ -513,7 +511,6 @@ class UserCoupons(Resource):
 
         return make_response(jsonify(data), 200)
 
-
 class UserCouponApply(Resource):
     @jwt_required
     def post(self):
@@ -651,7 +648,6 @@ class UserCheckoutConfirm(Resource):
         else:
             return make_response(jsonify({'success': False, "message": {"error": "روش پرداخت مورد نظر وجود ندارد"}}, 406))
 
-
 class UserApplyPayment(Resource):
     @jwt_required
     def get(self,pid):
@@ -687,7 +683,6 @@ class UserUnpaidOrders(Resource):
         unpaid_orders = Order.query.filter_by(status=OrderStatus.UNPAID, user_id = current_user.id).all()
         order_schema = OrderSchema(many=True)
         return make_response(jsonify(order_schema.dump(unpaid_orders)), 200)
-
 
 class UserUnpaidPayments(Resource):
 
@@ -782,3 +777,24 @@ class UserAuctionView(Resource):
             return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 406)
         else:
             pass
+
+class UserChargeWalet(Resource):
+    @jwt_required
+    def post(self):
+        data = request.get_json(force=True)
+        charge_amount = data.get("charge_amount", None)
+
+        payment_method = PaymentMethod.query.filter_by(type = Payment_Types.Online).first()
+
+        payment = Payment()
+        payment.amount = charge_amount
+        payment.payment_method = payment_method
+        payment.status = PaymentStatus.UNPAID
+        payment.discount = 0
+
+        current_user.payments.append(payment)
+        db.session.add(current_user)
+        db.session.commit()
+
+        msg = " برای پرداخت به صفحه تایید هدایت می شوید"
+        return make_response(jsonify({'success':True,"type":"redirect_to_bank","pid":payment.id,"message":msg}),200)

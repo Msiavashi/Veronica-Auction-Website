@@ -48,7 +48,7 @@ socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet',manage_sess
 
 
 
-app.debug = True
+app.debug = False
 toolbar = DebugToolbarExtension(app)
 
 #login manager
@@ -137,6 +137,7 @@ api.add_resource(User_API.UserBasicInfo, '/user/basic/information')
 api.add_resource(User_API.UserContactUs, '/user/contactus')
 api.add_resource(User_API.UserAuctionLikes, '/user/auction/likes')
 api.add_resource(User_API.UserFavoriteFilters, '/user/favorite/filters/<order_by_price>/<order_by>/<int:total>')
+api.add_resource(User_API.UserChargeWalet, '/user/charge/walet')
 # api.add_resource(User_API.CartOrder, '/cart/order')
 api.add_resource(Payment_API.MellatGateway, '/mellat/gateway')
 api.add_resource(Payment_API.MellatGatewayCallBack, '/user/mellat/gateway/callback')

@@ -387,21 +387,18 @@
 					<section id="content6" class="tab-content">
 						<h3>شارژ موجودی</h3>
 						<p>شما می توانید به هر اندازه که می خواهید موجودی حسابتان را شارژ کنید.</p>
-						<form method="post">
+
 							<table cellspacing="0" class="shop_table cart table">
 								<tbody>
 									<tr>
-										<td class="actions" colspan="6">
-											<div class="coupon">
-												<label for="coupon_code">افزایش اعتبار : </label>
-												<input type="text" placeholder="مبلغ..." value="" id="coupon_code" class="input-text" name="coupon_code">
-												<input type="submit" value="پرداخت" name="apply_coupon" class="button">
-											</div>
+										<td class="actions" colspan="12">
+											<label for="charge_amount">افزایش اعتبار : </label>
+											<input v-model="charge_amount" v-on:keypress="isNumber(event)" type="text" placeholder="مبلغ ... " class="input-text">
+											<input type="submit" value="پرداخت" class="button" v-on:click="_ChargeWalet">
 										</td>
 									</tr>
 								</tbody>
 							</table>
-						</form>
 					</section>
 				</div>
 
@@ -433,6 +430,7 @@ var app = new Vue({
 		total_invitations: 0 ,
 		won_auctions: 0 ,
 		invitation_code : "",
+		charge_amount : 0,
 	},
 
 	mounted: function(){
@@ -464,6 +462,46 @@ var app = new Vue({
 	},
 
 	methods:{
+		isNumber: function(evt) {
+      evt = (evt) ? evt : window.event;
+      var charCode = (evt.which) ? evt.which : evt.keyCode;
+      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && (charCode < 1776 || charCode > 1785) && charCode !== 46) {
+        evt.preventDefault();;
+      } else {
+        return true;
+      }
+    },
+
+		_ChargeWalet:function() {
+
+			if this.charge_amount == 0 {
+				alert('لطفا مقداری برای افزایش موجودی وارد کنید');
+			}
+
+			axios.post("{{url_for('userchargewalet')}}",
+				{
+					"charge_amount":this.charge_amount,
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+						alert(response.data.message)
+						if(response.data.type=="redirect_to_bank"){
+							window.parent.location = "/confirm/payment/"+response.data.pid;
+						}
+						else {
+							window.parent.location = "/view/auction/"+this.auction_id;
+						}
+				})
+				.catch((error)=>{
+					alert(error.response.data.reason);
+				});
+
+		},
+
 		_ToPersian(number){
 			return ToPersian(number);
 		},

@@ -142,13 +142,6 @@ var app = new Vue({
 					return;
 			}
 
-			console.clear();
-
-			console.log(this.plan_id);
-			console.log(this.auction_id);
-			console.log(this.payment_method_id);
-			console.log(this.price);
-
 			axios.post("{{url_for('auctionuserparticipation')}}",
 				{
 					"plan_id":this.plan_id,
@@ -165,9 +158,6 @@ var app = new Vue({
 						alert(response.data.message)
 						if(response.data.type=="redirect_to_bank"){
 							window.parent.location = "/confirm/payment/"+response.data.pid;
-						}
-						else {
-							window.parent.location = "/view/auction/"+this.auction_id;
 						}
 				})
 				.catch((error)=>{
