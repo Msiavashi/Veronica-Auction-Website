@@ -107,7 +107,11 @@ class Route():
     @app.route("/view/auction/<int:aid>")
     @login_required
     def viewAuction(aid):
-        return render_template('site/auction.html',auction_id=aid)
+        auction = Auction.query.get(aid)
+        if auction:
+            return render_template('site/auction.html',auction_id=aid)
+        else:
+            abort(404)
 
     @app.route("/view/category/<int:cid>/products")
     def viewProducts(cid):

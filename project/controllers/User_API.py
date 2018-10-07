@@ -603,7 +603,7 @@ class CheckOutInit(Resource):
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
-    @login_required
+    @jwt_required
     def post(self, pid):
         payment_method_id = request.form.get('payment_method_id')
         shipment_method_id = request.form.get('shipment_method_id')
@@ -677,16 +677,14 @@ class UserApplyPayment(Resource):
             return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),200)
 
 class UserUnpaidOrders(Resource):
-
-    @login_required
+    @jwt_required
     def get(self):
         unpaid_orders = Order.query.filter_by(status=OrderStatus.UNPAID, user_id = current_user.id).all()
         order_schema = OrderSchema(many=True)
         return make_response(jsonify(order_schema.dump(unpaid_orders)), 200)
 
 class UserUnpaidPayments(Resource):
-
-    @login_required
+    @jwt_required
     def get(self):
         unpaid_payments = Payment.query.filter_by(user_id=current_user.id, status=PaymentStatus.UNPAID).all()
         payment_schema = PaymentSchema(many=True)
@@ -752,31 +750,28 @@ class UserFavoriteFilters(Resource):
 
 class UserAuctionView(Resource):
 
-    # def get(self):
-        # if current_user.is_authenticated:
-        #     auction_views = db.session.query(user_auction_views).filter_by(user_id = current_user.id).all()
-        #     auctions = [Auction.query.get(auction_view.id) for auction_view in auction_views]
-        #     auction_schema = AuctionSchema(many=True)
-        #     print auctions
-        #     return make_response(jsonify({"seen_auctions": auction_schema.dump(auctions)}), 200)
-        # else:
-        #     return make_response(jsonify([]), 200)
-
-
-
-    def post(self):
+    def get(self):
         if current_user.is_authenticated:
-            data = request.get_json(force=True)
-            auction_id = data.get('aid')
-            auction = Auction.query.get(auction_id)
-            if not db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
-                current_user.auction_views.append(auction)
-                db.session.add(current_user)
-                db.session.commit()
-                return make_response(jsonify({"success": True, "message": {"success": "حراجی به لیست مشاهده شده افزوده شد"}}), 200)
-            return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 406)
+            auction_views = db.session.query(user_auction_views).filter_by(user_id = current_user.id).all()
+            auctions = [Auction.query.get(auction_view.id) for auction_view in auction_views]
+            auction_schema = AuctionSchema(many=True)
+            print auctions
+            return make_response(jsonify({"seen_auctions": auction_schema.dump(auctions)}), 200)
         else:
-            pass
+            return make_response(jsonify([]), 200)
+        
+    @jwt_required
+    def post(self):
+        data = request.get_json(force=True)
+        auction_id = data.get('aid')
+        auction = Auction.query.get(auction_id)
+        if not db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
+            current_user.auction_views.append(auction)
+            db.session.add(current_user)
+            db.session.commit()
+            return make_response(jsonify({"success": True, "message": {"success": "حراجی به لیست مشاهده شده افزوده شد"}}), 200)
+        return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 406)
+
 
 class UserChargeWalet(Resource):
     @jwt_required

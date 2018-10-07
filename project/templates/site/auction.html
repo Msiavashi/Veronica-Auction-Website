@@ -426,6 +426,22 @@ var app = new Vue({
 			.catch((response)=>{
 				console.error(response.data);
 			});
+
+			axios.post("{{url_for('userauctionview')}}",
+			{
+				"aid" : {{auction_id}}
+			},
+			{
+				headers:
+				{
+					'Content-Type': 'application/json'
+				}
+			}).then((response) => {
+					console.log("view confirmed");
+				})
+				.catch((response)=>{
+					console.error(response.data);
+				});
 	},
 
 	computed: {
