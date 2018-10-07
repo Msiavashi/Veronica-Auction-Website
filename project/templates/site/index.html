@@ -310,7 +310,7 @@
 	<div v-if="categories.length > 0" class="container" data-bind="foreach:categories">
 		<template v-for="category in categories">
 			{%raw%}
-			<div class="deal-box18">
+			<div class="deal-box18" v-if="category.auctions.length > 0">
 				<h2 class="white title30 text-center"><span>{{category.title}}</span></h2>
 
 				<div class="deal-slider18 poly-slider border bg-white">
@@ -586,7 +586,7 @@
 		updated:function() {
 			setTimeout(function() {
 				stop_loading(loading_element);
-			},2000);
+			},5000);
 		},
 		directives: {
 			flashtimer:{

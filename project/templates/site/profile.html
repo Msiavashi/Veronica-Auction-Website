@@ -474,8 +474,9 @@ var app = new Vue({
 
 		_ChargeWalet:function() {
 
-			if this.charge_amount == 0 {
+			if (this.charge_amount == 0) {
 				alert('لطفا مقداری برای افزایش موجودی وارد کنید');
+				return ;
 			}
 
 			axios.post("{{url_for('userchargewalet')}}",
@@ -491,9 +492,6 @@ var app = new Vue({
 						alert(response.data.message)
 						if(response.data.type=="redirect_to_bank"){
 							window.parent.location = "/confirm/payment/"+response.data.pid;
-						}
-						else {
-							window.parent.location = "/view/auction/"+this.auction_id;
 						}
 				})
 				.catch((error)=>{

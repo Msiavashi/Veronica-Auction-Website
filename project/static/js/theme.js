@@ -397,12 +397,12 @@ jQuery(window).on('load',function(){
 	}
 	//Owl Carousel
 
-	setTimeout(function() {
+
 
 		if($('.wrap-item').length>0){
 
 			$('.wrap-item').each(function() {
-
+setTimeout(function() {
 				var data = $(this).data();
 				$(this).owlCarousel({
 					addClassActive:true,
@@ -415,11 +415,11 @@ jQuery(window).on('load',function(){
 					navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
 				});
 				$(this).find('.owl-controls').css('left',data.control+'px');
-
+},500);
 			});
 
 		}
-	},2000);
+
 
 
 

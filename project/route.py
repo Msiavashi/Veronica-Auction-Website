@@ -194,7 +194,19 @@ class Route():
     @app.route('/checkout/payment/<int:pid>')
     # @login_required
     def checkout_payment(pid):
-        return render_template('site/checkout.html', pid=pid)
+        order_payment = None
+        if current_user.is_authenticated:
+            order_payment = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).first().payment
+        else:
+            order = session['orders'][0]
+            payment_id = int(order[0]['payment'][0]['id'])
+            order_payment = Payment.query.get(payment_id)
+        current_payment = Payment.query.get(pid)
+
+        if current_payment and current_payment.id == order_payment.id:
+            return render_template('site/checkout.html', pid=pid)
+        else:
+            abort(404)
 
     @app.route('/checkout')
     @login_required

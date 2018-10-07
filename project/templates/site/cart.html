@@ -106,9 +106,7 @@
 						</div>
 						<div class="wc-proceed-to-checkout">
 							<!-- <a class="checkout-button button alt wc-forward" href="checkout.html">مرحله بعد تایید نهایی</a> -->
-							<form method="post" action="{{url_for('checkoutinit')}}">
-								<input type="submit" value="پرداخت و تایید نهایی"  class="button alt">
-							</form>
+								<input type="submit" value="پرداخت و تایید نهایی" @click="handleCheckout" class="button alt">
 						</div>
 					</div>
 				</div>
@@ -194,6 +192,20 @@ var app = new Vue({
 					if(!already_applied){
 						this.discounts.push({id : 0, code:response.data.code, title:'تخفیف داده شده کوپن تخفیف : '+ response.data.title , discount:  parseInt(response.data.amount)});
 					}
+				}
+			})
+			.catch((response) => {
+
+			});
+
+		},
+
+		handleCheckout: function(){
+			axios.post("{{url_for('usercheckoutinit')}}")
+			.then((response) => {
+				alert(response.data.message)
+				if(response.data.type=="redirect_to_invoice"){
+					window.parent.location = "/checkout/payment/"+response.data.pid;
 				}
 			})
 			.catch((response) => {
@@ -344,9 +356,6 @@ var app = new Vue({
 
 		axios.get("{{url_for('usercoupons')}}")
 			.then((response) => {
-				console.log(this.discounts);
-				console.log(response.data);
-				console.log(this.discounts);
 				response.data.forEach(discount =>{
 					this.coupon_discount += parseInt(discount.amount);
 					this.discounts.push({id: 0, code :discount.code, title :'تخفیف داده شده کوپن تخفیف : '+ discount.title , discount: parseInt(discount.amount) });

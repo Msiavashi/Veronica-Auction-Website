@@ -49,7 +49,9 @@ class PaymentsInfo(Resource):
 class UserBasicInfo(Resource):
     @jwt_required
     def get(self):
-        return make_response(jsonify(UserSchema.dump(current_user)),200)
+        user = User.query.get(current_user.id)
+        userSchema = UserSchema()
+        return make_response(jsonify(userSchema.dump(user)),200)
 
     @login_required
     def post(self):
@@ -561,45 +563,52 @@ class UserCouponApply(Resource):
             db.session.commit()
             return make_response(jsonify({"msg":"کوپن خرید شما با موفقیت حذف شد"}), 200)
 
-class CheckOutInit(Resource):
+class UserCheckOutInit(Resource):
     def post(self):
         if (not current_user.is_authenticated):
             if "orders" in session:
                 unpaid_orders = session['orders']
-                amount = 0
-                discount = 0
-                for order in unpaid_orders:
-                    amount += float(order[0]['total_cost'])
-                    discount += float(order[0]['total_discount'])
+
                 payment = Payment()
-                payment.amount = amount
-                payment.discount = discount
-                payment.payment_method = PaymentMethod.query.filter_by(type=0).first()
+                payment.amount = 0
+                payment.discount = 0
+                payment.payment_method = PaymentMethod.query.filter_by(type=Payment_Types.Online).first()
+                paymentschema = PaymentSchema()
+
+                for order in unpaid_orders:
+                    payment.amount += float(order[0]['total_cost'])
+                    payment.discount += float(order[0]['total_discount'])
                 db.session.add(payment)
                 db.session.commit()
+                session['orders'][0][0]['payment']=(paymentschema.dump(payment))
         else:
             unpaid_orders = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).all()
+            payment = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).first().payment
+            if(not payment):
+                payment = Payment()
 
-            payment = Payment()
             payment.amount = 0
             payment.discount = 0
+            payment.payment_method = PaymentMethod.query.filter_by(type=Payment_Types.Online).first()
 
-            # TODO: make PaymentMethod nullable in database
-            payment_method = PaymentMethod.query.all()[0]
-            payment.payment_method = payment_method
 
-            db.session.add(payment)
-            db.session.commit()
-            current_user.payments.append(payment)
-            db.session.add(current_user)
             for order in unpaid_orders:
                 payment.amount += order.total_cost
+                payment.discount += order.total_discount
+
+                if (not order.payment):
+                    db.session.add(payment)
+                    current_user.payments.append(payment)
+                    db.session.add(current_user)
+
                 order.payment = payment
                 order.payment_id = payment.id
-                db.session.add(order)
-                db.session.commit()
 
-        return redirect(url_for('checkout_payment', pid=payment.id))
+                db.session.add(order)
+            db.session.commit()
+
+        msg = "نمایش پیش فاکتور برای سفارش شما"
+        return make_response(jsonify({'success':True,"type":"redirect_to_invoice","pid":payment.id,"message":msg}),200)
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
@@ -759,7 +768,7 @@ class UserAuctionView(Resource):
             return make_response(jsonify({"seen_auctions": auction_schema.dump(auctions)}), 200)
         else:
             return make_response(jsonify([]), 200)
-        
+
     @jwt_required
     def post(self):
         data = request.get_json(force=True)

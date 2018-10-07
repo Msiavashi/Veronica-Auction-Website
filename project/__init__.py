@@ -33,7 +33,7 @@ def check_if_token_in_blacklist(decrypted_token):
     return model.Revoked.is_jti_blacklisted(jti)
 
 # after production comment this
-Session(app)
+# Session(app)
 
 params = {
 	'ping_timeout': 60,
@@ -154,4 +154,4 @@ api.add_resource(User_API.UserUnpaidPayments, '/user/payments/unpaids')
 api.add_resource(User_API.UserAuctionView, '/user/auction/view')
 api.add_resource(User_API.UserCoupons, '/user/coupons')
 api.add_resource(User_API.UserCouponApply, '/user/copuon')
-api.add_resource(User_API.CheckOutInit, '/user/checkout/payment/init')
+api.add_resource(User_API.UserCheckOutInit, '/user/checkout/payment/init')
