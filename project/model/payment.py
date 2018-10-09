@@ -1,23 +1,34 @@
 # -*- coding: utf-8 -*-
 import sys
 reload(sys)
+import random
 sys.setdefaultencoding("utf-8")
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
 
 class PaymentStatus:
-    PAID = 1
+    PAID = 100
+    BANK = 200
+    PAYING = 300
+    ERROR = 400
+    ABORT = 500
     UNPAID = 0
-    ERROR = -1
+
+class PaymentType:
+    NOTITLE = 0
+    PLAN = 1000
+    WALET = 2000
+    PRODUCT = 3000
 
 class Payment(Base):
     __tablename__ = 'payments'
     id = db.Column(db.Integer, primary_key=True)
-    GUID = db.Column(db.String(length=50))
+    GUID = db.Column(db.String(64) ,default = random.randint(100000000000,10000000000000000) , onupdate=random.randint(100000000000,10000000000000000))
     amount = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     discount = db.Column(db.DECIMAL(precision=20, scale=4), nullable=False)
     status = db.Column(db.Integer,default=PaymentStatus.UNPAID,nullable=False)
+    type = db.Column(db.String(64),default=PaymentType.NOTITLE)
     details = db.Column(db.Text)
 
     payment_method_id = db.Column(db.BigInteger,db.ForeignKey('payment_methods.id'),nullable=False)
@@ -47,6 +58,7 @@ class PaymentSchema(Schema):
     amount = fields.Str()
     GUID = fields.Str()
     status = fields.Int()
+    type = fields.Str()
     created_at = fields.Str()
     details = fields.Raw()
     ref_id = fields.Str()

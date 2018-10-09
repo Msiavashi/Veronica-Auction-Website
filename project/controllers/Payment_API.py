@@ -78,7 +78,6 @@ class MellatGateway(Resource):
         pid = request.form.get('pid')
         payment = Payment.query.get(pid)
         bml = BMLPaymentAPI(BANK_MELLAT_USERNAME, BANK_MELLAT_PASSWORD, BANK_MELLAT_TERMINAL_ID)
-        payment.GUID = int(time.time())
         pay_token = bml.request_pay_ref( payment.GUID, int(payment.amount) * 10, "http://unibid.ir/api/user/mellat/callback", "درگاه پرداخت یونی بید")
         payment.ref_id = pay_token
         db.session.add(payment)
@@ -94,19 +93,23 @@ class ZarinpalGateway(Resource):
     def post(self):
         data = request.get_json(force=True)
         pid = int(data.get("pid", None))
-        print "pid",pid
         payment = Payment.query.get(pid)
+        orders = Order.query.filter_by(payment_id = pid).all()
+        for order in orders:
+            order.status = OrderStatus.DEACTIVATE
+            db.session.add(order)
+
         zpl = ZarinpalPaymentAPI()
-        payment.GUID = int(time.time())
         pay_token = zpl.send_request(int(payment.amount),current_user.email,current_user.mobile,"http://unibid.ir/api/user/zarinpal/gateway/callback" ,"درگاه پرداخت یونی بید")
         payment.ref_id = pay_token.Authority
+        payment.status = PaymentStatus.BANK
         db.session.add(payment)
         db.session.commit()
-        print pay_token
+        print 'pid',pid,'token',pay_token
         if pay_token.Status==100:
             return make_response(jsonify({'success':True,"ref_id": pay_token.Authority}), 200)
         else:
-            return make_response(jsonify({'success':False,"pay_token":pay_token.Authority,"message":"خطای پرداخت"}),400)
+            return make_response(jsonify({'success':False,"ref_id": pay_token.Authority,"message":"خطای پرداخت"}),400)
 
 
 class ZarinpalGatewayCallback(Resource):
@@ -118,11 +121,13 @@ class ZarinpalGatewayCallback(Resource):
 
         zpl = ZarinpalPaymentAPI()
         verify_res = zpl.verify(status,authority,payment.amount)
-
+        print 'verify_res',verify_res
         if verify_res == 100:
             payment.status = PaymentStatus.PAID
+        elif(verify_res == -21 or verify_res == -22):
+            payment.status = PaymentStatus.ABORT
         else:
-            payment.status = PaymentStatus.ERROR
+            payment.status = PaymentStatus.UNPAID
 
         db.session.add(payment)
         db.session.commit()

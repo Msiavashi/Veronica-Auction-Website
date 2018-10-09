@@ -105,8 +105,8 @@ class ItemAdmin(ModelView):
 
 class AdvertisementAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
     def _list_thumbnail(view, context, model, name):
         if not model.images:
@@ -127,7 +127,8 @@ class AdvertisementAdmin(ModelView):
 
 class CategoryAdmin(ModelView):
     def is_accessible(self):
-        return True
+        # return True
+        return current_user.has_role('admin')
 
     def _list_thumbnail(view, context, model, name):
         if not model.icon:
@@ -160,8 +161,8 @@ class ProductAdmin(ModelView):
     }
 
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
 class AuctionAdmin(ModelView):
     page_size = 10
@@ -176,92 +177,110 @@ class AuctionAdmin(ModelView):
     }
     }
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
 
-        # return True
 
 class AddressAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
 class StateAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
 class GiftAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
 class InsuranceAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
 class GarantyAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
 class InventoryAdmin(ModelView):
     def is_accessible(self):
-        return current_user.has_role('admin')
         # return True
+        return current_user.has_role('admin')
 
 class ManufactureAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class OfferAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['user_plan.auction_plan.plan.title','user_plan.user.first_name','user_plan.user.last_name','user_plan.user.alias_name','user_plan.user.username','auction.title','win']
+
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class EventAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class PaymentMethodAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class ShipmentMethodAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class OrderAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
 
 class PaymentAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['user.first_name','user.last_name','user.alias_name','user.username','payment_method.title','GUID', 'ref_id','status','amount','type']
+    column_exclude_list = ['sale_order_id','sale_refrence_id','details']
+
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class ShipmentAdmin(ModelView):
     def is_accessible(self):
+        # return True
         return current_user.has_role('admin')
-        return True
 
 class PlanAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
 
 class UserPlanAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['user.first_name','user.last_name','user.alias_name','user.username','auction.title','auction_plan.plan.title','payment.status','payment.GUID']
     def is_accessible(self):
         return current_user.has_role('admin')
 
 class AuctionPlanAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['auction.title','plan.title','price','max_offers','discount']
     def is_accessible(self):
         return current_user.has_role('admin')
 
 class UserAuctionParticipationAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['user.first_name','user.last_name','user.alias_name','user.username','auction.title']
     def is_accessible(self):
         return current_user.has_role('admin')
 

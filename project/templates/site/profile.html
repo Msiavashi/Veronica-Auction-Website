@@ -282,7 +282,9 @@
 										<th>شماره فاکتور</th>
 										<th>مبلغ</th>
 										<th>تاریخ</th>
+										<th>موضوع</th>
 										<th>وضعیت</th>
+										<th>روش پرداخت</th>
 									</tr>
 								</thead>
 								{%raw%}
@@ -291,7 +293,9 @@
 										<td>{{_ToPersian(payment.GUID)}}</td>
 										<td>{{_ToPersianCurrency(payment.amount)}} تومان  </td>
 										<td>{{_toLocalDate(payment.created_at)}}</td>
+										<td>{{_convertType(payment.type)}}</td>
 										<td>{{_convertStatus(payment.status)}}</td>
+										<td>{{payment.payment_method.title}}</td>
 									</tr>
 									<!-- <tr class="fold">
 										<td colspan="7">
@@ -513,9 +517,55 @@ var app = new Vue({
 			return full_date = new persianDate(new Date(date)).format("dddd DD MMMM YYYY ساعت HH:mm:ss a");
 		},
 		_convertStatus(status){
-			if(status==1)
-				return "پرداخت موفق";
-			return "پرداخت ناموفق";
+
+			// PAID = 100
+	    // BANK = 200
+	    // PAYING = 300
+	    // ERROR = 400
+	    // ABORT = 500
+	    // UNPAID = 0
+
+			switch (status) {
+				case 100:
+					return "پرداخت موفق";
+					break;
+				case 200:
+					return "درحال پرداخت بانک";
+					break;
+				case 300:
+					return "درحال تکمیل عملیات پرداخت";
+					break;
+				case 400:
+					return "پرداخت ناموفق";
+					break;
+				case 500:
+					return "لغو شده";
+					break;
+				default:
+					return "پرداخت نشده";
+				}
+			},
+			_convertType(type){
+
+				// NOTITLE = 0
+		    // PLAN = 1000
+		    // WALET = 2000
+		    // PRODUCT = 3000
+
+				switch (type) {
+					case "1000":
+						return "خرید پلن حراجی";
+						break;
+					case "2000":
+						return "شارژ کیف پول";
+						break;
+					case "3000":
+						return "خرید محصول";
+						break;
+					default:
+						return "بدون عنوان";
+
+				}
 		},
 	},
 

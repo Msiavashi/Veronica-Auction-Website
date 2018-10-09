@@ -324,7 +324,7 @@ class UserCartOrder(Resource):
     def get(self):
 
         if current_user.is_authenticated:
-            orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).order_by('created_at DESC')
+            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:
@@ -575,14 +575,18 @@ class UserCheckOutInit(Resource):
                 unpaid_orders = session['orders']
 
                 payment = Payment()
+                payment.type = PaymentType.PRODUCT
                 payment.amount = 0
                 payment.discount = 0
+                payment.status = PaymentStatus.PAYING
+
                 payment.payment_method = PaymentMethod.query.filter_by(type=Payment_Types.Online).first()
                 paymentschema = PaymentSchema()
 
                 for order in unpaid_orders:
                     payment.amount += float(order[0]['total_cost'])
                     payment.discount += float(order[0]['total_discount'])
+
                 db.session.add(payment)
                 db.session.commit()
                 session['orders'][0][0]['payment'] = paymentschema.dump(payment)
@@ -594,14 +598,17 @@ class UserCheckOutInit(Resource):
             if(not payment):
                 payment = Payment()
 
+            payment.type = PaymentType.PRODUCT
             payment.amount = 0
             payment.discount = 0
-            payment.payment_method = PaymentMethod.query.filter_by(type=Payment_Types.Online).first()
 
+            payment.payment_method = PaymentMethod.query.filter_by(type=Payment_Types.Online).first()
+            payment.status = PaymentStatus.PAYING
 
             for order in unpaid_orders:
                 payment.amount += order.total_cost
                 payment.discount += order.total_discount
+                order.status = OrderStatus.PAYING
 
                 if (not order.payment):
                     db.session.add(payment)
@@ -619,7 +626,7 @@ class UserCheckOutInit(Resource):
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
-    # @jwt_required
+    @jwt_required
     def post(self, pid):
         data = request.get_json(force=True)
         shipment_method = ShipmentMethod.query.get(data['shipment_method'])
@@ -639,15 +646,14 @@ class UserCheckoutConfirm(Resource):
 
             if payment.status == PaymentStatus.PAID:
                 msg = "این صورتحساب قبلا پرداخت شده است"
-                return make_response(jsonify({"message":msg}),400)
+                return make_response(jsonify({"message":msg,"operation":"redirect_to_profile"}),400)
 
             if payment_method.type == Payment_Types.Credit:
-                if current_user.credit < amount :
+                if current_user.credit < payment.amount + shipment_method.price:
                     msg = "موجودی حساب شما برای پرداخت این صورتحساب کافی نیست"
-                    return make_response(jsonify({"message":msg}),400)
+                    return make_response(jsonify({"message":msg,"operation":"redirect_to_profile"}),400)
                 else:
                     current_user.credit -= amount
-                    msg = "مبلغ مورد نظر از حساب شما کسر شد و خرید با موفقیت انجام گرفت"
 
                     orders = Order.query.filter_by(payment_id=pid,user_id=current_user.id).all()
 
@@ -681,8 +687,8 @@ class UserCheckoutConfirm(Resource):
                     db.session.add(payment)
 
                     db.session.commit()
-
-                    return make_response(jsonify({'success':True,"message":msg}),200)
+                    msg = "مبلغ مورد نظر از حساب شما کسر شد و خرید با موفقیت انجام گرفت"
+                    return make_response(jsonify({'success':True,"message":msg,"operation":"redirect_to_profile"}),200)
 
             if payment_method.type == Payment_Types.Online:
 
@@ -718,7 +724,7 @@ class UserCheckoutConfirm(Resource):
                 db.session.commit()
 
                 msg = "هدایت به صفحه تایید نهایی مبلغ و انتخاب درگاه پرداخت"
-                return make_response(jsonify({'success':True,"type":"redirect_to_bank","pid":payment.id,"message":msg}),200)
+                return make_response(jsonify({'success':True,"operation":"redirect_to_bank","pid":payment.id,"message":msg}),200)
             else:
                 return make_response(jsonify({'success': False, "message": {"error": "روش پرداخت مورد نظر وجود ندارد"}}, 406))
         else:
@@ -741,19 +747,13 @@ class UserApplyPayment(Resource):
                     current_user.auctions.append(unpaid_user_plan.auction)
             elif(orders):
                 for order in orders:
-                    shipment = Shipment()
-                    shipment.order_id = order.id
-                    shipment.payment_id = pid
-                    shipment.status = ShipmentStatus.IN_STORE
-                    shipment.shipment_method = order.shipment.shipment_method
-                    shipment.shipment_method_id = order.shipment.shipment_method_id
+                    shipment = Shipment.query.filter_by(order_id=order.id).first()
+                    shipment.status = ShipmentStatus.READY_TO_SEND
+                    order.status = OrderStatus.PAID
                     db.session.add(shipment)
-                    order.shipment = shipment
-                    db.session.add(order)
             else:
                 current_user.credit += payment.amount
-
-            db.session.add(current_user)
+                db.session.add(current_user)
             db.session.commit()
             msg = "پرداخت موفق"
             return make_response(jsonify({"success":True,"message":msg,"token":payment.ref_id}),200)
@@ -871,6 +871,7 @@ class UserChargeWalet(Resource):
         payment_method = PaymentMethod.query.filter_by(type = Payment_Types.Online).first()
 
         payment = Payment()
+        payment.type = PaymentType.WALET
         payment.amount = charge_amount
         payment.payment_method = payment_method
         payment.status = PaymentStatus.UNPAID

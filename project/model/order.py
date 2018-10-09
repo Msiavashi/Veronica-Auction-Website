@@ -9,9 +9,10 @@ import datetime
 
 # each order has a status for servicing
 class OrderStatus:
-    UNPAID = 0
-    PAYING = 1
-    PAID = 2
+    UNPAID = 400
+    PAYING = 300
+    DEACTIVATE = 200
+    PAID = 100
 
 class OrderDiscountStatus:
     REGULAR = 0

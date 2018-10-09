@@ -9,10 +9,11 @@ from marshmallow import Schema, fields
 import datetime
 
 class ShipmentStatus:
-    IN_STORE = 0
-    READY_TO_SEND = 1
-    SENT = 2
-    DELIVERED = 3
+    ORDERED = 500
+    IN_STORE = 400
+    READY_TO_SEND = 300
+    SENT = 200
+    DELIVERED = 100
 
 
 class Shipment(Base):

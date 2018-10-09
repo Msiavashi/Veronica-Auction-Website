@@ -15,6 +15,7 @@ from project.websocket.Timer import timer
 import time
 from project import socketio
 from flask_socketio import emit, join_room, leave_room
+from flask_jwt_extended import jwt_required
 
 @socketio.on('sync_carts')
 def sync_carts(data):
@@ -90,7 +91,7 @@ def loadview(data):
 
 #authenticated users only
 @socketio.on('bid')
-def handle_bid(data):
+def bid(data):
     room=data['auction_id']
     if not current_user.is_authenticated:
         emit('unauthorized', {"msg": "login required"})
@@ -183,7 +184,6 @@ def handle_bid(data):
 
     except Exception as e:
         emit("failed", {"success":False,"reason": e.message})
-
 
 def auction_done(data):
     room = data['auction_id']

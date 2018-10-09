@@ -244,7 +244,12 @@ var app = new Vue({
 					}
 				}).then(function (response) {
           //handle success
-          window.location = "/confirm/payment/{{pid}}"
+          alert(response.data.message);
+          if(response.data.operation =="redirect_to_bank"){
+            window.location = "/confirm/payment/{{pid}}"
+          }else {
+            window.location = "/profile"
+          }
          })
          .catch((error)=>{
  					alert(error.response.data.message);

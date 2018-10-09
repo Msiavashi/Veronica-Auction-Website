@@ -65,10 +65,10 @@ class AuctionUserParticipation(Resource):
                 return make_response(jsonify({'success':False,"reason":msg}),400)
 
             payment = Payment()
+            payment.type = PaymentType.PLAN
             payment.ref_id = current_user.id
             payment.sale_order_id = current_user.id
             payment.sale_refrence_id = current_user.id
-            payment.GUID = random.randint(100000,100000000)
             payment.amount = amount
             payment.discount = 0
             payment.payment_method = payment_method
@@ -97,6 +97,7 @@ class AuctionUserParticipation(Resource):
 
             payment = Payment()
             payment.amount = amount
+            payment.type = PaymentType.PLAN
             payment.payment_method = payment_method
             payment.status = PaymentStatus.UNPAID
             payment.discount = 0
