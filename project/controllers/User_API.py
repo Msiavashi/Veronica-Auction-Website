@@ -24,6 +24,7 @@ import copy
 import random
 from datetime import datetime
 from flask_jwt_extended import JWTManager,jwt_required,jwt_refresh_token_required
+from sqlalchemy import or_
 
 parser_user_address = reqparse.RequestParser()
 parser_user_address.add_argument('state', help = 'ورود استان ضروری است', required = True)
@@ -47,13 +48,13 @@ class PaymentsInfo(Resource):
         return make_response(jsonify(paymentSchema.dump(payments)),200)
 
 class UserBasicInfo(Resource):
-    @jwt_required
+    # @jwt_required
     def get(self):
         user = User.query.get(current_user.id)
         userSchema = UserSchema()
         return make_response(jsonify(userSchema.dump(user)),200)
 
-    @login_required
+    # @jwt_required
     def post(self):
         # json_data = request.get_json(force=True)
 
@@ -323,7 +324,7 @@ class UserCartOrder(Resource):
     def get(self):
 
         if current_user.is_authenticated:
-            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
+            orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:
@@ -344,7 +345,7 @@ class UserCartOrder(Resource):
         item = Item.query.get(item_id)
 
         if current_user.is_authenticated:
-            last_order = Order.query.filter_by(user_id=current_user.id,item_id=item_id).first()
+            last_order = Order.query.filter_by(user_id=current_user.id,item_id=item_id,status=OrderStatus.UNPAID).first()
             if(last_order):
                 msg = " این محصول در سبد خرید شما از قبل موجود است"
                 return make_response(jsonify({"reason":msg}),400)
@@ -381,7 +382,7 @@ class UserCartOrder(Resource):
             db.session.add(new_order)
             db.session.commit()
 
-            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
+            orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:
@@ -394,7 +395,7 @@ class UserCartOrder(Resource):
 
             founded = False
             order_schema = OrderSchema(many=True)
-            founded = next((x for x in session['orders'] if x[0]['item']['id'] == item.id), None)
+            founded = next((x for x in session['orders'] if x[0]['item']['id'] == item.id and (x[0]['status'] == OrderStatus.UNPAID or x[0]['status'] == OrderStatus.PAYING)), None)
             if (founded):
                 msg = " این محصول در سبد خرید شما از قبل موجود است"
                 return make_response(jsonify({"reason":msg}),400)
@@ -450,14 +451,15 @@ class UserCartOrder(Resource):
             new_order.total_discount = discount
             db.session.add(new_order)
             db.session.commit()
-            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
+            orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).order_by('created_at DESC')
+            # orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
             result = []
             order_schema = OrderSchema()
             for order in orders:
                 result.append(order_schema.dump(order))
             return make_response(jsonify(result), 200)
         else:
-            order = next(x for x in session['orders'] if x[0]['id'] == order_id)
+            order = next((x for x in session['orders'] if x[0]['item']['id'] == item.id and (x[0]['status'] == OrderStatus.UNPAID or x[0]['status'] == OrderStatus.PAYING)), None)
             if (order):
                 order[0]['total_cost'] = (order[0]['item']['price'] - order[0]['item']['discount']) * total
                 order[0]['total'] = total
@@ -580,10 +582,12 @@ class UserCheckOutInit(Resource):
                     payment.discount += float(order[0]['total_discount'])
                 db.session.add(payment)
                 db.session.commit()
-                session['orders'][0][0]['payment']=(paymentschema.dump(payment))
+                session['orders'][0][0]['payment'] = paymentschema.dump(payment)
         else:
-            unpaid_orders = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).all()
-            payment = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).first().payment
+            # unpaid_orders = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).all()
+
+            unpaid_orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).all()
+            payment = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).first().payment
             if(not payment):
                 payment = Payment()
 
@@ -612,50 +616,111 @@ class UserCheckOutInit(Resource):
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
-    @jwt_required
+    # @jwt_required
     def post(self, pid):
-        payment_method_id = request.form.get('payment_method_id')
-        shipment_method_id = request.form.get('shipment_method_id')
-        final_price = request.form.get('final_price')
+        data = request.get_json(force=True)
+        shipment_method = ShipmentMethod.query.get(data['shipment_method'])
+        payment_method = PaymentMethod.query.get(data['payment_method'])
         payment = Payment.query.get(pid)
 
-        if not payment or payment.user_id != current_user.id:
-            return make_response(jsonify({"msg": "سبد خرید مورد نظر یافت نشد"}) , 400)
+        if current_user.is_authenticated:
+            amount = shipment_method.price
 
-        shipment_method = ShipmentMethod.query.get(shipment_method_id)
-        payment_method = PaymentMethod.query.get(payment_method_id)
+            if not payment:
+                msg = "پرداخت معتبری برای سبد خرید شما موجود نیست.لطفا سبد خود را دوباره تشکیل دهید"
+                return make_response(jsonify({"message":msg}),400)
 
-        payment.payment_method = payment_method
-        payment.payment_method_id = payment_method_id
+            if payment.user_id != current_user.id:
+                msg = "این عملیات پرداخت غیر مجاز است"
+                return make_response(jsonify({"message":msg}),400)
 
-        orders = Order.query.filter_by(payment_id=pid).all()
+            if payment.status == PaymentStatus.PAID:
+                msg = "این صورتحساب قبلا پرداخت شده است"
+                return make_response(jsonify({"message":msg}),400)
 
-        for order in orders:
-            shipment = Shipment()
-            shipment.order_id = order.id
-            shipment.payment_id = pid
-            shipment.status = ShipmentStatus.IN_STORE
-            shipment.shipment_method = shipment_method
-            shipment.shipment_method_id = shipment_method_id
+            if payment_method.type == Payment_Types.Credit:
+                if current_user.credit < amount :
+                    msg = "موجودی حساب شما برای پرداخت این صورتحساب کافی نیست"
+                    return make_response(jsonify({"message":msg}),400)
+                else:
+                    current_user.credit -= amount
+                    msg = "مبلغ مورد نظر از حساب شما کسر شد و خرید با موفقیت انجام گرفت"
 
-            db.session.add(shipment)
-            db.session.commit()
+                    orders = Order.query.filter_by(payment_id=pid,user_id=current_user.id).all()
 
-            order.shipment = shipment
+                    for order in orders:
+                        shipment = Shipment.query.filter_by(order_id=order.id).first()
+                        if shipment :
+                            shipment.shipment_method = shipment_method
+                            shipment.shipment_method_id = shipment_method.id
+                            shipment.status = ShipmentStatus.READY_TO_SEND
+                        else:
+                            shipment = Shipment()
+                            shipment.order_id = order.id
+                            shipment.payment_id = pid
+                            shipment.status = ShipmentStatus.READY_TO_SEND
+                            shipment.shipment_method = shipment_method
+                            shipment.shipment_method_id = shipment_method.id
+                            order.shipment = shipment
+                            db.session.add(shipment)
+                        amount += order.total_cost
+                        order.status = OrderStatus.PAID
+                        db.session.add(order)
 
-            db.session.add(order)
-            db.session.commit()
+                    payment.amount = amount
+                    payment.status = PaymentStatus.PAID
+                    payment.ref_id = random.randint(100000,10000000)
+                    payment.sale_order_id = random.randint(1000000,1000000000)
+                    payment.sale_refrence_id = random.randint(1000,1000000)
+                    payment.GUID = random.randint(1000000000,100000000000)
+                    payment.payment_method = payment_method
+                    payment.payment_method_id = payment_method.id
+                    db.session.add(payment)
 
+                    db.session.commit()
 
-        payment.amount = final_price
+                    return make_response(jsonify({'success':True,"message":msg}),200)
 
-        db.session.add(payment)
-        db.session.commit()
+            if payment_method.type == Payment_Types.Online:
 
-        if payment_method.type == Payment_Types.Online:
-            return redirect('/checkout/payment/%s' % pid)
+                orders = Order.query.filter_by(payment_id=pid,user_id=current_user.id).all()
+
+                for order in orders:
+                    shipment = Shipment.query.filter_by(order_id=order.id).first()
+                    if shipment :
+                        shipment.shipment_method = shipment_method
+                        shipment.shipment_method_id = shipment_method.id
+                        shipment.status = ShipmentStatus.IN_STORE
+                    else:
+                        shipment = Shipment()
+                        shipment.order_id = order.id
+                        shipment.payment_id = pid
+                        shipment.status = ShipmentStatus.IN_STORE
+                        shipment.shipment_method = shipment_method
+                        shipment.shipment_method_id = shipment_method.id
+                        order.shipment = shipment
+                        db.session.add(shipment)
+                    amount += order.total_cost
+                    order.status = OrderStatus.PAYING
+                    db.session.add(order)
+
+                payment.amount = amount
+                payment.payment_method = payment_method
+                payment.payment_method_id = payment_method.id
+                payment.sale_order_id = random.randint(1000000,1000000000)
+                payment.sale_refrence_id = random.randint(1000,1000000)
+                payment.GUID = random.randint(1000000000,100000000000)
+
+                db.session.add(payment)
+                db.session.commit()
+
+                msg = "هدایت به صفحه تایید نهایی مبلغ و انتخاب درگاه پرداخت"
+                return make_response(jsonify({'success':True,"type":"redirect_to_bank","pid":payment.id,"message":msg}),200)
+            else:
+                return make_response(jsonify({'success': False, "message": {"error": "روش پرداخت مورد نظر وجود ندارد"}}, 406))
         else:
-            return make_response(jsonify({'success': False, "message": {"error": "روش پرداخت مورد نظر وجود ندارد"}}, 406))
+            msg = "session base payment not implemented"
+            return make_response(jsonify({"message":msg}),400)
 
 class UserApplyPayment(Resource):
     @jwt_required
@@ -663,15 +728,25 @@ class UserApplyPayment(Resource):
         payment = Payment.query.get(pid)
 
         unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).first()
+
         if(payment.status == PaymentStatus.PAID):
 
-            order = Order.query.filter_by(payment_id=payment.id).first()
+            orders = Order.query.filter_by(payment_id=pid).all()
 
-            if(order):
-                pass
-            elif(unpaid_user_plan):
+            if(unpaid_user_plan):
                 if(not current_user.has_auction(unpaid_user_plan.auction)):
                     current_user.auctions.append(unpaid_user_plan.auction)
+            elif(orders):
+                for order in orders:
+                    shipment = Shipment()
+                    shipment.order_id = order.id
+                    shipment.payment_id = pid
+                    shipment.status = ShipmentStatus.IN_STORE
+                    shipment.shipment_method = order.shipment.shipment_method
+                    shipment.shipment_method_id = order.shipment.shipment_method_id
+                    db.session.add(shipment)
+                    order.shipment = shipment
+                    db.session.add(order)
             else:
                 current_user.credit += payment.amount
 
@@ -680,8 +755,10 @@ class UserApplyPayment(Resource):
             msg = "پرداخت موفق"
             return make_response(jsonify({"success":True,"message":msg,"token":payment.ref_id}),200)
         else:
-            unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).delete()
-            db.session.commit()
+            if unpaid_user_plan:
+                UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).delete()
+                db.session.commit()
+
             msg = "پرداخت ناموفق"
             return make_response(jsonify({"success":False,"message":msg,"token":payment.ref_id}),200)
 

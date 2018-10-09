@@ -10,7 +10,7 @@ import datetime
 # each order has a status for servicing
 class OrderStatus:
     UNPAID = 0
-    PAYONG = 1
+    PAYING = 1
     PAID = 2
 
 class OrderDiscountStatus:
@@ -41,7 +41,7 @@ class Order(Base):
     item_id = db.Column(db.BigInteger, db.ForeignKey('items.id'))
     item = db.relationship('Item')
 
-    shipmet = db.relationship('Shipment', cascade="all, delete")
+    shipmet = db.relationship('Shipment')
 
     # payments = db.relationship('Payment',secondary='payment_orders',back_populates='orders')
 
@@ -68,7 +68,6 @@ class OrderSchema(Schema):
     # user = fields.Nested('UserSchema',exclude=('orders',))
     item = fields.Nested('ItemSchema',exclude=('orders',))
     payment = fields.Nested('PaymentSchema')
-
 
     @post_load
     def make_order(self,data):

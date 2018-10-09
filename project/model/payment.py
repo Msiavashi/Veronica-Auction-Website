@@ -37,7 +37,7 @@ class Payment(Base):
 
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False ,onupdate=datetime.datetime.now)
 
     def __str__(self):
         return " پرداخت به کد رهگیری : "+ str(self.GUID) + " باوضعیت  :" + str(self.status) + " در تاریخ : " + str(self.created_at)

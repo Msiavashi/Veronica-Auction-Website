@@ -20,7 +20,7 @@ class ShipmentMethod(Base):
 
 
     def __str__(self):
-        return self.title
+        return self.title + " با هزینه ارسال : " + str(self.price)
 
 class ShipmentMethodSchema(Schema):
     id = fields.Int()

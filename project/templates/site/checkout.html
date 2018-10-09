@@ -1,5 +1,5 @@
 {% extends 'site/layout.html' %}
-{% block title %} یونی بید | برندگان گذشته {% endblock %}
+{% block title %}   برندگان گذشته {% endblock %}
 {% block content %}
 <div v-cloak id="app" class="content-page woocommerce">
   <div class="container">
@@ -15,32 +15,35 @@
               <form class="form-my-account">
                 <h2 class="title18">وارد کردن اطلاعات</h2>
                 <p class="clearfix box-col2">
-                  <input type="text" v-bind:value="info.last_name" placeholder="نام خانوادگی *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
-                  <input type="text" v-bind:value="info.first_name" placeholder="نام *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" v-model="information.last_name" placeholder="نام خانوادگی *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" v-model="information.first_name" placeholder="نام *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
                 </p>
-                <p><input type="text" v-bind:value="info.work_place" placeholder="نام محل کار" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
+                <p><input type="text" v-model="information.work_place" placeholder="نام محل کار" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
                 <p class="clearfix box-col2">
-                  <input type="text" v-bind:value="info.email" placeholder="ایمیل" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
-                  <input type="text" v-bind:value="info.mobile" placeholder="موبایل *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" v-model="information.email" placeholder="ایمیل" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" v-model="information.mobile" placeholder="موبایل *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
                 </p>
                 <p>
-                  <select name="state" id="state">
-                      {%raw%}<option v-for="state in states" v-bind:value="state.id" :selected="info.address && info.address.state.id == state.id" >{{ state.title }}</option>{%endraw%}
+                  <select v-model="information.state" id="state">
+                      {%raw%}<option v-for="state in states" :value="state.id" :selected="info.address && info.address.state.id == state.id" >{{ state.title }}</option>{%endraw%}
                   </select>
                 </p>
-                <p><input type="text" v-bind:value="info.address.address" placeholder="آدرس *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" /></p>
+                <p>
+                  <input type="text" v-model="information.address" placeholder="آدرس *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                </p>
+
                 <p class="clearfix box-col2">
-                  <input type="text" v-bind:value="info.address.postal_code" placeholder="کد پستی" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
-                  <input type="text" v-bind:value="info.address.city" placeholder="شهر / روستا *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" v-model="information.postal_code" placeholder="کد پستی" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
+                  <input type="text" v-model="information.city" placeholder="شهر / روستا *" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" />
                 </p>
                 <p>
                   {%raw%}
                     <div  v-if="current_user">
-                      <input type="checkbox" v-model="update_information" id="update_information" />
+                      <input type="checkbox" v-model="information.accept_tick" id="update_information" />
                       <label for="update_information"> بروز رسانی اطلاعات حساب </label>
                     </div>
                     <div v-else>
-                      <input type="checkbox" v-model="register_information" id="register_information" />
+                      <input type="checkbox" v-model="information.accept_tick" id="register_information" />
                       <label for="register_information">ایجاد یک حساب کاربری؟</label>
                     </div>
                   {%endraw%}
@@ -53,7 +56,7 @@
               <form class="form-my-account">
                 <h2 class="title18">اطلاعات بیشتر</h2>
                 <p>
-                  <textarea v-model="more_info" placeholder="توضیحات بیشتر..." cols="30" rows="13" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''"></textarea>
+                  <textarea v-model="information.more_info" placeholder="توضیحات بیشتر..." cols="30" rows="13" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''"></textarea>
                 </p>
               </form>
             </div>
@@ -184,17 +187,29 @@ var app = new Vue({
     shipment_methods: [],
     payment_methods: [],
     states :[],
-    payment_method_id: null,
-    shipment_method_id: null,
     shipment_price: 0,
     user_orders: [],
-    user: "{{current_user.id}}",
     invitation_discount: 0,
     items_discount: 0,
     total_price: 0,
-    update_information : null,
-    register_information : null,
-    more_info : "",
+
+    information :{
+      first_name : "",
+      last_name : "",
+      work_place : "",
+      mobile : "",
+      email : "",
+      state : "",
+      city : "",
+      address : "",
+      postal_code : "",
+      more_info : "",
+      registered : "{{current_user.id}}" ? true : false,
+      accept_tick : 0,
+      shipment_method : 0,
+      payment_method : 0,
+      payment_id : 0,
+    }
   },
 
   computed: {
@@ -210,33 +225,48 @@ var app = new Vue({
     },
 
     update_payment_id: function(payment_method_id){
-      this.payment_method_id = payment_method_id;
+      this.information.payment_method = payment_method_id;
     },
 
     update_shipment_data: function(price, id){
       this.shipment_price = price;
-      this.shipment_method_id = id;
+      this.information.shipment_method = id;
     },
 
     handleSubmit: function(){
-      var bodyFormData = new FormData();
-      bodyFormData.set('final_price', this.final_price);
-      bodyFormData.set('payment_method_id', this.payment_method_id);
-      bodyFormData.set('shipment_method_id', this.shipment_method_id);
-      axios({
-        method: 'POST',
-        url: "{{url_for('usercheckoutconfirm',pid=pid)}}",
-        data: bodyFormData,
-        config: { headers: {'Content-Type': 'multipart/form-data' }}
-      })
-      .then(function (response) {
-        //handle success
-        window.location = "/confirm/payment/{{pid}}"
-       })
-      .catch(function (response) {
-          //handle error
-          console.log(response);
-      });
+      console.log(this.information);
+    
+      axios.post("{{url_for('usercheckoutconfirm',pid=pid)}}",this.information,
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then(function (response) {
+          //handle success
+          console.log(response.data);
+          return ;
+          window.location = "/confirm/payment/{{pid}}"
+         })
+        .catch(function (response) {
+            //handle error
+            console.log(response);
+        });
+
+      // axios({
+      //   method: 'POST',
+      //   url: "{{url_for('usercheckoutconfirm',pid=pid)}}",
+      //   data: this.information,
+      //   config: { headers: {'Content-Type': 'multipart/form-data' }}
+      // })
+      // .then(function (response) {
+      //   //handle success
+      //   window.location = "/confirm/payment/{{pid}}"
+      //  })
+      // .catch(function (response) {
+      //     //handle error
+      //     console.log(response);
+      // });
     }
   },
 
@@ -250,9 +280,20 @@ var app = new Vue({
      .catch(function (error) {
        console.error(error);
    });
+
    axios.get("{{url_for('userbasicinfo')}}")
      .then(function (response) {
        self.info = response.data[0];
+       console.log(self.info);
+
+       self.information.first_name = self.info.first_name;
+       self.information.last_name = self.info.last_name;
+       self.information.work_place = self.info.work_place;
+       self.information.state = self.info.address.state.id;
+       self.information.city = self.info.address.city;
+       self.information.address = self.info.address.address;
+       self.information.postal_code = self.info.address.postal_code;
+       self.information.mobile = self.info.mobile;
      })
      .catch(function (error) {
        console.error(error);
@@ -261,7 +302,6 @@ var app = new Vue({
     axios.get("{{url_for('sitepaymentmethods')}}")
       .then(function (response) {
         self.payment_methods = response.data[0];
-        self.payment_method_id = self.payment_methods[0].id
       })
       .catch(function (error) {
         console.error(error);
@@ -270,18 +310,10 @@ var app = new Vue({
     axios.get("{{url_for('siteshipmentmethods')}}")
       .then(function (response) {
         self.shipment_methods = response.data[0];
-        self.shipment_method_id = self.shipment_methods[0].id
       })
       .catch(function (error) {
         console.error(error);
     });
-
-    if (this.user == ""){
-      this.user= true;
-    }
-    else{
-      this.user = false;
-    }
 
     axios.get("{{url_for('usercartorder')}}")
       .then(function (response) {

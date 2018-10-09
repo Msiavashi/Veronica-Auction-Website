@@ -15,7 +15,7 @@
 				<div v-if="ad_auctions" class="col-md-12 col-sm-12 col-xs-12">
 					<div class="wrap-banner-slider1">
 						<div class="banner-slider banner-slider1">
-							<div class="wrap-item" data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
+							<div v-wrapitem data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
 								<template v-for="item in ad_auctions">
 									{%raw%}
 									<div class="item-banner item-banner1">
@@ -35,7 +35,7 @@
 						</div>
 						<!-- End Banner -->
 						<div v-if="ad_products" class="sub-banner-slider">
-							<div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
+							<div v-wrapitem data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
 								<template v-for="item in ad_products">
 									{%raw%}
 									<div class="item-sub-banner">
@@ -151,7 +151,7 @@
 
 			<div id="hot1" class="tab-pane active">
 				<div class="hotdeal-slider">
-					<div class="wrap-item" data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
+					<div v-wrapitem data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
 						<template v-for="auction in best_auctions">
 							{%raw%}
 							<div class="item-pro-hotdeal">
@@ -209,7 +209,7 @@
 			<!-- ENd Tab -->
 			<div id="hot2" class="tab-pane">
 				<div class="hotdeal-slider">
-					<div class="wrap-item" data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
+					<div v-wrapitem data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
 						<template v-for="auction in popular_auctions">
 							{%raw%}
 							<div class="item-pro-hotdeal">
@@ -314,7 +314,7 @@
 				<h2 class="white title30 text-center"><span>{{category.title}}</span></h2>
 
 				<div class="deal-slider18 poly-slider border bg-white">
-					<div class="wrap-item" data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
+					<div v-wrapitem data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
 						<template v-for="auction in category.auctions">
 
 							<div class="deal-pro18">
@@ -440,10 +440,48 @@
 			_updateTimer(date){
 				return new Date(date).format("yyyy-M-d hh:mm:ss");
 			},
+			_invalidate(){
+					$('.wrap-item').each(function() {
+							var data = $(this).data();
+							// console.log(data);
+							$(this).owlCarousel({
+									addClassActive:true,
+									stopOnHover:true,
+									itemsCustom:data.itemscustom,
+									autoPlay:data.autoplay,
+									transitionStyle:data.transition,
+									beforeInit:background,
+									afterAction:animated,
+									navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+							});
+							$(this).find('.owl-controls').css('left',data.control+'px');
+					});
+			},
+			background(){
+				$('.bg-slider .item-banner').each(function(){
+					var src=$(this).find('.banner-thumb a img').attr('src');
+					$(this).css('background-image','url("'+src+'")');
+				});
+			},
+			animated(){
+				$('.banner-slider .owl-item').each(function(){
+					var check = $(this).hasClass('active');
+					if(check==true){
+						$(this).find('.animated').each(function(){
+							var anime = $(this).attr('data-animated');
+							$(this).addClass(anime);
+						});
+					}else{
+						$(this).find('.animated').each(function(){
+							var anime = $(this).attr('data-animated');
+							$(this).removeClass(anime);
+						});
+					}
+				});
+			},
 
 		},
 		mounted: function(){
-
 				axios.get("{{url_for('siteauctioncarouselads')}}")
 					.then((response) => {
 						this.ad_auctions = response.data[0];
@@ -509,7 +547,6 @@
 								is_participant : participated,
 							});
 						});
-
 					})
 					.catch((response)=>{
 						console.error(response);
@@ -534,7 +571,6 @@
 								is_participant : participated,
 							});
 						});
-
 					})
 					.catch((response)=>{
 						console.error(response);
@@ -584,9 +620,8 @@
 				}, 5000);
 		},
 		updated:function() {
-			setTimeout(function() {
-				stop_loading(loading_element);
-			},5000);
+			// this._invalidate();
+			stop_loading(loading_element);
 		},
 		directives: {
 			flashtimer:{
@@ -655,6 +690,24 @@
 							 }
 						 });
 					 	}
+				}
+			},
+			wrapitem:{
+				inserted:function(el) {
+					setTimeout(function() {
+						var data = $(el).data();
+						$(el).owlCarousel({
+								addClassActive:true,
+								stopOnHover:true,
+								itemsCustom:data.itemscustom,
+								autoPlay:data.autoplay,
+								transitionStyle:data.transition,
+								beforeInit:background,
+								afterAction:animated,
+								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+						});
+						$(el).find('.owl-controls').css('left',data.control+'px');
+					},Math.floor(Math.random() * 1000) + 100 );
 				}
 			},
 

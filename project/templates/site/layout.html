@@ -10,7 +10,7 @@
     	<meta name="robots" content="noodp,index,follow"/>
     	<meta name="enamad" content="168699"/>
     {% endblock head_meta %}
-    <title>{% block title %}{% endblock %}367128</title>
+    <title>حراجی آنلاین یونی بید |{% block title %} صفحه اصلی {% endblock %}</title>
     {% block head_css %}
 
       <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
@@ -374,7 +374,7 @@
             {% if current_user.is_authenticated %}
               <h3 class="title24 title-flash"><span class="bg-color white">حراجی های دیده شده</span></h3>
               <div class="hot-cat-slider">
-              <div class="wrap-item" data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
+              <div v-wrapitem data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
                 <template v-for="auction in viewed">
                   {%raw%}
                   <div class="item-hot-cat">
@@ -397,7 +397,7 @@
             <!-- End List Cat Price -->
             <div class="footer-list-box">
               <div class="row">
-                <div class="col-md-5 col-sm-12 col-xs-12">
+                <div class="col-md-3 col-sm-12 col-xs-12">
                   <!-- <div class="newsletter-form footer-box">
                     <h2 class="title14">خبرنامه</h2>
                     <form>
@@ -452,6 +452,9 @@
                     <p class="formule-email"><a href="mailto:info@unibid.ir">info@unibid.ir</a></p>
                   </div>
                 </div>
+                <div class="col-md-2 col-sm-6 col-xs-12">
+                  <script src="https://cdn.zarinpal.com/trustlogo/v1/trustlogo.js" type="text/javascript"></script>
+                </div>
               </div>
             </div>
             <!-- End Footer List Box -->
@@ -460,7 +463,6 @@
           <div class="payment-method text-center">
             <a href="#" class="wobble-vertical"><img src="{{url_for('static',filename='images/theme/sibapp.png')}}" alt="" /></a>
             <a href="#" class="wobble-vertical"><img src="{{url_for('static',filename='images/theme/googleplay.png')}}" alt="" /></a>
-            <script src="https://cdn.zarinpal.com/trustlogo/v1/trustlogo.js" type="text/javascript"></script>
           </div>
 
           <div class="footer-copyright">
@@ -808,7 +810,25 @@
       },
 
     },
-    updated:function() {
+    directives:{
+      wrapitem:{
+				inserted:function(el) {
+					setTimeout(function() {
+						var data = $(el).data();
+						$(el).owlCarousel({
+								addClassActive:true,
+								stopOnHover:true,
+								itemsCustom:data.itemscustom,
+								autoPlay:data.autoplay,
+								transitionStyle:data.transition,
+								beforeInit:background,
+								afterAction:animated,
+								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+						});
+						$(el).find('.owl-controls').css('left',data.control+'px');
+					},2000);
+				}
+			},
     }
   });
 

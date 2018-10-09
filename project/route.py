@@ -18,6 +18,7 @@ from flask_jwt_extended import (
     get_jwt_identity, set_access_cookies,
     set_refresh_cookies, unset_jwt_cookies
 )
+from sqlalchemy import or_
 # from .model.payment import *
 
 
@@ -196,14 +197,16 @@ class Route():
     def checkout_payment(pid):
         order_payment = None
         if current_user.is_authenticated:
-            order_payment = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).first().payment
+            unpaid_orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).first()
+            if unpaid_orders:
+                order_payment = unpaid_orders.payment
         else:
             order = session['orders'][0]
             payment_id = int(order[0]['payment'][0]['id'])
             order_payment = Payment.query.get(payment_id)
         current_payment = Payment.query.get(pid)
 
-        if current_payment and current_payment.id == order_payment.id:
+        if current_payment and order_payment and current_payment.id == order_payment.id:
             return render_template('site/checkout.html', pid=pid)
         else:
             abort(404)

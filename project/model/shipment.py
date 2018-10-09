@@ -30,6 +30,7 @@ class Shipment(Base):
     status = db.Column(db.Integer, default=ShipmentStatus.IN_STORE)
 
     order_id = db.Column(db.BigInteger, db.ForeignKey('orders.id'))
+    order = db.relationship('Order')
     # payment = db.relationship('Payment')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
@@ -51,4 +52,5 @@ class ShipmentSchema(Schema):
     price = fields.Str()
     status = fields.Int()
     # insurance = fields.Nested('InsuranceSchema',exclude=('shipment',))
-    payment = fields.Nested('OrderSchema',exclude=('shipment',))
+    payment = fields.Nested('PaymentSchema',exclude=('shipment',))
+    order = fields.Nested('OrderSchema',exclude=('shipment',))
