@@ -26,7 +26,7 @@ class UserMessage(Base):
     file = db.Column(db.String(1024), nullable=True)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
     def __str__(self):
         return " ارسال توسط :" + str(User.query.filter_by(id=self.user_id)) + " درتاریخ " + str(self.created_at)

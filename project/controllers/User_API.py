@@ -48,7 +48,7 @@ class PaymentsInfo(Resource):
         return make_response(jsonify(paymentSchema.dump(payments)),200)
 
 class UserBasicInfo(Resource):
-    # @jwt_required
+    @jwt_required
     def get(self):
         user = User.query.get(current_user.id)
         userSchema = UserSchema()

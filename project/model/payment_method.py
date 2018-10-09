@@ -22,7 +22,7 @@ class PaymentMethod(Base):
     details = db.Column(db.Text)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
     def __str__(self):
         return self.title

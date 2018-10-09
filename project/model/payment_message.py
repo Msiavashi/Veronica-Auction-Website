@@ -15,7 +15,7 @@ class PaymentMessage(Base):
     payments = db.relationship('Payment' , secondary = 'payment_message_payments', back_populates='messages')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
     def __str__(self):
         return self.title

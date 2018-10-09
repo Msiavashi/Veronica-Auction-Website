@@ -419,7 +419,7 @@ jQuery(window).on('load',function(){
 
 						});
 						$(this).find('.owl-controls').css('left',data.control+'px');
-					},Math.floor(Math.random() * 1000) + 100 );
+					},Math.floor(Math.random() * 1000) + 500 );
 				});
 		}
 

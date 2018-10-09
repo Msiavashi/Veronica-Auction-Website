@@ -24,7 +24,7 @@ class Item(Base):
     orders = db.relationship('Order')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
     def __str__(self):
         return  " محصول :"+str(self.product.title) + " آیتم: " + self.title
         # return  'نام محصول'

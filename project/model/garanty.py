@@ -13,7 +13,7 @@ class Garanty(Base):
     products = db.relationship('Product', secondary='garanty_products', back_populates='garanties')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
     def __str__(self):
         return self.title
 

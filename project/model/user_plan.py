@@ -23,7 +23,7 @@ class UserPlan(Base):
     payment = db.relationship('Payment')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
     def __str__(self):
         if(self.user):
             return    " پلن : " + self.auction_plan.plan.title +" "+ self.auction_plan.auction.title +" "+ self.user.username + " "

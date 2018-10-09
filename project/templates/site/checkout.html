@@ -246,10 +246,9 @@ var app = new Vue({
           //handle success
           window.location = "/confirm/payment/{{pid}}"
          })
-        .catch(function (response) {
-            //handle error
-            console.log(response);
-        });
+         .catch((error)=>{
+ 					alert(error.response.data.message);
+ 				});
 
       // axios({
       //   method: 'POST',
