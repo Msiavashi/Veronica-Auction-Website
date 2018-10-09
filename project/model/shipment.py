@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import random
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -17,6 +18,8 @@ class ShipmentStatus:
 class Shipment(Base):
     __tablename__ = 'shipments'
     id = db.Column(db.BigInteger, primary_key=True)
+
+    guid = db.Column(db.String(64), default = random.randint(100000000000,10000000000000000))
 
     shipment_method_id = db.Column(db.BigInteger,db.ForeignKey('shipment_methods.id'))
     shipment_method = db.relationship('ShipmentMethod')
@@ -45,6 +48,7 @@ class Shipment(Base):
 
 class ShipmentSchema(Schema):
     id = fields.Int()
+    guid = fields.Str()
     company = fields.Str()
     method = fields.Str()
     send_date = fields.DateTime()

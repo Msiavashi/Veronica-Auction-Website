@@ -459,8 +459,11 @@ class UserCartOrder(Resource):
                 result.append(order_schema.dump(order))
             return make_response(jsonify(result), 200)
         else:
-            order = next((x for x in session['orders'] if x[0]['item']['id'] == item.id and (x[0]['status'] == OrderStatus.UNPAID or x[0]['status'] == OrderStatus.PAYING)), None)
-            if (order):
+            order = next((x for x in session['orders'] if x[0]['id'] == order_id),None)
+            print order[0]
+            # print session['orders']
+
+            if ((order[0]['status'] == str(OrderStatus.UNPAID) or order[0]['status'] == str(OrderStatus.PAYING))):
                 order[0]['total_cost'] = (order[0]['item']['price'] - order[0]['item']['discount']) * total
                 order[0]['total'] = total
                 order[0]['total_discount'] = order[0]['item']['discount'] * total
