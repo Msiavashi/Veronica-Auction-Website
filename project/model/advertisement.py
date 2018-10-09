@@ -13,7 +13,7 @@ class Advertisement(Base):
     show = db.Column(db.Boolean,default=False)
     discount = db.Column(db.Integer,nullable=False)
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
     def __str__(self):
         return self.title

@@ -23,7 +23,7 @@ class Address(Base):
     postal_code = db.Column(db.String(length=20), nullable=False)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
     def __str__(self):
         return " آدرس :" + self.country + " - " + str(self.state) + "  - " + self.city + " - " + self.address

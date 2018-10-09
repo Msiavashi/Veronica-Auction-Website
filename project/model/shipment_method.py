@@ -16,7 +16,7 @@ class ShipmentMethod(Base):
     price = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
 
     def __str__(self):

@@ -14,7 +14,7 @@ class Gift(Base):
     users = db.relationship('User', secondary='user_gifts', back_populates='gifts',lazy='dynamic')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
     # def __str__(self):
     #     return self.title

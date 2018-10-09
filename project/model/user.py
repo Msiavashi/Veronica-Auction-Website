@@ -26,7 +26,7 @@ class User(Base,UserMixin):
     password = db.Column(db.String(length=100), nullable=False)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
 
     invitor = db.Column(db.String(length=255))
