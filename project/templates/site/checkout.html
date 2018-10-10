@@ -38,13 +38,13 @@
                 </p>
                 <p>
                   {%raw%}
-                    <div  v-if="current_user">
-                      <input type="checkbox" v-model="information.accept_tick" id="update_information" />
-                      <label for="update_information"> بروز رسانی اطلاعات حساب </label>
+                    <div  v-if="!current_user">
+                      <input type="checkbox" v-model="information.accept_tick" id="register_information" />
+                      <label for="register_information">ایجاد یک حساب کاربری؟</label>
                     </div>
                     <div v-else>
                       <input type="checkbox" v-model="information.accept_tick" id="register_information" />
-                      <label for="register_information">ایجاد یک حساب کاربری؟</label>
+                      <label for="register_information">بروز رسانی اطلاعات حساب</label>
                     </div>
                   {%endraw%}
                 </p>
@@ -213,7 +213,7 @@ var app = new Vue({
       postal_code : "",
       more_info : "",
       registered : "{{current_user.id}}" ? true : false,
-      accept_tick : -1,
+      accept_tick : 0,
       shipment_method : -1,
       payment_method : -1,
       payment_id : -1,
@@ -252,18 +252,7 @@ var app = new Vue({
       }
       console.log(obj);
 
-      // for (var key in this.information) {
-      //   if (this.information.hasOwnProperty(key)) {
-      //       console.log(key + " -> " + this.information[key]);
-      //       if (this.information[key] ==="" || this.information[key]===-1){
-      //         data[key] = this.information[key];
-      //       }
-      //   }
-      // }
-      // console.log(data);
-
-
-      axios.post("{{url_for('usercheckoutconfirm',pid=pid)}}",this.information,
+      axios.post("{{url_for('usercheckoutconfirm',pid=pid)}}",obj,
 				{
 					headers:
 					{
@@ -271,9 +260,11 @@ var app = new Vue({
 					}
 				}).then(function (response) {
           //handle success
+
           $(".error_alert").addClass('hide');
-          alert(response.data.message);
-          if(response.data.operation =="redirect_to_bank"){
+
+          if(response.data.message.operation ==="redirect_to_bank"){
+            alert('هدایت به درگاه بانک جهت پرداخت صورتحساب');
             window.location = "/confirm/payment/{{pid}}"
           }else {
             window.location = "/profile"
@@ -321,6 +312,7 @@ var app = new Vue({
        console.log(self.info);
 
        self.information.first_name = self.info.first_name;
+       self.information.email = self.info.email;
        self.information.last_name = self.info.last_name;
        self.information.work_place = self.info.work_place;
        self.information.state = self.info.address.state.id;

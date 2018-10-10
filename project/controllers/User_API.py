@@ -51,6 +51,7 @@ parse_payment_account.add_argument('accept_tick', required = False)
 parse_payment_account.add_argument('work_place', required = False)
 parse_payment_account.add_argument('postal_code', required = False)
 parse_payment_account.add_argument('more_info', required = False)
+parse_payment_account.add_argument('email', required = False)
 parse_payment_account.add_argument('shipment_method',help='ورود روش ارسال الزامی است', required = True)
 parse_payment_account.add_argument('payment_method',help='ورود روش پرداخت الزامی است', required = True)
 
@@ -659,15 +660,18 @@ class UserCheckoutConfirm(Resource):
         shipment_method = ShipmentMethod.query.get(shipment_method)
         payment_method = PaymentMethod.query.get(payment_method)
 
-
         if current_user.is_authenticated:
+            print data,data['accept_tick'] == "True"
 
-            if (data['accept_tick']):
+            if ('accept_tick' in data and data['accept_tick'] == "True"):
                 current_user.first_name = data['first_name']
                 current_user.last_name = data['last_name']
                 current_user.mobile = data['mobile']
-                current_user.work_place = data['work_place']
-                current_user.email = data['email']
+
+                if 'work_place' in data:
+                    current_user.work_place = data['work_place']
+                if 'email' in data:
+                    current_user.email = data['email']
 
                 if(not current_user.address):
                     address = Address()
@@ -689,6 +693,8 @@ class UserCheckoutConfirm(Resource):
                     current_user.address.state = state
                     current_user.address.postal_code = data['postal_code']
 
+                db.session.add(current_user)
+                db.session.commit()
             amount = shipment_method.price
 
             if not payment:
@@ -709,6 +715,8 @@ class UserCheckoutConfirm(Resource):
                     return make_response(jsonify({"message" : {"message":msg,"operation":"redirect_to_profile"}}),400)
                 else:
                     current_user.credit -= amount
+                    db.session.add(current_user)
+                    db.session.commit()
 
                     orders = Order.query.filter_by(payment_id=pid,user_id=current_user.id).all()
 
@@ -726,7 +734,7 @@ class UserCheckoutConfirm(Resource):
                             shipment.shipment_method = shipment_method
                             shipment.shipment_method_id = shipment_method.id
                             order.shipment = shipment
-                            if (data['more_info']):
+                            if ('more_info' in data):
                                 order.description = data['more_info']
                             db.session.add(shipment)
                         amount += order.total_cost
@@ -781,10 +789,10 @@ class UserCheckoutConfirm(Resource):
                 db.session.commit()
 
                 msg = "هدایت به صفحه تایید نهایی مبلغ و انتخاب درگاه پرداخت"
-                return make_response(jsonify({'success':True,"operation":"redirect_to_bank","pid":payment.id,"message":msg}),200)
+                return make_response(jsonify({'message':{'success':True,"operation":"redirect_to_bank","pid":payment.id,"message":msg}}),200)
             else:
                 msg = "روش پرداخت مورد نظر و"
-                return make_response(jsonify({"message":{"message":msg}}),400)
+                return make_response(jsonify({"message":{"message":{"message":msg}}}),400)
         else:
             msg = "session base payment not implemented"
             return make_response(jsonify({"message":{"message":msg}}),400)

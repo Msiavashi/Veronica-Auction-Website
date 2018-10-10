@@ -150,11 +150,11 @@ class CategoryAdmin(ModelView):
 class ProductAdmin(ModelView):
     page_size = 10
     can_view_details = True
-    column_searchable_list = ['title', 'desciption']
-    column_editable_list = ['title', 'desciption']
-    column_exclude_list = ['desciption', ]
+    column_searchable_list = ['title', 'description']
+    column_editable_list = ['title', 'description']
+    column_exclude_list = ['description', ]
     form_widget_args = {
-    'desciption': {
+    'description': {
     'rows': 10,
     'style': 'color: black'
     }

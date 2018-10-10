@@ -114,7 +114,7 @@ class UserSchema(Schema):
     last_name = fields.Str()
     work_place = fields.Str()
     mobile = fields.Str()
-    email = fields.Email()
+    email = fields.Str()
     credit = fields.Str()
     avatar = fields.Str()
     invitor = fields.Str()

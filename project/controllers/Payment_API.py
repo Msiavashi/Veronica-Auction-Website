@@ -13,7 +13,7 @@ from ..model.payment import *
 from ..model.order import *
 from ..model.user import *
 import time
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, jwt_refresh_token_required, fresh_jwt_required
 
 '''
 # Request Payment Token:
@@ -89,7 +89,7 @@ class MellatGateway(Resource):
             return make_response(jsonify({'success':False,"pay_token":pay_token,"message":"خطای بانک"}),400)
 
 class ZarinpalGateway(Resource):
-    @jwt_required
+    @fresh_jwt_required
     def post(self):
         data = request.get_json(force=True)
         pid = int(data.get("pid", None))
