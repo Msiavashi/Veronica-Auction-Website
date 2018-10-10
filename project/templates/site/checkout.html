@@ -158,11 +158,19 @@
                 </label>
               </li> -->
             </ul>
-            <div id="app" class="form-row place-order">
+            <div class="form-row place-order">
               <form @submit.prevent="handleSubmit" id="confirm">
                 <input type="submit" data-value="Place order" value="پرداخت و تایید نهایی" id="place_order"  class="button alt">
+
+                <div class="alert alert-danger error_alert hide">
+                  <a href="#" class="close" aria-label="close">×</a>
+                  <div class="error_container"></div>
+                </div>
+
               </form>
+
             </div>
+
           </div>
         </div>
       </div>
@@ -199,16 +207,16 @@ var app = new Vue({
       work_place : "",
       mobile : "",
       email : "",
-      state : "",
+      state : -1,
       city : "",
       address : "",
       postal_code : "",
       more_info : "",
       registered : "{{current_user.id}}" ? true : false,
-      accept_tick : 0,
-      shipment_method : 0,
-      payment_method : 0,
-      payment_id : 0,
+      accept_tick : -1,
+      shipment_method : -1,
+      payment_method : -1,
+      payment_id : -1,
     }
   },
 
@@ -234,7 +242,26 @@ var app = new Vue({
     },
 
     handleSubmit: function(){
-      console.log(this.information);
+
+      var obj = this.information;
+
+      for (var propName in obj) {
+        if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
+          delete obj[propName];
+        }
+      }
+      console.log(obj);
+
+      // for (var key in this.information) {
+      //   if (this.information.hasOwnProperty(key)) {
+      //       console.log(key + " -> " + this.information[key]);
+      //       if (this.information[key] ==="" || this.information[key]===-1){
+      //         data[key] = this.information[key];
+      //       }
+      //   }
+      // }
+      // console.log(data);
+
 
       axios.post("{{url_for('usercheckoutconfirm',pid=pid)}}",this.information,
 				{
@@ -244,6 +271,7 @@ var app = new Vue({
 					}
 				}).then(function (response) {
           //handle success
+          $(".error_alert").addClass('hide');
           alert(response.data.message);
           if(response.data.operation =="redirect_to_bank"){
             window.location = "/confirm/payment/{{pid}}"
@@ -252,7 +280,11 @@ var app = new Vue({
           }
          })
          .catch((error)=>{
- 					alert(error.response.data.message);
+           console.log(error.response.data.message);
+            $(".error_alert").removeClass('hide');
+           for (var propName in error.response.data.message) {
+       			 $(".error_container").html(error.response.data.message[propName])
+           }
  				});
 
       // axios({
@@ -355,6 +387,11 @@ var app = new Vue({
 
 
 
+});
+
+$('.close').on('click',function(event){
+	event.preventDefault();
+	$(this).parent().removeClass('show').addClass('hide')
 });
 
 </script>

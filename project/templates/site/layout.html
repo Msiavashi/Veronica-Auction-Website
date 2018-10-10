@@ -593,10 +593,7 @@
       });
 
       this.base_socket.on('sync_carts', function(data) {
-        if (data && data.length == 0){
-          myapp.mycarts = [];
-          return;
-        }
+      
         if(data && data.length > 0){
              data.forEach(cart => {
                if (! myapp.mycarts.find(x=>x.id == cart[0].id))

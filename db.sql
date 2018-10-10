@@ -479,7 +479,7 @@ ALTER SEQUENCE public.insurances_id_seq OWNED BY public.insurances.id;
 CREATE TABLE public.inventories (
     id bigint NOT NULL,
     name character varying(100) NOT NULL,
-    desciption character varying(255) NOT NULL,
+    description character varying(255) NOT NULL,
     address_id bigint,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -582,7 +582,7 @@ CREATE TABLE public.manufactures (
     id bigint NOT NULL,
     name character varying(25) NOT NULL,
     country character varying(100) NOT NULL,
-    desciption text NOT NULL,
+    description text NOT NULL,
     details text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -669,7 +669,7 @@ ALTER TABLE public.order_items OWNER TO bordito;
 
 CREATE TABLE public.orders (
     id bigint NOT NULL,
-    desciption text,
+    description text,
     status integer,
     register_user boolean,
     total_cost numeric(20,4) NOT NULL,
@@ -788,7 +788,7 @@ ALTER SEQUENCE public.payments_id_seq OWNED BY public.payments.id;
 CREATE TABLE public.plans (
     id bigint NOT NULL,
     title character varying(255) NOT NULL,
-    desciption text NOT NULL,
+    description text NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -824,7 +824,7 @@ ALTER SEQUENCE public.plans_id_seq OWNED BY public.plans.id;
 CREATE TABLE public.products (
     id bigint NOT NULL,
     title character varying(255) NOT NULL,
-    desciption text NOT NULL,
+    description text NOT NULL,
     quantity integer NOT NULL,
     details text,
     category_id bigint,
@@ -1480,7 +1480,7 @@ COPY public.insurances (id, company, description, price, created_at, updated_at)
 -- Data for Name: inventories; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
-COPY public.inventories (id, name, desciption, address_id, created_at, updated_at) FROM stdin;
+COPY public.inventories (id, name, description, address_id, created_at, updated_at) FROM stdin;
 \.
 
 
@@ -1514,7 +1514,7 @@ COPY public.manufacture_products (manufacture_id, product_id) FROM stdin;
 -- Data for Name: manufactures; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
-COPY public.manufactures (id, name, country, desciption, details, created_at, updated_at) FROM stdin;
+COPY public.manufactures (id, name, country, description, details, created_at, updated_at) FROM stdin;
 \.
 
 
@@ -1546,7 +1546,7 @@ COPY public.order_items (order_id, item_id) FROM stdin;
 -- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
-COPY public.orders (id, desciption, status, register_user, total_cost, user_id, created_at, updated_at) FROM stdin;
+COPY public.orders (id, description, status, register_user, total_cost, user_id, created_at, updated_at) FROM stdin;
 \.
 
 
@@ -1572,7 +1572,7 @@ COPY public.payments (id, "GUID", amount, status, details, payment_method_id, or
 -- Data for Name: plans; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
-COPY public.plans (id, title, desciption, created_at, updated_at) FROM stdin;
+COPY public.plans (id, title, description, created_at, updated_at) FROM stdin;
 1	طلایی	این طلایی است	2018-05-21 19:46:25	2018-05-21 19:46:25
 2	نقره ای	این نقره ای است	2018-05-21 19:46:36	2018-05-21 19:46:36
 3	برنزی	این برنزی است	2018-05-21 19:46:47	2018-05-21 19:46:47
@@ -1583,7 +1583,7 @@ COPY public.plans (id, title, desciption, created_at, updated_at) FROM stdin;
 -- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
-COPY public.products (id, title, desciption, quantity, details, category_id, manufacture_id, advertisement_id, created_at, updated_at) FROM stdin;
+COPY public.products (id, title, description, quantity, details, category_id, manufacture_id, advertisement_id, created_at, updated_at) FROM stdin;
 1	آیفون ایکس	این یک آیفون ایکس است	10		1	\N	\N	2018-05-21 19:43:30	2018-05-21 19:43:30
 \.
 

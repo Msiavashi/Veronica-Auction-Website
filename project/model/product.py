@@ -7,7 +7,7 @@ class Product(Base):
     __tablename__ = 'products'
     id = db.Column(db.BigInteger, primary_key=True)
     title = db.Column(db.String(length=255), nullable=False)
-    desciption = db.Column(db.Text,nullable=False)
+    description = db.Column(db.Text,nullable=False)
     details = db.Column(db.Text)
 
     category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'))
@@ -37,7 +37,7 @@ class Product(Base):
 class ProductSchema(Schema):
     id = fields.Int()
     title = fields.Str()
-    desciption = fields.Str()
+    description = fields.Str()
     quantity = fields.Int()
     details = fields.Str()
     # category = fields.Nested('CategorySchema',exclude=('products',))

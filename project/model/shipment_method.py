@@ -25,5 +25,5 @@ class ShipmentMethod(Base):
 class ShipmentMethodSchema(Schema):
     id = fields.Int()
     title = fields.Str()
-    desciption = fields.Str()
+    description = fields.Str()
     price = fields.Str()

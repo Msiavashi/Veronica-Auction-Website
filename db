@@ -368,7 +368,7 @@ ALTER SEQUENCE public.insurances_id_seq OWNED BY public.insurances.id;
 CREATE TABLE public.inventories (
     id bigint NOT NULL,
     name character varying(100) NOT NULL,
-    desciption character varying(255),
+    description character varying(255),
     address_id bigint
 );
 
@@ -1232,7 +1232,7 @@ COPY public.insurances (id, company_name, description, price) FROM stdin;
 -- Data for Name: inventories; Type: TABLE DATA; Schema: public; Owner: bordito
 --
 
-COPY public.inventories (id, name, desciption, address_id) FROM stdin;
+COPY public.inventories (id, name, description, address_id) FROM stdin;
 1	شرکت	انبار مرکزی شرکت	\N
 2	ولیعصر	بازارچه رضا - مغازه ۵	\N
 \.

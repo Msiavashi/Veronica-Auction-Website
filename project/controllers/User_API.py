@@ -40,8 +40,24 @@ parser_user_message.add_argument('subject', help = 'ورود موضوع پیام
 parser_user_message.add_argument('title', help = 'ورود عنوان پیام ضروری است', required = True)
 parser_user_message.add_argument('message', help = 'متنی برای پیام وارد نکرده اید', required = True)
 
+parse_payment_account = reqparse.RequestParser()
+parse_payment_account.add_argument('first_name', help = 'ورود نام ضروری است', required = True)
+parse_payment_account.add_argument('last_name', help = 'ورود نام خانوادگی ضروری است', required = True)
+parse_payment_account.add_argument('state', help = 'ورود استان ضروری است', required = True)
+parse_payment_account.add_argument('city', help = 'ورود شهر ضروری است', required = True)
+parse_payment_account.add_argument('address', help = 'ورود آدرس ضروری است', required = True)
+parse_payment_account.add_argument('mobile', help = 'ورود شماره همراه ضروری است', required = True)
+parse_payment_account.add_argument('accept_tick', required = False)
+parse_payment_account.add_argument('work_place', required = False)
+parse_payment_account.add_argument('postal_code', required = False)
+parse_payment_account.add_argument('more_info', required = False)
+parse_payment_account.add_argument('shipment_method',help='ورود روش ارسال الزامی است', required = True)
+parse_payment_account.add_argument('payment_method',help='ورود روش پرداخت الزامی است', required = True)
+
+
+
 class PaymentsInfo(Resource):
-    @login_required
+    @jwt_required
     def get(self,pagenum,pagesize):
         payments = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').paginate(pagenum, pagesize, True).items
         paymentSchema = PaymentSchema(many=True)
@@ -54,7 +70,7 @@ class UserBasicInfo(Resource):
         userSchema = UserSchema()
         return make_response(jsonify(userSchema.dump(user)),200)
 
-    # @jwt_required
+    @jwt_required
     def post(self):
         # json_data = request.get_json(force=True)
 
@@ -147,7 +163,7 @@ class UserBasicInfo(Resource):
             return make_response(jsonify({"message":{"error":e.message}}), 500)
 
 class UserInformation(Resource):
-    @login_required
+    @jwt_required
     def get(self):
 
         credit = current_user.credit
@@ -190,7 +206,7 @@ class UserInformation(Resource):
         print info
         return make_response(jsonify(info),200)
 
-    @login_required
+    @jwt_required
     def post(self):
         # json_data = request.get_json(force=True)
 
@@ -288,7 +304,7 @@ class UserContactUs(Resource):
         return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in definitions.ALLOWED_EXTENTIONS
 
-    @login_required
+    @jwt_required
     def post(self):
         user_message = parser_user_message.parse_args()
 
@@ -573,19 +589,28 @@ class UserCheckOutInit(Resource):
         if (not current_user.is_authenticated):
             if "orders" in session:
                 unpaid_orders = session['orders']
+                payment = unpaid_orders[0][0]['payment']
+                if not payment:
+                    payment = Payment()
+                else:
+                    payment = Payment.query.get(payment[0]['id'])
 
-                payment = Payment()
                 payment.type = PaymentType.PRODUCT
                 payment.amount = 0
                 payment.discount = 0
                 payment.status = PaymentStatus.PAYING
+                payment.details = str(unpaid_orders[0][0]['id'])
 
                 payment.payment_method = PaymentMethod.query.filter_by(type=Payment_Types.Online).first()
                 paymentschema = PaymentSchema()
+                print "session orders before :", unpaid_orders
 
                 for order in unpaid_orders:
+                    order[0]['status'] = OrderStatus.PAYING
                     payment.amount += float(order[0]['total_cost'])
                     payment.discount += float(order[0]['total_discount'])
+
+                print "session orders after :", unpaid_orders
 
                 db.session.add(payment)
                 db.session.commit()
@@ -626,32 +651,62 @@ class UserCheckOutInit(Resource):
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
-    @jwt_required
     def post(self, pid):
-        data = request.get_json(force=True)
-        shipment_method = ShipmentMethod.query.get(data['shipment_method'])
-        payment_method = PaymentMethod.query.get(data['payment_method'])
+        data = parse_payment_account.parse_args()
+        shipment_method = data['shipment_method']
+        payment_method = data['payment_method']
         payment = Payment.query.get(pid)
+        shipment_method = ShipmentMethod.query.get(shipment_method)
+        payment_method = PaymentMethod.query.get(payment_method)
+
 
         if current_user.is_authenticated:
+
+            if (data['accept_tick']):
+                current_user.first_name = data['first_name']
+                current_user.last_name = data['last_name']
+                current_user.mobile = data['mobile']
+                current_user.work_place = data['work_place']
+                current_user.email = data['email']
+
+                if(not current_user.address):
+                    address = Address()
+                    address.city = data['city']
+                    address.address = data['address']
+                    state = State.query.get(data['state'])
+                    address.state = state
+                    address.postal_code = data['postal_code']
+                    try:
+                        db.session.add(address)
+                        db.session.commit()
+                        current_user.address = address
+                    except Exception as e:
+                        return make_response(jsonify({"message":{"message": e.message}}), 500)
+                else:
+                    current_user.address.city = data['city']
+                    current_user.address.address = data['address']
+                    state = State.query.get(data['state'])
+                    current_user.address.state = state
+                    current_user.address.postal_code = data['postal_code']
+
             amount = shipment_method.price
 
             if not payment:
                 msg = "پرداخت معتبری برای سبد خرید شما موجود نیست.لطفا سبد خود را دوباره تشکیل دهید"
-                return make_response(jsonify({"message":msg}),400)
+                return make_response(jsonify({"message":{"message":msg}}),400)
 
             if payment.user_id != current_user.id:
                 msg = "این عملیات پرداخت غیر مجاز است"
-                return make_response(jsonify({"message":msg}),400)
+                return make_response(jsonify({"message":{"message":msg}}),400)
 
             if payment.status == PaymentStatus.PAID:
                 msg = "این صورتحساب قبلا پرداخت شده است"
-                return make_response(jsonify({"message":msg,"operation":"redirect_to_profile"}),400)
+                return make_response(jsonify({"message":{"message":msg,"operation":"redirect_to_profile"}}),400)
 
             if payment_method.type == Payment_Types.Credit:
                 if current_user.credit < payment.amount + shipment_method.price:
                     msg = "موجودی حساب شما برای پرداخت این صورتحساب کافی نیست"
-                    return make_response(jsonify({"message":msg,"operation":"redirect_to_profile"}),400)
+                    return make_response(jsonify({"message" : {"message":msg,"operation":"redirect_to_profile"}}),400)
                 else:
                     current_user.credit -= amount
 
@@ -671,6 +726,8 @@ class UserCheckoutConfirm(Resource):
                             shipment.shipment_method = shipment_method
                             shipment.shipment_method_id = shipment_method.id
                             order.shipment = shipment
+                            if (data['more_info']):
+                                order.description = data['more_info']
                             db.session.add(shipment)
                         amount += order.total_cost
                         order.status = OrderStatus.PAID
@@ -688,7 +745,7 @@ class UserCheckoutConfirm(Resource):
 
                     db.session.commit()
                     msg = "مبلغ مورد نظر از حساب شما کسر شد و خرید با موفقیت انجام گرفت"
-                    return make_response(jsonify({'success':True,"message":msg,"operation":"redirect_to_profile"}),200)
+                    return make_response(jsonify({"message":{'success':True,"message":msg,"operation":"redirect_to_profile"}}),200)
 
             if payment_method.type == Payment_Types.Online:
 
@@ -726,10 +783,11 @@ class UserCheckoutConfirm(Resource):
                 msg = "هدایت به صفحه تایید نهایی مبلغ و انتخاب درگاه پرداخت"
                 return make_response(jsonify({'success':True,"operation":"redirect_to_bank","pid":payment.id,"message":msg}),200)
             else:
-                return make_response(jsonify({'success': False, "message": {"error": "روش پرداخت مورد نظر وجود ندارد"}}, 406))
+                msg = "روش پرداخت مورد نظر و"
+                return make_response(jsonify({"message":{"message":msg}}),400)
         else:
             msg = "session base payment not implemented"
-            return make_response(jsonify({"message":msg}),400)
+            return make_response(jsonify({"message":{"message":msg}}),400)
 
 class UserApplyPayment(Resource):
     @jwt_required
@@ -871,6 +929,7 @@ class UserChargeWalet(Resource):
         payment_method = PaymentMethod.query.filter_by(type = Payment_Types.Online).first()
 
         payment = Payment()
+
         payment.type = PaymentType.WALET
         payment.amount = charge_amount
         payment.payment_method = payment_method

@@ -26,7 +26,7 @@ class Order(Base):
     __tablename__ = 'orders'
     id = db.Column(db.BigInteger, primary_key=True)
 
-    desciption = db.Column(db.Text)
+    description = db.Column(db.Text)
 
     status = db.Column(db.Integer, default=0)
     discount_status = db.Column(db.Integer, default=0)
@@ -57,7 +57,7 @@ class Order(Base):
 
 class OrderSchema(Schema):
     id = fields.Int()
-    desciption = fields.Str()
+    description = fields.Str()
     discount_status = fields.Str()
     status = fields.Str()
     register_user = fields.Boolean()

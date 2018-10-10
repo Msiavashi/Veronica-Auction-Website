@@ -59,11 +59,8 @@ login_manager.login_view = 'site.login'
 
 @app.before_request
 def make_session_permanent():
-    print request.remote_addr
-    print request.headers.get('User-Agent')
     session.permanent = True
-    permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
-    session.modified = True
+    app.permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
 
 from project.middleware import *
 app.jinja_env.globals.update(has_role=has_role)

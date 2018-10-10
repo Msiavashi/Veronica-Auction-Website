@@ -32,7 +32,7 @@ class Item(Base):
 class ItemSchema(Schema):
     id = fields.Int()
     title = fields.Str()
-    desciption = fields.Str()
+    description = fields.Str()
     price = fields.Int()
     quantity = fields.Int()
     discount = fields.Int()

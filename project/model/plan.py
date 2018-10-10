@@ -6,7 +6,7 @@ class Plan(Base):
     __tablename__ = 'plans'
     id = db.Column(db.BigInteger, primary_key=True)
     title = db.Column(db.String(length=255), nullable=False)
-    desciption = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text, nullable=False)
 
     auctions = db.relationship('AuctionPlan')
 
