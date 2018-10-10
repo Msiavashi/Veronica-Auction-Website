@@ -138,7 +138,11 @@ var app = new Vue({
 		},
 		_placePlanOrder(){
 			if (this.amount > this.credit && $("#payment_method_cheque").is(':checked') ){
-					alert('مبلغ حساب شما برای پرداخت کافی نمیباشد. لطفا حساب خود را شارژ کنید');
+					swal(
+						'مشکلی پیش اومد',
+						'مبلغ حساب شما برای پرداخت کافی نمیباشد. لطفا حساب خود را شارژ کنید',
+						'error'
+					)
 					return;
 			}
 
@@ -155,15 +159,27 @@ var app = new Vue({
 						'Content-Type': 'application/json'
 					}
 				}).then((response) => {
-						alert(response.data.message)
-						if(response.data.type=="redirect_to_bank"){
-							window.parent.location = "/confirm/payment/"+response.data.pid;
+						if(response.data.type=="redirect_to_bank")
+						{
+							swal({
+							  title: 'تایید پرداخت',
+							  text: "به صفحه تایید و انتخاب درگاه پرداخت هدایت می شوید",
+							  type: 'success',
+							  confirmButtonColor: '#3085d6',
+							  confirmButtonText: 'باشه...'
+							}).then((result) => {
+							  if (result.value) {
+							   window.parent.location = "/confirm/payment/"+response.data.pid;
+							  }
+							})
 						}
-				})
-				.catch((error)=>{
-					alert(error.response.data.reason);
+			}).catch((error)=>{
+					swal(
+						'مشکلی پیش اومد',
+						error.response.data.reason,
+						'error'
+					)
 				});
-
 		},
 	},
 	mounted: function(){
@@ -176,7 +192,11 @@ var app = new Vue({
 				stop_loading(loading_element);
 			})
 			.catch((response)=>{
-				console.error(response);
+				swal(
+					'مشکلی پیش اومد',
+					'برای حراجی پلن تعریف نشده است لطفا با پشتیبانی سایت تماس حاصل کنید',
+					'error'
+				)
 			});
 	},
 	updated: function () {

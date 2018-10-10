@@ -263,9 +263,20 @@ var app = new Vue({
 
           $(".error_alert").addClass('hide');
 
+
           if(response.data.message.operation ==="redirect_to_bank"){
-            alert('هدایت به درگاه بانک جهت پرداخت صورتحساب');
-            window.location = "/confirm/payment/{{pid}}"
+
+            swal({
+              title: 'تایید پرداخت',
+              text: "به صفحه تایید و انتخاب درگاه پرداخت هدایت می شوید",
+              type: 'success',
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: 'باشه...'
+            }).then((result) => {
+              if (result.value) {
+               window.location = "/confirm/payment/{{pid}}";
+              }
+            })
           }else {
             window.location = "/profile"
           }

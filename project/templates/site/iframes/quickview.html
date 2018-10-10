@@ -283,11 +283,19 @@ var app = new Vue({
           }
         }).then((response) => {
           if(response.data.length > 0){
-            alert('محصول مورد نظر شما به سبد خرید اضافه شد');
+            swal(
+              'سبد خرید',
+              'محصول موردنظر به سبد خرید شما اضافه شد',
+              'success'
+            )
           }
         })
         .catch((error)=>{
-          alert(error.response.data.reason);
+          swal(
+            'مشکلی پیش اومد',
+            error.response.data.reason,
+            'error'
+          )
         });
     },
 
@@ -303,10 +311,18 @@ var app = new Vue({
             'Content-Type': 'application/json'
           }
         }).then((response) => {
-            alert('محصول موردنظر به علاقمندی های شما اضافه شد');
+          swal(
+            'علاقمندی محصول',
+            response.data.message,
+            'success'
+          )
         })
         .catch((error)=>{
-          alert(error.response.data.message);
+          swal(
+            'مشکلی پیش اومد',
+            error.response.data.message,
+            'error'
+          )
         });
     }
 	},

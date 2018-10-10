@@ -179,12 +179,20 @@
 							});
 	            myapp.total_carts = ToPersian(myapp.mycarts.length);
 							myapp.total_changed = true;
-							alert('محصول مورد نظر شما به سبد خرید اضافه شد');
+							swal(
+								'سبد خرید',
+								'محصول موردنظر به سبد خرید شما اضافه شد',
+								'success'
+							)
 
 						}
 					})
 					.catch((error)=>{
-						alert(error.response.data.reason)
+						swal(
+							'مشکلی پیش اومد',
+							error.response.data.reason,
+							'error'
+						)
 					});
 			},
 
@@ -200,12 +208,20 @@
 							'Content-Type': 'application/json'
 						}
 					}).then((response) => {
-						alert(response.data[0].message)
+						swal(
+							'علاقمندی محصول',
+							response.data.message,
+							'success'
+						)
 						var elementPos = this.auctions.map(function(x) {return x.id; }).indexOf(auction_id);
 						this.auctions.splice( elementPos, 1 );
 					})
 					.catch((error)=>{
-						alert(error.response.data.message);
+						swal(
+							'مشکلی پیش اومد',
+							error.response.data.message,
+							'error'
+						)
 					});
 			}
 		},

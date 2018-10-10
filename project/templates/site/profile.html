@@ -479,7 +479,11 @@ var app = new Vue({
 		_ChargeWalet:function() {
 
 			if (this.charge_amount == 0) {
-				alert('لطفا مقداری برای افزایش موجودی وارد کنید');
+				swal(
+					'دقت در ورود اطلاعات',
+					'لطفا مقداری برای افزایش موجودی وارد کنید',
+					'error'
+				)
 				return ;
 			}
 
@@ -493,13 +497,21 @@ var app = new Vue({
 						'Content-Type': 'application/json'
 					}
 				}).then((response) => {
-						alert(response.data.message)
+						swal(
+							'افزایش موجودی',
+							response.data.message,
+							'success'
+						)
 						if(response.data.type=="redirect_to_bank"){
 							window.parent.location = "/confirm/payment/"+response.data.pid;
 						}
 				})
 				.catch((error)=>{
-					alert(error.response.data.reason);
+					swal(
+						'مشکلی پیش اومد',
+						error.response.data.reason,
+						'error'
+					)
 				});
 
 		},

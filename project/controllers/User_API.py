@@ -364,7 +364,7 @@ class UserCartOrder(Resource):
         if current_user.is_authenticated:
             last_order = Order.query.filter_by(user_id=current_user.id,item_id=item_id,status=OrderStatus.UNPAID).first()
             if(last_order):
-                msg = " این محصول در سبد خرید شما از قبل موجود است"
+                msg = "این محصول رو قبلا به سبد خرید اضافه کرده اید"
                 return make_response(jsonify({"reason":msg}),400)
 
             #calculate price base on auction participation
@@ -414,7 +414,7 @@ class UserCartOrder(Resource):
             order_schema = OrderSchema(many=True)
             founded = next((x for x in session['orders'] if x[0]['item']['id'] == item.id and (x[0]['status'] == OrderStatus.UNPAID or x[0]['status'] == OrderStatus.PAYING)), None)
             if (founded):
-                msg = " این محصول در سبد خرید شما از قبل موجود است"
+                msg = "این محصول رو قبلا به سبد خرید اضافه کرده اید"
                 return make_response(jsonify({"reason":msg}),400)
 
             if len(session['orders']) < MAXIMUM_ORDERS :

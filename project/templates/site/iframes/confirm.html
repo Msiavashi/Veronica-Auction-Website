@@ -110,24 +110,40 @@ var app = new Vue({
 	$('#confirm1').on('submit', function(event){
 		if(app.must_login){
 			event.preventDefault();
-			alert('برای این عملیات نیاز به ورود مجدد به سایت است');
+			swal(
+				'دقت کنید',
+				'برای این عملیات نیاز به ورود مجدد به سایت است',
+				'warning'
+			)
 			return;
 		}
 		if(!app.ref_id){
 			event.preventDefault();
-			alert('لطفا تا آماده شدن فرم اندکی صبر کنید...');
+			swal(
+				'دقت کنید',
+				'لطفا اندکی صبر کنید تا توکن پرداخت حاضر شود...',
+				'warning'
+			)
 		}
 	});
 
 	$('#confirm2').on('submit', function(event){
 		if(app.must_login){
 			event.preventDefault();
-			alert('برای این عملیات نیاز به ورود مجدد به سایت است');
+			swal(
+				'دقت کنید',
+				'برای این عملیات نیاز به ورود مجدد به سایت است',
+				'warning'
+			)
 			return;
 		}
 		if(!app.ref_id){
 			event.preventDefault();
-			alert('لطفا تا آماده شدن فرم اندکی صبر کنید...');
+			swal(
+				'دقت کنید',
+				'لطفا اندکی صبر کنید تا توکن پرداخت حاضر شود...',
+				'warning'
+			)
 		}
 	});
 
