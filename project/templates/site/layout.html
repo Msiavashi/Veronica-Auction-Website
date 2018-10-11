@@ -571,13 +571,14 @@
 								product_title : cart[0].item.product.title,
 								item_id : cart[0].item.id ,
                 image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
-                discounted_price : cart[0].total_cost,
-								main_price : cart[0].item.price * cart[0].total ,
+                discounted_price : (cart[0].item.price * cart[0].total) - (cart[0].item.discount * cart[0].total),
+                main_price : cart[0].item.price * cart[0].total ,
+                main_discount : cart[0].item.discount,
                 min_quantity : 1,
                 max_quantity : cart[0].item.quantity,
-                current_quantity : parseInt(cart[0].total),
+                current_quantity : cart[0].total,
                 status : cart[0].status,
-                discount_status : parseInt(cart[0].discount_status),
+                discount_status : cart[0].discount_status,
 							});
 						});
           }
@@ -612,9 +613,9 @@
                     main_price : cart[0].item.price * cart[0].total ,
                     min_quantity : 1,
                     max_quantity : cart[0].item.quantity,
-                    current_quantity : parseInt(cart[0].total),
+                    current_quantity : cart[0].total,
                     status : cart[0].status,
-                    discount_status : parseInt(cart[0].discount_status),
+                    discount_status : cart[0].discount_status,
                 });
             });
           }
@@ -657,10 +658,14 @@
 
       increaseTotal(id){
         cart = this.mycarts.find(x => x.id == id);
-        if(cart.max_quantity - cart.current_quantity === 0 )
-          return;
+        if(cart.max_quantity - cart.current_quantity === 0 ){
+          swal('محدودیت سفارش','شما مجاز به سفارش بیش از موجودی محصول نیستید');
+          return ;
+        }
 
-        if (cart.discount_status === 0) {
+
+        console.log(cart.discount_status);
+        if (cart.discount_status == 0 || cart.discount_status == undefined) {
           cart.current_quantity++ ;
           this.updateCarts();
         }
@@ -695,9 +700,9 @@
                       main_price : cart[0].item.price * cart[0].total ,
                       min_quantity : 1,
                       max_quantity : cart[0].item.quantity,
-                      current_quantity : parseInt(cart[0].total),
+                      current_quantity : cart[0].total,
                       status : cart[0].status,
-                      discount_status : parseInt(cart[0].discount_status),
+                      discount_status : cart[0].discount_status,
                     });
                   });
                 }
@@ -868,7 +873,7 @@
 								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
 						});
 						$(el).find('.owl-controls').css('left',data.control+'px');
-					},Math.floor(Math.random() * 2000) + 1000 );
+					},3000);
 				}
 			},
     }

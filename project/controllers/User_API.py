@@ -521,6 +521,19 @@ class UserCartOrder(Resource):
                 session['orders'].remove(order)
             return make_response(jsonify(session['orders']), 200)
 
+class UserCartCheckout(Resource):
+    @jwt_required
+    def get(self):
+        if current_user.is_authenticated:
+            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.PAYING).order_by('created_at DESC')
+            result = []
+            order_schema = OrderSchema()
+            for order in orders:
+                result.append(order_schema.dump(order))
+
+            return make_response(jsonify(result), 200)
+
+
 class UserCoupons(Resource):
     @jwt_refresh_token_required
     def get(self):
@@ -699,22 +712,22 @@ class UserCheckoutConfirm(Resource):
 
             if not payment:
                 msg = "پرداخت معتبری برای سبد خرید شما موجود نیست.لطفا سبد خود را دوباره تشکیل دهید"
-                return make_response(jsonify({"message":{"message":msg}}),400)
+                return make_response(jsonify({"message":{"message":msg,"success":False}}),400)
 
             if payment.user_id != current_user.id:
                 msg = "این عملیات پرداخت غیر مجاز است"
-                return make_response(jsonify({"message":{"message":msg}}),400)
+                return make_response(jsonify({"message":{"message":msg,"success":False}}),400)
 
             if payment.status == PaymentStatus.PAID:
                 msg = "این صورتحساب قبلا پرداخت شده است"
-                return make_response(jsonify({"message":{"message":msg,"operation":"redirect_to_profile"}}),400)
+                return make_response(jsonify({"message":{"message":msg,"operation":"redirect_to_profile","success":False}}),400)
 
             if payment_method.type == Payment_Types.Credit:
                 if current_user.credit < payment.amount + shipment_method.price:
                     msg = "موجودی حساب شما برای پرداخت این صورتحساب کافی نیست"
-                    return make_response(jsonify({"message" : {"message":msg,"operation":"redirect_to_profile"}}),400)
+                    return make_response(jsonify({"message" : {"message":msg,"operation":"redirect_to_profile","success":False}}),400)
                 else:
-                    current_user.credit -= amount
+                    current_user.credit -= payment.amount + shipment_method.price
                     db.session.add(current_user)
                     db.session.commit()
 
@@ -791,11 +804,11 @@ class UserCheckoutConfirm(Resource):
                 msg = "هدایت به صفحه تایید نهایی مبلغ و انتخاب درگاه پرداخت"
                 return make_response(jsonify({'message':{'success':True,"operation":"redirect_to_bank","pid":payment.id,"message":msg}}),200)
             else:
-                msg = "روش پرداخت مورد نظر و"
-                return make_response(jsonify({"message":{"message":{"message":msg}}}),400)
+                msg = "روش پرداخت مورد نظر وجود ندارد"
+                return make_response(jsonify({"message":{"message":{"message":msg,"success":False}}}),400)
         else:
-            msg = "session base payment not implemented"
-            return make_response(jsonify({"message":{"message":msg}}),400)
+            msg = "برای پرداخت صورتحساب باید به سایت وارد شوید"
+            return make_response(jsonify({"message":{"message":msg,"success":False}}),400)
 
 class UserApplyPayment(Resource):
     @jwt_required

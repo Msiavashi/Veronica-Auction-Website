@@ -37,7 +37,7 @@
 											<span class="amount">{{_ToPersianCurrency(cart.main_price)}} تومان</span>
 										</td>
 										<td class="text-orange">
-											<span class="amount">{{_ToPersianCurrency( cart.main_price - cart.discounted_price)}} تومان</span>
+											<span class="amount">{{_ToPersianCurrency( cart.main_discount)}} تومان</span>
 											<a href="#" data-toggle="tooltip" v-bind:title="_generateTitle(cart.discount_status)"><i class="fas fa-question-circle"></i></a>
 										</td>
 										<td class="product-quantity">
@@ -64,7 +64,7 @@
 								</tr>
 								<tr v-else>
 									<td class="actions" colspan="7">
-											<a href="/login"> اهراز هویت برای اعمال کوپن تخفیف ضروری است !</a>
+											<a href="#" @click="_logout($event)"> اهراز هویت برای اعمال کوپن تخفیف ضروری است !</a>
 										</span>
 									</td>
 								</tr>
@@ -245,13 +245,13 @@ var app = new Vue({
 		_generateTitle:function(discount_status) {
 
 			switch (discount_status) {
-				case "0":
+				case 0:
 					return "تخفیف داده شده محصول";
 					break;
-				case "1":
+				case 1:
 					return "تخفیف مخصوص خرید پلن حراجی";
 					break;
-				case "2":
+				case 2:
 					return "تخفیف حاصل از بردن حراجی";
 					break;
 			}
@@ -270,10 +270,13 @@ var app = new Vue({
 		increaseTotal(id,e){
 			e.preventDefault();
 			cart = this.user_orders.find(x => x.id == id);
-			if(cart.max_quantity - cart.current_quantity == 0 )
-				return;
+			if(cart.max_quantity - cart.current_quantity === 0 ){
+				swal('محدودیت سفارش','شما مجاز به سفارش بیش از موجودی محصول نیستید');
+				return ;
+			}
 
-			if (cart.status == 0) {
+
+			if (cart.discount_status == 0 || cart.discount_status == undefined) {
 				cart.current_quantity++ ;
 				this.updateCarts();
 			}
@@ -305,8 +308,9 @@ var app = new Vue({
 										product_title : cart[0].item.product.title,
 										item_id : cart[0].item.id ,
 										image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
-										discounted_price : cart[0].total_cost,
+										discounted_price : (cart[0].item.price * cart[0].total) - (cart[0].item.discount * cart[0].total),
 										main_price : cart[0].item.price * cart[0].total ,
+										main_discount : cart[0].item.discount,
 										min_quantity : 1,
 										max_quantity : cart[0].item.quantity,
 										current_quantity : cart[0].total,
@@ -400,6 +404,29 @@ var app = new Vue({
 				}
 			})
 
+			},
+
+		_logout(){
+				axios.post("{{url_for('userlogout')}}")
+					.then((response) => {
+						if(response.data){
+
+							axios.post("{{url_for('userlogoutrefresh')}}")
+								.then((response) => {
+									if(response.data){
+										window.location = '/logout';
+									}
+								})
+								.catch((response)=>{
+									console.error(response);
+									window.location = '/logout';
+								});
+						}
+					})
+					.catch((response)=>{
+						console.error(response);
+						window.location = '/logout';
+					});
 			},
 
   },

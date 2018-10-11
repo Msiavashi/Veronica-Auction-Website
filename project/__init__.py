@@ -144,6 +144,7 @@ api.add_resource(Payment_API.ZarinpalGatewayCallback, '/user/zarinpal/gateway/ca
 
 api.add_resource(User_API.UserApplyPayment, '/user/apply/payment/<int:pid>')
 api.add_resource(User_API.UserCartOrder, '/user/cart/order')
+api.add_resource(User_API.UserCartCheckout, '/user/cart/checkout')
 
 api.add_resource(User_API.UserCheckoutConfirm, '/user/checkout/confirm/payment/<int:pid>')
 api.add_resource(User_API.UserUnpaidOrders, '/user/orders/unpaid' )

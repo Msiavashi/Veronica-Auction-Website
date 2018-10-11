@@ -69,7 +69,7 @@
             <table class="shop_table woocommerce-checkout-review-order-table">
               <thead>
                 <tr>
-                  <th class="product-name">محصول</th>
+                  <th class="product-name">عنوان</th>
                   <th class="product-total">مبلغ</th>
                 </tr>
               </thead>
@@ -95,12 +95,12 @@
               </tbody>
               <tfoot>
                 <tr class="cart-subtotal">
-                  <th>کل مبلغ سفارش</th>
+                  <th>مبلغ محصولات سفارش داده شده</th>
                   <td><strong class="amount">{%raw%}{{toPersian(total_price)}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="shipping">
-                  <th>نوع ارسال</th>
                   <td>
+                    <label>نوع ارسال</label>
                     <ul  id="shipping_method" class="list-none">
                       <li v-for="(shipment, index) in shipment_methods">
                         <input v-shipmentradio type="radio" @click="update_shipment_data(shipment.price ,shipment.id)" class="shipping_method" value="local_delivery" :id="index" data-index="0" name="shipping_method">
@@ -108,17 +108,17 @@
                       </li>
                     </ul>
                   </td>
-                </tr>
-                <tr class="cart-subtotal">
-                  <th>هزینه ارسال</th>
+
                   <td><strong class="amount">{%raw%}{{toPersian(shipment_price)}}{%endraw%} تومان</strong></td>
+
                 </tr>
-                <tr class="cart-subtotal">
+
+                <!-- <tr class="cart-subtotal">
                   <th class="text-orange">تخفیف داده شده (کد تخفیف)</th>
                   <td><strong class="amount text-orange">{%raw%}{{toPersian(invitation_discount)}}{%endraw%} تومان</strong></td>
-                </tr>
+                </tr> -->
                 <tr class="cart-subtotal">
-                  <th class="text-orange">تخفیف داده شده (محصول)</th>
+                  <th class="text-orange">تخفیف داده شده</th>
                   <td><strong class="amount text-orange">{%raw%}{{toPersian(items_discount)}}{%endraw%} تومان</strong></td>
                 </tr>
                 <tr class="order-total">
@@ -222,7 +222,7 @@ var app = new Vue({
 
   computed: {
     final_price: function(){
-      return parseInt(this.total_price)  + parseInt(this.shipment_price) - parseInt(this.invitation_discount) - parseInt(this.items_discount);
+      return parseInt(this.total_price)  + parseInt(this.shipment_price);
     }
   },
 
@@ -263,30 +263,37 @@ var app = new Vue({
 
           $(".error_alert").addClass('hide');
 
-
-          if(response.data.message.operation ==="redirect_to_bank"){
-
-            swal({
-              title: 'تایید پرداخت',
-              text: "به صفحه تایید و انتخاب درگاه پرداخت هدایت می شوید",
-              type: 'success',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'باشه...'
-            }).then((result) => {
-              if (result.value) {
-               window.location = "/confirm/payment/{{pid}}";
+          swal({
+            title: 'تایید پرداخت',
+            text: response.data.message.message,
+            type: 'success',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'باشه...'
+          }).then((result) => {
+            if (result.value) {
+              if(response.data.message.operation ==="redirect_to_bank"){
+                window.location = "/confirm/payment/{{pid}}";
+              }else {
+                window.location = "/profile";
               }
-            })
-          }else {
-            window.location = "/profile"
-          }
+            }
+          })
          })
          .catch((error)=>{
            console.log(error.response.data.message);
-            $(".error_alert").removeClass('hide');
-           for (var propName in error.response.data.message) {
-       			 $(".error_container").html(error.response.data.message[propName])
-           }
+           if(error.response.data.message.success === false)
+             swal(
+               'مشکلی پیش اومد',
+               error.response.data.message.message,
+               'error'
+             )
+            else{
+              $(".error_alert").removeClass('hide');
+              for (var propName in error.response.data.message) {
+         			  $(".error_container").html(error.response.data.message[propName])
+              }
+            }
+
  				});
 
       // axios({
@@ -352,7 +359,7 @@ var app = new Vue({
         console.error(error);
     });
 
-    axios.get("{{url_for('usercartorder')}}")
+    axios.get("{{url_for('usercartcheckout')}}")
       .then(function (response) {
           self.user_orders = response.data;
           response.data.forEach(order => {
