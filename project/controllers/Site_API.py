@@ -117,7 +117,6 @@ class SiteCategoryProductFilters(Resource):
         result ={'category':category_schema.dump(category),'auctions':auction_schema.dump(auctions)}
         return make_response(jsonify(result),200)
 
-
 class SiteAuctionCarouselAds(Resource):
     def get(self):
         auctions = Auction.query.join(Advertisement).filter(Advertisement.show==True)
@@ -217,6 +216,6 @@ class SitePaymentMethods(Resource):
 class SiteShipmentMethods(Resource):
 
     def get(self):
-        shipment_methods = ShipmentMethod.query.all()
+        shipment_methods = ShipmentMethod.query.order_by('price').all()
         shipment_methods_schema = ShipmentMethodSchema(many=True)
         return make_response(jsonify(shipment_methods_schema.dump(shipment_methods)), 200)

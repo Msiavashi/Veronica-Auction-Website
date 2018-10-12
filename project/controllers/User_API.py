@@ -20,11 +20,12 @@ from ..utils import Payload
 from definitions import AVATAR_DIR
 from definitions import MESSAGE_SUBJECTS
 from definitions import MAXIMUM_ORDERS
+from definitions import COUPONCODE
 import copy
 import random
 from datetime import datetime
 from flask_jwt_extended import JWTManager,jwt_required,jwt_refresh_token_required
-from sqlalchemy import or_
+from sqlalchemy import or_ , and_
 
 parser_user_address = reqparse.RequestParser()
 parser_user_address.add_argument('state', help = 'ورود استان ضروری است', required = True)
@@ -139,13 +140,13 @@ class UserBasicInfo(Resource):
                 msg ="شما قادر به معرفی خود نیستید"
                 return make_response(jsonify({"message":{"error":msg}}),500)
 
-            already_invited = current_user.gifts.filter_by(title='invitor').first()
+            already_invited = current_user.gifts.filter_by(title=COUPONCODE).first()
 
             if(already_invited):
                 msg = "جایزه کد معرفی شما قبلا استفاده شده است"
                 return make_response(jsonify({"message":{"error":msg}}),400)
 
-            gift = Gift.query.filter_by(title='invitor').first()
+            gift = Gift.query.filter_by(title=COUPONCODE).first()
             current_user.gifts.append(gift)
             current_user.credit += gift.amount
             current_user.invitor = invitor.username
@@ -275,23 +276,29 @@ class UserInformation(Resource):
                 msg ="شما قادر به معرفی خود نیستید"
                 return make_response(jsonify({"message":{"error":msg}}),500)
 
-            already_invited = current_user.gifts.filter_by(title='invitor').first()
+            gift = Gift.query.filter_by(title=COUPONCODE).first()
+            if gift:
+                user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=gift.id,used=True).first()
+                if(user_gift):
+                    msg = "جایزه کد معرفی شما قبلا استفاده شده است"
+                    return make_response(jsonify({"message":{"error":msg}}),400)
+                else:
+                    current_user.gifts.append(gift)
+                    current_user.credit += gift.amount
+                    current_user.invitor = invitor.username
+                    invitor.credit += gift.amount
+                    db.session.add(invitor)
+                    db.session.add(current_user)
+                    db.session.commit()
+                    # update extra field for relationship
+                    stmt = user_gifts.update().where(and_(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id)).values(used=True)
+                    db.engine.execute(stmt)
 
-            if(already_invited):
-                msg = "جایزه کد معرفی شما قبلا استفاده شده است"
-                return make_response(jsonify({"message":{"error":msg}}),400)
-
-            gift = Gift.query.filter_by(title='invitor').first()
-            current_user.gifts.append(gift)
-            current_user.credit += gift.amount
-            current_user.invitor = invitor.username
-            invitor.credit += gift.amount
-            db.session.add(invitor)
-            db.session.commit()
 
         try:
             db.session.add(current_user)
             db.session.commit()
+
             msg = " اطلاعات شما با موفقیت ذخیره شد "
             if new_password :
                 logout_user()
@@ -533,14 +540,13 @@ class UserCartCheckout(Resource):
 
             return make_response(jsonify(result), 200)
 
-
 class UserCoupons(Resource):
     @jwt_refresh_token_required
     def get(self):
         data = []
         for gift in current_user.gifts:
-            user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=gift.id).first()
-            if not user_gift.used:
+            user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=gift.id,used=False).first()
+            if user_gift:
                 data.append({"code":gift.id,"title":gift.title ,"amount":str(gift.amount)})
             # update extra field for relationship
             # stmt = user_gifts.update().where(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id).values(used=False)
@@ -548,13 +554,12 @@ class UserCoupons(Resource):
 
         return make_response(jsonify(data), 200)
 
-class UserCouponApply(Resource):
     @jwt_required
     def post(self):
 
         if(not current_user.is_authenticated):
             msg = "کوپن تخفیف فقط برای کاربران عضو تعریف شده است"
-            return make_response(jsonify({"reason":msg, "success":False}),200)
+            return make_response(jsonify({"reason":msg, "success":False}),400)
 
         data = request.get_json(force=True)
         coupon_code = data.get("coupon", None)
@@ -563,16 +568,16 @@ class UserCouponApply(Resource):
             coupon = Gift.query.filter_by(title = coupon_code).first()
             if(not coupon):
                 msg ="کد تخفیف شما معتبر نمی باشد"
-                return make_response(jsonify({"reason":msg, "success":False}),200)
+                return make_response(jsonify({"reason":msg}),400)
             if coupon.expired:
                 msg =  "کوپن تخفیف مورد نظر منقضی شده است"
-                return make_response(jsonify({"reason":msg, "success":False}),200)
+                return make_response(jsonify({"reason":msg}),400)
 
             gift_user = db.session.query(user_gifts).filter_by(user_id=current_user.id, gift_id=coupon.id).first()
             if gift_user:
                 if gift_user.used:
                     msg = "کد تخفیف قبلا توسط شما استفاده شده است"
-                    return make_response(jsonify({"reason":msg, "success":False}),200)
+                    return make_response(jsonify({"reason":msg}),400)
                 else:
                     msg = "این کوپن تخفیف قبلا برای سبد خرید شما ثبت شده است"
                     return make_response(jsonify({"code":coupon.id, "title":coupon.title, "amount":str(coupon.amount), "reason":msg,"success":True}),200)
@@ -584,7 +589,7 @@ class UserCouponApply(Resource):
                 return make_response(jsonify({"code":coupon.id, "title":coupon.title, "amount":str(coupon.amount), "reason":msg,"success":True}),200)
 
         msg ="لطفا کد تخفیف خود را وارد کنید"
-        return make_response(jsonify({"reason":msg, "success":False}),200)
+        return make_response(jsonify({"reason":msg}),400)
 
     @jwt_required
     def delete(self):
@@ -617,14 +622,11 @@ class UserCheckOutInit(Resource):
 
                 payment.payment_method = PaymentMethod.query.filter_by(type=Payment_Types.Online).first()
                 paymentschema = PaymentSchema()
-                print "session orders before :", unpaid_orders
 
                 for order in unpaid_orders:
                     order[0]['status'] = OrderStatus.PAYING
                     payment.amount += float(order[0]['total_cost'])
                     payment.discount += float(order[0]['total_discount'])
-
-                print "session orders after :", unpaid_orders
 
                 db.session.add(payment)
                 db.session.commit()
@@ -644,6 +646,18 @@ class UserCheckOutInit(Resource):
             payment.payment_method = PaymentMethod.query.filter_by(type=Payment_Types.Online).first()
             payment.status = PaymentStatus.PAYING
 
+            gift_discount = 0
+            user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id,used=False).all()
+            for g in user_gift:
+                gift = Gift.query.get(g.gift_id)
+                if not gift.expired:
+                    gift_discount += gift.amount
+                    # stmt = user_gifts.update().where(and_(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id)).values(used=True)
+                    # db.engine.execute(stmt)
+                else:
+                    stmt = user_gifts.delete().where(and_(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id))
+                    db.engine.execute(stmt)
+
             for order in unpaid_orders:
                 payment.amount += order.total_cost
                 payment.discount += order.total_discount
@@ -658,6 +672,9 @@ class UserCheckOutInit(Resource):
                 order.payment_id = payment.id
 
                 db.session.add(order)
+            payment.amount -= gift_discount
+            payment.discount += gift_discount
+            db.session.add(payment)
             db.session.commit()
 
         msg = "نمایش پیش فاکتور برای سفارش شما"
@@ -708,7 +725,6 @@ class UserCheckoutConfirm(Resource):
 
                 db.session.add(current_user)
                 db.session.commit()
-            amount = shipment_method.price
 
             if not payment:
                 msg = "پرداخت معتبری برای سبد خرید شما موجود نیست.لطفا سبد خود را دوباره تشکیل دهید"
@@ -750,11 +766,10 @@ class UserCheckoutConfirm(Resource):
                             if ('more_info' in data):
                                 order.description = data['more_info']
                             db.session.add(shipment)
-                        amount += order.total_cost
                         order.status = OrderStatus.PAID
                         db.session.add(order)
 
-                    payment.amount = amount
+                    payment.amount += shipment_method.price
                     payment.status = PaymentStatus.PAID
                     payment.ref_id = random.randint(100000,10000000)
                     payment.sale_order_id = random.randint(1000000,1000000000)
@@ -762,8 +777,15 @@ class UserCheckoutConfirm(Resource):
                     payment.GUID = random.randint(1000000000,100000000000)
                     payment.payment_method = payment_method
                     payment.payment_method_id = payment_method.id
-                    db.session.add(payment)
 
+                    user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id,used=False).all()
+                    for g in user_gift:
+                        gift = Gift.query.get(g.gift_id)
+                        if gift:
+                            stmt = user_gifts.update().where(and_(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id)).values(used=True)
+                            db.engine.execute(stmt)
+
+                    db.session.add(payment)
                     db.session.commit()
                     msg = "مبلغ مورد نظر از حساب شما کسر شد و خرید با موفقیت انجام گرفت"
                     return make_response(jsonify({"message":{'success':True,"message":msg,"operation":"redirect_to_profile"}}),200)
@@ -787,11 +809,10 @@ class UserCheckoutConfirm(Resource):
                         shipment.shipment_method_id = shipment_method.id
                         order.shipment = shipment
                         db.session.add(shipment)
-                    amount += order.total_cost
                     order.status = OrderStatus.PAYING
                     db.session.add(order)
 
-                payment.amount = amount
+                payment.amount += shipment_method.price
                 payment.payment_method = payment_method
                 payment.payment_method_id = payment_method.id
                 payment.sale_order_id = random.randint(1000000,1000000000)
@@ -829,6 +850,14 @@ class UserApplyPayment(Resource):
                     shipment = Shipment.query.filter_by(order_id=order.id).first()
                     shipment.status = ShipmentStatus.READY_TO_SEND
                     order.status = OrderStatus.PAID
+
+                    user_gift = db.session.query(user_gifts).filter_by(user_id=current_user.id,used=False).all()
+                    for g in user_gift:
+                        gift = Gift.query.get(g.gift_id)
+                        if gift:
+                            stmt = user_gifts.update().where(and_(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id)).values(used=True)
+                            db.engine.execute(stmt)
+
                     db.session.add(shipment)
             else:
                 current_user.credit += payment.amount
