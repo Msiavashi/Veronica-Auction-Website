@@ -172,6 +172,18 @@ var app = new Vue({
 							   window.parent.location = "/confirm/payment/"+response.data.pid;
 							  }
 							})
+						}else if (response.data.type=="registered") {
+							swal({
+							  title: 'شرکت در حراجی',
+							  text: "مبلغ پلن انتخابی از کیف پول شما کسر شد و در حراجی شرکت داده شدید",
+							  type: 'success',
+							  confirmButtonColor: '#3085d6',
+							  confirmButtonText: 'باشه...'
+							}).then((result) => {
+							  if (result.value) {
+							   window.parent.location = "/view/auction/"+this.auction_id;
+							  }
+							})
 						}
 			}).catch((error)=>{
 					swal(

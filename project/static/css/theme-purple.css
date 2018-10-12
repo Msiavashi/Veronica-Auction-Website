@@ -1221,13 +1221,13 @@ margin-bottom: 0;
 .check-cart {
   /*float: right;*/
   display: inline-block;
-
+  padding-left: 20px;
 }
 .mini-cart-box .mini-cart-link {
   display: block;
   position: relative;
-  /*margin-right: 10px;*/
-  padding-left: 20px;
+  margin-right: 10px;
+  /*padding-left: 20px;*/
 }
 .mini-cart-link .mini-cart-icon {
   font-size: 30px;
