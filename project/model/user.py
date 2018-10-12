@@ -4,6 +4,7 @@ import datetime
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask_login import UserMixin
 from . import Role
+from definitions import BASE_USER_CREDIT
 
 class User(Base,UserMixin):
     def __init__(self, username):
@@ -31,7 +32,7 @@ class User(Base,UserMixin):
 
     invitor = db.Column(db.String(length=255))
 
-    credit = db.Column(db.DECIMAL(precision=20, scale=4), default=0)
+    credit = db.Column(db.DECIMAL(precision=20, scale=4), default=BASE_USER_CREDIT)
 
     address_id = db.Column(db.BigInteger, db.ForeignKey('addresses.id'))
     address = db.relationship('Address')

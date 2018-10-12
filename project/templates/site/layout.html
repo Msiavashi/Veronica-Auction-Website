@@ -168,7 +168,7 @@
       										</div>
       										<div class="mini-cart-button">
       											<a class="mini-cart-view" href="/cart">مشاهده سبد خرید</a>
-      											<a class="mini-cart-checkout" href="#">پرداخت</a>
+      											<a class="mini-cart-checkout" href="/profile/walet">پرداخت</a>
       										</div>
                           {%endraw%}
       									</div>
@@ -189,7 +189,7 @@
                           {% else %}
                           <li><a href="/profile"><i class="fa fa-user"></i> مشاهده پنل</a></li>
                           <li><a href="/favorite"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
-                          <li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
+                          <li><a href="/profile/walet"><i class="fa fa-sign-in"></i> پرداخت</a></li>
                           <li><a @click="_logout"><i class="fa fa-sign-out" aria-hidden="true"></i>خروج</a></li>
                           {% endif%}
       									</ul>
@@ -277,11 +277,11 @@
       								<a href="#" class="checkout-link"><i class="fa fa-lock" aria-hidden="true"></i></a>
       								<ul class="list-checkout list-unstyled">
                         {% if not current_user.is_authenticated %}
-      									<li><a href="#"><i class="fa fa-key" aria-hidden="true"></i>ورود</a></li>
+      									<li><a href="/login"><i class="fa fa-key" aria-hidden="true"></i>ورود</a></li>
                         {% else %}
                         <li><a href="/profile"><i class="fa fa-user"></i> مشاهده پنل</a></li>
-                        <li><a href="#"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
-                        <li><a href="#"><i class="fa fa-sign-in"></i> پرداخت</a></li>
+                        <li><a href="/favorite"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
+                        <li><a href="/profle/walet"><i class="fa fa-sign-in"></i> پرداخت</a></li>
                         <li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>خروج</a></li>
                         {% endif %}
       								</ul>
@@ -348,7 +348,7 @@
                         </div>
                         <div class="mini-cart-button">
                           <a class="mini-cart-view" href="/cart">مشاهده سبد خرید</a>
-                          <a class="mini-cart-checkout" href="#">پرداخت</a>
+                          <a class="mini-cart-checkout" href="/profile/walet">پرداخت</a>
                         </div>
                         {%endraw%}
                       </div>
@@ -411,11 +411,11 @@
                   <div class="social-footer footer-box">
                     <h2 class="title14">اشتراک گذاری</h2>
                     <div class="list-social">
-                      <a href="https://www.instagram.com/officialunibid/"><i class="fa fa-instagram" aria-hidden="true"></i></a>
-                      <a href="https://www.facebook.com/officialunibid/"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                      <a href="https://www.instagram.com/unibid.official/"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+                      <!-- <a href="https://www.facebook.com/officialunibid/"><i class="fa fa-facebook" aria-hidden="true"></i></a>
                       <a href="https://twitter.com/unibid2?lang=en"><i class="fa fa-twitter" aria-hidden="true"></i></a>
                       <a href="https://www.linkedin.com/company/unibid/"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-                      <a href="mailto:officialunibid@gmail.com"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
+                      <a href="mailto:officialunibid@gmail.com"><i class="fa fa-google-plus" aria-hidden="true"></i></a> -->
                     </div>
                   </div>
                 </div>

@@ -7,21 +7,21 @@
 			<div class="col-md-12">
 				<!-- <h2 class="title-shop-page">پنل کاربری</h2> -->
 				<div id="tabMenu" class="tab_container">
-						<input class="tabinput" id="tab1" type="radio" name="tabs" checked>
+						<input class="tabinput" id="tab1" type="radio" name="tabs" :checked="tab_selector==''">
 						<label class="tablabel" for="tab1"><i class="fa fa-dashboard"></i><span>داشبورد</span></label>
 
-						<input class="tabinput" id="tab2" type="radio" name="tabs">
+						<input class="tabinput" id="tab2" type="radio" name="tabs" :checked="tab_selector=='modify'">
 						<label class="tablabel" for="tab2"><i class="fa fa-pencil-square-o"></i><span>ویرایش اطلاعات</span></label>
 
-						<input class="tabinput" id="tab3" type="radio" name="tabs">
+						<input class="tabinput" id="tab3" type="radio" name="tabs" :checked="tab_selector=='sendmessage'">
 						<label class="tablabel" for="tab3"><i class="fa fa-comments"></i><span>ارسال پیام</span></label>
 
-						<input class="tabinput" id="tab4" type="radio" name="tabs">
+						<input class="tabinput" id="tab4" type="radio" name="tabs" :checked="tab_selector=='payments'">
 						<label class="tablabel" for="tab4"><i class="fa fa-legal"></i><span>پرداختی ها</span></label>
 
-						<input class="tabinput" id="tab5" type="radio" name="tabs">
+						<input class="tabinput" id="tab5" type="radio" name="tabs" :checked="tab_selector=='invitor'">
 						<label class="tablabel" for="tab5"><i class="fa fa-code"></i><span>کد معرف</span></label>
-						<input class="tabinput" id="tab6" type="radio" name="tabs">
+						<input class="tabinput" id="tab6" type="radio" name="tabs" :checked="tab_selector=='walet'">
 						<label class="tab6 tablabel" for="tab6"><span>شارژ موجودی</span></label>
 
 					<section id="content1" class="tab-content">
@@ -435,6 +435,7 @@ var app = new Vue({
 		won_auctions: 0 ,
 		invitation_code : "",
 		charge_amount : 0,
+		tab_selector : "{{tab}}",
 	},
 
 	mounted: function(){
@@ -641,6 +642,11 @@ $(document).on('submit','#message_form',function(event) {
   			});
       });
   });
+
+	$('.close').on('click',function(event){
+		event.preventDefault();
+		$(this).parent().removeClass('show').addClass('hide')
+	});
 
 </script>
 {% endblock scripts %}

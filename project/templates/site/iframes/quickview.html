@@ -138,7 +138,7 @@
               <div class="product-extra-link2">
                 <a class="addcart-link2" href="#"  v-on:click="addToCart(auctionItemId,$event)"><i class="fa fa-shopping-basket" aria-hidden="true"></i> اضافه به سبد</a>
                 <a class="wishlist-link2" href="#" v-on:click="addToWish(auctionId,$event)"><i aria-hidden="true" class="fa fa-heart"></i></a>
-                <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-percent"></i><span id="discount"></span>تومان</a>
+                <a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-dollar-sign"></i><span id="discount"></span>تومان</a>
               </div>
             </div>
           </div>
@@ -386,7 +386,7 @@ var app = new Vue({
 		},
 
 		now_date: function(){
-			return new persianDate(new Date()).format("dddd DD MMMM YYYY");
+			return  new persianDate(new Date(this.deadline)).format("dddd DD MMMM YYYY");
 		}
 
 	},

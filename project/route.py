@@ -79,6 +79,14 @@ class Route():
     def profile():
         return render_template('site/profile.html')
 
+    @app.route("/profile/<tab>")
+    @login_required
+    def profile_tab(tab):
+        tabs = {'modify','sendmessage','payments','invitor','walet'}
+        if tab in tabs:
+            return render_template('site/profile.html',tab=tab)
+        return abort(404)
+
     @app.route("/favorite")
     @login_required
     def favorite():

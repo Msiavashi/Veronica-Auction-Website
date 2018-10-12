@@ -9,6 +9,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) # This is Project Root
 STATIC_DIR = os.path.join(ROOT_DIR, "project/static/")
 AVATAR_DIR = os.path.join(ROOT_DIR, "project/files/avatars")
 BASE_BID_PRICE = 1000
+BASE_USER_CREDIT = 10000
 SESSION_EXPIRE_TIME = 1
 UPLOAD_FOLDER = os.path.join(STATIC_DIR, 'messages', 'attachments')
 ALLOWED_EXTENTIONS = set(['text', 'pdf', 'doc', 'docs', 'jpg', 'jpeg', 'png'])

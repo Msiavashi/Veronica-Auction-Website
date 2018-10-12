@@ -17777,3 +17777,7 @@ ul.checkout-bar a {
   border: 1px solid #8507f2;
   cursor: pointer;
 }
+
+.flash-countdown::before{
+  display: none;
+}

@@ -275,7 +275,7 @@ var app = new Vue({
               if(response.data.message.operation ==="redirect_to_bank"){
                 window.location = "/confirm/payment/{{pid}}";
               }else {
-                window.location = "/profile";
+                window.location = "/profile/payments";
               }
             }
           })

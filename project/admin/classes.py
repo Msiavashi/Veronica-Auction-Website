@@ -217,7 +217,7 @@ class ManufactureAdmin(ModelView):
         return current_user.has_role('admin')
 
 class OfferAdmin(ModelView):
-    page_size = 10
+    page_size = 30
     can_view_details = True
     column_searchable_list = ['user_plan.auction_plan.plan.title','user_plan.user.first_name','user_plan.user.last_name','user_plan.user.alias_name','user_plan.user.username','auction.title','win']
 
