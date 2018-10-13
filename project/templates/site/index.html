@@ -15,7 +15,7 @@
 				<div v-if="ad_auctions" class="col-md-12 col-sm-12 col-xs-12">
 					<div class="wrap-banner-slider1">
 						<div class="banner-slider banner-slider1">
-							<div v-wrapitem data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
+							<div v-wrapitem1 data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
 								<template v-for="item in ad_auctions">
 									{%raw%}
 									<div class="item-banner item-banner1">
@@ -35,7 +35,7 @@
 						</div>
 						<!-- End Banner -->
 						<div v-if="ad_products" class="sub-banner-slider">
-							<div v-wrapitem data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
+							<div v-wrapitem2 data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
 								<template v-for="item in ad_products">
 									{%raw%}
 									<div class="item-sub-banner">
@@ -151,7 +151,7 @@
 
 			<div id="hot1" class="tab-pane active">
 				<div class="hotdeal-slider">
-					<div v-wrapitem data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
+					<div v-wrapitem3 data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
 						<template v-for="auction in best_auctions">
 							{%raw%}
 							<div class="item-pro-hotdeal">
@@ -209,7 +209,7 @@
 			<!-- ENd Tab -->
 			<div id="hot2" class="tab-pane">
 				<div class="hotdeal-slider">
-					<div v-wrapitem data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
+					<div v-wrapitem4 data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
 						<template v-for="auction in popular_auctions">
 							{%raw%}
 							<div class="item-pro-hotdeal">
@@ -271,7 +271,7 @@
 	<div class="service-footer3 service-footer11">
 		<div class="container">
 			<div class="service-slider3">
-				<div v-wrapitem class="wrap-item" data-pagination="false" data-navigation="false" data-items="6">
+				<div v-wrapitem5 class="wrap-item" data-pagination="false" data-navigation="false" data-items="6">
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for1.png" alt="" /></a>
 						<h2 class="title14">شرکت کنید</h2>
@@ -314,7 +314,7 @@
 				<h2 class="white title30 text-center"><span>{{category.title}}</span></h2>
 
 				<div class="deal-slider18 poly-slider border bg-white">
-					<div v-wrapitem data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
+					<div v-wrapitem6 data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
 						<template v-for="auction in category.auctions">
 
 							<div class="deal-pro18">
@@ -692,6 +692,115 @@
 					 	}
 				}
 			},
+			wrapitem1:{
+				inserted:function(el) {
+					setTimeout(function() {
+						var data = $(el).data();
+						$(el).owlCarousel({
+								addClassActive:true,
+								stopOnHover:true,
+								itemsCustom:data.itemscustom,
+								autoPlay:data.autoplay,
+								transitionStyle:data.transition,
+								beforeInit:background,
+								afterAction:animated,
+								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+						});
+						$(el).find('.owl-controls').css('left',data.control+'px');
+					},2000 );
+				}
+			},
+			wrapitem2:{
+				inserted:function(el) {
+					setTimeout(function() {
+						var data = $(el).data();
+						$(el).owlCarousel({
+								addClassActive:true,
+								stopOnHover:true,
+								itemsCustom:data.itemscustom,
+								autoPlay:data.autoplay,
+								transitionStyle:data.transition,
+								beforeInit:background,
+								afterAction:animated,
+								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+						});
+						$(el).find('.owl-controls').css('left',data.control+'px');
+					},1000 );
+				}
+			},
+			wrapitem3:{
+				inserted:function(el) {
+					setTimeout(function() {
+						var data = $(el).data();
+						$(el).owlCarousel({
+								addClassActive:true,
+								stopOnHover:true,
+								itemsCustom:data.itemscustom,
+								autoPlay:data.autoplay,
+								transitionStyle:data.transition,
+								beforeInit:background,
+								afterAction:animated,
+								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+						});
+						$(el).find('.owl-controls').css('left',data.control+'px');
+					},1000 );
+				}
+			},
+			wrapitem4:{
+				inserted:function(el) {
+					setTimeout(function() {
+						var data = $(el).data();
+						$(el).owlCarousel({
+								addClassActive:true,
+								stopOnHover:true,
+								itemsCustom:data.itemscustom,
+								autoPlay:data.autoplay,
+								transitionStyle:data.transition,
+								beforeInit:background,
+								afterAction:animated,
+								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+						});
+						$(el).find('.owl-controls').css('left',data.control+'px');
+					},1000 );
+				}
+			},
+			wrapitem5:{
+				inserted:function(el) {
+					setTimeout(function() {
+						var data = $(el).data();
+						$(el).owlCarousel({
+								addClassActive:true,
+								stopOnHover:true,
+								itemsCustom:data.itemscustom,
+								autoPlay:data.autoplay,
+								transitionStyle:data.transition,
+								beforeInit:background,
+								afterAction:animated,
+								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+						});
+						$(el).find('.owl-controls').css('left',data.control+'px');
+					},1000 );
+				}
+			},
+			wrapitem6:{
+				inserted:function(el) {
+					setTimeout(function() {
+						var data = $(el).data();
+						$(el).owlCarousel({
+								addClassActive:true,
+								stopOnHover:true,
+								itemsCustom:data.itemscustom,
+								autoPlay:data.autoplay,
+								transitionStyle:data.transition,
+								beforeInit:background,
+								afterAction:animated,
+								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+						});
+						$(el).find('.owl-controls').css('left',data.control+'px');
+					},1000 );
+				}
+			},
+
 			wrapitem:{
 				inserted:function(el) {
 					setTimeout(function() {
