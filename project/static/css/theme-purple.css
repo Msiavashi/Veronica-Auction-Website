@@ -7007,6 +7007,7 @@ a.protect-icon:hover {
 }
 .banner-zoom {
   position: relative;
+  border: 1px solid #e5e5e5;
 }
 .bn-adv2 .banner-info {
   height: 80px;
@@ -7057,6 +7058,8 @@ a.protect-icon:hover {
 }
 .banner-flash {
   margin-bottom: 30px;
+  width: 400px!important;
+  height: 300px!important;
 }
 .flash-info {
   background: #fff none repeat scroll 0 0;
