@@ -114,7 +114,7 @@ class AdvertisementAdmin(ModelView):
 
         def gen_img(filename):
             return '<img src="{}">'.format(url_for('static',
-                                                   filename="images/ads/" + form.thumbgen_filename(model.images)))
+                                                   filename="images/ads/" + form.thumbgen_filename(model.images).split("'")[1]))
 
         return Markup("<br />".join(gen_img(model.images) for image in ast.literal_eval(model.images)))
 
@@ -123,7 +123,7 @@ class AdvertisementAdmin(ModelView):
     form_extra_fields = {'images': MultipleImageUploadField("Images",
                                                             base_path="project/static/images/ads",
                                                             url_relative_path="images/ads/",
-                                                            thumbnail_size=(64, 64, 1))}
+                                                            thumbnail_size=(64, 128, 1))}
 
 class CategoryAdmin(ModelView):
     def is_accessible(self):
@@ -136,7 +136,7 @@ class CategoryAdmin(ModelView):
 
         def gen_img(filename):
             return '<img src="{}">'.format(url_for('static',
-                                                   filename="images/category/" + form.thumbgen_filename(model.icon)))
+                                                   filename="images/category/" + form.thumbgen_filename(model.icon).split("'")[1]))
 
         return Markup("<br />".join(gen_img(model.icon) for image in ast.literal_eval(model.icon)))
 

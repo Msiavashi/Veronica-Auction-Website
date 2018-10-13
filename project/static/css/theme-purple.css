@@ -5906,6 +5906,8 @@ a.protect-icon:hover {
 }
 .wrap-banner-slider1 {
   /* margin-right: -38px; */
+    font-family: iranyekan,aviny !important;
+    color: #fff
 }
 .banner-slider1 .owl-theme .owl-controls .owl-buttons div {
   border-radius: 4px;

@@ -35,6 +35,18 @@
 		 url('../fonts/svg/iranyekanwebregular.svg#iranyekan') format('svg') /* Legacy iOS */
 }
 
+@font-face {
+	font-family: aviny;
+	font-style: normal;
+	font-weight: normal;
+	src: url('../fonts/eot/aviny-webfont.eot');
+	src:
+		 url('../fonts/woff2/aviny-webfont.woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/
+		 url('../fonts/woff/aviny-webfont.woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+		 url('../fonts/ttf/aviny-webfont.ttf') format('truetype'),
+		 url('../fonts/svg/aviny-webfont.svg#aviny') format('svg') /* Legacy iOS */
+}
+
 /* Latin fonts (Roboto) */
 
 @font-face {
@@ -69,4 +81,3 @@
 		 url('../fonts/woff/robotoregular.woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
 		 url('../fonts/ttf/robotoregular.ttf') format('truetype');
 }
-
