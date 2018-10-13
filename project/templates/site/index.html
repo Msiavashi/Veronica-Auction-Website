@@ -102,13 +102,13 @@
 
 											{%if current_user.is_authenticated%}
 											<div v-if="auction.is_participant">
-												<a v-bind:href="auction.link" class="btn-rect white bg-color radius"><span>نمایش حراجی</span></a>
+												<a v-bind:href="auction.link" class="btn-rect white bg-color5 radius"><span>نمایش حراجی</span></a>
 											</div>
 											<div v-if="!auction.is_participant">
-												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color1 radius"><span>شرکت در حراجی</span></a>
 											</div>
 											{%else%}
-												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
+												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color3 radius"><span>ورود</span></a>
 											{%endif%}
 
 											{%raw%}
@@ -179,17 +179,17 @@
 
 										{%if current_user.is_authenticated%}
 										<div v-if="auction.is_participant">
-											<a v-bind:href="auction.link" class="addcart-link"><span>نمایش حراجی</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color5 "><span>نمایش حراجی</span></a>
 											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 										</div>
 
 										<div v-if="!auction.is_participant">
-											<a v-bind:href="auction.link" class="addcart-link quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color1 quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
 											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 										</div>
 
 										{%else%}
-											<a v-bind:href="auction.link" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color3 quickview-link fancybox.iframe"><span>ورود</span></a>
 										{%endif%}
 
 										{%raw%}
@@ -237,16 +237,16 @@
 
 										{%if current_user.is_authenticated%}
 										<div v-if="auction.is_participant">
-											<a v-bind:href="auction.link" class="addcart-link"><span>نمایش حراجی</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color5 "><span>نمایش حراجی</span></a>
 											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 										</div>
 										<div v-if="!auction.is_participant">
-											<a v-bind:href="auction.link" class="addcart-link quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color1 quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
 											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 										</div>
 
 										{%else%}
-											<a v-bind:href="auction.link" class="addcart-link quickview-link fancybox.iframe"><span>ورود</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color3 quickview-link fancybox.iframe"><span>ورود</span></a>
 										{%endif%}
 
 										{%raw%}
@@ -333,13 +333,13 @@
 
 										{%if current_user.is_authenticated%}
 										<div v-if="auction.is_participant">
-											<a v-bind:href="auction.link" class="btn-rect white bg-color radius"><span>نمایش حراجی</span></a>
+											<a v-bind:href="auction.link" class="btn-rect white bg-color5 radius"><span>نمایش حراجی</span></a>
 										</div>
 										<div v-if="!auction.is_participant">
-											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>شرکت در حراجی</span></a>
+											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color1 radius"><span>شرکت در حراجی</span></a>
 										</div>
 										{%else%}
-											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color radius"><span>ورود</span></a>
+											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color3 radius"><span>ورود</span></a>
 										{%endif%}
 										{%raw%}
 									</div>
