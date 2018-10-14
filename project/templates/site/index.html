@@ -381,18 +381,23 @@
 			auction = app.today_auctions.find(x => x.id == item.auction_id);
 
 			cat_temp = app.categories.find(x => x.auctions.find(y=> y.id == item.auction_id));
-			cat_auction = cat_temp.auctions.find(x => x.id == item.auction_id);
+			if (cat_temp)
+			{
+				cat_auction = cat_temp.auctions.find(x => x.id == item.auction_id);
+			}
 
 			if (item.expired) {
 
 				var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
 				app.today_auctions.splice( elementPos, 1 );
+				if (cat_temp){
+					var elementPos_cat = cat_temp.auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
+					cat_temp.auctions.splice( elementPos_cat, 1 );
+				}
 
-				var elementPos_cat = cat_temp.auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
-				cat_temp.auctions.splice( elementPos_cat, 1 );
 			}
 			else {
-
+				if(auction){
 					auction.deadline = item.remained_time;
 
 					$.each($("[data-auctionid="+auction.id+"]"),function(item,value) {
@@ -401,7 +406,7 @@
 								"total_duration": auction.deadline
 						}).restart();
 					});
-
+				}
 			}
 		});
 		//console.log('syncing...');
@@ -707,7 +712,7 @@
 								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
 						});
 						$(el).find('.owl-controls').css('left',data.control+'px');
-						stop_loading(loading_element);
+
 					},3000 );
 
 				}
@@ -783,6 +788,7 @@
 						$(el).find('.owl-controls').css('left',data.control+'px');
 					},2000 );
 				}
+
 			},
 			wrapitem6:{
 				inserted:function(el) {
@@ -799,6 +805,7 @@
 								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
 						});
 						$(el).find('.owl-controls').css('left',data.control+'px');
+						stop_loading(loading_element);
 					},2000 );
 				}
 			},

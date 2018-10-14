@@ -32,7 +32,8 @@
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/animate.css') }}"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/hover.css') }}"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/color-purple.css') }}" media="all"/>
-    	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/theme-purple.css') }}" media="all"/>
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/theme.css') }}" media="all"/>
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/theme-purple.css') }}" media="all"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/responsive.css') }}" media="all"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/browser.css') }}" media="all"/>
     	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rtl.css') }}" media="all"/>
@@ -60,7 +61,7 @@
     gtag('config', 'UA-120307926-1');
   </script> -->
 
-  <body style="background:#f4f4f4">
+  <body>
     <div class="wrap">
       {% block header %}
         <div id="header">
@@ -375,7 +376,7 @@
 
           <div class="container">
             {% if current_user.is_authenticated %}
-              <h3 class="title24 title-flash"><span class="bg-color white">حراجی های دیده شده</span></h3>
+              <!-- <h3 class="title24 title-flash"><span class="bg-color white">حراجی های دیده شده</span></h3>
               <div class="hot-cat-slider">
               <div v-wrapitem data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
                 <template v-for="auction in viewed">
@@ -391,11 +392,8 @@
                   </div>
                   {%endraw%}
                 </template>
-
-                <!-- ko text: triggerSlider($($element.parentElement)) -->
-                <!-- /ko -->
               </div>
-            </div>
+            </div> -->
             {% endif %}
             <!-- End List Cat Price -->
             <div class="footer-list-box">

@@ -7,6 +7,8 @@ body {
   margin: 0;
   padding: 0;
   font-weight: 400;
+  background:url(../images/theme/bg.png) repeat;
+  background-size: 600px
 }
 .wrap {
   overflow: hidden;
@@ -6186,15 +6188,15 @@ a.protect-icon:hover {
 .deal-percent {
   display: inline-block;
   margin-bottom: 3px;
-  color: #14d492;
-  border: 1px #14d492 solid;
+  color: #2060a2;
+  border: 1px #2060a2 solid;
   padding: 2px 9px;
   border-radius: 3px;
   transition: all 0.3s ease-in-out 0s
 }
 .banner-flash:hover .deal-percent {
   color:#fff;
-  background: #14d492
+  background: #2060a2
 }
 .deal-percent > span {
   /* font-size: 40px; */
@@ -14770,13 +14772,13 @@ a.protect-icon:hover {
   background: #000;
 }
 .deal-timer18 .flash-countdown .time_circles > div {
-  color: #7772d8;
+  color: #993877;
   font-size: 25px;
   height: 56px;
   line-height: 56px;
 }
 .deal-timer18 .flash-countdown::before {
-  background: #7772d8 url("../images/theme/sand-clock.png") no-repeat scroll center center;
+  background: #993877 url("../images/theme/sand-clock.png") no-repeat scroll center center;
   content: "";
   height: 58px;
   left: -1px;

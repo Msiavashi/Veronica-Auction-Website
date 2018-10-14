@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 __version__ = '0.1'
-from flask import Flask , session , Response , render_template ,request
+from flask import Flask , session , Response , render_template ,request ,g
 from flask_restful import reqparse, abort, Api, Resource
 from datetime import timedelta
 from flask_debugtoolbar import DebugToolbarExtension
@@ -18,6 +18,7 @@ import redis
 from flask_login import current_user,LoginManager
 from definitions import SESSION_EXPIRE_TIME
 from flask_session import Session
+from sqlalchemy import create_engine
 
 REDIS_URL = "redis://localhost:6379/0"
 
@@ -36,8 +37,8 @@ def check_if_token_in_blacklist(decrypted_token):
 # Session(app)
 
 params = {
-	'ping_timeout': 60,
-	'ping_interval': 10
+	 'pingInterval': 10000,
+     'pingTimeout': 5000,
 }
 #
 # socketio = SocketIO(logger=True, engineio_logger=True, **params)
@@ -45,8 +46,6 @@ params = {
 
 socketio = SocketIO(**params)
 socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet',manage_session=False)
-
-
 
 app.debug = False
 toolbar = DebugToolbarExtension(app)
@@ -61,6 +60,17 @@ login_manager.login_view = 'site.login'
 def make_session_permanent():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
+#     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+#     conn = engine.connect()
+#     g.db = conn
+#
+#
+# @app.after_request
+# def after_request(response):
+#     if g.db is not None:
+#         g.db.close()
+#     return response
+
 
 from project.middleware import *
 app.jinja_env.globals.update(has_role=has_role)

@@ -4981,7 +4981,7 @@ a.protect-icon:hover {
 }
 /*End Product Special*/
 /***********************************************************************************************************
-											Blog				
+											Blog
 ***********************************************************************************************************/
 /*Begin Blog Large*/
 .content-blog-page {
@@ -5938,7 +5938,7 @@ a.protect-icon:hover {
 	background: #fff;
 	margin-top: -50px;
   margin-bottom: 50px;
-  display:none; 
+  display:none;
 }
 /*Begin Titlte Box1*/
 .title-box1 {
@@ -6114,7 +6114,7 @@ a.protect-icon:hover {
   color: #333;
   /* display: block; */
   font-size: 13px;
-  font-weight: normal;  
+  font-weight: normal;
 }
 .deal-percent {
   display: inline-block;
@@ -6734,7 +6734,7 @@ a.protect-icon:hover {
   margin-bottom: 45px;
 }
 /************************************************************************************************************
-										    Home 2 
+										    Home 2
 ************************************************************************************************************/
 .inner-banner-info {
   max-width: 1200px;
@@ -7082,7 +7082,7 @@ a.protect-icon:hover {
   display: none;
 }
 .time_circles {
-  direction: ltr 
+  direction: ltr
 }
 .flash-countdown .time_circles > div {
   color: #fff;
@@ -9154,7 +9154,7 @@ a.protect-icon:hover {
   margin-top: 20px;
 }
 /***********************************************************************************************************
-											Home 7			
+											Home 7
 ***********************************************************************************************************/
 .banner-image7 {
   margin: 10px 20px 20px;
@@ -9422,7 +9422,7 @@ a.protect-icon:hover {
   width: 100%;
 }
 /***********************************************************************************************************
-											Home 8			
+											Home 8
 ***********************************************************************************************************/
 .top-header8 {
   background: #3a1b41 none repeat scroll 0 0;
@@ -10242,7 +10242,7 @@ a.protect-icon:hover {
   text-align: right;
 }
 /***********************************************************************************************************
-											Home 10			
+											Home 10
 ***********************************************************************************************************/
 .header10 {
   background: #4f6273 none repeat scroll 0 0;
@@ -14423,7 +14423,7 @@ a.protect-icon:hover {
   border-color: #fde428;
 }
 /**********************************************************************************************************
-												Home 18		
+												Home 18
 **********************************************************************************************************/
 .footer-copyright18 .designby a {
   color: #fff;
@@ -14888,7 +14888,7 @@ a.protect-icon:hover {
   line-height: 24px;
 }
 /*****************************************************************************************
-									 About					
+									 About
 ******************************************************************************************/
 .item-contact-info .contact-icon.icon-quality::before {
   content: "\f219";
@@ -15051,7 +15051,7 @@ a.protect-icon:hover {
   margin-top: 70px;
 }
 /*****************************************************************************************
-									 Contact					
+									 Contact
 ******************************************************************************************/
 .hidden-category-dropdown .wrap-category-dropdown {
   background: #fff none repeat scroll 0 0;
@@ -15299,7 +15299,7 @@ a.protect-icon:hover {
   left: auto!important;
 }
 /*******************************************************************************************************
-										Preview	Menu				
+										Preview	Menu
 ********************************************************************************************************/
 .main-nav > ul > li .sub-menu > li.menu-item-preview {
   position: relative;
@@ -15602,7 +15602,7 @@ a.protect-icon:hover {
 }
 /*End Wooocommerce*/
 /*************************************************************************************************
-										Cart/Checkout 
+										Cart/Checkout
 **************************************************************************************************/
 .content-page.woocommerce {
   /* background: #fff; */
@@ -15746,7 +15746,7 @@ a.protect-icon:hover {
   right:auto !important
 }
 /*************************************************************************************************
-										Login/Register 
+										Login/Register
 **************************************************************************************************/
 a.shop-button,
 .register-content-box .register-button {
@@ -15851,7 +15851,7 @@ a.shop-button,
   margin: auto;
 }
 /*************************************************************************************************
-									End	Login/Register 
+									End	Login/Register
 **************************************************************************************************/
 /**************************************************************************************************
 											Home 19
@@ -16520,7 +16520,7 @@ div.table .product-info .product-title a {
   transition: none;
 }
 /****************************************************************************************************
-										Custom Light Box			
+										Custom Light Box
 *****************************************************************************************************/
 .box-addcart-special {
   background: #fff;
@@ -16981,7 +16981,7 @@ td.product-info-total .product-info .desc {
   margin-bottom: 0;
   position: relative;
   overflow: hidden;
-  text-overflow: ellipsis; 
+  text-overflow: ellipsis;
   white-space: nowrap;
   direction: rtl
 }
@@ -17167,7 +17167,7 @@ td.product-info-total .product-info .desc {
   #tabMenu label.tablabel span {
     display: none;
   }
-  
+
   #tabMenu.tab_container {
     width: 98%;
   }
@@ -17179,7 +17179,7 @@ td.product-info-total .product-info .desc {
   	transform: scale(0.9);
   	opacity: 0;
   }
-  
+
   100% {
   	transform: scale(1);
   	opacity: 1;
