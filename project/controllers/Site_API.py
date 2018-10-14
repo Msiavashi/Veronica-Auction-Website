@@ -78,6 +78,25 @@ class SiteCategoryAuctions(Resource):
         result ={'category':category_schema.dump(category),'auctions':auction_schema.dump(auctions)}
         return make_response(jsonify(result),200)
 
+class SiteCategoryForAuctions(Resource):
+    def get(self):
+        now = datetime.now()
+        categories = Category.query.all()
+        result = []
+        for category in categories:
+            auction_schema = AuctionSchema(many=True)
+            auctions = Auction.query.filter(Auction.start_date >= now).join(Item).join(Product).join(Category).filter_by(id = category.id)
+            auction_result =[]
+            if(auctions):
+                for auction in auctions:
+                    auction_participants = []
+                    for participant in auction.participants:
+                        auction_participants.append({"id":participant.id,"username":participant.username})
+                    remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
+                    auction_result.append({"id":auction.id,"title":auction.title,"images":auction.item.images,"base_price":str(auction.base_price),"remained_time":remained_time,"participants":auction_participants})
+                result.append({"title" : category.title,"auctions":auction_result})
+        return make_response(jsonify(result),200)
+
 class SiteCategoryProducts(Resource):
     def get(self,cid):
         now = datetime.now()
@@ -145,41 +164,87 @@ class SiteTodayEvents(Resource):
 
 class SiteTodayAuctions(Resource):
     def get(self):
-        results = db.session.query(Auction).all()
+        now = datetime.now()
+        results = Auction.query.all()
         auctions=[]
         for auction in results:
-            now = datetime.now()
-            remained = (auction.start_date - now).days
-            if(remained==0):
-                auction.remained_time = (auction.start_date - now).seconds
-                auctions.append(auction)
-
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+            if((auction.start_date - now).days == 0) :
+                auction_participants = []
+                for participant in auction.participants:
+                    auction_participants.append({"id":participant.id,"username":participant.username})
+                remained_time = (auction.start_date - now).seconds
+                auctions.append({
+                "id":auction.id,
+                "title":auction.title,
+                "images":auction.item.images,
+                "base_price":str(auction.base_price),
+                "max_price":str(auction.max_price),
+                "main_price":str(auction.item.price),
+                "remained_time":remained_time,
+                "participants":auction_participants,
+                "max_members":auction.max_members,
+                })
+        return make_response(jsonify(auctions),200)
 
 class SiteMostpopularAuctions(Resource):
     def get(self):
         today = datetime.today()
-        result = db.session.query(Auction.id, db.func.count(user_auction_likes.c.user_id).label('total')).join(user_auction_likes).group_by(Auction.id).having(Auction.start_date >= today).order_by('total DESC')
+        now = datetime.now()
+        res = db.session.query(Auction.id, db.func.count(user_auction_likes.c.user_id).label('total')).join(user_auction_likes).group_by(Auction.id).having(Auction.start_date >= today).order_by('total DESC').limit(10)
+        ids = []
+        for r in res:
+            ids.append(r.id)
+
+        result = db.session.query(Auction).filter(Auction.id.in_(ids)).all()
+
         auctions =[]
-        for a in result:
-            auction = Auction.query.get(a.id)
-            auction.remained_time = (auction.start_date - datetime.now()).seconds
-            auctions.append(auction)
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+        for auction in result:
+            auction_participants = []
+            for participant in auction.participants:
+                auction_participants.append({"id":participant.id,"username":participant.username})
+            remained_time = (auction.start_date - now).seconds
+            auctions.append({
+            "id":auction.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            "max_price":str(auction.max_price),
+            "main_price":str(auction.item.price),
+            "remained_time":remained_time,
+            "participants":auction_participants,
+            "max_members":auction.max_members,
+            })
+        return make_response(jsonify(auctions),200)
 
 class SiteMostviewedAuctions(Resource):
     def get(self):
         today = datetime.today()
-        result = db.session.query(Auction.id, db.func.count(user_auction_views.c.user_id).label('total')).join(user_auction_views).group_by(Auction.id).having(Auction.start_date >= today).order_by('total DESC')
+        now = datetime.now()
+        res = db.session.query(Auction.id, db.func.count(user_auction_likes.c.user_id).label('total')).join(user_auction_views).group_by(Auction.id).having(Auction.start_date >= today).order_by('total DESC').limit(10)
+        ids = []
+        for r in res:
+            ids.append(r.id)
+        
+        result = db.session.query(Auction).filter(Auction.id.in_(ids)).all()
+
         auctions =[]
-        for a in result:
-            auction = Auction.query.get(a.id)
-            auction.remained_time = (auction.start_date - datetime.now()).seconds
-            auctions.append(auction)
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+        for auction in result:
+            auction_participants = []
+            for participant in auction.participants:
+                auction_participants.append({"id":participant.id,"username":participant.username})
+            remained_time = (auction.start_date - now).seconds
+            auctions.append({
+            "id":auction.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            "max_price":str(auction.max_price),
+            "main_price":str(auction.item.price),
+            "remained_time":remained_time,
+            "participants":auction_participants,
+            "max_members":auction.max_members,
+            })
+        return make_response(jsonify(auctions),200)
 
 class UserContactUs(Resource):
 
@@ -204,14 +269,12 @@ class UserContactUs(Resource):
 
         return redirect(url_for('index'))
 
-
 class SitePaymentMethods(Resource):
 
     def get(self):
         payment_methods = PaymentMethod.query.order_by('type').all()
         payment_methods_schema = PaymentMethodSchema(many=True)
         return make_response(jsonify(payment_methods_schema.dump(payment_methods)), 200)
-
 
 class SiteShipmentMethods(Resource):
 

@@ -376,7 +376,7 @@
 
           <div class="container">
             {% if current_user.is_authenticated %}
-              <!-- <h3 class="title24 title-flash"><span class="bg-color white">حراجی های دیده شده</span></h3>
+              <h3 class="title24 title-flash"><span class="bg-color white">حراجی های دیده شده</span></h3>
               <div class="hot-cat-slider">
               <div v-wrapitem data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
                 <template v-for="auction in viewed">
@@ -386,14 +386,14 @@
                       <h3 class="product-title"><a v-bind:href="_generateAuctionLink(auction.id)">{{auction.title}}</a></h3>
                       <p class="price-from">شروع از {{_ToPersianCurrency(auction.base_price)}}</p>
                     </div>
-                    <div class="hot-cat-thumb"><img v-bind:src="'/static/images/products/'+_clearNames(auction.item.images)" alt="" />
+                    <div class="hot-cat-thumb"><img v-bind:src="'/static/images/products/'+_clearNames(auction.images)" alt="" />
                       <a href="#" v-bind:href="_generateAuctionInstanceLink(auction.id)" class="quickview-link fancybox.iframe shopnow"><span>مشاهده</span></a>
                     </div>
                   </div>
                   {%endraw%}
                 </template>
               </div>
-            </div> -->
+            </div>
             {% endif %}
             <!-- End List Cat Price -->
             <div class="footer-list-box">
@@ -523,7 +523,7 @@
       search_keyword : "جستجو کنید...",
       category :"{{category_id}}",
       intervalTimer :null,
-      base_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
+      // base_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
     },
     watch:{
       search_keyword:function() {
@@ -589,36 +589,36 @@
 
     created:function() {
 
-      this.intervalTimer = setInterval(()=>{
-        this.base_socket.emit('sync_carts',{room:'index'});
-      }, 2000);
+      // this.intervalTimer = setInterval(()=>{
+      //   this.base_socket.emit('sync_carts',{room:'index'});
+      // }, 2000);
+      //
+      // this.base_socket.on('connect', function() {
+      //     console.log('connected base_socket');
+      // });
 
-      this.base_socket.on('connect', function() {
-          console.log('connected base_socket');
-      });
-
-      this.base_socket.on('sync_carts', function(data) {
-
-        if(data && data.length > 0){
-             data.forEach(cart => {
-               if (! myapp.mycarts.find(x=>x.id == cart[0].id))
-                 myapp.mycarts.push({
-                    id : cart[0].id,
-                    item_title : cart[0].item.title,
-                    product_title : cart[0].item.product.title,
-                    item_id : cart[0].item.id ,
-                    image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
-                    discounted_price : cart[0].total_cost,
-                    main_price : cart[0].item.price * cart[0].total ,
-                    min_quantity : 1,
-                    max_quantity : cart[0].item.quantity,
-                    current_quantity : cart[0].total,
-                    status : cart[0].status,
-                    discount_status : cart[0].discount_status,
-                });
-            });
-          }
-      });
+      // this.base_socket.on('sync_carts', function(data) {
+      //
+      //   if(data && data.length > 0){
+      //        data.forEach(cart => {
+      //          if (! myapp.mycarts.find(x=>x.id == cart[0].id))
+      //            myapp.mycarts.push({
+      //               id : cart[0].id,
+      //               item_title : cart[0].item.title,
+      //               product_title : cart[0].item.product.title,
+      //               item_id : cart[0].item.id ,
+      //               image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+      //               discounted_price : cart[0].total_cost,
+      //               main_price : cart[0].item.price * cart[0].total ,
+      //               min_quantity : 1,
+      //               max_quantity : cart[0].item.quantity,
+      //               current_quantity : cart[0].total,
+      //               status : cart[0].status,
+      //               discount_status : cart[0].discount_status,
+      //           });
+      //       });
+      //     }
+      // });
     },
 
     methods:{
@@ -825,7 +825,7 @@
       axios.get("{{url_for('auctionuserviewed')}}")
         .then((response) => {
           if(response.data){
-            this.viewed = response.data[0];
+            this.viewed = response.data;
           }
         })
         .catch((response)=>{

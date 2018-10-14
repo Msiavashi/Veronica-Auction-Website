@@ -15,7 +15,7 @@
 				<div v-if="ad_auctions" class="col-md-12 col-sm-12 col-xs-12">
 					<div class="wrap-banner-slider1">
 						<div class="banner-slider banner-slider1">
-							<div v-wrapitem1 data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
+							<div v-wrapitem data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
 								<template v-for="item in ad_auctions">
 									{%raw%}
 									<div class="item-banner item-banner1">
@@ -35,7 +35,7 @@
 						</div>
 						<!-- End Banner -->
 						<div v-if="ad_products" class="sub-banner-slider">
-							<div v-wrapitem2 data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
+							<div v-wrapitem data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
 								<template v-for="item in ad_products">
 									{%raw%}
 									<div class="item-sub-banner">
@@ -133,8 +133,7 @@
 		</div>
 	</div>
 
-	<div v-if="popular_auctions.length > 0 || best_auctions.length > 0" class="product-hotdeal">
-
+	<div class="product-hotdeal">
 		<div class="header-hotdeal">
 			<div class="container">
 				<div class="title-box1">
@@ -151,7 +150,7 @@
 
 			<div id="hot1" class="tab-pane active">
 				<div class="hotdeal-slider">
-					<div v-wrapitem3 data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
+					<div v-wrapitemhot data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
 						<template v-for="auction in best_auctions">
 							{%raw%}
 							<div class="item-pro-hotdeal">
@@ -209,7 +208,7 @@
 			<!-- ENd Tab -->
 			<div id="hot2" class="tab-pane">
 				<div class="hotdeal-slider">
-					<div v-wrapitem4 data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
+					<div v-wrapitemhot data-itemscustom="[[0,1],[560,2],[768,3],[1024,4],[1200,5],[1366,6]]"  data-pagination = "false"  data-autoplay = "true"  data-navigation = "true">
 						<template v-for="auction in popular_auctions">
 							{%raw%}
 							<div class="item-pro-hotdeal">
@@ -271,7 +270,7 @@
 	<div class="service-footer3 service-footer11">
 		<div class="container">
 			<div class="service-slider3">
-				<div v-wrapitem5 class="wrap-item" data-pagination="false" data-navigation="false" data-items="6">
+				<div v-wrapitem class="wrap-item" data-pagination="false" data-navigation="false" data-items="6">
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for1.png" alt="" /></a>
 						<h2 class="title14">شرکت کنید</h2>
@@ -314,7 +313,7 @@
 				<h2 class="white title30 text-center"><span>{{category.title}}</span></h2>
 
 				<div class="deal-slider18 poly-slider border bg-white">
-					<div v-wrapitem6 data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
+					<div v-wrapitemend data-bind ='foreach : auctions' data-itemscustom="[[0,1],[768,3],[1024,4]]" data-navigation="true" data-pagination="false">
 						<template v-for="auction in category.auctions">
 
 							<div class="deal-pro18">
@@ -371,46 +370,46 @@
 
 	start_loading(loading_element);
 
-	var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-	socket.on('connect', function() {
-			console.log('connected');
-	});
-	socket.on('sync_timers', function(data) {
-
-		data.timers.forEach(item => {
-			auction = app.today_auctions.find(x => x.id == item.auction_id);
-
-			cat_temp = app.categories.find(x => x.auctions.find(y=> y.id == item.auction_id));
-			if (cat_temp)
-			{
-				cat_auction = cat_temp.auctions.find(x => x.id == item.auction_id);
-			}
-
-			if (item.expired) {
-
-				var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
-				app.today_auctions.splice( elementPos, 1 );
-				if (cat_temp){
-					var elementPos_cat = cat_temp.auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
-					cat_temp.auctions.splice( elementPos_cat, 1 );
-				}
-
-			}
-			else {
-				if(auction){
-					auction.deadline = item.remained_time;
-
-					$.each($("[data-auctionid="+auction.id+"]"),function(item,value) {
-
-						$(value).data('timer', auction.deadline).TimeCircles({
-								"total_duration": auction.deadline
-						}).restart();
-					});
-				}
-			}
-		});
-		//console.log('syncing...');
-	});
+	// var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+	// socket.on('connect', function() {
+	// 		console.log('connected');
+	// });
+	// socket.on('sync_timers', function(data) {
+	//
+	// 	data.timers.forEach(item => {
+	// 		auction = app.today_auctions.find(x => x.id == item.auction_id);
+	//
+	// 		cat_temp = app.categories.find(x => x.auctions.find(y=> y.id == item.auction_id));
+	// 		if (cat_temp)
+	// 		{
+	// 			cat_auction = cat_temp.auctions.find(x => x.id == item.auction_id);
+	// 		}
+	//
+	// 		if (item.expired) {
+	//
+	// 			var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
+	// 			app.today_auctions.splice( elementPos, 1 );
+	// 			if (cat_temp){
+	// 				var elementPos_cat = cat_temp.auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
+	// 				cat_temp.auctions.splice( elementPos_cat, 1 );
+	// 			}
+	//
+	// 		}
+	// 		else {
+	// 			if(auction){
+	// 				auction.deadline = item.remained_time;
+	//
+	// 				$.each($("[data-auctionid="+auction.id+"]"),function(item,value) {
+	//
+	// 					$(value).data('timer', auction.deadline).TimeCircles({
+	// 							"total_duration": auction.deadline
+	// 					}).restart();
+	// 				});
+	// 			}
+	// 		}
+	// 	});
+	// 	//console.log('syncing...');
+	// });
 
 	app = new Vue({
 
@@ -510,7 +509,7 @@
 					});
 				axios.get("{{url_for('sitetodayauctions')}}")
 					.then((response) => {
-						response.data[0].forEach( auction => {
+						response.data.forEach( auction => {
 							participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
 							this.today_auctions.push({
 								id : auction.id,
@@ -521,8 +520,8 @@
 								max_members :ToPersian(auction.max_members),
 								base_price : ToPersian(formatCurrency(auction.base_price)),
 								max_price : ToPersian(formatCurrency(auction.max_price)),
-								price : ToPersian(formatCurrency(auction.item.price)),
-								image : product_image_path + ClearifyNames(auction.item.images)[0],
+								price : ToPersian(formatCurrency(auction.main_price)),
+								image : product_image_path + ClearifyNames(auction.images)[0],
 								instance_link : "/instantview/"+ auction.id,
 								link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
 								is_participant : participated,
@@ -534,19 +533,18 @@
 					});
 				axios.get("{{url_for('sitemostpopularauctions')}}")
 					.then((response) => {
-						response.data[0].forEach( auction => {
+						response.data.forEach( auction => {
 							participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
 							this.popular_auctions.push({
 								id : auction.id,
 								title : auction.title ,
-								description : auction.description ,
 								deadline : auction.remained_time,
 								participant_count :ToPersian(auction.participants.length),
 								max_members :ToPersian(auction.max_members),
 								base_price : ToPersian(formatCurrency(auction.base_price)),
 								max_price : ToPersian(formatCurrency(auction.max_price)),
-								price : ToPersian(formatCurrency(auction.item.price)),
-								image : product_image_path + ClearifyNames(auction.item.images)[0],
+								price : ToPersian(formatCurrency(auction.main_price)),
+								image : product_image_path + ClearifyNames(auction.images)[0],
 								instance_link : "/instantview/"+ auction.id,
 								link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
 								is_participant : participated,
@@ -558,19 +556,18 @@
 					});
 				axios.get("{{url_for('sitemostviewedauctions')}}")
 					.then((response) => {
-						response.data[0].forEach( auction => {
+						response.data.forEach( auction => {
 							participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
 							this.best_auctions.push({
 								id : auction.id,
 								title : auction.title ,
-								description : auction.description ,
 								deadline : auction.remained_time,
 								participant_count :ToPersian(auction.participants.length),
 								max_members :ToPersian(auction.max_members),
 								base_price : ToPersian(formatCurrency(auction.base_price)),
 								max_price : ToPersian(formatCurrency(auction.max_price)),
-								price : ToPersian(formatCurrency(auction.item.price)),
-								image : product_image_path + ClearifyNames(auction.item.images)[0],
+								price : ToPersian(formatCurrency(auction.main_price)),
+								image : product_image_path + ClearifyNames(auction.images)[0],
 								instance_link : "/instantview/"+ auction.id,
 								link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
 								is_participant : participated,
@@ -580,49 +577,36 @@
 					.catch((response)=>{
 						console.error(response);
 					});
-				axios.get("{{url_for('sitecategorymenuitems')}}")
+				axios.get("{{url_for('sitecategoryforauctions')}}")
 					.then((response) => {
-						response.data[0].forEach(category => {
-
-							axios.get("api/site/category/"+category.id+"/auctions")
-								.then((response) => {
-									auctions = [];
-									response.data.auctions[0].forEach(auction =>{
-										participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
-										auctions.push({
-											id : auction.id,
-											title : auction.title,
-											deadline : auction.remained_time,
-											image : product_image_path + ClearifyNames(auction.item.images)[0],
-											instance_link : "/instantview/"+ auction.id,
-											view_link : "/view/auction/"+ auction.id,
-											link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
-											is_participant : participated,
-											base_price : ToPersian(formatCurrency(auction.base_price)),
-										});
-									});
-
-									this.categories.push({
-										title : category.title,
-										auctions : auctions,
-									});
-
-								})
-								.catch((response)=>{
-									console.error(response);
+						response.data.forEach(item => {
+							auctions = [];
+							item.auctions.forEach(auction =>{
+								participated = auction.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+								auctions.push
+									({id : auction.id,
+										title : auction.title,
+										deadline : auction.remained_time,
+										image : product_image_path + ClearifyNames(auction.images)[0],
+										instance_link : "/instantview/"+ auction.id,
+										view_link : "/view/auction/"+ auction.id,
+										link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
+										is_participant : participated,
+										base_price : ToPersian(formatCurrency(auction.base_price))});
 							});
-
-
-
+							this.categories.push({
+								title : item.title,
+								auctions : auctions,
+							});
 						});
 					})
-					.catch((response)=>{
-						console.error(response);
+					.catch((error)=>{
+						console.log(error.response);
 				});
-				this.interval = setInterval(()=>{
-					ids = this.today_auctions.map(function(item) {return item.id; });
-					socket.emit('sync_timers',{auction_ids: ids,room:'index'});
-				}, 5000);
+				// this.interval = setInterval(()=>{
+				// 	ids = this.today_auctions.map(function(item) {return item.id; });
+				// 	socket.emit('sync_timers',{auction_ids: ids,room:'index'});
+				// }, 5000);
 		},
 		updated:function() {
 			// this._invalidate();
@@ -697,9 +681,8 @@
 					 	}
 				}
 			},
-			wrapitem1:{
+			wrapitem:{
 				inserted:function(el) {
-					setTimeout(function() {
 						var data = $(el).data();
 						$(el).owlCarousel({
 								addClassActive:true,
@@ -712,87 +695,28 @@
 								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
 						});
 						$(el).find('.owl-controls').css('left',data.control+'px');
-
-					},3000 );
-
 				}
 			},
-			wrapitem2:{
+			wrapitemhot:{
 				inserted:function(el) {
-					setTimeout(function() {
 						var data = $(el).data();
-						$(el).owlCarousel({
-								addClassActive:true,
-								stopOnHover:true,
-								itemsCustom:data.itemscustom,
-								autoPlay:data.autoplay,
-								transitionStyle:data.transition,
-								beforeInit:background,
-								afterAction:animated,
-								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
-						});
-						$(el).find('.owl-controls').css('left',data.control+'px');
-					},2000 );
+						setTimeout(function(){
+							$(el).owlCarousel({
+									addClassActive:true,
+									stopOnHover:true,
+									itemsCustom:data.itemscustom,
+									autoPlay:data.autoplay,
+									transitionStyle:data.transition,
+									beforeInit:background,
+									afterAction:animated,
+									navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+							});
+							$(el).find('.owl-controls').css('left',data.control+'px');
+						},Math.floor(Math.random() * 3000) + 2000 );
 				}
 			},
-			wrapitem3:{
+			wrapitemend:{
 				inserted:function(el) {
-					setTimeout(function() {
-						var data = $(el).data();
-						$(el).owlCarousel({
-								addClassActive:true,
-								stopOnHover:true,
-								itemsCustom:data.itemscustom,
-								autoPlay:data.autoplay,
-								transitionStyle:data.transition,
-								beforeInit:background,
-								afterAction:animated,
-								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
-						});
-						$(el).find('.owl-controls').css('left',data.control+'px');
-					},2000 );
-				}
-			},
-			wrapitem4:{
-				inserted:function(el) {
-					setTimeout(function() {
-						var data = $(el).data();
-						$(el).owlCarousel({
-								addClassActive:true,
-								stopOnHover:true,
-								itemsCustom:data.itemscustom,
-								autoPlay:data.autoplay,
-								transitionStyle:data.transition,
-								beforeInit:background,
-								afterAction:animated,
-								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
-						});
-						$(el).find('.owl-controls').css('left',data.control+'px');
-					},2000 );
-				}
-			},
-			wrapitem5:{
-				inserted:function(el) {
-					setTimeout(function() {
-						var data = $(el).data();
-						$(el).owlCarousel({
-								addClassActive:true,
-								stopOnHover:true,
-								itemsCustom:data.itemscustom,
-								autoPlay:data.autoplay,
-								transitionStyle:data.transition,
-								beforeInit:background,
-								afterAction:animated,
-								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
-						});
-						$(el).find('.owl-controls').css('left',data.control+'px');
-					},2000 );
-				}
-
-			},
-			wrapitem6:{
-				inserted:function(el) {
-					setTimeout(function() {
 						var data = $(el).data();
 						$(el).owlCarousel({
 								addClassActive:true,
@@ -806,26 +730,6 @@
 						});
 						$(el).find('.owl-controls').css('left',data.control+'px');
 						stop_loading(loading_element);
-					},2000 );
-				}
-			},
-
-			wrapitem:{
-				inserted:function(el) {
-					setTimeout(function() {
-						var data = $(el).data();
-						$(el).owlCarousel({
-								addClassActive:true,
-								stopOnHover:true,
-								itemsCustom:data.itemscustom,
-								autoPlay:data.autoplay,
-								transitionStyle:data.transition,
-								beforeInit:background,
-								afterAction:animated,
-								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
-						});
-						$(el).find('.owl-controls').css('left',data.control+'px');
-					},Math.floor(Math.random() * 2000) + 1000 );
 				}
 			},
 

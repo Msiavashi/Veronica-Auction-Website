@@ -58,11 +58,13 @@ def join(data):
     deadline = (auction.start_date - datetime.now()).seconds + 1
     emit("join",{"msg": "new client joined auction","auction": auction_schema.dump(auction),"deadline":deadline} , room=room)
 
-@socketio.on('leave')
-def leave(data):
-    room = data['room']
+@socketio.on('leave_auction')
+def leave_auction(data):
+    room = data['auction_id']
+    emit("leave_auction", {"message": "client left room"}, room=room)
     leave_room(room)
-    emit("leave", {"msg": "client left room"}, room=room)
+    print 'leaving room',room
+    return 200
 
 def loadview(data):
     try:
@@ -228,10 +230,11 @@ def auction_done(data):
             db.session.commit()
 
         emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": user_schema.dump(winner),"discount":str(discounted_price)},room=room)
-
+        # leave_auction(data)
         return 200
     else:
         emit("auction_done", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
+        # leave_auction(data)
         return 400
     # except Exception as e:
     #     return "{'error':"+str(e)+"}"

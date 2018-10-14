@@ -18,9 +18,20 @@ import random
 class AuctionUserViewed(Resource):
     def get(self):
         if(current_user.is_authenticated):
-            auctions = Auction.query.join(user_auction_views).filter_by(user_id=current_user.id)
-            auction_schema = AuctionSchema(many=True)
-            return make_response(jsonify(auction_schema.dump(auctions)),200)
+            result = Auction.query.join(user_auction_views).filter_by(user_id=current_user.id).order_by('user_auction_views.date DESC').limit(10)
+            auctions = []
+            for auction in result:
+                auction_participants = []
+                for participant in auction.participants:
+                    auction_participants.append({"id":participant.id,"username":participant.username})
+                auctions.append({
+                "id":auction.id,
+                "title":auction.title,
+                "images":auction.item.images,
+                "base_price":str(auction.base_price),
+                "participants":auction_participants,
+                })
+            return make_response(jsonify(auctions),200)
 
 class AuctionViewFinished(Resource):
     def get(self):

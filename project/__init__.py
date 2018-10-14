@@ -118,6 +118,7 @@ api.add_resource(Site_API.SiteSearchAuctionsCategory, '/site/search/auctions/cat
 api.add_resource(Site_API.SiteSearchFilters, '/site/search/filters/<order_by_price>/<order_by>/<int:total>/<keyword>')
 
 api.add_resource(Site_API.SiteCategoryAuctions, '/site/category/<int:cid>/auctions/')
+api.add_resource(Site_API.SiteCategoryForAuctions, '/site/category/auctions/')
 api.add_resource(Site_API.SiteCategoryProducts, '/site/category/<int:cid>/products/')
 api.add_resource(Site_API.SiteCategoryProductFilters, '/site/category/<int:cid>/product/filters/<order_by_price>/<order_by>/<int:total>')
 api.add_resource(Site_API.SiteCategoryCarouselAds, '/site/category/<int:cid>/carousel/ads')

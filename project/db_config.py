@@ -6,7 +6,7 @@
 
 class Config:
     engine = "postgres"
-    port = "6432"
+    port = "5432"
     host_name = "localhost"
     db_name = "unibid_db"
     password = "123db321"
