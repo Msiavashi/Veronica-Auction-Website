@@ -170,21 +170,20 @@
 					var vm = this;
 					axios.get("/api/site/category/{{category_id}}/product/filters/"+this.ordering+"/"+this.orderkey+"/"+this.sortingTotal+"")
 						.then((response) => {
-							response.data.auctions[0].forEach(auction => {
+							response.data.auctions.forEach(auction => {
 								this.auctions.push({
 									id : auction.id,
 									title : auction.title ,
-									description : auction.description ,
 									remained_time : auction.remained_time,
 									from_created : auction.left_from_created,
 									remained_percent : "width:0%",
 									base_price : ToPersian(formatCurrency(auction.base_price)),
 									max_price : ToPersian(formatCurrency(auction.max_price)),
-									price : ToPersian(formatCurrency(auction.item.price)),
-									image : product_image_path + ClearifyNames(auction.item.images)[0],
+									price : ToPersian(formatCurrency(auction.main_price)),
+									image : product_image_path + ClearifyNames(auction.images)[0],
 									instantview_link : "/instantview/"+ auction.id,
 									auctionview_link : "/view/auction/"+ auction.id,
-									item_id : auction.item.id,
+									item_id : auction.item_id,
 									likeflag: auction.liked ? "fa fa-heart" : "fa fa-heart-o",
 								});
 							});
@@ -279,21 +278,20 @@
 			var vm = this;
 			axios.get("/api/site/category/{{category_id}}/product/filters/"+this.ordering+"/"+this.orderkey+"/"+this.sortingTotal+"")
 				.then((response) => {
-					response.data.auctions[0].forEach(auction => {
+					response.data.auctions.forEach(auction => {
 						this.auctions.push({
 							id : auction.id,
 							title : auction.title ,
-							description : auction.description ,
 							remained_time : auction.remained_time,
 							from_created : auction.left_from_created,
 							remained_percent : "width:0%",
 							base_price : ToPersian(formatCurrency(auction.base_price)),
 							max_price : ToPersian(formatCurrency(auction.max_price)),
-							price : ToPersian(formatCurrency(auction.item.price)),
-							image : product_image_path + ClearifyNames(auction.item.images)[0],
+							price : ToPersian(formatCurrency(auction.main_price)),
+							image : product_image_path + ClearifyNames(auction.images)[0],
 							instantview_link : "/instantview/"+ auction.id,
 							auctionview_link : "/view/auction/"+ auction.id,
-							item_id : auction.item.id,
+							item_id : auction.item_id,
 							likeflag: auction.liked ? "fa fa-heart" : "fa fa-heart-o",
 						});
 					});

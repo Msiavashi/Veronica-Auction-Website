@@ -17789,3 +17789,7 @@ ul.checkout-bar a {
 .flash-countdown::before{
   display: none;
 }
+
+.sort-bar > .select-box::after{
+  display: none;
+}

@@ -35,18 +35,29 @@ class AuctionUserViewed(Resource):
 
 class AuctionViewFinished(Resource):
     def get(self):
-        offers = Offer.query.filter_by(win=True).all()
-        for offer in offers:
+        result = Offer.query.filter_by(win=True).all()
+        offers = []
+        for offer in result:
             user = User.query.join(UserPlan).join(Offer).filter_by(id=offer.id).first()
-            user_schema = UserSchema()
-
+            auction_participants = []
+            for participant in offer.auction.participants:
+                auction_participants.append({"id":participant.id,"username":participant.username})
+            winner = ""
             if(user.first_name and user.last_name and offer.win):
-                offer.winner = user.first_name + ' ' + user.last_name
+                winner = user.first_name + ' ' + user.last_name
             else:
-                offer.winner = user.username
+                winner = user.username
 
-        offer_schema = OfferSchema(many=True)
-        return make_response(jsonify(offer_schema.dump(offers)),200)
+            offers.append({
+            "auction_id":offer.auction.id,
+            "title":offer.auction.title,
+            "images":offer.auction.item.images,
+            "total_price":int(offer.total_price),
+            "main_price":int(offer.auction.item.price),
+            "start_date":offer.auction.start_date,
+            "participants":auction_participants,
+            })
+        return make_response(jsonify(offers),200)
 
 class AuctionUserParticipation(Resource):
     def post(self):

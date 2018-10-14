@@ -28,23 +28,40 @@ class SiteSearchFilters(Resource):
     def get(self,order_by_price,order_by,total,keyword):
         now = datetime.now()
         result = None
-        if order_by_price == "price":
+        if order_by_price=="price":
             result = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).join(Item).order_by("price " + order_by).limit(total)
         else:
             result = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).order_by("start_date " + order_by).limit(total)
 
         auctions=[]
-        for a in result:
-            auction = Auction.query.get(a.id)
-            auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
-            auction.left_from_created = (auction.created_at - now).seconds
+        for auction in result:
+            auction_participants = []
+            for participant in auction.participants:
+                auction_participants.append({"id":participant.id,"username":participant.username})
+
+            remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
+            left_from_created = (now.replace(hour=0,minute=0,second=0,microsecond=0) - now).seconds
+            liked = None
             if current_user.is_authenticated:
-                auction.liked = auction in current_user.auction_likes
-            auctions.append(auction)
+                liked = auction in current_user.auction_likes
 
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+            auctions.append({
+            "id":auction.id,
+            "item_id":auction.item.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            "max_price":str(auction.max_price),
+            "main_price":str(auction.item.price),
+            "remained_time":remained_time,
+            "left_from_created":left_from_created,
+            "liked":liked,
+            "participants":auction_participants,
+            "max_members":auction.max_members,
+            })
 
+        return make_response(jsonify(auctions),200)
+    
 class SiteSearchAuctions(Resource):
     def get(self,keyword):
         auctions = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).limit(MAX_SEARCH_RESULT)
@@ -123,17 +140,34 @@ class SiteCategoryProductFilters(Resource):
             result = Auction.query.order_by("start_date "+ order_by).join(Item).join(Product).join(Category).filter_by(id = cid).limit(total)
 
         auctions=[]
-        for a in result:
-            auction = Auction.query.get(a.id)
-            auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
-            auction.left_from_created = (now.replace(hour=0,minute=0,second=0,microsecond=0) - now).seconds
+        for auction in result:
+            auction_participants = []
+            for participant in auction.participants:
+                auction_participants.append({"id":participant.id,"username":participant.username})
+
+            remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
+            left_from_created = (now.replace(hour=0,minute=0,second=0,microsecond=0) - now).seconds
+            liked = None
             if current_user.is_authenticated:
-                auction.liked = auction in current_user.auction_likes
-            auctions.append(auction)
+                liked = auction in current_user.auction_likes
+
+            auctions.append({
+            "id":auction.id,
+            "item_id":auction.item.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            "max_price":str(auction.max_price),
+            "main_price":str(auction.item.price),
+            "remained_time":remained_time,
+            "left_from_created":left_from_created,
+            "liked":liked,
+            "participants":auction_participants,
+            "max_members":auction.max_members,
+            })
+
         category = Category.query.get(cid)
-        auction_schema = AuctionSchema(many=True)
-        category_schema = CategorySchema()
-        result ={'category':category_schema.dump(category),'auctions':auction_schema.dump(auctions)}
+        result ={'category':CategorySchema().dump(category),'auctions':auctions}
         return make_response(jsonify(result),200)
 
 class SiteAuctionCarouselAds(Resource):
@@ -224,7 +258,7 @@ class SiteMostviewedAuctions(Resource):
         ids = []
         for r in res:
             ids.append(r.id)
-        
+
         result = db.session.query(Auction).filter(Auction.id.in_(ids)).all()
 
         auctions =[]

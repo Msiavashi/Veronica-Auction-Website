@@ -930,20 +930,39 @@ class UserFavoriteFilters(Resource):
     def get(self,order_by_price,order_by,total):
         now = datetime.now()
         result = None
-        if order_by_price == "price":
+        if order_by_price=="price":
             result = current_user.auction_likes.join(Item).order_by("price "+order_by).limit(total)
         else:
             result = current_user.auction_likes.order_by("start_date "+order_by).limit(total)
 
         auctions=[]
-        for a in result:
-            auction = Auction.query.get(a.id)
-            auction.remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
-            auction.left_from_created = (auction.created_at - now).seconds
-            auctions.append(auction)
+        for auction in result:
+            auction_participants = []
+            for participant in auction.participants:
+                auction_participants.append({"id":participant.id,"username":participant.username})
 
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+            remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
+            left_from_created = (now.replace(hour=0,minute=0,second=0,microsecond=0) - now).seconds
+            liked = None
+            if current_user.is_authenticated:
+                liked = auction in current_user.auction_likes
+
+            auctions.append({
+            "id":auction.id,
+            "item_id":auction.item.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            "max_price":str(auction.max_price),
+            "main_price":str(auction.item.price),
+            "remained_time":remained_time,
+            "left_from_created":left_from_created,
+            "liked":liked,
+            "participants":auction_participants,
+            "max_members":auction.max_members,
+            })
+
+        return make_response(jsonify(auctions),200)
 
 class UserAuctionView(Resource):
 
