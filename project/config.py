@@ -3,6 +3,8 @@ import os
 import definitions
 
 # Create dummy secrey key so we can use sessions
+# SECRET_KEY = "1qsj59$80__+j3o0-1cn.f=20-=@$&mp=-d1hkpwqhf2-==123ehdwoh^2n-^$@8-jf[=2ufiofh]"
+# JWT_SECRET_KEY = "=921nlkwendq-019-4=1%@$-igj2f-=@FF2jpw00-=02=fjng809=292fj-209r=548@$Gdjp="
 SECRET_KEY = os.urandom(124)
 JWT_SECRET_KEY = os.urandom(124)
 DEBUG_TB_INTERCEPT_REDIRECTS = False

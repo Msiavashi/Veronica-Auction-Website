@@ -374,6 +374,7 @@ jQuery(document).ready(function(){
 			}
 		});
 	}
+
 	if($('.countdown-master').length>0){
 		$('.countdown-master').each(function(){
 			$(this).FlipClock(65100,{

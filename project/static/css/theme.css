@@ -15817,8 +15817,8 @@ a.shop-button,
   margin-left: 10px;
   width: 14px;
   margin-right: 0;
-  background: #fff;
-  border-color:#fff
+  background: #aaa;
+  border-color:#aaa
 }
 .social-login-block .social-login-btn a.login-fb-link {
   background: #3B5998;
@@ -15845,6 +15845,9 @@ a.shop-button,
 }
 .create-account .text-right a:hover {
   text-decoration: underline;
+}
+.create-account .text-left input:{
+  background: #555
 }
 .my-profile-box .form-my-account {
   margin: auto;

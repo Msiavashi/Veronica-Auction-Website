@@ -76,16 +76,21 @@ def loadview(data):
         for user in result:
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
             user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
-            user.current_bids = user_last_offer.current_bids
-            user.current_offer_price = user_last_offer.total_price
-            users.append(user)
-
-        user_schema = UserSchema(many=True)
+            current_bids = user_last_offer.current_bids
+            current_offer_price = user_last_offer.total_price
+            pretty_name = user.first_name + " " + user.last_name if (user.first_name and user.last_name) else user.username
+            users.append({
+                "current_bids" : current_bids,
+                "current_offer_price" : int(current_offer_price),
+                "pretty_name" : pretty_name ,
+                "avatar" : user.avatar,
+                "id": user.id
+            })
 
         if(last_offer):
-            emit("update_view", {"success":True, "current_offer_price": str(last_offer.total_price),"users": user_schema.dump(users)})
+            emit("update_view", {"success":True, "current_offer_price": str(last_offer.total_price),"users": users})
         else:
-            emit("update_view", {"success":True , "current_offer_price": 0,"users": user_schema.dump(users)})
+            emit("update_view", {"success":True , "current_offer_price": 0,"users": users})
 
     except Exception as e:
         emit("failed", {"reason": e.message})
@@ -162,8 +167,6 @@ def bid(data):
         db.session.add(offer)
         db.session.commit()
 
-
-
         if(remained < 10 and remained > 0):
             auction.start_date = now + timedelta(seconds=11)
             db.session.add(auction)
@@ -176,12 +179,18 @@ def bid(data):
         for user in result:
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
             user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
-            user.current_bids = user_last_offer.current_bids
-            user.current_offer_price = user_last_offer.total_price
-            users.append(user)
+            current_bids = user_last_offer.current_bids
+            current_offer_price = user_last_offer.total_price
+            pretty_name = user.first_name + " " + user.last_name if (user.first_name and user.last_name) else user.username
+            users.append({
+                "current_bids" : current_bids,
+                "current_offer_price" : int(current_offer_price),
+                "pretty_name" : pretty_name ,
+                "avatar" : user.avatar,
+                "id": user.id
+            })
 
-        user_schema = UserSchema(many=True)
-        emit("accepted", {"success": True, "current_bids": offer.current_bids, "total_price": str(offer.total_price) ,"users":user_schema.dump(users)},room=room)
+        emit("accepted", {"success": True, "current_bids": offer.current_bids, "total_price": str(offer.total_price) ,"users":users},room=room)
         return 200
 
     except Exception as e:

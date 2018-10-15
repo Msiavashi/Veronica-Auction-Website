@@ -15,6 +15,51 @@ from flask_login import login_required ,current_user
 from decimal import Decimal
 import random
 
+class AuctionTestJson(Resource):
+    def post(self):
+        data = request.get_json(force=True)
+        auction_id = data['auction_id']
+        # auction = Auction.query.get(auction_id)
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
+        result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
+        users = []
+        for user in result:
+            user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
+            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
+            current_bids = user_last_offer.current_bids
+            current_offer_price = user_last_offer.total_price
+            pretty_name = user.first_name + " " + user.last_name if (user.first_name and user.last_name) else user.username
+            users.append({
+                "current_bids" : current_bids,
+                "current_offer_price" : int(current_offer_price),
+                "pretty_name" : pretty_name ,
+                "avatar" : user.avatar,
+                "id":user.id
+            })
+
+        user_schema = UserSchema(many=True)
+        return make_response(jsonify({"success":True, "current_offer_price": str(last_offer.total_price),"users": users}),200)
+
+class AuctionTest(Resource):
+    def post(self):
+        data = request.get_json(force=True)
+        auction_id = data['auction_id']
+        # auction = Auction.query.get(auction_id)
+        last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
+        result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
+        users = []
+        for user in result:
+            user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
+            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
+            user.current_bids = user_last_offer.current_bids
+            user.current_offer_price = user_last_offer.total_price
+            users.append(user)
+
+        user_schema = UserSchema(many=True)
+
+        return make_response(jsonify({"success":True, "current_offer_price": str(last_offer.total_price),"users": user_schema.dump(users)}),200)
+
+
 class AuctionUserViewed(Resource):
     def get(self):
         if(current_user.is_authenticated):
@@ -56,6 +101,7 @@ class AuctionViewFinished(Resource):
             "main_price":int(offer.auction.item.price),
             "start_date":offer.auction.start_date,
             "participants":auction_participants,
+            "winner":winner,
             })
         return make_response(jsonify(offers),200)
 
@@ -149,20 +195,69 @@ class AuctionUserParticipation(Resource):
             msg = " برای پرداخت به صفحه تایید هدایت می شوید"
             return make_response(jsonify({'success':True,"type":"redirect_to_bank","pid":payment.id,"message":msg}),200)
 
+# class AuctionInstanceView(Resource):
+#     def get(self,aid):
+#         auction = Auction.query.get(aid)
+#         auction.participants.order_by('created_at')
+#         auction_schema = AuctionSchema()
+#         product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
+#         product_schema = ProductSchema()
+#         auction.remained_time = (auction.start_date - datetime.now()).seconds
+#
+#         if(current_user.is_authenticated):
+#             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()
+#             auction_plan_schema = AuctionPlanSchema()
+#             return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
+#         return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
+
 class AuctionInstanceView(Resource):
     def get(self,aid):
         auction = Auction.query.get(aid)
-        auction.participants.order_by('created_at')
-        auction_schema = AuctionSchema()
-        product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
-        product_schema = ProductSchema()
-        auction.remained_time = (auction.start_date - datetime.now()).seconds
-
+        auction_participants = []
+        for participant in auction.participants.order_by('created_at'):
+            auction_participants.append({"id":participant.id,"username":participant.username})
+        remained_time = (auction.start_date - datetime.now()).seconds
+        plan = None
         if(current_user.is_authenticated):
             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()
-            auction_plan_schema = AuctionPlanSchema()
-            return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
-        return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
+        result = None
+        if plan:
+            result = {
+            "id":auction.id,
+            "item_id":auction.item.id,
+            "title":auction.title,
+            "ratio":auction.ratio,
+            "description":auction.description,
+            "product_description":auction.item.product.description,
+            "images":auction.item.images,
+            "max_members":auction.max_members,
+            "base_price":int(auction.base_price),
+            "max_price":int(auction.max_price),
+            "main_price":int(auction.item.price),
+            "start_date":auction.start_date,
+            "participants":auction_participants,
+            "remained_time":remained_time,
+            "max_offers":plan.max_offers
+            }
+        else:
+            result = {
+            "id":auction.id,
+            "item_id":auction.item.id,
+            "title":auction.title,
+            "ratio":auction.ratio,
+            "description":auction.description,
+            "product_description":auction.item.product.description,
+            "images":auction.item.images,
+            "max_members":auction.max_members,
+            "max_price":str(auction.max_price),
+            "base_price":str(auction.base_price),
+            "main_price":str(auction.item.price),
+            "start_date":auction.start_date,
+            "participants":auction_participants,
+            "remained_time":remained_time,
+            "max_offers":0
+            }
+        return make_response(jsonify({"auction":result}),200)
 
 class AuctionGetPlans(Resource):
     def get(self,aid):

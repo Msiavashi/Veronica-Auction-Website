@@ -2,19 +2,19 @@
 {% block title %}   شرکت در حراجی {% endblock %}
 {% block content %}
 
-<div class="content-page">
-  <div class="container" id="app">
+<div id="app" class="content-page">
+  <div v-cloak class="container">
     <div class="product-quickview detail-with-sidebar config-detail">
       <div class="row">
         <div class="col-md-4 col-sm-5 col-xs-12">
           <div class="product-extra-link2 rightList">
             {%raw%}
-              <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-times">{{_ToPersian(auctionRatio)}}ضریب</i></a>
+              <a class="wishlist-link" href="#">{{_ToPersian(auctionRatio)}}<i aria-hidden="true" class="fa fa-times"></i> ضریب</a>
               <a class="wishlist-link" href="#"><i aria-hidden="true" class="fa fa-users"></i>{{_ToPersian(auctionParticipants.length)}} از {{_ToPersian(auctionMaxMembers)}} </a>
             {%endraw%}
           </div>
           <!-- End rightlist -->
-          <div class="detail-gallery">
+          <div v-detail class="detail-gallery">
 
             <div class="mid">
               <img v-bind:src="activeImage" alt=""/>
@@ -113,7 +113,7 @@
 
                 {%raw%}
                 <div id="countdown">
-                  <div id='tiles' class="flash-countdown color-full" data-timer="0" ></div>
+                  <div v-remainedtime id='tiles' class="flash-countdown color-full" data-timer="0" ></div>
                   <div class="countdown-label">{{now_date}}</div>
                 </div>
                 {%endraw%}
@@ -175,8 +175,6 @@
 
 start_loading(loading_element);
 
-var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
 var app = new Vue({
 
 	el: "#app",
@@ -186,39 +184,31 @@ var app = new Vue({
 			show: false,
 			message: ""
 		},
-		auctionCurrentWinner: "",
+    auctionCurrentWinner: "",
 		auctionCurrentWinnerImage: null,
-		winnerUser: null,
 		auctionCurrentOffer: null,
 		offerBidCount: 0,
-		currentOfferPrice: null,
-		interval: null,
-		timerSync: null,
-		remainingTime: null,
 		deadline: null,
 		activeImage: null,
 		images: [],
 		people: [],
 		auctionBasePrice: 0,
 		auctionItemPrice: 0,
-		itemProductdescription:"",
-		auctionItemId: 0,
 		auctionDescription: "",
+		itemProductdescription:"",
+		auctionId: 0,
+		auctionItemId: 0,
 		auctionMaxMembers: 0,
 		auctionRatio: 0,
 		auctionMaxPrice: 0,
-		auctionId: 0,
-		auctionItemId: 0,
 		auctionTitle: "",
 		auctionParticipants: [],
-		auction: {},
 		users: [],
-		active_user: null
+    socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
 	},
 	methods: {
-
-		handleBid: function(){
-			socket.emit("bid", {
+    handleBid: function(){
+			this.socket.emit("bid", {
 				auction_id: "{{auction_id}}",
 			});
 		},
@@ -232,197 +222,149 @@ var app = new Vue({
 		},
 
 		getRemainTime: function(){
-			socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
+			this.socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 		},
 
-		setAuctionInformation: function(auction){
-
-			this.images = [];
-			ClearifyNames(auction.item.images).forEach(image => {
-				this.images.push(images_path + image.trim());
-			});
-
-			this.auction = auction;
-			this.activeImage = this.images[0];
-			this.auctionBasePrice = auction.base_price;
-			this.auctionItemPrice = auction.item.price;
-			this.auctionItemId = auction.item.id;
-			this.itemProductdescription = auction.item.product.description;
-			this.auctionDescription = auction.description;
-			this.auctionMaxPrice = auction.max_price
-			this.auctionRatio = auction.ratio;
-      this.auctionId = auction.id;
-      this.auctionItemId = auction.item.id;
-			this.auctionTitle = auction.title;
-			this.auctionMaxMembers = auction.max_members;
-			this.auctionParticipants = auction.participants;
-			this.deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
-
+		addToCart:function(item_id,event){
+			event.preventDefault();
+			axios.post("{{url_for('usercartorder')}}",
+				{
+					"item_id": item_id,
+					"total":1
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+					if(response.data.length > 0){
+						myapp.mycarts = []
+						console.log(data);
+						response.data.forEach(cart => {
+							myapp.mycarts.push({
+								id : cart[0].id,
+								item_title : cart[0].item.title,
+								product_title : cart[0].item.product.title,
+								item_id : cart[0].item.id ,
+								image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+								discounted_price : cart[0].item.price - cart[0].item.discount,
+								main_price : cart[0].item.price ,
+								min_quantity : 1,
+								max_quantity : cart[0].item.quantity,
+								current_quantity : cart[0].total,
+							});
+						});
+						myapp.total_carts = ToPersian(myapp.mycarts.length);
+						myapp.total_changed = true;
+						swal(
+							'سبد خرید',
+							'محصول موردنظر به سبد خرید شما اضافه شد',
+							'success'
+						)
+					}
+				})
+				.catch((error)=>{
+					swal(
+						'مشکلی پیش اومد',
+						error.response.data.reason,
+						'error'
+					)
+				});
 		},
 
-		setPlanInformation: function(plan){
-			if (plan){
-				this.offerBidCount = plan.max_offers;
-			}
-		},
-
-		setProductInformation: function(product){
-
-		},
-    addToCart:function(item_id,event){
-      event.preventDefault();
-      axios.post("{{url_for('usercartorder')}}",
-        {
-          "item_id": item_id,
-          "total":1
-        },
-        {
-          headers:
-          {
-            'Content-Type': 'application/json'
-          }
-        }).then((response) => {
-          if(response.data.length > 0){
-            swal(
-              'سبد خرید',
-              'محصول موردنظر به سبد خرید شما اضافه شد',
-              'success'
-            )
-          }
-        })
-        .catch((error)=>{
-          swal(
-            'مشکلی پیش اومد',
-            error.response.data.reason,
-            'error'
-          )
-        });
-    },
-
-    addToWish:function(auction_id,event){
-      event.preventDefault();
-      axios.post("{{url_for('userauctionlikes')}}",
-        {
-          "auction_id": auction_id
-        },
-        {
-          headers:
-          {
-            'Content-Type': 'application/json'
-          }
-        }).then((response) => {
-          swal(
-            'علاقمندی محصول',
-            response.data.message,
-            'success'
-          )
-        })
-        .catch((error)=>{
-          swal(
-            'مشکلی پیش اومد',
-            error.response.data.message,
-            'error'
-          )
-        });
-    }
-	},
-
-	beforeCreate: function(){
-		var self = this;
-		socket.emit("join", {auction_id: '{{auction_id}}'});
-		socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
-
-		axios.get("{{url_for('auctioninstanceview', aid=auction_id)}}")
-			.then((response) => {
-				this.setProductInformation(response.data.product[0]);
-				this.setPlanInformation(response.data.plan[0]);
-				this.setAuctionInformation(response.data.auction[0]);
-        setTimeout(function() {
-          if($('.detail-gallery').length>0){
-            console.log('here');
-                $('.detail-gallery').each(function(){
-                $(this).find(".carousel").jCarouselLite({
-                  btnNext: $(this).find(".gallery-control .next"),
-                  btnPrev: $(this).find(".gallery-control .prev"),
-                  speed: 800,
-                  visible:3,
-                });
-                //Elevate Zoom
-                $(this).find('.mid img').elevateZoom({
-                  zoomType: "inner",
-                  cursor: "crosshair",
-                  zoomWindowFadeIn: 500,
-                  zoomWindowFadeOut: 750
-                });
-                $(this).find(".carousel a").on('click',function(event) {
-                  event.preventDefault();
-                  $(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
-                  $(this).addClass('active');
-                  $(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
-                  var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
-                  $('.zoomWindow').css('background-image','url("'+z_url+'")');
-                });
-              });
-            }
-        },500);
-			})
-			.catch((response)=>{
-				console.error(response.data);
-			});
+		addToWish:function(auction_id,event){
+			event.preventDefault();
+			axios.post("{{url_for('userauctionlikes')}}",
+				{
+					"auction_id": auction_id
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+					swal(
+						'علاقمندی محصول',
+						response.data.message,
+						'success'
+					)
+				})
+				.catch((error)=>{
+					swal(
+						'مشکلی پیش اومد',
+						error.response.data.message,
+						'error'
+					)
+				});
+		}
 	},
 
 	created: function(){
+		var self = this;
+		this.socket.emit("join", {auction_id: '{{auction_id}}'});
+		this.socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 
+		axios.get("{{url_for('auctioninstanceview', aid=auction_id)}}")
+      .then((response) => {
+        var auction = response.data.auction;
+        this.offerBidCount = auction.max_offers ;
+        this.images = [];
+        ClearifyNames(auction.images).forEach(image => {
+          this.images.push(images_path + image.trim());
+        });
+        this.activeImage = this.images[0];
+        this.auctionBasePrice = auction.base_price;
+        this.auctionItemPrice = auction.main_price;
+        this.auctionId = auction.id;
+        this.auctionItemId = auction.item_id;
+        this.itemProductdescription = auction.product_description;
+        this.auctionDescription = auction.description;
+        this.auctionMaxPrice = auction.max_price
+        this.auctionRatio = auction.ratio;
+        this.auctionTitle = auction.title;
+        this.auctionMaxMembers = auction.max_members;
+        this.auctionParticipants = auction.participants;
+        this.deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+      })
+      .catch((error)=>{
+        console.error(error.response.data);
+      });
+
+      axios.post("{{url_for('userauctionview')}}",
+				{
+					"aid" : {{auction_id}}
+				},
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+						console.log("view confirmed");
+					})
+					.catch((error)=>{
+						console.error(error.response.data);
+					});
 	},
 
 	computed: {
-		auction_end_date: function(){
-			return full_date = new persianDate(new Date(this.deadline)).format("dddd DD MMMM YYYY");
+    auction_end_date: function(){
+			return  new persianDate(new Date(this.deadline)).format("dddd DD MMMM YYYY");
 		},
 
 		auction_end_time: function(){
-			return full_hour = new persianDate(new Date(this.deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
+			return  new persianDate(new Date(this.deadline)).format("HH:mm:ss a"); // "شنبه, فروردین ۱۲ ۱۳۹۶, ۵:۵۴:۱۱ ب ظ"
 
 		},
 
 		now_date: function(){
 			return  new persianDate(new Date(this.deadline)).format("dddd DD MMMM YYYY");
-		}
-
+		},
 	},
 
-	// countdown
 	mounted: function(){
-    if($('.flash-countdown').length>0){
-  		$(".flash-countdown").TimeCircles({
-  			fg_width: 0.01,
-  			bg_width: 1.2,
-  			text_size: 0.07,
-  			circle_bg_color: "#ffffff",
-  			time: {
-  				Days: {
-  					show: false,
-  					text: "",
-  					color: "#f9bc02"
-  				},
-  				Hours: {
-  					show: true,
-  					text: "",
-  					color: "#f9bc02"
-  				},
-  				Minutes: {
-  					show: true,
-  					text: "",
-  					color: "#f9bc02"
-  				},
-  				Seconds: {
-  					show: true,
-  					text: "",
-  					color: "#f9bc02"
-  				}
-  			}
-  		});
-  	}
 			// this.interval = setInterval(()=>{
 			// 	var seconds = moment.duration(this.remainingTime).asSeconds() - 1;
 			// 	this.remainingTime = moment.utc(seconds*1000).format('HH:mm:ss');
@@ -433,20 +375,88 @@ var app = new Vue({
 			// 	socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 			// }, 10000);
 	},
+
+  directives: {
+    detail:{
+      inserted:function(el) {
+        if($('.detail-gallery').length>0){
+    				$('.detail-gallery').each(function(){
+    				$(this).find(".carousel").jCarouselLite({
+    					btnNext: $(this).find(".gallery-control .next"),
+    					btnPrev: $(this).find(".gallery-control .prev"),
+    					speed: 800,
+    					visible:3,
+    				});
+    				//Elevate Zoom
+    				$(this).find('.mid img').elevateZoom({
+    					zoomType: "inner",
+    					cursor: "crosshair",
+    					zoomWindowFadeIn: 500,
+    					zoomWindowFadeOut: 750
+    				});
+    				$(this).find(".carousel a").on('click',function(event) {
+    					event.preventDefault();
+    					$(this).parents('.detail-gallery').find(".carousel a").removeClass('active');
+    					$(this).addClass('active');
+    					$(this).parents('.detail-gallery').find(".mid img").attr("src", $(this).find('img').attr("src"));
+    					var z_url = $(this).parents('.detail-gallery').find('.mid img').attr('src');
+    					$('.zoomWindow').css('background-image','url("'+z_url+'")');
+    				});
+    			});
+    		}
+      },
+    },
+    remainedtime:{
+      inserted:function(el) {
+        if($('.flash-countdown').length>0){
+      		$(".flash-countdown").TimeCircles({
+      			fg_width: 0.01,
+      			bg_width: 1.2,
+      			text_size: 0.07,
+      			circle_bg_color: "#ffffff",
+      			time: {
+      				Days: {
+      					show: false,
+      					text: "",
+      					color: "#f9bc02"
+      				},
+      				Hours: {
+      					show: true,
+      					text: "",
+      					color: "#f9bc02"
+      				},
+      				Minutes: {
+      					show: true,
+      					text: "",
+      					color: "#f9bc02"
+      				},
+      				Seconds: {
+      					show: true,
+      					text: "",
+      					color: "#f9bc02"
+      				}
+      			}
+      		});
+      	}
+      }
+    }
+  },
 });
 
-
-
- socket.on('connect', function() {
-		 console.log('connected');
+app.socket.on('connect', function() {
+		 console.log('connected..');
  });
 
- var timer = setInterval(check_seconds,1000);
+app.socket.on('disconnect', function() {
+		 console.log('disconnected..');
+ });
 
- var timer_sentinal = 10000;
- var running_timer = true;
+var timer = setInterval(check_seconds,1000);
 
- function check_seconds() {
+var timer_sentinal = 10000;
+var running_timer = true;
+
+function check_seconds() {
 	running_timer = true;
 	timer_sentinal -= 1000;
 	// console.log('timer_sentinal');
@@ -472,17 +482,14 @@ var app = new Vue({
  	if(timer_sentinal == 0){
 		console.log('sentinal');
 		start_loading(loading_element);
-		socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
+		app.socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 		clearInterval(timer);
 		running_timer = false;
 	}
  }
 
-
-
-socket.on("remaining_time", function(seconds){
-
-
+app.socket.on("remaining_time", function(seconds){
+  console.log(seconds);
 	stop_loading(loading_element);
 
 	timer_sentinal = seconds * 1000;
@@ -490,101 +497,77 @@ socket.on("remaining_time", function(seconds){
 		running_timer = true;
 		timer = setInterval(check_seconds,1000);
 	}
-	// if (( seconds  < 60 ) && (seconds  > 9) ) {
-	// 	$('#tiles').removeClass('color-full');
-	// 	$('#tiles').addClass('color-half');
-	// } else{
-	// 	$('#tiles').addClass('color-full');
-	// 	$('#tiles').removeClass('color-half');
-	// }
-	// if ( seconds < 10 ) {
-	// 	$('#tiles').removeClass('color-half');
-	// 	$('#tiles').addClass('color-empty');
-	// }
-	// else{
-	// 	$('#tiles').addClass('color-full');
-	// 	$('#tiles').removeClass('color-empty');
-	// }
-
-	//
-	// const formatted = moment.utc(seconds*1000).format('HH:mm:ss');
-	// app.remainingTime = formatted;
-
 	$(".flash-countdown").data('timer', seconds).TimeCircles({
 			"total_duration": seconds
 	}).restart();
 
 });
 
-socket.on("update_view", function(data){
-
-	if(data.users[0].length==0)
+app.socket.on("update_view", function(data){
+	console.log(data);
+	if(data.users.length==0)
 		return ;
 
 	app.auctionCurrentOffer = ToPersian(formatCurrency(parseInt(data['current_offer_price']))) + " تومان ";
-	app.auctionCurrentWinnerImage = data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#";
-	app.auctionCurrentWinner = data.users[0][0].username;
-	app.users = data.users[0];
-	app.active_user = app.users[0];
+	app.auctionCurrentWinnerImage = data.users[0].avatar ? avatar_path+ClearifyNames(data.users[0].avatar)[0] : "#";
+	app.auctionCurrentWinner = data.users[0].pretty_name;
+	app.users = data.users;
 
 	app.users.forEach(user => {
+
+		if(user.id =='{{current_user.id}}'){
+			if(user.current_bids)
+				app.offerBidCount = user.current_bids;
+		}
+
 		app.people.push({
-			name: user.username,
+			name: user.pretty_name,
 			its_you: user.id == "{{current_user.id}}" ? true : false,
 			avatar: user.avatar ? avatar_path + ClearifyNames(user.avatar)[0] : "#",
 			price: ToPersian(formatCurrency(user.current_offer_price))
 		});
+
 	});
-
-	// TODO: update the dom
-
 });
 
-socket.on("unauthorized", function(data){
+app.socket.on("unauthorized", function(data){
 	console.log("unauthorized");
 });
 
-socket.on("failed", function(data){
+app.socket.on("failed", function(data){
 
 	$(".error_alert").removeClass('hide');
 	$(".error_container").html(data.reason);
 });
 
-socket.on('accepted', function(data){
-	app.users = data.users[0];
-	app.winnerUser = app.users[0];
+app.socket.on('accepted', function(data){
 
-		app.users.forEach(user => {
-			if(user.id =='{{current_user.id}}'){
-				if(user.current_bids)
-					app.offerBidCount = user.current_bids;
-				}
-		});
-
-	// app.offerBidCount = ToPersian(data.users[0].filter((user)=>{return user.id == "{{current_user.id}}"})[0].current_bids);
-
-
+	app.users = data.users;
 	app.auctionCurrentOffer = ToPersian(formatCurrency(parseInt(data['total_price'])));
+	app.auctionCurrentWinner = data.users[0].pretty_name;
+	app.auctionCurrentWinnerImage = data.users[0].avatar ? avatar_path+ClearifyNames(data.users[0].avatar)[0] : "#";
 
-	if (app.winnerUser){
-		app.auctionCurrentWinner = data.users[0][0].username;
-     	app.auctionCurrentWinnerImage = data.users[0][0].avatar ? avatar_path+ClearifyNames(data.users[0][0].avatar)[0] : "#";
-	}
 	app.people = [];
+
 	app.users.forEach(user => {
+		if(user.id =='{{current_user.id}}'){
+			if(user.current_bids)
+				app.offerBidCount = user.current_bids;
+			}
 		app.people.push({
-			name: user.username,
+			name: user.pretty_name,
 			its_you: user.id == "{{current_user.id}}" ? true : false,
 			avatar: user.avatar ? avatar_path + ClearifyNames(user.avatar)[0] : "#",
 			price: ToPersian(formatCurrency(user.current_offer_price))
 		});
 	});
+
 	app.$forceUpdate();
-	socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
+	app.socket.emit('get_remain_time', {auction_id: "{{auction_id}}"});
 	console.log("accepted");
 });
 
-socket.on("auction_done", function(data){
+app.socket.on("auction_done", function(data){
 
  	 clearInterval(timer);
 
@@ -602,7 +585,13 @@ socket.on("auction_done", function(data){
 		 $(".error_container").html(data.reason);
 	 }
 	  stop_loading(loading_element);
-		socket.disconnect();
+		console.log('here i am done ...');
+		app.socket.emit('leave_auction', {auction_id: "{{auction_id}}"});
+});
+
+app.socket.on("leave_auction", function(data){
+	console.log("leave_auction...");
+	app.socket.disconnect();
 });
 
 $('.close').on('click',function(event){

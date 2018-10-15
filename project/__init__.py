@@ -138,7 +138,6 @@ api.add_resource(Auction_API.AuctionUserParticipation, '/auction/user/participat
 api.add_resource(Auction_API.AuctionUserViewed, '/auction/user/viewed')
 api.add_resource(Auction_API.AuctionViewFinished, '/auction/view/finished')
 
-
 api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:pagesize>')
 api.add_resource(User_API.UserInformation, '/user/information')
 api.add_resource(User_API.UserBasicInfo, '/user/basic/information')
@@ -163,3 +162,6 @@ api.add_resource(User_API.UserUnpaidPayments, '/user/payments/unpaids')
 api.add_resource(User_API.UserAuctionView, '/user/auction/view')
 api.add_resource(User_API.UserCoupons, '/user/coupons')
 api.add_resource(User_API.UserCheckOutInit, '/user/checkout/payment/init')
+
+api.add_resource(Auction_API.AuctionTestJson, '/auction/test/json')
+api.add_resource(Auction_API.AuctionTest, '/auction/test')
