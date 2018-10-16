@@ -7,7 +7,7 @@
 			<div class="col-md-12">
 				<!-- <h2 class="title-shop-page">پنل کاربری</h2> -->
 				<div id="tabMenu" class="tab_container">
-						<input class="tabinput" id="tab1" type="radio" name="tabs" :checked="tab_selector==''">
+						<input class="tabinput" id="tab1" type="radio" name="tabs" :checked="tab_selector=='default'">
 						<label class="tablabel" for="tab1"><i class="fa fa-dashboard"></i><span>داشبورد</span></label>
 
 						<input class="tabinput" id="tab2" type="radio" name="tabs" :checked="tab_selector=='modify'">
@@ -435,7 +435,7 @@ var app = new Vue({
 		won_auctions: 0 ,
 		invitation_code : "",
 		charge_amount : 0,
-		tab_selector : "{{tab}}",
+		tab_selector : "{{tab}}" ? "{{tab}}" : "default",
 	},
 
 	mounted: function(){
@@ -473,6 +473,7 @@ var app = new Vue({
       if ((charCode > 31 && (charCode < 48 || charCode > 57)) && (charCode < 1776 || charCode > 1785) && charCode !== 46) {
         evt.preventDefault();;
       } else {
+				this.tab_selector = "walet";
         return true;
       }
     },

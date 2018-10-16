@@ -15641,7 +15641,7 @@ a.protect-icon:hover {
   color: #999;
   height: 40px;
   padding: 0 15px;
-  text-transform: uppercase;
+  /*text-transform: uppercase;*/
   width: 100%;
 }
 .check-address {
