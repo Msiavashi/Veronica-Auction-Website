@@ -205,7 +205,6 @@ class UserInformation(Resource):
             "avatars":avatars,
             "subjects":MESSAGE_SUBJECTS
         }
-        print info
         return make_response(jsonify(info),200)
 
     @jwt_required
@@ -321,12 +320,10 @@ class UserContactUs(Resource):
         new_message.subject = user_message['subject']
         new_message.message = user_message['message']
         new_message.user = current_user
-        print request
         if 'file' in request.files:
             file = request.files['file']
             if file and self._allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                print filename
                 path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(path)
                 new_message.file = path
@@ -484,8 +481,6 @@ class UserCartOrder(Resource):
             return make_response(jsonify(result), 200)
         else:
             order = next((x for x in session['orders'] if x[0]['id'] == order_id),None)
-            print order[0]
-            # print session['orders']
 
             if ((order[0]['status'] == str(OrderStatus.UNPAID) or order[0]['status'] == str(OrderStatus.PAYING))):
                 order[0]['total_cost'] = (order[0]['item']['price'] - order[0]['item']['discount']) * total
@@ -691,7 +686,6 @@ class UserCheckoutConfirm(Resource):
         payment_method = PaymentMethod.query.get(payment_method)
 
         if current_user.is_authenticated:
-            print data,data['accept_tick'] == "True"
 
             if ('accept_tick' in data and data['accept_tick'] == "True"):
                 current_user.first_name = data['first_name']
@@ -971,7 +965,6 @@ class UserAuctionView(Resource):
             auction_views = db.session.query(user_auction_views).filter_by(user_id = current_user.id).all()
             auctions = [Auction.query.get(auction_view.id) for auction_view in auction_views]
             auction_schema = AuctionSchema(many=True)
-            print auctions
             return make_response(jsonify({"seen_auctions": auction_schema.dump(auctions)}), 200)
         else:
             return make_response(jsonify([]), 200)
