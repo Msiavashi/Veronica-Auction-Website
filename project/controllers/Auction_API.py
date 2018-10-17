@@ -106,7 +106,6 @@ class AuctionViewFinished(Resource):
         return make_response(jsonify(offers),200)
 
 class AuctionUserParticipation(Resource):
-    @jwt_required
     def post(self):
         data = request.get_json(force=True)
         plan_id = int(data.get("plan_id", None))

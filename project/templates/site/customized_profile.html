@@ -7,21 +7,21 @@
 			<div class="col-md-12">
 				<!-- <h2 class="title-shop-page">پنل کاربری</h2> -->
 				<div id="tabMenu" class="tab_container">
-						<input class="tabinput" id="tab1" type="radio" name="tabs" :checked="is_active_tab('default')">
+						<input class="tabinput" id="tab1" type="radio" name="tabs" :checked="tab_selector==='default'">
 						<label class="tablabel" for="tab1"><i class="fa fa-dashboard"></i><span>داشبورد</span></label>
 
-						<input class="tabinput" id="tab2" type="radio" name="tabs" :checked="is_active_tab('modify')">
+						<input class="tabinput" id="tab2" type="radio" name="tabs" :checked="tab_selector==='modify'">
 						<label class="tablabel" for="tab2"><i class="fa fa-pencil-square-o"></i><span>ویرایش اطلاعات</span></label>
 
-						<input class="tabinput" id="tab3" type="radio" name="tabs" :checked="is_active_tab('sendmessage')">
+						<input class="tabinput" id="tab3" type="radio" name="tabs" :checked="tab_selector==='sendmessage'">
 						<label class="tablabel" for="tab3"><i class="fa fa-comments"></i><span>ارسال پیام</span></label>
 
-						<input class="tabinput" id="tab4" type="radio" name="tabs" :checked="is_active_tab('payments')">
+						<input class="tabinput" id="tab4" type="radio" name="tabs" :checked="tab_selector==='payments'">
 						<label class="tablabel" for="tab4"><i class="fa fa-legal"></i><span>پرداختی ها</span></label>
 
-						<input class="tabinput" id="tab5" type="radio" name="tabs" :checked="is_active_tab('invitor')">
+						<input class="tabinput" id="tab5" type="radio" name="tabs" :checked="tab_selector==='invitor'">
 						<label class="tablabel" for="tab5"><i class="fa fa-code"></i><span>کد معرف</span></label>
-						<input class="tabinput" id="tab6" type="radio" name="tabs" @click="tab_selector='walet'" :checked="is_active_tab('walet')">
+						<input class="tabinput" id="tab6" type="radio" name="tabs" :checked="tab_selector==='walet'">
 						<label class="tab6 tablabel" for="tab6"><span>شارژ موجودی</span></label>
 
 					<section id="content1" class="tab-content">
@@ -436,12 +436,11 @@ var app = new Vue({
 		invitation_code : "",
 		charge_amount : 0,
 		payment_id:0,
-		tab_selector : "{{tab}}",
+		tab_selector : "{{tab}}" ? "{{tab}}" : "default",
 		is_number : false,
 	},
 
 	mounted: function(){
-		console.log(this.tab_selector);
 		axios.get("{{url_for('userinformation')}}")
 			.then((response) => {
 				console.log(response.data);
@@ -470,15 +469,8 @@ var app = new Vue({
 	},
 
 	methods:{
-		is_active_tab:function(tab) {
-
-			if (tab == this.tab_selector){
-				return true;
-			}else {
-				return false;
-			}
-		},
 		isNumber: function(evt) {
+			this.tab_selector = "walet";
 
       evt = (evt) ? evt : window.event;
       var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -486,7 +478,7 @@ var app = new Vue({
       if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
         evt.preventDefault();
       } else {
-				this.tab_selector = "walet";
+				this.is_number = true;
         return true;
       }
     },
@@ -518,10 +510,10 @@ var app = new Vue({
 		},
 		_ChargeWalet:function() {
 
-			if (this.charge_amount == 0 || !parseInt(this.charge_amount)) {
+			if (this.charge_amount == 0) {
 				swal(
 					'دقت در ورود اطلاعات',
-					'لطفا در ورود مبلغ شارژ دقت کنید. توجه کنید که صفحه کلید شما باید در حالت انگلیسی قرار گرفته باشد',
+					'لطفا مقداری برای افزایش موجودی وارد کنید',
 					'error'
 				);
 				return ;

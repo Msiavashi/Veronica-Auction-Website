@@ -77,11 +77,15 @@ class Route():
     @app.route("/profile")
     @login_required
     def profile():
-        return render_template('site/profile.html')
+        return render_template('site/profile.html',tab='default')
 
     @app.route("/profile/<tab>")
     @login_required
     def profile_tab(tab):
+        print "tab",tab
+        if tab == "":
+            return render_template('site/profile.html',tab='default')
+
         tabs = {'modify','sendmessage','payments','invitor','walet'}
         if tab in tabs:
             return render_template('site/profile.html',tab=tab)

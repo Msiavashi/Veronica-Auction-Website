@@ -14718,7 +14718,7 @@ a.protect-icon:hover {
 }
 
 .poly-logo {
-  background: #000 url("../images/theme/sand-clock.png") no-repeat scroll center center;
+  background: #993877 url("../images/theme/sand-clock.png") no-repeat scroll center center;
   color:#fff;
   height: 58px;
   left: -1px;
@@ -14732,7 +14732,7 @@ a.protect-icon:hover {
 
 .deal-pro18:hover .poly-logo {
   color:#fff;
-  background: #2060a2 url("../images/theme/sand-clock.png") no-repeat scroll center center;
+  background: #993877 url("../images/theme/sand-clock.png") no-repeat scroll center center;
 }
 
 .deal-timer18 .poly-timer{
