@@ -343,9 +343,14 @@
 										{%raw%}
 									</div>
 								</div>
-								<div class="deal-timer18 poly-box">
+								<!-- <div class="deal-timer18 poly-box">
 									<div v-flashtimer class="flash-countdown timer auction" v-bind:data-timer ="auction.deadline" v-bind:data-auctionid="auction.id"></div>
+								</div> -->
+								<div class="poly-timer">
+									<div class="poly-text">{{auction.start_date}}</div>
+									<span class="poly-logo"></span>
 								</div>
+
 							</div>
 						</template>
 
@@ -592,7 +597,9 @@
 										view_link : "/view/auction/"+ auction.id,
 										link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
 										is_participant : participated,
+										start_date:new persianDate(new Date(new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC"))).format("dddd D MMMM ماه YY ساعت HH:mm:ss"),
 										base_price : ToPersian(formatCurrency(auction.base_price))});
+
 							});
 							this.categories.push({
 								title : item.title,

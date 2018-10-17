@@ -106,29 +106,60 @@ class AuctionViewFinished(Resource):
         return make_response(jsonify(offers),200)
 
 class AuctionUserParticipation(Resource):
+    @jwt_required
     def post(self):
         data = request.get_json(force=True)
-
         plan_id = int(data.get("plan_id", None))
         auction_id = int(data.get("auction_id", None))
         method_id = int(data.get("method_id", None))
-        amount = int(data.get("amount", None))
 
+        plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
+        auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction_id).first()
         payment_method = PaymentMethod.query.get(method_id)
-        if not amount:
+
+        if not payment_method or not plan or not auction_plan:
             return make_response(jsonify({'success':False,"reason":"پلنی برای این حراجی تعریف نشده است"}),400)
 
-
-        auction = Auction.query.get(auction_id)
-
+        auction = auction_plan.auction
         now = datetime.now()
         remained = (auction.start_date - now).seconds
+
+        if(auction.start_date < now):
+            return make_response(jsonify({'success':False,"reason":"زمان شرکت در حراجی منقضی شده است"}),400)
 
         if(remained < 60):
             return make_response(jsonify({'success':False,"reason":"حداکثر تا یک دقیقه قبل از حراجی برای ثبت نام فرصت دارید"}),400)
 
+        UserPlan.query.filter_by(auction_plan_id = auction_plan.id,user_id=current_user.id,auction_id=auction.id).delete()
+        amount = auction_plan.price
+
         if(payment_method.type == Payment_Types.Credit):
-            if(current_user.credit < int(amount)):
+            if amount == 0 :
+                payment = Payment()
+                payment.type = PaymentType.FREE
+                payment.ref_id = random.randint(10000,100000)
+                payment.sale_order_id = random.randint(10000,100000)
+                payment.sale_refrence_id = random.randint(10000,100000)
+                payment.amount = amount
+                payment.discount = 0
+                payment.payment_method = payment_method
+                payment.status = PaymentStatus.PAID
+
+                user_plan = UserPlan()
+                user_plan.auction = auction
+                user_plan.auction_plan = auction_plan
+                user_plan.payment = payment
+
+                current_user.payments.append(payment)
+                current_user.auctions.append(auction)
+                current_user.user_plans.append(user_plan)
+
+                db.session.add(current_user)
+                db.session.commit()
+                msg = "شما بصورت رایگان در این حراجی شرکت داده شدید"
+                return make_response(jsonify({"success":True,"type":"registered","message":msg}),200)
+
+            if(current_user.credit < amount):
                 msg = "موجودی حساب شما برای پرداخت این پلن کافی نمی باشد"
                 return make_response(jsonify({'success':False,"reason":msg}),400)
 
@@ -141,10 +172,6 @@ class AuctionUserParticipation(Resource):
             payment.discount = 0
             payment.payment_method = payment_method
             payment.status = PaymentStatus.PAID
-
-            plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
-            auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
-            unpain_user_plan = UserPlan.query.filter_by(auction_plan_id = auction_plan.id,user_id=current_user.id,auction_id=auction.id).delete()
 
             user_plan = UserPlan()
             user_plan.auction = auction
@@ -170,13 +197,6 @@ class AuctionUserParticipation(Resource):
             payment.status = PaymentStatus.UNPAID
             payment.discount = 0
 
-            plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
-            auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction.id).first()
-            unpain_user_plan = UserPlan.query.filter_by(auction_plan_id = auction_plan.id,user_id=current_user.id,auction_id=auction.id).delete()
-
-            db.session.commit()
-
-
             user_plan = UserPlan()
             user_plan.auction = auction
             user_plan.auction_plan = auction_plan
@@ -186,7 +206,6 @@ class AuctionUserParticipation(Resource):
             db.session.commit()
 
             current_user.payments.append(payment)
-            # current_user.auctions.append(auction)
             current_user.user_plans.append(user_plan)
 
             db.session.add(current_user)
@@ -194,21 +213,6 @@ class AuctionUserParticipation(Resource):
 
             msg = " برای پرداخت به صفحه تایید هدایت می شوید"
             return make_response(jsonify({'success':True,"type":"redirect_to_bank","pid":payment.id,"message":msg}),200)
-
-# class AuctionInstanceView(Resource):
-#     def get(self,aid):
-#         auction = Auction.query.get(aid)
-#         auction.participants.order_by('created_at')
-#         auction_schema = AuctionSchema()
-#         product = Product.query.join(Item).join(Auction).filter_by(item_id=auction.item_id,id=auction.id).first()
-#         product_schema = ProductSchema()
-#         auction.remained_time = (auction.start_date - datetime.now()).seconds
-#
-#         if(current_user.is_authenticated):
-#             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()
-#             auction_plan_schema = AuctionPlanSchema()
-#             return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan": auction_plan_schema.dump(plan)}),200)
-#         return make_response(jsonify({"auction" : auction_schema.dump(auction) , "product" : product_schema.dump(product),"plan":[]}),200)
 
 class AuctionInstanceView(Resource):
     def get(self,aid):

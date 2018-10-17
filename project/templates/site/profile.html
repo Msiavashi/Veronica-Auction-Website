@@ -397,8 +397,8 @@
 									<tr>
 										<td class="actions" colspan="12">
 											<label for="charge_amount">افزایش اعتبار : </label>
-											<input v-model="charge_amount" v-on:keypress="isNumber(event)" type="text" placeholder="مبلغ ... " class="input-text">
-											<input type="submit" value="پرداخت" class="button" v-on:click="_ChargeWalet">
+											<input type="text" v-model="charge_amount" v-on:keypress="isNumber(event)" placeholder="مبلغ ... " class="input-text">
+											<input type="submit" value="پرداخت" class="button" @click="_ChargeWalet">
 										</td>
 									</tr>
 								</tbody>
@@ -435,6 +435,7 @@ var app = new Vue({
 		won_auctions: 0 ,
 		invitation_code : "",
 		charge_amount : 0,
+		payment_id:0,
 		tab_selector : "{{tab}}" ? "{{tab}}" : "default",
 	},
 
@@ -470,14 +471,40 @@ var app = new Vue({
 		isNumber: function(evt) {
       evt = (evt) ? evt : window.event;
       var charCode = (evt.which) ? evt.which : evt.keyCode;
-      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && (charCode < 1776 || charCode > 1785) && charCode !== 46) {
+			// if ((charCode > 31 && (charCode < 48 || charCode > 57)) && (charCode < 1776 || charCode > 1785) && charCode !== 46) {
+      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
         evt.preventDefault();;
       } else {
 				this.tab_selector = "walet";
         return true;
       }
     },
+		_delete_last_payment:function(){
+			axios.delete("{{url_for('userchargewalet')}}",
+					{
+						data:{"pid": this.payment_id},
+						headers:
+						{
+							'Content-Type': 'application/json'
+						}
 
+					}).then((response) => {
+						swal({
+							title: 'افزایش موجودی',
+							text: response.data.message,
+							type: 'success',
+							confirmButtonColor: '#3085d6',
+							confirmButtonText: 'باشه...',
+						});
+					})
+					.catch((error)=>{
+						swal(
+							'مشکلی پیش اومد',
+							error.response.data.reason,
+							'error'
+						);
+					});
+		},
 		_ChargeWalet:function() {
 
 			if (this.charge_amount == 0) {
@@ -485,7 +512,16 @@ var app = new Vue({
 					'دقت در ورود اطلاعات',
 					'لطفا مقداری برای افزایش موجودی وارد کنید',
 					'error'
-				)
+				);
+				return ;
+			}
+
+			if (this.charge_amount %500 != 0) {
+				swal(
+					'دقت در ورود اطلاعات',
+					'حداقل مبلغ شارژ کیف پول ۵۰۰تومان است و مبلغ شارژ مورد نظر باید ضریبی از ۵۰۰ تومان باشد',
+					'error'
+				);
 				return ;
 			}
 
@@ -499,23 +535,40 @@ var app = new Vue({
 						'Content-Type': 'application/json'
 					}
 				}).then((response) => {
-						swal(
-							'افزایش موجودی',
-							response.data.message,
-							'success'
-						)
-						if(response.data.type=="redirect_to_bank"){
-							window.parent.location = "/confirm/payment/"+response.data.pid;
+					this.payment_id = response.data.pid;
+					alert(this.payment_id);
+
+					swal({
+						title: 'تایید شارژ کیف پول',
+						text: response.data.message,
+						type: 'success',
+						confirmButtonColor: '#3085d6',
+						confirmButtonText: 'بله پرداخت می کنم',
+						showCancelButton: true,
+						cancelButtonText: 'خیر منصرف شدم!',
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						reverseButtons: true,
+
+					}).then((result) => {
+						if (result.value){
+							if(response.data.operation=="redirect_to_bank"){
+								window.parent.location = "/confirm/payment/"+this.payment_id;
+							}
 						}
+						else {
+							this._delete_last_payment();
+						}
+					});
+
 				})
 				.catch((error)=>{
 					swal(
 						'مشکلی پیش اومد',
 						error.response.data.reason,
 						'error'
-					)
+					);
 				});
-
 		},
 
 		_ToPersian(number){
@@ -575,6 +628,8 @@ var app = new Vue({
 						break;
 					case "3000":
 						return "خرید محصول";
+					case "4000":
+						return "خرید رایگان";
 						break;
 					default:
 						return "بدون عنوان";

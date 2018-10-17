@@ -6153,11 +6153,24 @@ a.protect-icon:hover {
   width: 100%;
   text-align: center;
   padding: 7px 5px;
+  color:#000
 }
+
+.info-pro-hotdeal .deal-percent::after{
+  background: #993877 url("../images/theme/sand-clock.png") no-repeat scroll center center;
+  color: #993877;
+  content: "";
+  height: 58px;
+  left: -1px;
+  top: -1px;
+  width: 54px;
+}
+
 .item-pro-hotdeal:hover .info-pro-hotdeal .deal-percent {
   background: #14d492;
-  color:#fff
+  color:#000
 }
+
 .item-pro-hotdeal .info-pro-hotdeal .product-price {
   width:100%
 }
@@ -7062,8 +7075,8 @@ a.protect-icon:hover {
 }
 .banner-flash {
   margin-bottom: 30px;
-  width: 400px!important;
-  height: 300px!important;
+  /*width: 400px!important;
+  height: 300px!important;*/
 }
 .flash-info {
   background: #fff none repeat scroll 0 0;
@@ -14699,6 +14712,51 @@ a.protect-icon:hover {
   border-right: 1px solid #e5e5e5;
   padding: 0 20px;
 }
+.deal-pro18:hover .poly-timer {
+  color:#fff;
+  background: #2060a2
+}
+
+.poly-logo {
+  background: #000 url("../images/theme/sand-clock.png") no-repeat scroll center center;
+  color:#fff;
+  height: 58px;
+  left: -1px;
+  top: -1px;
+  width: 54px;
+  display: inline-block;
+  width: 20%;
+  padding: 10px;
+  float: right;
+}
+
+.deal-pro18:hover .poly-logo {
+  color:#fff;
+  background: #2060a2 url("../images/theme/sand-clock.png") no-repeat scroll center center;
+}
+
+.deal-timer18 .poly-timer{
+  padding: 10px;
+  color:#2060a2;
+  background: #fff;
+  border : 1px solid #2060a2;
+}
+.poly-text{
+  display: inline-block;
+  height: 58px;
+  width: 80%;
+  padding: 10px;
+}
+
+.deal-timer18 .poly-timer span.text::after {
+  background: #993877 url("../images/theme/sand-clock.png");
+  content: "";
+  height: 58px;
+  left: -1px;
+  top: -1px;
+  width: 54px;
+}
+
 .deal-pro18 .title14 {
   padding: 17px 15px;
   text-align: center;
@@ -14777,6 +14835,7 @@ a.protect-icon:hover {
   height: 56px;
   line-height: 56px;
 }
+
 .deal-timer18 .flash-countdown::before {
   background: #993877 url("../images/theme/sand-clock.png") no-repeat scroll center center;
   content: "";
@@ -14785,6 +14844,7 @@ a.protect-icon:hover {
   top: -1px;
   width: 54px;
 }
+
 .deal-slider18.poly-slider .owl-theme .owl-controls .owl-buttons div {
   margin-top: -110px;
 }

@@ -5,7 +5,8 @@ import random
 sys.setdefaultencoding("utf-8")
 from project.database import db, Base
 from marshmallow import Schema, fields
-import datetime
+from datetime import datetime
+import time
 
 class PaymentStatus:
     PAID = 100
@@ -20,8 +21,10 @@ class PaymentType:
     PLAN = 1000
     WALET = 2000
     PRODUCT = 3000
+    FREE = 4000
 
 class Payment(Base):
+    random.seed(time.time())
     __tablename__ = 'payments'
     id = db.Column(db.Integer, primary_key=True)
     GUID = db.Column(db.String(64) ,default = random.randint(100000000000,10000000000000000) , onupdate=random.randint(100000000000,10000000000000000))
@@ -47,8 +50,8 @@ class Payment(Base):
     messages = db.relationship('PaymentMessage' , secondary = 'payment_message_payments', back_populates='payments')
 
 
-    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False ,onupdate=datetime.datetime.now)
+    created_at = db.Column(db.TIMESTAMP, default=datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.now, nullable=False ,onupdate=datetime.now)
 
     def __str__(self):
         return " پرداخت به کد رهگیری : "+ str(self.GUID) + " باوضعیت  :" + str(self.status) + " در تاریخ : " + str(self.created_at)

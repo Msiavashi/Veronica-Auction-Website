@@ -1003,4 +1003,13 @@ class UserChargeWalet(Resource):
         db.session.commit()
 
         msg = " برای پرداخت به صفحه تایید هدایت می شوید"
-        return make_response(jsonify({'success':True,"type":"redirect_to_bank","pid":payment.id,"message":msg}),200)
+        return make_response(jsonify({'success':True,"operation":"redirect_to_bank","pid":payment.id,"message":msg}),200)
+
+    @jwt_required
+    def delete(self):
+        data = request.get_json(force=True)
+        pid = int(data.get("pid", None))
+        Payment.query.filter_by(id=pid).delete()
+        db.session.commit();
+        msg = "پرداخت مورد نظر شما کنسل شد"
+        return make_response(jsonify({'success':True,"operation":"cancel_payment","message":msg}),200)

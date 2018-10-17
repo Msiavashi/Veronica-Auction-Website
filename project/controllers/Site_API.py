@@ -61,7 +61,7 @@ class SiteSearchFilters(Resource):
             })
 
         return make_response(jsonify(auctions),200)
-    
+
 class SiteSearchAuctions(Resource):
     def get(self,keyword):
         auctions = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).limit(MAX_SEARCH_RESULT)
@@ -110,7 +110,19 @@ class SiteCategoryForAuctions(Resource):
                     for participant in auction.participants:
                         auction_participants.append({"id":participant.id,"username":participant.username})
                     remained_time = (auction.start_date - now).days * 24 * 60 * 60 + (auction.start_date - now).seconds
-                    auction_result.append({"id":auction.id,"title":auction.title,"images":auction.item.images,"base_price":str(auction.base_price),"remained_time":remained_time,"participants":auction_participants})
+                    title = auction.title
+                    if (len(auction.title) > 25):
+                        title = auction.title[:25]+"..."
+
+                    auction_result.append({
+                    "id":auction.id,
+                    "title":title,
+                    "images":auction.item.images,
+                    "base_price":str(auction.base_price),
+                    "remained_time":remained_time,
+                    "participants":auction_participants,
+                    "start_date":auction.start_date
+                    })
                 result.append({"title" : category.title,"auctions":auction_result})
         return make_response(jsonify(result),200)
 
