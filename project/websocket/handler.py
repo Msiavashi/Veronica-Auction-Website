@@ -33,6 +33,13 @@ def sync_timers_join(data):
     emit("sync_timers_join" , room=room)
     return 200
 
+@socketio.on('sync_auction_join')
+def sync_auction_join(data):
+    room = data['room']
+    join_room(room)
+    emit("sync_auction_join" , room=room)
+    return 200
+
 @socketio.on('sync_carts')
 def sync_carts(data):
     room = data['room']
@@ -88,7 +95,7 @@ def sync_carts(data):
             emit("sync_carts", session['orders'] , room=room)
         else:
             emit("sync_carts",[] , room=room)
-
+    return 200
 
 @socketio.on('sync_timers')
 def sync_timers(data):
@@ -114,29 +121,40 @@ def sync_timers(data):
             "max_members":auction.max_members,
             'expired':now > auction.start_date,
             })
-
     emit("sync_timers",{"auctions": auctions} , room=room)
+    return 200
+
+@socketio.on('sync_auction')
+def sync_auction(data):
+    room = data['room']
+    auction_id = data['auction_id']
+    auction = Auction.query.get(auction_id)
+    remained = (auction.start_date - datetime.now()).seconds + 1
+    emit("remaining_time", remained,room=room)
+    return 200
 
 @socketio.on('join')
 def join(data):
     room = data['auction_id']
     join_room(room)
-    loadview(data)
-    auction = Auction.query.get(data['auction_id'])
-    auction_schema = AuctionSchema();
-    deadline = (auction.start_date - datetime.now()).seconds + 1
-    emit("join",{"msg": "new client joined auction","auction": auction_schema.dump(auction),"deadline":deadline} , room=room)
+    emit("joined",{"message":"new client joined"},room=room)
+    return 200
 
 @socketio.on('leave_auction')
 def leave_auction(data):
     room = data['auction_id']
+    sync = data['room']
     emit("leave_auction", {"message": "client left room"}, room=room)
+    leave_room(sync)
     leave_room(room)
-    print 'leaving room',room
+    print 'leaving auction room',room
+    print 'leaving sync room',room
     return 200
 
+@socketio.on('loadview')
 def loadview(data):
     try:
+        room = data['auction_id']
         auction_id = data['auction_id']
         # auction = Auction.query.get(auction_id)
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
@@ -157,13 +175,14 @@ def loadview(data):
             })
 
         if(last_offer):
-            emit("update_view", {"success":True, "current_offer_price": str(last_offer.total_price),"users": users})
+            emit("update_view", {"success":True, "current_offer_price": str(last_offer.total_price),"users": users},room=room)
         else:
-            emit("update_view", {"success":True , "current_offer_price": 0,"users": users})
+            emit("update_view", {"success":True , "current_offer_price": 0,"users": users},room=room)
 
     except Exception as e:
         emit("failed", {"reason": e.message})
 
+    return 200
 
 #authenticated users only
 @socketio.on('bid')
@@ -264,6 +283,7 @@ def bid(data):
 
     except Exception as e:
         emit("failed", {"success":False,"reason": e.message})
+    return 200
 
 def auction_done(data):
     room = data['auction_id']
@@ -290,7 +310,6 @@ def auction_done(data):
 
         if last_order :
             last_order.total_cost = last_offer.total_price
-            last_order.status = OrderStatus.UNPAID
             last_order.discount_status = OrderDiscountStatus.AUCTIONWINNER
             last_order.total_discount = discounted_price
             last_order.total = 1
@@ -309,29 +328,10 @@ def auction_done(data):
             db.session.commit()
 
         emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": user_schema.dump(winner),"discount":str(discounted_price)},room=room)
-        # leave_auction(data)
         return 200
     else:
         emit("auction_done", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
-        # leave_auction(data)
         return 400
-    # except Exception as e:
-    #     return "{'error':"+str(e)+"}"
-
-
-@socketio.on('status')
-def get_acution_status(data):
-    room = data['auction_id']
-    auction_id = data['auction_id']
-    auction = Auction.query.get(auction_id)
-    remained = (auction.start_date - datetime.now()).seconds
-    server_time = datetime.now()
-    auction_time = auction.start_date
-    if (auction.start_date < datetime.now()):
-        loadview(data)
-        auction_done(data)
-    else:
-        emit("auction_status", {"status": "running","remained":remained,"server_time":str(server_time),"auction_time":str(auction_time)},room=room)
 
 @socketio.on('get_remain_time')
 def get_remain_time(data):
@@ -343,6 +343,7 @@ def get_remain_time(data):
     else:
         remained = (auction.start_date - datetime.now()).seconds + 1
         emit("remaining_time", remained,room=room)
+    return 200
 
 @socketio.on('keepAlive')
 def keepAlive(data):

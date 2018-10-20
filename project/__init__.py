@@ -37,8 +37,8 @@ def check_if_token_in_blacklist(decrypted_token):
 # Session(app)
 
 params = {
-	 'pingInterval': 10000,
-     'pingTimeout': 5000,
+	 'pingInterval': 20000,
+     'pingTimeout': 10000,
 }
 #
 # socketio = SocketIO(logger=True, engineio_logger=True, **params)
