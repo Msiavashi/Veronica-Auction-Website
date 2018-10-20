@@ -376,45 +376,7 @@
 	start_loading(loading_element);
 
 	// var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-	// socket.on('connect', function() {
-	// 		console.log('connected');
-	// });
-	// socket.on('sync_timers', function(data) {
-	//
-	// 	data.timers.forEach(item => {
-	// 		auction = app.today_auctions.find(x => x.id == item.auction_id);
-	//
-	// 		cat_temp = app.categories.find(x => x.auctions.find(y=> y.id == item.auction_id));
-	// 		if (cat_temp)
-	// 		{
-	// 			cat_auction = cat_temp.auctions.find(x => x.id == item.auction_id);
-	// 		}
-	//
-	// 		if (item.expired) {
-	//
-	// 			var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
-	// 			app.today_auctions.splice( elementPos, 1 );
-	// 			if (cat_temp){
-	// 				var elementPos_cat = cat_temp.auctions.map(function(x) {return x.id; }).indexOf(item.auction_id);
-	// 				cat_temp.auctions.splice( elementPos_cat, 1 );
-	// 			}
-	//
-	// 		}
-	// 		else {
-	// 			if(auction){
-	// 				auction.deadline = item.remained_time;
-	//
-	// 				$.each($("[data-auctionid="+auction.id+"]"),function(item,value) {
-	//
-	// 					$(value).data('timer', auction.deadline).TimeCircles({
-	// 							"total_duration": auction.deadline
-	// 					}).restart();
-	// 				});
-	// 			}
-	// 		}
-	// 	});
-	// 	//console.log('syncing...');
-	// });
+
 
 	app = new Vue({
 
@@ -429,9 +391,85 @@
 			best_auctions : [] ,
 			popular_auctions : [] ,
 			categories : [],
+			current_user_hash : "{{current_user}}".hashCode(),
 			interval :null,
-		},
+			index_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
 
+		},
+		created:function () {
+
+			this.index_socket.on('connect', function() {
+					console.log('connected index socket');
+			});
+
+			this.index_socket.emit('sync_timers_join',{room:this.current_user_hash});
+
+      this.index_socket.on('sync_timers_join', function() {
+          console.log('joined to sync timer room');
+      });
+
+			this.interval = setInterval(()=>{
+				this.index_socket.emit('sync_timers',{room:this.current_user_hash});
+			}, 1000);
+
+			this.index_socket.on('sync_timers', function(data) {
+			
+				data.auctions.forEach(item => {
+
+					auction = app.today_auctions.find(x => x.id == item.id);
+
+					if (auction){
+						auction.title = item.title;
+						auction.deadline = item.remained_time;
+						auction.participant_count = ToPersian(item.participants.length);
+						auction.max_members = ToPersian(item.max_members);
+						auction.base_price = ToPersian(formatCurrency(item.base_price));
+						auction.max_price = ToPersian(formatCurrency(item.max_price));
+						auction.price = ToPersian(formatCurrency(item.main_price));
+						auction.image = product_image_path + ClearifyNames(item.images)[0];
+						auction.is_participant = item.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+
+						$.each($("[data-auctionid="+auction.id+"]"),function(item,value) {
+
+							$(value).data('timer', auction.deadline).TimeCircles({
+									"total_duration": auction.deadline
+							}).restart();
+						});
+
+					}
+					else {
+						participated = item.participants.find(x => x.id == "{{current_user.id}}") ? true : false;
+						app.today_auctions.push({
+							id : item.id,
+							title : item.title ,
+							deadline : item.remained_time,
+							participant_count :ToPersian(item.participants.length),
+							max_members :ToPersian(item.max_members),
+							base_price : ToPersian(formatCurrency(item.base_price)),
+							max_price : ToPersian(formatCurrency(item.max_price)),
+							price : ToPersian(formatCurrency(item.main_price)),
+							image : product_image_path + ClearifyNames(item.images)[0],
+							instance_link : "/instantview/"+ item.id,
+							link : participated ? "/view/auction/"+item.id : "/participate/"+ item.id,
+							is_participant : participated,
+						});
+					}
+
+
+
+				});
+
+				app.today_auctions.forEach(item => {
+					if(!data.auctions.find(x => x.id == item.id)){
+						var elementPos = app.today_auctions.map(function(x) {return x.id; }).indexOf(item.id);
+						app.today_auctions.splice( elementPos, 1 );
+					}
+
+				});
+
+			});
+
+		},
 		methods:{
 			prepare_ad_images(images){
 				return ad_image_path + ClearifyNames(images)[0];
@@ -610,10 +648,7 @@
 					.catch((error)=>{
 						console.log(error.response);
 				});
-				// this.interval = setInterval(()=>{
-				// 	ids = this.today_auctions.map(function(item) {return item.id; });
-				// 	socket.emit('sync_timers',{auction_ids: ids,room:'index'});
-				// }, 5000);
+
 		},
 		updated:function() {
 			// this._invalidate();

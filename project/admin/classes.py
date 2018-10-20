@@ -244,6 +244,7 @@ class OrderAdmin(ModelView):
     page_size = 10
     can_view_details = True
     column_searchable_list = ['status','discount_status','item.title','item.product.title','user.first_name','user.last_name','user.alias_name','user.username','payment.GUID', 'payment.ref_id','payment.status','payment.amount','payment.type']
+    column_editable_list = ['status', 'discount_status','total']
 
     def is_accessible(self):
         return current_user.has_role('admin')

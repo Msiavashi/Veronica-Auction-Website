@@ -528,6 +528,7 @@
       search_keyword : "جستجو کنید...",
       category :"{{category_id}}",
       intervalTimer :null,
+      current_user_hash :"{{current_user}}".hashCode(),
       base_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
     },
     watch:{
@@ -559,92 +560,112 @@
     			.then((response) => {
     				this.allcategories = response.data[0];
     			})
-    			.catch((error)=>{
-    				console.error(error.response.data);
+    			.catch((response)=>{
+    				console.error(response);
     			});
 
         axios.get("{{url_for('usercartorder')}}")
     			.then((response) => {
-
-            this.mycarts = [];
-            app.user_orders = [];
-            response.data.forEach(cart => {
-                  if (! this.mycarts.find(x=>x.id == cart.id)){
-                    this.mycarts.push({
-                      id : cart.id,
-                      title : cart.title,
-                      item_title : cart.item_title,
-                        product_title : cart.product_title,
-                        fulltitle : cart.fulltitle,
-                      item_id : cart.item_id ,
-                      image : '/static/images/products/' + ClearifyNames(cart.images)[0],
-                      discounted_price : parseInt(cart.discounted_price),
-                      main_price : parseInt(cart.main_price),
-                      min_quantity : 1,
-                      max_quantity : cart.quantity,
-                      current_quantity : cart.total,
-                      status : cart.status,
-                      discount_status : cart.discount_status,
-                    });
-                   }
-            });
-            app.user_orders = this.mycarts;
-
+            console.log(response.data);
+            if(response.data.length > 0)
+            {
+              response.data.forEach(cart => {
+  							this.mycarts.push({
+                  "id" : cart.id,
+                  "title" : cart.title,
+                  "item_title" : cart.item_title,
+                  "product_title" : cart.product_title,
+                  "fulltitle" : cart.fulltitle,
+                  "item_id" : cart.item_id ,
+                  "image" : '/static/images/products/' + ClearifyNames(cart.images)[0],
+                  "discounted_price" : parseInt(cart.discounted_price),
+                  "main_price" : parseInt(cart.main_price),
+                  "min_quantity" : 1,
+                  "max_quantity" : cart.quantity,
+                  "current_quantity" : cart.total,
+                  "status" : cart.status,
+                  "discount_status" : cart.discount_status,
+  							});
+  						});
+            }
     			})
     			.catch((error)=>{
     				console.error(error.response.data);
     			});
   	},
 
+
     created:function() {
-
-      this.intervalTimer = setInterval(()=>{
-        this.base_socket.emit('sync_carts',{room:'index'});
-      }, 1000);
-
       this.base_socket.on('connect', function() {
           console.log('connected base_socket');
       });
 
-      this.base_socket.on('sync_carts', function(data) {
 
-         data.forEach(cart => {
-           if (! myapp.mycarts.find(x=>x.id == cart.id)){
-             myapp.mycarts.push({
-               id : cart.id,
-               title : cart.title,
-               item_title : cart.item_title,
-               product_title : cart.product_title,
-               fulltitle : cart.fulltitle,
-               item_id : cart.item_id ,
-               image : '/static/images/products/' + ClearifyNames(cart.images)[0],
-               discounted_price : parseInt(cart.discounted_price),
-               main_price : parseInt(cart.main_price),
-               min_quantity : 1,
-               max_quantity : cart.quantity,
-               current_quantity : cart.total,
-               status : cart.status,
-               discount_status : cart.discount_status,
-              });
-           }
-          });
+      this.base_socket.emit('sync_carts_join',{room:this.current_user_hash});
 
-        if (data.length == 0){
-          myapp.mycarts = [];
-          app.user_orders = [];
-        }
-        else {
-          myapp.mycarts.forEach(cart => {
-            if (!data.find(x=>x.id == cart.id)){
-              var elementPos1 = myapp.mycarts.map(function(x) {return x.id; }).indexOf(cart.id);
-              myapp.mycarts.splice( elementPos1, 1 );
-
-              var elementPos2 = app.user_orders.map(function(x) {return x.id; }).indexOf(cart.id);
-              app.user_orders.splice( elementPos2, 1 );
-            }
-          });
-         }
+      this.base_socket.on('sync_carts_join', function() {
+          console.log('joined to sync cart room');
       });
+
+      this.intervalTimer = setInterval(()=>{
+        this.base_socket.emit('sync_carts',{room:this.current_user_hash});
+      }, 1000);
+
+      this.base_socket.on('sync_carts', function(data) {
+        myapp.mycarts = []
+
+        data.forEach(cart => {
+          if (!myapp.mycarts.find(x=>x.id == cart.id)){
+             myapp.mycarts.push({
+               "id" : cart.id,
+               "title" : cart.title,
+               "item_title" : cart.item_title,
+               "product_title" : cart.product_title,
+               "fulltitle" : cart.fulltitle,
+               "item_id" : cart.item_id ,
+               "image" : '/static/images/products/' + ClearifyNames(cart.images)[0],
+               "discounted_price" : parseInt(cart.discounted_price),
+               "main_price" : parseInt(cart.main_price),
+               "min_quantity" : 1,
+               "max_quantity" : cart.quantity,
+               "current_quantity" : cart.total,
+               "status" : cart.status,
+               "discount_status" : cart.discount_status,
+              });
+            }
+        });
+
+        // myapp.mycarts.forEach(cart => {
+        //   console.log(!temp_carts.find(x=>x.id == cart.id));
+        //
+        //  if (!temp_carts.find(x=>x.id == cart.id)){
+        //
+        //    var elementPos1 = myapp.mycarts.map(function(x) {return x.id; }).indexOf(cart.id);
+        //    myapp.mycarts.splice( elementPos1, 1 );
+        //
+        //    if (app.user_orders){
+        //      var elementPos2 = app.user_orders.map(function(x) {return x.id; }).indexOf(cart.id);
+        //      app.user_orders.splice( elementPos2, 1 );
+        //     }
+        //   }
+        // });
+
+          // var onlyInA = data.filter(comparer(myapp.mycarts));
+          // var onlyInB = myapp.mycarts.filter(comparer(data));
+          //
+          // result = onlyInA.concat(onlyInB);
+          //
+          // console.log(result);
+
+      });
+
+      // function comparer(otherArray){
+      //   return function(current){
+      //     return otherArray.filter(function(other){
+      //       return other.value == current.value && other.display == current.display
+      //     }).length == 0;
+      //   }
+      // }
     },
 
     methods:{
@@ -710,32 +731,34 @@
               'Content-Type': 'application/json'
             }
           }).then((response) => {
-            this.mycarts = [];
-            app.user_orders = [];
-            response.data.forEach(cart => {
-                  if (! this.mycarts.find(x=>x.id == cart.id)){
-                    this.mycarts.push({
-                      id : cart.id,
-                      title : cart.title,
-                      item_title : cart.item_title,
-                        product_title : cart.product_title,
-                        fulltitle : cart.fulltitle,
-                      item_id : cart.item_id ,
-                      image : '/static/images/products/' + ClearifyNames(cart.images)[0],
-                      discounted_price : parseInt(cart.discounted_price),
-                      main_price : parseInt(cart.main_price),
-                      min_quantity : 1,
-                      max_quantity : cart.quantity,
-                      current_quantity : cart.total,
-                      status : cart.status,
-                      discount_status : cart.discount_status,
+            if(response){
+              this.mycarts = [];
+              app.user_orders = [];
+              if(response.data && response.data.length > 0){
+                   response.data.forEach(cart => {
+                     this.mycarts.push({
+                       "id" : cart.id,
+                       "title" : cart.title,
+                       "item_title" : cart.item_title,
+   										 "product_title" : cart.product_title,
+   										 "fulltitle" : cart.fulltitle,
+                       "item_id" : cart.item_id ,
+                       "image" : '/static/images/products/' + ClearifyNames(cart.images)[0],
+                       "discounted_price" : parseInt(cart.discounted_price),
+                       "main_price" : parseInt(cart.main_price),
+                       "min_quantity" : 1,
+                       "max_quantity" : cart.quantity,
+                       "current_quantity" : cart.total,
+                       "status" : cart.status,
+                       "discount_status" : cart.discount_status,
                     });
-                   }
-            });
+                  });
+                }
+            }
             app.user_orders = this.mycarts;
           })
           .catch((error)=>{
-            console.log(error.response.data);
+            console.log(error);
           });
 
       },
@@ -895,7 +918,7 @@
 								navigationText:['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
 						});
 						$(el).find('.owl-controls').css('left',data.control+'px');
-					},1000);
+					},2000);
 				}
 			},
     }

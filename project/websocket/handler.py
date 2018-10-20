@@ -19,10 +19,23 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy import or_ , and_
 
 
+@socketio.on('sync_carts_join')
+def sync_carts_join(data):
+    room = data['room']
+    join_room(room)
+    emit("sync_carts_join" , room=room)
+    return 200
+
+@socketio.on('sync_timers_join')
+def sync_timers_join(data):
+    room = data['room']
+    join_room(room)
+    emit("sync_timers_join" , room=room)
+    return 200
+
 @socketio.on('sync_carts')
 def sync_carts(data):
     room = data['room']
-    join_room(room)
     if current_user.is_authenticated:
         result = Order.query.filter(or_(Order.status==OrderStatus.UNPAID, Order.status==OrderStatus.PAYING)).filter_by(user_id=current_user.id).order_by('created_at DESC')
         orders = []
@@ -80,14 +93,29 @@ def sync_carts(data):
 @socketio.on('sync_timers')
 def sync_timers(data):
     room = data['room']
-    join_room(room)
-    ids = data['auction_ids']
     now = datetime.now()
-    auctions = Auction.query.filter(Auction.id.in_(ids)).all()
-    result = []
-    for auction in auctions:
-        result.append({"auction_id":auction.id,"remained_time":(auction.start_date - now).seconds,'expired':now > auction.start_date})
-    emit("sync_timers",{"timers": result} , room=room)
+    results = Auction.query.all()
+    auctions=[]
+    for auction in results:
+        if((auction.start_date - now).days == 0) :
+            auction_participants = []
+            for participant in auction.participants:
+                auction_participants.append({"id":participant.id,"username":participant.username})
+            remained_time = (auction.start_date - now).seconds
+            auctions.append({
+            "id":auction.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            "max_price":str(auction.max_price),
+            "main_price":str(auction.item.price),
+            "remained_time":remained_time,
+            "participants":auction_participants,
+            "max_members":auction.max_members,
+            'expired':now > auction.start_date,
+            })
+
+    emit("sync_timers",{"auctions": auctions} , room=room)
 
 @socketio.on('join')
 def join(data):
