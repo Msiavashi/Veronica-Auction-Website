@@ -1,9 +1,9 @@
 {% extends 'site/iframes/ilayout.html' %}
 {% block title %}   ورود  {% endblock %}
 {% block content %}
-<input type="hidden" value="{{next}}" id="next">
+
 <div class="content-page woocommerce">
-	<div class="container">
+	<div id="app" class="container">
 		<div class="row">
 			<div class="col-md-12">
 				<h2 class="title-shop-page">حساب کاربری</h2>
@@ -20,17 +20,16 @@
 										<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
 										<div class="success_container"></div>
 									</div>
-									<form id="login_form">
-										<input type="hidden" value="{{next}}"  name = "next" id="next">
+									<form @submit.prevent="handleSubmit">
 
 										<h2 class="title24 title-form-account">ورود</h2>
 										<p>
 											<label for="username">نام کاربری<span class="required">*</span></label>
-											<input type="text" name="username"/>
+											<input v-model="loginInformation.username" name="username" type="text" />
 										</p>
 										<p>
 											<label for="password">رمز عبور <span class="required">*</span></label>
-											<input type="password" name="password"/>
+											<input v-model="loginInformation.password" name="password" type="password" />
 										</p>
 										<p>
 											<input type="submit" class="register-button" name="login" value="ورود">
@@ -38,7 +37,7 @@
 										<div class="table create-account">
 											<div class="text-left">
 												<p>
-													<input type="checkbox"  id="remember" /> <label for="remember">مرا به خاطر بسپار</label>
+													<input v-model="loginInformation.remember_me" name="remember_me" type="checkbox"  id="remember" /> <label for="remember">مرا به خاطر بسپار</label>
 												</p>
 											</div>
 											<div class="text-right">
@@ -79,43 +78,73 @@
 {% block scripts %}
 {{ super() }}
 <script>
-next = $('#next').val();
-console.log(next);
-$( "#login_form" ).submit(function( event ) {
 
-  event.preventDefault();
-  var $form = $( this );
-  var data = getFormData($form);
-	var url = "{{url_for('userlogin')}}";
-  var posting = $.post( url, data);
-  posting.done(function( data ) {
-		$(".error_alert").addClass('hide');
-		$(".success_alert").removeClass('hide');
-		$(".success_container").html('ورود شما با موفقیت انجام ')
-		if(next!="None"){
-			if(data.redirect_to_auction){
-				window.parent.location = '/view/auction/'+data.auction_id;
-				return ;
-			}
-			if(next.includes('participate') || next.includes('instantview')){
-					window.location = next;
-			}
-			if(next.includes('view/auction')){
-					window.parent.location = next;
-			}
+var app = new Vue({
+
+  el: '#app',
+
+  data:{
+		loginInformation :{
+			username : "",
+			password : "",
+			remember_me :0,
+			next : "{{next}}",
+		},
+		next : "{{next}}",
+	},
+	mounted:function(){
+
+	},
+	methods:{
+		handleSubmit: function(){
+
+			self = this;
+			var obj = self.loginInformation;
+
+      for (var propName in obj) {
+        if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
+          delete obj[propName];
+        }
+      }
+			console.log(obj);
+
+			axios.post("{{url_for('userlogin')}}",obj,
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then(function (response) {
+					$(".error_alert").addClass('hide');
+
+					if(self.next!="None"){
+						if(response.data.redirect_to_auction){
+							window.parent.location = '/view/auction/'+response.data.auction_id;
+						}
+						if(self.next.includes('participate') || self.next.includes('instantview')){
+								window.location = self.next;
+						}
+						if(next.includes('view/auction')){
+								window.parent.location = self.next;
+						}
+					}
+					else
+					{
+						window.parent.location.reload();
+					}
+
+					$(".success_alert").removeClass('hide');
+					$(".success_container").html('ورود شما با موفقیت انجام ')
+         })
+         .catch((error)=>{
+
+              $(".error_alert").removeClass('hide');
+              for (var propName in error.response.data.message) {
+         			  $(".error_container").html(error.response.data.message[propName])
+              }
+ 				});
 		}
-		else
-		{
-			window.parent.location.reload();
-		}
-  });
-	posting.fail(function(xhr, status, error) {
-		obj = JSON.parse(xhr.responseText);
-		$.each(obj.message, function (key, item) {
-			$(".error_alert").removeClass('hide');
-			$(".error_container").html(item)
-			});
-    });
+	}
 });
 
 </script>

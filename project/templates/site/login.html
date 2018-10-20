@@ -2,9 +2,8 @@
 {% block title %} ورود به سایت {% endblock %}
 {% block content %}
 
-<input type="hidden" value="{{next}}" id="next">
 <div class="content-page woocommerce">
-	<div class="container">
+	<div id="app" class="container">
 		<div class="row">
 			<div class="col-md-12">
 				<h2 class="title-shop-page">حساب کاربری</h2>
@@ -21,16 +20,16 @@
 										<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
 										<div class="success_container"></div>
 									</div>
-									<form id="login_form">
+									<form @submit.prevent="handleSubmit">
 
 										<h2 class="title24 title-form-account">ورود</h2>
 										<p>
 											<label for="username">نام کاربری<span class="required">*</span></label>
-											<input type="text" name="username"/>
+											<input v-model="loginInformation.username" type="text" name="username"/>
 										</p>
 										<p>
 											<label for="password">رمز عبور <span class="required">*</span></label>
-											<input type="password" name="password"/>
+											<input v-model="loginInformation.password" type="password" name="password"/>
 										</p>
 										<p>
 											<input type="submit" class="register-button" name="login" value="ورود">
@@ -38,7 +37,7 @@
 										<div class="table create-account">
 											<div class="text-left">
 												<p>
-													<input type="checkbox"  id="remember" /> <label for="remember">مرا به خاطر بسپار</label>
+													<input v-model="loginInformation.remember_me" type="checkbox"  id="remember" /> <label for="remember">مرا به خاطر بسپار</label>
 												</p>
 											</div>
 											<div class="text-right">
@@ -81,36 +80,90 @@
 
 <script>
 
-next = $('#next').val();
-console.log(next);
+var app = new Vue({
 
-$( "#login_form" ).submit(function( event ) {
+  el: '#app',
 
-  event.preventDefault();
-  var $form = $( this );
-  var data = getFormData($form);
-	var url = "{{url_for('userlogin')}}";
-  var posting = $.post( url, data);
-  posting.done(function( data ) {
-		$(".error_alert").addClass('hide');
-		$(".success_alert").removeClass('hide');
-		$(".success_container").html('ورود شما با موفقیت انجام ')
+  data:{
+		loginInformation :{
+			username : "",
+			password : "",
+			remember_me :0,
+		},
+		next : "{{next}}",
+	},
+	mounted:function(){
+		console.log(this.next);
+	},
+	methods:{
+		handleSubmit: function(){
+			self = this;
+			var obj = self.loginInformation;
 
-		if(next!="None"){
-				window.location = next;
-			}
-			else {
-			window.parent.location.reload();
+      for (var propName in obj) {
+        if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
+          delete obj[propName];
+        }
+      }
+			axios.post("{{url_for('userlogin')}}",obj,
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then(function (response) {
+          //handle success
+					$(".error_alert").addClass('hide');
+					$(".success_alert").removeClass('hide');
+					$(".success_container").html('ورود شما با موفقیت انجام ')
+					if(self.next!="None"){
+							window.location = self.next;
+						}
+						else {
+						window.parent.location.reload();
+					}
+         })
+         .catch((error)=>{
+
+              $(".error_alert").removeClass('hide');
+              for (var propName in error.response.data.message) {
+         			  $(".error_container").html(error.response.data.message[propName])
+              }
+ 				});
 		}
-  });
-	posting.fail(function(xhr, status, error) {
-		obj = JSON.parse(xhr.responseText);
-		$.each(obj.message, function (key, item) {
-			$(".error_alert").removeClass('hide');
-			$(".error_container").html(item)
-			});
-    });
+	}
 });
 
+// $( "#login_form" ).submit(function( event ) {
+//
+//   event.preventDefault();
+//   var $form = $( this );
+//   var data = getFormData($form);
+// 	var url = "{{url_for('userlogin')}}";
+//   var posting = $.post( url, data);
+//   posting.done(function( data ) {
+// 		$(".error_alert").addClass('hide');
+// 		$(".success_alert").removeClass('hide');
+// 		$(".success_container").html('ورود شما با موفقیت انجام ')
+//
+// 		if(next!="None"){
+// 				window.location = next;
+// 			}
+// 			else {
+// 			window.parent.location.reload();
+// 		}
+//   });
+// 	posting.fail(function(xhr, status, error) {
+// 		obj = JSON.parse(xhr.responseText);
+// 		$.each(obj.message, function (key, item) {
+// 			$(".error_alert").removeClass('hide');
+// 			$(".error_container").html(item)
+// 			});
+//     });
+// });
+$('.close').on('click',function(event){
+	event.preventDefault();
+	$(this).parent().removeClass('show').addClass('hide')
+});
 </script>
 {% endblock scripts %}

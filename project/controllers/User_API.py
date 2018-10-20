@@ -265,6 +265,9 @@ class UserInformation(Resource):
         invitor_code = request.form.get('invitor-code',None)
 
         if(invitor_code):
+            msg ="کد دعوت بصورت موقت غیر فعال می باشد"
+            return make_response(jsonify({"message":{"error":msg}}),500)
+
 
             invitor = User.query.filter_by(username=invitor_code).first()
 

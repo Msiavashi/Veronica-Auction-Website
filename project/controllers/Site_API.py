@@ -64,15 +64,35 @@ class SiteSearchFilters(Resource):
 
 class SiteSearchAuctions(Resource):
     def get(self,keyword):
-        auctions = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).limit(MAX_SEARCH_RESULT)
+        result = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).limit(MAX_SEARCH_RESULT)
+        auctions = []
+        for auction in result:
+            auctions.append({
+            "id":auction.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            })
+
+        return make_response(jsonify(auctions),200)
+
+
         auction_schema = AuctionSchema(many=True)
         return make_response(jsonify(auction_schema.dump(auctions)),200)
 
 class SiteSearchAuctionsCategory(Resource):
     def get(self,cid,keyword):
         auctions = Auction.query.filter(or_(Auction.title.like("%"+keyword+"%"),Auction.description.like("%"+keyword+"%"))).join(Item).join(Product).join(Category).filter_by(id = cid)
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+        auctions = []
+        for auction in result:
+            auctions.append({
+            "id":auction.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            })
+
+        return make_response(jsonify(auctions),200)
 
 class SiteCategoryMenuItems(Resource):
     def get(self):

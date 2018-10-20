@@ -113,7 +113,7 @@
                             {%raw%}
                               <div class="item-search-pro">
           											<div class="search-ajax-thumb product-thumb">
-          												<a v-bind:href="_generateAuctionLink(auction.id)" class="product-thumb-link"><img v-bind:src="_generateAuctionImage(auction.item.images)" alt="" /></a>
+          												<a v-bind:href="_generateAuctionLink(auction.id)" class="product-thumb-link"><img v-bind:src="_generateAuctionImage(auction.images)" alt="" /></a>
           											</div>
           											<div class="search-ajax-title"><h3 class="title14"><a v-bind:href="_generateAuctionLink(auction.id)">{{auction.title}}</a></h3></div>
           											<div class="search-ajax-price">
@@ -528,14 +528,14 @@
       search_keyword : "جستجو کنید...",
       category :"{{category_id}}",
       intervalTimer :null,
-      // base_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
+      base_socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port),
     },
     watch:{
       search_keyword:function() {
         if(this.category != ""){
           axios.get("/api/site/search/auctions/category/"+this.category+"/"+this.search_keyword)
       			.then((response) => {
-      				this.searhed_auctions = response.data[0];
+      				this.searhed_auctions = response.data;
       			})
       			.catch((response)=>{
       				console.error(response);
@@ -544,7 +544,7 @@
         else {
           axios.get("/api/site/search/auctions/"+this.search_keyword)
       			.then((response) => {
-      				this.searhed_auctions = response.data[0];
+      				this.searhed_auctions = response.data;
       			})
       			.catch((response)=>{
       				console.error(response);
@@ -594,36 +594,36 @@
 
     created:function() {
 
-      // this.intervalTimer = setInterval(()=>{
-      //   this.base_socket.emit('sync_carts',{room:'index'});
-      // }, 2000);
-      //
-      // this.base_socket.on('connect', function() {
-      //     console.log('connected base_socket');
-      // });
+      this.intervalTimer = setInterval(()=>{
+        this.base_socket.emit('sync_carts',{room:'index'});
+      }, 2000);
 
-      // this.base_socket.on('sync_carts', function(data) {
-      //
-      //   if(data && data.length > 0){
-      //        data.forEach(cart => {
-      //          if (! myapp.mycarts.find(x=>x.id == cart[0].id))
-      //            myapp.mycarts.push({
-      //               id : cart[0].id,
-      //               item_title : cart[0].item.title,
-      //               product_title : cart[0].item.product.title,
-      //               item_id : cart[0].item.id ,
-      //               image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
-      //               discounted_price : cart[0].total_cost,
-      //               main_price : cart[0].item.price * cart[0].total ,
-      //               min_quantity : 1,
-      //               max_quantity : cart[0].item.quantity,
-      //               current_quantity : cart[0].total,
-      //               status : cart[0].status,
-      //               discount_status : cart[0].discount_status,
-      //           });
-      //       });
-      //     }
-      // });
+      this.base_socket.on('connect', function() {
+          console.log('connected base_socket');
+      });
+
+      this.base_socket.on('sync_carts', function(data) {
+
+        if(data && data.length > 0){
+             data.forEach(cart => {
+               if (! myapp.mycarts.find(x=>x.id == cart[0].id))
+                 myapp.mycarts.push({
+                    id : cart[0].id,
+                    item_title : cart[0].item.title,
+                    product_title : cart[0].item.product.title,
+                    item_id : cart[0].item.id ,
+                    image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
+                    discounted_price : cart[0].total_cost,
+                    main_price : cart[0].item.price * cart[0].total ,
+                    min_quantity : 1,
+                    max_quantity : cart[0].item.quantity,
+                    current_quantity : cart[0].total,
+                    status : cart[0].status,
+                    discount_status : cart[0].discount_status,
+                });
+            });
+          }
+      });
     },
 
     methods:{
@@ -776,9 +776,6 @@
             });
           }
         })
-
-
-
 
       },
 

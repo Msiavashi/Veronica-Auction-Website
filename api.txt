@@ -1,0 +1,51 @@
+UserRegistration              ====>   unibid.ir/api/register
+UserLogin                     ====>   unibid.ir/api/user/login
+UserLogout                    ====>   unibid.ir/api/user/logout
+UserTokenRefresh              ====>   unibid.ir/api/refresh/token
+UserLogoutRefresh             ====>   unibid.ir/api/refresh/logout
+
+UserInformation               ====>   unibid.ir/api/user/information
+UserBasicInfo                 ====>   unibid.ir/api/user/basic/information
+UserContactUs                 ====>   unibid.ir/api/user/contactus
+UserAuctionLikes              ====>   unibid.ir/api/user/auction/likes
+UserFavoriteFilters           ====>   unibid.ir/api/user/favorite/filters/<order_by_price>/<order_by>/<int:total>
+UserChargeWalet               ====>   unibid.ir/api/user/charge/walet
+UserApplyPayment              ====>   unibid.ir/api/user/apply/payment/<int:pid>
+UserCartOrder                 ====>   unibid.ir/api/user/cart/order
+UserCartCheckout              ====>   unibid.ir/api/user/cart/checkout
+UserCheckoutConfirm           ====>   unibid.ir/api/user/checkout/confirm/payment/<int:pid>
+UserUnpaidOrders              ====>   unibid.ir/api/user/orders/unpaid )
+UserUnpaidPayments            ====>   unibid.ir/api/user/payments/unpaids
+UserAuctionView               ====>   unibid.ir/api/user/auction/view
+UserCoupons                   ====>   unibid.ir/api/user/coupons
+UserCheckOutInit              ====>   unibid.ir/api/user/checkout/payment/init
+
+SiteCategoryMenuItems         ====>		unibid.ir/api/site/category/menu/items
+SiteSearchAuctions            ====> 	unibid.ir/api/site/search/auctions/<keyword>
+SiteSearchAuctionsCategory    ====>		unibid.ir/api/site/search/auctions/category/<int:cid>/<keyword>
+SiteSearchFilters             ====>		unibid.ir/api/site/search/filters/<order_by_price>/<order_by>/<int:total>/<keyword>
+SiteCategoryForAuctions       ====>		unibid.ir/api/site/category/auctions/
+SiteCategoryProducts          ====>		unibid.ir/api/site/category/<int:cid>/products/
+SiteCategoryProductFilters    ====>		unibid.ir/api/site/category/<int:cid>/product/filters/<order_by_price>/<order_by>/<int:total>
+SiteCategoryCarouselAds       ====>		unibid.ir/api/site/category/<int:cid>/carousel/ads
+SiteAuctionCarouselAds        ====>		unibid.ir/api/site/auction/carousel/ads
+SiteProductCarouselAds        ====>		unibid.ir/api/site/product/carousel/ads
+SiteTodayEvents               ====>		unibid.ir/api/site/today/events
+SiteTodayAuctions             ====>		unibid.ir/api/site/today/auctions
+SiteMostpopularAuctions       ====>		unibid.ir/api/site/mostpopular/auctions
+SiteMostviewedAuctions        ====>		unibid.ir/api/site/mostviewed/auctions
+SiteShipmentMethods           ====>		unibid.ir/api/site/shipment/methods
+SitePaymentMethods            ====>		unibid.ir/api/site/payment/methods
+SiteStates                    ====>		unibid.ir/api/site/address/states
+
+AuctionInstanceView           ====>		unibid.ir/api/auction/<int:aid>/instantview
+AuctionGetPlans               ====>		unibid.ir/api/auction/get/plans/<int:aid>
+AuctionUserParticipation      ====>		unibid.ir/api/auction/user/participation
+AuctionUserViewed             ====>		unibid.ir/api/auction/user/viewed
+AuctionViewFinished           ====>		unibid.ir/api/auction/view/finished
+
+PaymentsInfo                  ====>		unibid.ir/api/user/payments/info/<int:pagenum>/<int:pagesize>
+MellatGateway                 ====>		unibid.ir/api/mellat/gateway
+MellatGatewayCallBack         ====>		unibid.ir/api/user/mellat/gateway/callback
+ZarinpalGateway               ====>		unibid.ir/api/zarinpal/gateway
+ZarinpalGatewayCallback       ====>		unibid.ir/api/user/zarinpal/gateway/callback

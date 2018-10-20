@@ -24,6 +24,7 @@ parser_register.add_argument('accept_roles', help = 'تایید مقررات س�
 parser_login = reqparse.RequestParser()
 parser_login.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
 parser_login.add_argument('password', help = 'ورود رمز عبور ضروری است', required = True)
+parser_login.add_argument('remember_me', required = False)
 parser_login.add_argument('next')
 
 def can_access(f):
@@ -60,6 +61,7 @@ class UserRegistration(Resource):
 class UserLogin(Resource):
     def post(self):
         data = parser_login.parse_args()
+        data = request.get_json(force=True)
 
         current_user = User.find_by_username(data['username'])
 
@@ -68,16 +70,15 @@ class UserLogin(Resource):
 
         if User.verify_hash(data['password'], current_user.password):
 
+
             access_token = create_access_token(identity = data['username'],fresh=True,expires_delta=False)
             refresh_token = create_refresh_token(identity = data['username'])
-
-
 
             # Set the JWT cookies in the response
             redirect_to_auction = False
             auction_id = 0
 
-            if data['next'] and "participate" in data['next'] :
+            if 'next' in data and "participate" in data['next'] :
                 temp = data['next']
                 auction_id = temp.split('/')[2]
                 if(current_user.has_auction(int(auction_id))):
@@ -139,7 +140,11 @@ class UserLogin(Resource):
                         db.session.commit()
                 session.pop('orders')
 
-            login_user(current_user,remember=True)
+            if 'remember_me' in data and data['remember_me']==True:
+                login_user(current_user,remember=True)
+            else:
+                login_user(current_user,remember=False)
+
             set_refresh_cookies(resp, refresh_token)
             set_access_cookies(resp, access_token)
             return make_response(resp,200)

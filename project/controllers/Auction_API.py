@@ -69,9 +69,12 @@ class AuctionUserViewed(Resource):
                 auction_participants = []
                 for participant in auction.participants:
                     auction_participants.append({"id":participant.id,"username":participant.username})
+                title = auction.title
+                if (len(auction.title) > 15):
+                    title = auction.title[:15]+"..."
                 auctions.append({
                 "id":auction.id,
-                "title":auction.title,
+                "title":title,
                 "images":auction.item.images,
                 "base_price":str(auction.base_price),
                 "participants":auction_participants,
