@@ -20,7 +20,7 @@ class Address(Base):
 
     city = db.Column(db.String(length=50), nullable=False)
     address = db.Column(db.String(length=255), nullable=False)
-    postal_code = db.Column(db.String(length=20), nullable=False)
+    postal_code = db.Column(db.String(length=20), nullable=True)
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)

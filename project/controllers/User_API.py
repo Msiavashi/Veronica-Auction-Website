@@ -345,16 +345,56 @@ parser = reqparse.RequestParser()
 parser.add_argument('item_id')
 
 class UserCartOrder(Resource):
+    def calculate_response(self):
+        result = Order.query.filter(or_(Order.status==OrderStatus.UNPAID, Order.status==OrderStatus.PAYING)).filter_by(user_id=current_user.id).order_by('created_at DESC')
+        orders = []
+        for order in result:
+            title = order.item.product.title
+            if (len(title) > 20):
+                title = title[:20]+"..."
+            item_title = order.item.title
+            if (len(item_title) > 50):
+                item_title = item_title[:50]+"..."
+            product_title = order.item.product.title
+            if (len(product_title) > 50):
+                product_title = product_title[:50]+"..."
+            fulltitle = product_title + " - " + item_title
+            discounted_price = 0
+
+            if order.discount_status == OrderDiscountStatus.REGULAR:
+                discounted_price = order.item.discount * order.total
+
+            elif order.discount_status == OrderDiscountStatus.INAUCTION :
+                auction = current_user.auctions.join(Item).filter_by(id = order.item.id).order_by('auctions.created_at DESC').first()
+                userplan = current_user.user_plans.join(Auction).filter_by(id=auction.id).first()
+                auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=userplan.id).first()
+                discounted_price = auctionplan.discount
+
+            elif order.discount_status == OrderDiscountStatus.AUCTIONWINNER:
+                auction = current_user.auctions.join(Item).filter_by(id = order.item.id).order_by('auctions.created_at DESC').first()
+                offer = Offer.query.filter_by(win=True).join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
+                discounted_price = order.item.price - offer.total_price
+
+            orders.append({
+            "id" : order.id,
+            "item_id" : order.item.id,
+            "title" : title,
+            "item_title" : item_title,
+            "product_title" : product_title,
+            "fulltitle" : product_title + " - " + item_title,
+            "images" : order.item.images,
+            "main_price" : str(order.total * order.item.price),
+            "discounted_price" : str(order.total * order.item.price - discounted_price),
+            "quantity" : order.item.quantity,
+            "total" : order.total,
+            "status" : order.status,
+            "discount_status" : order.discount_status,
+            })
+        return orders
+
     def get(self):
-
         if current_user.is_authenticated:
-            orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
-            result = []
-            order_schema = OrderSchema()
-            for order in orders:
-                result.append(order_schema.dump(order))
-
-            return make_response(jsonify(result), 200)
+            return make_response(jsonify(self.calculate_response()), 200)
         else:
             if "orders" in session:
                 return make_response(jsonify(session['orders']), 200)
@@ -406,12 +446,7 @@ class UserCartOrder(Resource):
             db.session.add(new_order)
             db.session.commit()
 
-            orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).order_by('created_at DESC')
-            result = []
-            order_schema = OrderSchema()
-            for order in orders:
-                result.append(order_schema.dump(order))
-            return make_response(jsonify(result), 200)
+            return make_response(jsonify(self.calculate_response()), 200)
         else:
 
             if not "orders" in session:
@@ -475,13 +510,8 @@ class UserCartOrder(Resource):
             new_order.total_discount = discount
             db.session.add(new_order)
             db.session.commit()
-            orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).order_by('created_at DESC')
-            # orders = Order.query.filter_by(user_id=current_user.id,status=OrderStatus.UNPAID).order_by('created_at DESC')
-            result = []
-            order_schema = OrderSchema()
-            for order in orders:
-                result.append(order_schema.dump(order))
-            return make_response(jsonify(result), 200)
+
+            return make_response(jsonify(self.calculate_response()), 200)
         else:
             order = next((x for x in session['orders'] if x[0]['id'] == order_id),None)
 
@@ -508,13 +538,9 @@ class UserCartOrder(Resource):
                         current_user.gifts.remove(gift)
 
             db.session.commit()
-            orders = Order.query.filter_by(user_id=current_user.id)
-            result = []
-            order_schema = OrderSchema()
-            for order in orders:
-                result.append(order_schema.dump(order))
 
-            return make_response(jsonify(result), 200)
+            return make_response(jsonify(self.calculate_response()), 200)
+
         else:
             order = None
             for x in session['orders']:
@@ -819,7 +845,7 @@ class UserCheckoutConfirm(Resource):
                 db.session.add(payment)
                 db.session.commit()
 
-                msg = "هدایت به صفحه تایید نهایی مبلغ و انتخاب درگاه پرداخت"
+                msg = "سبد خرید شما آماده پرداخت است . پیگیری های آتی خرید خود را از پروفایل کاربری خود انجام دهید"
                 return make_response(jsonify({'message':{'success':True,"operation":"redirect_to_bank","pid":payment.id,"message":msg}}),200)
             else:
                 msg = "روش پرداخت مورد نظر وجود ندارد"

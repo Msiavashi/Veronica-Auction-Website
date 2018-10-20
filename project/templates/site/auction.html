@@ -317,31 +317,33 @@ var app = new Vue({
 						'Content-Type': 'application/json'
 					}
 				}).then((response) => {
-					if(response.data.length > 0){
-						myapp.mycarts = []
-						console.log(data);
-						response.data.forEach(cart => {
-							myapp.mycarts.push({
-								id : cart[0].id,
-								item_title : cart[0].item.title,
-								product_title : cart[0].item.product.title,
-								item_id : cart[0].item.id ,
-								image : '/static/images/products/' + ClearifyNames(cart[0].item.images)[0],
-								discounted_price : cart[0].item.price - cart[0].item.discount,
-								main_price : cart[0].item.price ,
-								min_quantity : 1,
-								max_quantity : cart[0].item.quantity,
-								current_quantity : cart[0].total,
-							});
-						});
-						myapp.total_carts = ToPersian(myapp.mycarts.length);
-						myapp.total_changed = true;
-						swal(
-							'سبد خرید',
-							'محصول موردنظر به سبد خرید شما اضافه شد',
-							'success'
-						)
-					}
+					// if(response.data.length > 0){
+					// 	myapp.mycarts = []
+					// 	console.log(data);
+					// 	response.data.forEach(cart => {
+					// 		myapp.mycarts.push({
+					// 			id : cart.id,
+					// 			title : cart.title,
+					// 			item_id : cart.item_id ,
+					// 			image : '/static/images/products/' + ClearifyNames(cart.images)[0],
+					// 			discounted_price : parseInt(cart.discounted_price),
+					// 			main_price : parseInt(cart.main_price),
+					// 			min_quantity : 1,
+					// 			max_quantity : cart.quantity,
+					// 			current_quantity : cart.total,
+					// 			status : cart.status,
+					// 			discount_status : cart.discount_status,
+					// 		});
+					// 	});
+					// 	myapp.total_carts = ToPersian(myapp.mycarts.length);
+					// 	myapp.total_changed = true;
+					//
+					// }
+					swal(
+						'سبد خرید',
+						'محصول موردنظر به سبد خرید شما اضافه شد',
+						'success'
+					)
 				})
 				.catch((error)=>{
 					swal(

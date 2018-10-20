@@ -241,6 +241,10 @@ class ShipmentMethodAdmin(ModelView):
         return current_user.has_role('admin')
 
 class OrderAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['status','discount_status','item.title','item.product.title','user.first_name','user.last_name','user.alias_name','user.username','payment.GUID', 'payment.ref_id','payment.status','payment.amount','payment.type']
+
     def is_accessible(self):
         return current_user.has_role('admin')
 
@@ -255,6 +259,10 @@ class PaymentAdmin(ModelView):
         return current_user.has_role('admin')
 
 class ShipmentAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['guid','status','order.status','order.discount_status','order.item.title','order.item.product.title','order.user.first_name','order.user.last_name','order.user.alias_name','order.user.username','order.payment.GUID', 'order.payment.ref_id','order.payment.status','order.payment.amount','order.payment.type','insurance.company']
+
     def is_accessible(self):
         # return True
         return current_user.has_role('admin')

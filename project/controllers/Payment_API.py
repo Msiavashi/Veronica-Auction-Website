@@ -98,6 +98,7 @@ class ZarinpalGateway(Resource):
         for order in orders:
             order.status = OrderStatus.DEACTIVATE
             db.session.add(order)
+            db.session.commit()
 
         zpl = ZarinpalPaymentAPI()
         pay_token = zpl.send_request(int(payment.amount),current_user.email,current_user.mobile,"http://unibid.ir/api/user/zarinpal/gateway/callback" ,"درگاه پرداخت یونی بید")
