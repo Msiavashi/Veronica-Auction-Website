@@ -410,10 +410,10 @@
 
 			this.interval = setInterval(()=>{
 				this.index_socket.emit('sync_timers',{room:this.current_user_hash});
-			}, 1000);
+			}, 10000);
 
 			this.index_socket.on('sync_timers', function(data) {
-			
+
 				data.auctions.forEach(item => {
 
 					auction = app.today_auctions.find(x => x.id == item.id);

@@ -77,10 +77,10 @@
                 <tr v-for="order in user_orders" class="cart_item">
                   {%raw%}
                   <td class="product-name">
-                   <span class="product-quantity"> {{toPersian(order[0].total)}} × {{order[0].item.title}} با کسر تخفیف {{toPersian(parseInt(order[0].item.discount)*parseInt(order[0].total))}} تومانی </span>
+                   <span class="product-quantity"> {{toPersian(order.total)}} × {{order.item_title}} با کسر تخفیف {{toPersian(parseInt(order.main_price) - parseInt(order.discounted_price))}} تومانی </span>
                   </td>
                   <td class="product-total">
-                    <span class="amount">{{toPersian(order[0].total_cost)}} تومان</span>
+                    <span class="amount">{{toPersian(order.discounted_price)}} تومان</span>
                   </td>
                   {%endraw%}
                 </tr>
@@ -375,13 +375,12 @@ var app = new Vue({
       .then(function (response) {
           self.user_orders = response.data;
           response.data.forEach(order => {
-            self.total_price += parseInt(order[0].total_cost) + parseInt(order[0].item.discount)*parseInt(order[0].total);
-            self.items_discount += parseInt(order[0].item.discount)*parseInt(order[0].total);
-
+            self.total_price += parseInt(order.main_price);
+            self.items_discount += parseInt(order.main_price - order.discounted_price);
         });
       })
       .catch(function (error) {
-        console.error(error);
+        console.log(error.response.data);
     });
     // $.getJSON("{{url_for('usercartorder')}}", function(data){
     //   console.log(data);

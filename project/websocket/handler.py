@@ -290,6 +290,7 @@ def auction_done(data):
 
         if last_order :
             last_order.total_cost = last_offer.total_price
+            last_order.status = OrderStatus.UNPAID
             last_order.discount_status = OrderDiscountStatus.AUCTIONWINNER
             last_order.total_discount = discounted_price
             last_order.total = 1

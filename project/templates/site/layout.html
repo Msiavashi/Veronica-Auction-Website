@@ -609,7 +609,7 @@
 
       this.intervalTimer = setInterval(()=>{
         this.base_socket.emit('sync_carts',{room:this.current_user_hash});
-      }, 1000);
+      }, 2000);
 
       this.base_socket.on('sync_carts', function(data) {
         myapp.mycarts = []
