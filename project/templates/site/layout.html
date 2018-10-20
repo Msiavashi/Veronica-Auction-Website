@@ -169,7 +169,7 @@
       										</div>
       										<div class="mini-cart-button">
       											<a class="mini-cart-view" href="/cart">مشاهده سبد خرید</a>
-      											<a class="mini-cart-checkout" href="/profile/walet">پرداخت</a>
+      											<a class="mini-cart-checkout" href="#" @click="_handleCheckout">پرداخت</a>
       										</div>
                           {%endraw%}
       									</div>
@@ -190,7 +190,7 @@
                           {% else %}
                           <li><a href="/profile"><i class="fa fa-user"></i> مشاهده پنل</a></li>
                           <li><a href="/favorite"><i class="fa fa-heart-o"></i> علاقه مندی ها</a></li>
-                          <li><a href="/profile/walet"><i class="fa fa-sign-in"></i> پرداخت</a></li>
+                          <li><a href="/profile/walet"><i class="fa fa-sign-in"></i> شارژ کیف پول</a></li>
                           <li><a @click="_logout"><i class="fa fa-sign-out" aria-hidden="true"></i>خروج</a></li>
                           {% endif%}
       									</ul>
@@ -349,7 +349,7 @@
                         </div>
                         <div class="mini-cart-button">
                           <a class="mini-cart-view" href="/cart">مشاهده سبد خرید</a>
-                          <a class="mini-cart-checkout" href="/profile/walet">پرداخت</a>
+                          <a class="mini-cart-checkout" href="#" @click="_handleCheckout">پرداخت</a>
                         </div>
                         {%endraw%}
                       </div>
@@ -669,6 +669,34 @@
     },
 
     methods:{
+      _handleCheckout: function(){
+        axios.post("{{url_for('usercheckoutinit')}}")
+        .then((response) => {
+          swal()
+          if(response.data.type=="redirect_to_invoice"){
+            swal({
+              title: 'تایید سفارش',
+              text: response.data.message,
+              type: 'success',
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: 'باشه...'
+            }).then((result) => {
+              if (result.value) {
+               window.parent.location = "/checkout/payment/"+response.data.pid;
+              }
+            })
+          }
+        })
+        .catch((error) => {
+          swal(
+            'مشکلی پیش اومد',
+            error.response.data.message,
+            'error'
+          )
+        });
+
+      },
+
       _generateCategoryLink(id){
         return "/view/category/"+id+"/products";
       },
@@ -719,6 +747,7 @@
           swal("محدودیت افزایش سفارش","تخفیف داده شده برای این محصول فقط برای یک آیتم است");
         }
       },
+
       updateCarts(){
         axios.patch("{{url_for('usercartorder')}}",
           {
@@ -822,7 +851,6 @@
         })
 
       },
-
       _logout(){
         axios.post("{{url_for('userlogout')}}")
           .then((response) => {

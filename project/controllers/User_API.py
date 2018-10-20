@@ -50,7 +50,7 @@ parse_payment_account.add_argument('address', help = 'ورود آدرس ضرور
 parse_payment_account.add_argument('mobile', help = 'ورود شماره همراه ضروری است', required = True)
 parse_payment_account.add_argument('accept_tick', required = False)
 parse_payment_account.add_argument('work_place', required = False)
-parse_payment_account.add_argument('postal_code', required = False)
+parse_payment_account.add_argument('postal_code',help='ورود کد پستی ضروری است',required = True)
 parse_payment_account.add_argument('more_info', required = False)
 parse_payment_account.add_argument('email', required = False)
 parse_payment_account.add_argument('shipment_method',help='ورود روش ارسال الزامی است', required = True)
@@ -659,6 +659,11 @@ class UserCheckOutInit(Resource):
             # unpaid_orders = Order.query.filter_by(user_id=current_user.id, status=OrderStatus.UNPAID).all()
 
             unpaid_orders = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).all()
+
+            if not unpaid_orders:
+                msg = "امکان پرداخت سبد خرید شما وجود ندارد لطفا پس از بررسی مجددا اقدام فرمایید"
+                return make_response(jsonify({"success":False,"message":msg}),400)
+
             payment = Order.query.filter_by(user_id=current_user.id).filter(or_(Order.status==OrderStatus.UNPAID,Order.status==OrderStatus.PAYING)).first().payment
             if(not payment):
                 payment = Payment()
