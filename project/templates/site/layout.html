@@ -613,9 +613,10 @@
       }, 2000);
 
       this.base_socket.on('sync_carts', function(data) {
-        myapp.mycarts = []
-
-        data.forEach(cart => {
+        if(data.orders == undefined)
+          return ;
+          
+        data.orders.forEach(cart => {
           if (!myapp.mycarts.find(x=>x.id == cart.id)){
              myapp.mycarts.push({
                "id" : cart.id,
@@ -635,6 +636,14 @@
               });
             }
         });
+
+        myapp.mycarts.forEach(item => {
+					if(!data.orders.find(x => x.id == item.id)){
+						var elementPos = myapp.mycarts.map(function(x) {return x.id; }).indexOf(item.id);
+						myapp.mycarts.splice( elementPos, 1 );
+					}
+
+				});
 
         // myapp.mycarts.forEach(cart => {
         //   console.log(!temp_carts.find(x=>x.id == cart.id));

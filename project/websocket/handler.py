@@ -89,7 +89,8 @@ def sync_carts(data):
             "discount_status" : order.discount_status,
             })
 
-        emit("sync_carts",orders , room=room)
+        emit("sync_carts",{"orders":orders}, room=room)
+        return 200
     else:
         if "orders" in session:
             emit("sync_carts", session['orders'] , room=room)
@@ -255,6 +256,9 @@ def bid(data):
         db.session.add(offer)
         db.session.commit()
 
+        now = datetime.now()
+        remained = (auction.start_date + timedelta(seconds=1) - now).seconds
+
         if(remained < 10 and remained > 0):
             auction.start_date = now + timedelta(seconds=11)
             db.session.add(auction)
@@ -290,7 +294,7 @@ def auction_done(data):
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
 
-    total_bids = Offer.query.filter_by(auction_id=auction_id).count()
+    # total_bids = Offer.query.filter_by(auction_id=auction_id).count()
     last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
 
     if(last_offer):
@@ -299,7 +303,8 @@ def auction_done(data):
         db.session.add(last_offer)
         db.session.commit()
 
-        winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
+        # winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
+        winner = last_offer.user_plan.user
         print "winner :",winner
         user_schema = UserSchema()
         discounted_price = auction.item.price - last_offer.total_price

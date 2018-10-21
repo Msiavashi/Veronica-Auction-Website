@@ -414,23 +414,25 @@ class UserCartOrder(Resource):
                 msg = "این محصول رو قبلا به سبد خرید اضافه کرده اید"
                 return make_response(jsonify({"reason":msg}),400)
 
+            last_paid_order = Order.query.filter_by(user_id=current_user.id,item_id=item_id,status=OrderStatus.PAID).first()
+
+
             #calculate price base on auction participation
             item_price = (item.price - item.discount) * total
             discount_status = OrderDiscountStatus.REGULAR
             discount = item.discount * total
 
             auction = current_user.auctions.join(Item).filter_by(id = item.id).first()
-            if auction:
+            if auction and not last_paid_order:
                 offer = Offer.query.join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
-                discount_status = OrderDiscountStatus.INAUCTION
-                if offer and offer.win:
+                if offer and offer.user_plan.user.id==current_user.id and offer.win:
                     item_price = offer.total_price
                     discount_status = OrderDiscountStatus.AUCTIONWINNER
                     total = 1
                     discount = item.price - offer.total_price
                 else:
-                    userplan = current_user.user_plans.join(Auction).filter_by(id=auction.id).first()
-                    auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=userplan.id).first()
+                    auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=offer.user_plan.id).first()
+                    discount_status = OrderDiscountStatus.INAUCTION
                     item_price = item.price - auctionplan.discount
                     total = 1
                     discount = auctionplan.discount
@@ -835,6 +837,7 @@ class UserCheckoutConfirm(Resource):
                             db.session.add(shipment)
                         order.status = OrderStatus.PAID
                         db.session.add(order)
+                        db.session.commit()
 
                     payment.amount += shipment_method.price
                     payment.status = PaymentStatus.PAID
@@ -878,6 +881,7 @@ class UserCheckoutConfirm(Resource):
                         db.session.add(shipment)
                     order.status = OrderStatus.PAYING
                     db.session.add(order)
+                    db.session.commit()
 
                 payment.amount += shipment_method.price
                 payment.payment_method = payment_method
@@ -926,10 +930,11 @@ class UserApplyPayment(Resource):
                             db.engine.execute(stmt)
 
                     db.session.add(shipment)
+                    db.session.commit()
             else:
                 current_user.credit += payment.amount
                 db.session.add(current_user)
-            db.session.commit()
+                db.session.commit()
             msg = "پرداخت موفق"
             return make_response(jsonify({"success":True,"message":msg,"token":payment.ref_id}),200)
         else:
