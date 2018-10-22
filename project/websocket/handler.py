@@ -70,7 +70,7 @@ def sync_carts(data):
 
             elif order.discount_status == OrderDiscountStatus.AUCTIONWINNER:
                 auction = current_user.auctions.join(Item).filter_by(id = order.item.id).order_by('auctions.created_at DESC').first()
-                offer = Offer.query.filter_by(win=True).join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
+                offer = Offer.query.filter_by(auction_id=auction.id,win=True).first()
                 discounted_price = order.item.price - offer.total_price
 
             orders.append({
@@ -224,7 +224,7 @@ def bid(data):
             return 400
 
         if(remained < 10000 and remained > 0):
-            auction.start_date = now + timedelta(milliseconds=10300)
+            auction.start_date = now + timedelta(milliseconds=10700)
             db.session.add(auction)
             db.session.commit()
 
