@@ -372,7 +372,7 @@ class UserCartOrder(Resource):
 
             elif order.discount_status == OrderDiscountStatus.AUCTIONWINNER:
                 auction = current_user.auctions.join(Item).filter_by(id = order.item.id).order_by('auctions.created_at DESC').first()
-                offer = Offer.query.filter_by(win=True).join(Auction).filter_by(id=auction.id).order_by("offers.created_at DESC").first()
+                offer = Offer.query.filter_by(auction_id=auction.id,win=True).first()
                 discounted_price = order.item.price - offer.total_price
 
             orders.append({
@@ -431,11 +431,19 @@ class UserCartOrder(Resource):
                     total = 1
                     discount = item.price - offer.total_price
                 else:
-                    auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=offer.user_plan.id).first()
-                    discount_status = OrderDiscountStatus.INAUCTION
-                    item_price = item.price - auctionplan.discount
-                    total = 1
+                    auction = current_user.auctions.join(Item).filter_by(id = item.id).order_by('auctions.created_at DESC').first()
+                    userplan = current_user.user_plans.join(Auction).filter_by(id=auction.id).first()
+                    auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=userplan.id).first()
                     discount = auctionplan.discount
+                    total = 1
+                    item_price = item.price - auctionplan.discount
+                    discount_status = OrderDiscountStatus.INAUCTION
+
+                    # auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(user_id=current_user.id).first()
+                    # discount_status = OrderDiscountStatus.INAUCTION
+                    # item_price = item.price - auctionplan.discount
+                    # total = 1
+                    # discount = auctionplan.discount
 
             new_order = Order()
             new_order.user = current_user
@@ -527,9 +535,9 @@ class UserCartOrder(Resource):
     def delete(self):
         data = request.get_json(force=True)
         order_id = int(data.get("order_id", None))
-        order_schema = OrderSchema(many=True)
-
+        print "order_id for delete",order_id
         if current_user.is_authenticated:
+            print "auth cart for delete",order_id
             Order.query.filter_by(id=order_id).delete()
             db.session.commit()
 

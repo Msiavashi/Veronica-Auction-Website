@@ -125,15 +125,6 @@ def sync_timers(data):
     emit("sync_timers",{"auctions": auctions} , room=room)
     return 200
 
-@socketio.on('sync_auction')
-def sync_auction(data):
-    room = data['room']
-    auction_id = data['auction_id']
-    auction = Auction.query.get(auction_id)
-    remained = (auction.start_date - datetime.now()).seconds + 1
-    emit("remaining_time", remained,room=room)
-    return 200
-
 @socketio.on('join')
 def join(data):
     room = data['auction_id']
@@ -188,47 +179,60 @@ def loadview(data):
 #authenticated users only
 @socketio.on('bid')
 def bid(data):
-    room=data['auction_id']
+    room = data['auction_id']
     if not current_user.is_authenticated:
-        emit('unauthorized', {"msg": "login required"})
-        return 401
-        # is_registered
+        emit('failed',{"success":False,"reason":"جلسه کاری شما منقضی شده است لطفا دوباره به سایت وارد شوید"})
+        return 400
+
     try:
         auction_id = data['auction_id']
-        user_id = current_user.id
         auction = Auction.query.get(auction_id)
 
         if(auction.start_date < datetime.now()):
             emit('failed',{"success":False,"reason":"وقت شرکت در حراجی به اتمام رسیده است"})
             return 400
-        user = User.query.get(user_id)
-        user_plan = UserPlan.query.filter_by(user_id=user_id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
-        auc_part = UserAuctionParticipation.query.filter_by(auction_id=auction_id,user_id=user_id).first()
+
+        user_plan = UserPlan.query.filter_by(user_id = current_user.id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
+        auc_part = UserAuctionParticipation.query.filter_by(auction_id=auction_id,user_id=current_user.id).first()
+
         if(not (user_plan and auc_part)):
             emit('failed',{"success":False,"reason":"شما در این حراجی شرکت نکرده اید و مجوز ارسال پیشنهاد ندارید"})
             return 400
-        # check for one minutes remained for starting auction
 
+        # check for one minutes remained for starting auction
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
 
         if(last_offer and last_offer.win):
-            auction_done(data)
+            get_winner(data)
             return 200
 
         now = datetime.now()
-        remained = (auction.start_date + timedelta(seconds=1) - now).seconds
-        if(remained > 60):
+        days = (auction.start_date - now).days
+        sign = lambda x: (1, -1)[x < 0]
+
+        millisecond = (auction.start_date - now).seconds * 1000
+        microsecond = (auction.start_date - now).microseconds
+        remained = sign(days) * (millisecond + microsecond / 1000)
+
+        if(remained > 60000):
             emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
             return 400
 
         my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
-
         if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
             emit("failed", {"success":False, "reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید"})
             return 400
 
-        offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
+        if(remained < 10000 and remained > 0):
+            auction.start_date = now + timedelta(milliseconds=10300)
+            db.session.add(auction)
+            db.session.commit()
 
+        elif(remained <=0 ):
+            return auction_done(data)
+
+
+        offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
         offer = Offer()
         offer.user_plan=user_plan
         offer.auction=auction
@@ -256,16 +260,6 @@ def bid(data):
         db.session.add(offer)
         db.session.commit()
 
-        now = datetime.now()
-        remained = (auction.start_date + timedelta(seconds=1) - now).seconds
-
-        if(remained < 10 and remained > 0):
-            auction.start_date = now + timedelta(seconds=11)
-            db.session.add(auction)
-            db.session.commit()
-        elif(remained <=0 ):
-            return auction_done(data)
-
         result = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(auction_id=auction_id).order_by('offers.created_at DESC')
         users = []
         for user in result:
@@ -290,7 +284,7 @@ def bid(data):
     return 200
 
 def auction_done(data):
-    room = data['auction_id']
+    room = data["auction_id"]
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
 
@@ -298,53 +292,86 @@ def auction_done(data):
     last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
 
     if(last_offer):
-
-        last_offer.win = True
-        db.session.add(last_offer)
-        db.session.commit()
-
-        # winner = User.query.join(UserAuctionParticipation).join(UserPlan).join(Offer).filter_by(id=last_offer.id).first()
-        winner = last_offer.user_plan.user
-        print "winner :",winner
-        user_schema = UserSchema()
         discounted_price = auction.item.price - last_offer.total_price
-
-        #set the order for winner in he/she's carts
-
-        last_order = Order.query.filter_by(user_id=winner.id,item_id=auction.item.id).first()
-
-        if last_order :
-            last_order.total_cost = last_offer.total_price
-            last_order.discount_status = OrderDiscountStatus.AUCTIONWINNER
-            last_order.total_discount = discounted_price
-            last_order.total = 1
-            db.session.add(last_order)
+        if (not last_offer.win):
+            last_offer.win = True
+            db.session.add(last_offer)
             db.session.commit()
+
+            winner = {
+            "username" : last_offer.user_plan.user.username,
+            "first_name" : last_offer.user_plan.user.first_name,
+            "last_name" : last_offer.user_plan.user.last_name,
+            "avatar" : last_offer.user_plan.user.avatar,
+            "discount" : int(auction.item.price - last_offer.total_price)
+            }
+            #set the order for winner in he/she's carts
+
+            last_order = Order.query.filter_by(user_id=last_offer.user_plan.user.id,item_id=auction.item.id).first()
+
+            if last_order :
+                last_order.total_cost = last_offer.total_price
+                last_order.discount_status = OrderDiscountStatus.AUCTIONWINNER
+                last_order.total_discount = discounted_price
+                last_order.total = 1
+                db.session.add(last_order)
+                db.session.commit()
+            else:
+                new_order = Order()
+                new_order.user = last_offer.user_plan.user
+                new_order.item = auction.item
+                new_order.total_cost = last_offer.total_price
+                new_order.status = OrderStatus.UNPAID
+                new_order.discount_status = OrderDiscountStatus.AUCTIONWINNER
+                new_order.total = 1
+                new_order.total_discount = discounted_price
+                db.session.add(new_order)
+                db.session.commit()
+
+            emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": winner},room=room)
+            return 200
         else:
-            new_order = Order()
-            new_order.user = winner
-            new_order.item = auction.item
-            new_order.total_cost = last_offer.total_price
-            new_order.status = OrderStatus.UNPAID
-            new_order.discount_status = OrderDiscountStatus.AUCTIONWINNER
-            new_order.total = 1
-            new_order.total_discount = discounted_price
-            db.session.add(new_order)
-            db.session.commit()
-
-        emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": user_schema.dump(winner),"discount":str(discounted_price)},room=room)
-        return 200
+            winner = {
+            "username" : last_offer.user_plan.user.username,
+            "first_name" : last_offer.user_plan.user.first_name,
+            "last_name" : last_offer.user_plan.user.last_name,
+            "avatar" : last_offer.user_plan.user.avatar,
+            "discount" : int(discounted_price),
+            }
+            emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": winner},room=room)
+            return 200
     else:
         emit("auction_done", {"success":False, "reason":"این حراجی بدون پیشنهاد دهنده به پایان رسیده است"},room=room)
         return 400
 
+def get_winner(data):
+    room = data["room"]
+    auction_id = data['auction_id']
+    auction = Auction.query.get(auction_id)
+    last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
+
+    if last_offer and last_offer.win:
+        winner = {
+        "username" : last_offer.user_plan.user.username,
+        "first_name" : last_offer.user_plan.user.first_name,
+        "last_name" : last_offer.user_plan.user.last_name,
+        "avatar" : last_offer.user_plan.user.avatar,
+        "discount" : int(auction.item.price - last_offer.total_price),
+        }
+        emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": winner },room=room)
+
+    remained = (auction.start_date - datetime.now()).seconds + 1
+    emit("remaining_time",remained,room=room)
+    return 200
+
+
 @socketio.on('get_remain_time')
 def get_remain_time(data):
-    room = data['auction_id']
+    room = data['room']
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
     if(auction.start_date < datetime.now()):
-        auction_done(data)
+        return auction_done(data)
     else:
         remained = (auction.start_date - datetime.now()).seconds + 1
         emit("remaining_time", remained,room=room)
