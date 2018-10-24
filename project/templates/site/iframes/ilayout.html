@@ -8,6 +8,7 @@
     	<meta name="description" content=""/>
     	<meta name="keywords" content=""/>
     	<meta name="robots" content="noodp,index,follow"/>
+      <meta name="google-site-verification" content="QY_hSHE2T8uULuCap_fi3nA-indtctkjy4lLkZEat3s" />
     {% endblock head_meta %}
     <title>{% block title %}{% endblock %}   حراجی آنلاین اینترنتی </title>
     {% block head_css %}
@@ -65,7 +66,7 @@
   </div>
   {% block scripts %}
 
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/bootstrap.min.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.fancybox.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery-ui.min.js')}}"></script>
@@ -80,6 +81,16 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/vue.min.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/axios.min.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/sweetalert2.all.min.js')}}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.progressTimer.js')}}"></script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127836074-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-127836074-1');
+  </script>
 
   {% endblock scripts %}
 

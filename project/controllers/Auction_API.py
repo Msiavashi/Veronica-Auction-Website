@@ -222,7 +222,12 @@ class AuctionInstanceView(Resource):
         auction_participants = []
         for participant in auction.participants.order_by('created_at'):
             auction_participants.append({"id":participant.id,"username":participant.username})
-        remained_time = (auction.start_date - datetime.now()).seconds
+
+        now = datetime.now()
+        days = (auction.start_date - now).days
+        sign = lambda x: (1, -1)[x < 0]
+        remained_time = sign(days) *  (auction.start_date - now).seconds
+
         plan = None
         if(current_user.is_authenticated):
             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()

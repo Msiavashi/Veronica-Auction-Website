@@ -17853,3 +17853,27 @@ ul.checkout-bar a {
 .sort-bar > .select-box::after{
   display: none;
 }
+
+.win-user-final {
+  background: #000;
+  margin-bottom: 5px;
+  text-align: center;
+  padding: 10px;
+  color: #fff;
+  border-radius: 3px 3px 0 0;
+}
+.boardstyle {
+  position: relative;
+}
+#progressTimer {
+	width: 155px;
+	height: 20px;
+	transform: rotate(90deg);
+	position: absolute;
+	left: -48px;
+	top: 67px;
+}
+.progress {
+	height: 40px;
+	border-radius: 15px;
+}

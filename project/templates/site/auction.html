@@ -101,14 +101,17 @@
 											</template>
 										</div>
 										<div class="product-extra-link2 resWi">
-											<div class="last-Bid-user">
-											{%raw%}
-												<p class="img-price-Bid"><img v-bind:src="auctionCurrentWinnerImage"/></p>
-												<p class="price-Bid">{{auctionCurrentOffer}} </p>
-												<p class="name-price-Bid" id="auction_current_winner">{{auctionCurrentWinner}}</p>
-											{%endraw%}
+											<div class="win-user-final">برنده این حراجی</div>
+											<div class="boardstyle">
+												<div class="last-Bid-user">
+												{%raw%}
+													<p class="img-price-Bid"><img v-bind:src="auctionCurrentWinnerImage"/></p>
+													<p class="price-Bid">{{auctionCurrentOffer}} </p>
+													<p class="name-price-Bid" id="auction_current_winner">{{auctionCurrentWinner}}</p>
+												{%endraw%}
+												</div>
+												<div id="progressTimer"></div>
 											</div>
-
 											{%raw%}
 											<div id="countdown">
 												<div id='tiles' class="flash-countdown color-full" data-timer="0" ></div>
@@ -282,10 +285,22 @@ var app = new Vue({
 		auctionTitle: "",
 		auctionParticipants: [],
 		socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port ,{resource:'A/socket.io', 'force new connection': true}),
+		progress_counter: null,
+		progress_start : null,
+	},
+	watch:{
+		auctionBasePrice:function() {
+			$("#progressTimer").progressTimer({
+				timeLimit: app.progress_counter,  //total number of seconds
+				warningThreshold: 60,  //seconds remaining triggering switch to warning color
+				dangerThreshold: 10,
+			});
+		},
 	},
 	methods: {
 
 		handleBid: function(){
+
 			this.socket.emit("bid", {
 				auction_id: "{{auction_id}}",
 			});
@@ -378,7 +393,6 @@ var app = new Vue({
 	},
 
 	created: function(){
-
 		axios.get("{{url_for('auctioninstanceview', aid=auction_id)}}")
 			.then((response) => {
 				var auction = response.data.auction;
@@ -400,6 +414,9 @@ var app = new Vue({
 				this.auctionMaxMembers = auction.max_members;
 				this.auctionParticipants = auction.participants;
 				this.deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+				this.progress_counter = auction.remained_time > 0 ? auction.remained_time : 0;
+				this.progress_start = auction.remained_time;
+				console.log(this.progress_counter);
 			})
 			.catch((error)=>{
 				console.error(error.response.data);
@@ -439,6 +456,7 @@ var app = new Vue({
 
 	// countdown
 	mounted: function(){
+
 			// this.interval = setInterval(()=>{
 			// 	var seconds = moment.duration(this.remainingTime).asSeconds() - 1;
 			// 	this.remainingTime = moment.utc(seconds*1000).format('HH:mm:ss');
@@ -471,58 +489,6 @@ app.socket.on('sync_auction_join', function() {
 app.socket.on('disconnect', function() {
 		 console.log('disconnected..');
  });
-
-var timer = setInterval(check_seconds,1000);
-
-var timer_sentinal = 10000;
-var running_timer = true;
-
-function check_seconds() {
-	running_timer = true;
-	timer_sentinal -= 1000;
-	// console.log('timer_sentinal');
-	// console.log(timer_sentinal);
-
-	seconds = timer_sentinal / 1000;
-	if (( seconds  < 60  ) && (seconds  > 10) ) {
-		$('#tiles').removeClass('color-full');
-		$('#tiles').addClass('color-half');
-	} else{
-		$('#tiles').addClass('color-full');
-		$('#tiles').removeClass('color-half');
-	}
-	if ( seconds <= 10 ) {
-		$('#tiles').removeClass('color-half');
-		$('#tiles').addClass('color-empty');
-	}
-	else{
-		$('#tiles').addClass('color-full');
-		$('#tiles').removeClass('color-empty');
-	}
-
- 	if(timer_sentinal == 0){
-		console.log('sentinal');
-		start_loading(loading_element);
-		app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
-		clearInterval(timer);
-		running_timer = false;
-	}
- }
-
-app.socket.on("remaining_time", function(seconds){
-
-	console.log("remaining_time");
-	stop_loading(loading_element);
-	timer_sentinal = seconds * 1000;
-	if(timer_sentinal!=0 && !running_timer){
-		running_timer = true;
-		timer = setInterval(check_seconds,1000);
-	}
-	$(".flash-countdown").data('timer', seconds).TimeCircles({
-			"total_duration": seconds
-	}).restart();
-
-	});
 
 app.socket.on("update_view", function(data){
 	if(data.users.length==0)
@@ -586,8 +552,30 @@ app.socket.on('accepted', function(data){
 	console.log("accepted");
 });
 
+app.socket.on("remaining_time", function(seconds){
+	console.log("remaining_time : "+ seconds);
+
+	if (seconds <= 11){
+		app.progress_counter = seconds;
+		app.progress_start = seconds;
+	}
+
+	console.log("remaining_time");
+	stop_loading(loading_element);
+	timer_sentinal = seconds * 1000;
+	if(timer_sentinal!=0 && !running_timer){
+		running_timer = true;
+		timer = setInterval(check_seconds,1000);
+	}
+	$(".flash-countdown").data('timer', seconds).TimeCircles({
+			"total_duration": seconds
+	}).restart();
+
+	});
+
 app.socket.on("auction_done", function(data){
 
+	$('.progress-bar').css('width', 0+'%');
 	 clearInterval(timer);
  	 clearInterval(app.timerSync);
 
@@ -614,10 +602,73 @@ app.socket.on("leave_auction", function(data){
 	app.socket.disconnect();
 });
 
+var timer = setInterval(check_seconds,1000);
+
+var timer_sentinal = 10000;
+var running_timer = true;
+
+function check_seconds() {
+
+	running_timer = true;
+	timer_sentinal -= 1000;
+	// console.log('timer_sentinal');
+	// console.log(timer_sentinal);
+	seconds = timer_sentinal / 1000;
+
+	if (seconds <= app.progress_start){
+
+			app.progress_counter -= 1;
+			$('.progress-bar').css('width', (app.progress_counter * 100) / app.progress_start +'%');
+			console.log((app.progress_counter *100) / app.progress_start);
+	}
+
+	if (( seconds  < 60  ) && (seconds  > 10) ) {
+		$('#tiles').removeClass('color-full');
+		$('#tiles').addClass('color-half');
+	} else{
+		$('#tiles').addClass('color-full');
+		$('#tiles').removeClass('color-half');
+	}
+	if ( seconds <= 10 ) {
+		$('#tiles').removeClass('color-half');
+		$('#tiles').addClass('color-empty');
+	}
+	else{
+		$('#tiles').addClass('color-full');
+		$('#tiles').removeClass('color-empty');
+	}
+
+ 	if(timer_sentinal == 0){
+		console.log('sentinal');
+		start_loading(loading_element);
+		app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
+		clearInterval(timer);
+		running_timer = false;
+	}
+ }
+
 $('.close').on('click',function(event){
 	event.preventDefault();
 	$(this).parent().removeClass('show').addClass('hide')
 });
+
+// progress bar timer
+
+$("#progressTimer").progressTimer({
+	// timeLimit: app.progress_counter,  //total number of seconds
+	// warningThreshold: 40,  //seconds remaining triggering switch to warning color
+	// dangerThreshold: 10,
+});
+
+// var counterBack = setInterval(function(){
+//   app.progress_counter --;
+//   if (app.progress_counter >= 0){
+//     $('.progress-bar').css('width', app.progress_counter+'%');
+//   } else {
+//     clearInterval(counterBack);
+//   }
+//
+// }, 100);
 
 </script>
 
