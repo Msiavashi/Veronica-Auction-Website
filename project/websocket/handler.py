@@ -163,11 +163,16 @@ def loadview(data):
                 "current_offer_price" : int(current_offer_price),
                 "pretty_name" : pretty_name ,
                 "avatar" : user.avatar,
-                "id": user.id
+                "id": user.id,
             })
 
         if(last_offer):
-            emit("update_view", {"success":True, "current_offer_price": str(last_offer.total_price),"users": users},room=room)
+            now = datetime.now()
+            days = (last_offer.auction.start_date - now).days
+            sign = lambda x: (1, -1)[x < 0]
+            remained_time = sign(days) * (last_offer.auction.start_date - datetime.now()).seconds
+
+            emit("update_view", {"success":True,"remained_time":remained_time , "current_offer_price": str(last_offer.total_price),"users": users},room=room)
         else:
             emit("update_view", {"success":True , "current_offer_price": 0,"users": users},room=room)
 
@@ -379,5 +384,6 @@ def get_remain_time(data):
 
 @socketio.on('keepAlive')
 def keepAlive(data):
-    room = data['auction_id']
+    room = data['room']
     emit("alive",room=room)
+    return 200

@@ -7162,7 +7162,7 @@ a.protect-icon:hover {
   direction: ltr
 }
 .flash-countdown .time_circles > div {
-  color: #fff;
+  /*color: #fff;*/
   display: inline-block;
   font-weight: 700;
   width: auto !important;
@@ -17034,6 +17034,9 @@ td.product-info-total .product-info .desc {
     padding-left: 0px;
     padding-right: 0px;
   }
+  #progressTimer{
+    display: none;
+  }
 }
 
 
@@ -17571,6 +17574,10 @@ td.product-info-total .product-info .desc {
   #tabMenu .visible-big {
     display: none;
   }
+
+  #progressTimer{
+    display: none;
+  }
 }
 
 /* progress bar */
@@ -17743,6 +17750,9 @@ ul.checkout-bar a {
     width: 100%;
     z-index: 99;
   }
+  #progressTimer_resp{
+    display: none;
+  }
 }
 
 .CodeM {
@@ -17865,6 +17875,7 @@ ul.checkout-bar a {
 .boardstyle {
   position: relative;
 }
+
 #progressTimer {
 	width: 155px;
 	height: 20px;

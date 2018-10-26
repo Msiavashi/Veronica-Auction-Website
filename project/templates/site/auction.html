@@ -1,6 +1,8 @@
 {% extends 'site/layout.html' %}
 {% block title %} حراجی محصول {% endblock %}
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/TimeCircles0.css') }}"/>
+
 
 <div id="app" class="content-page">
 	<div v-cloak class="container">
@@ -110,12 +112,12 @@
 													<p class="name-price-Bid" id="auction_current_winner">{{auctionCurrentWinner}}</p>
 												{%endraw%}
 												</div>
-												<div id="progressTimer"></div>
 											</div>
 											{%raw%}
+											<div class="countdown-label">{{now_date}}</div>
 											<div id="countdown">
-												<div id='tiles' class="flash-countdown color-full" data-timer="0" ></div>
-												<div class="countdown-label">{{now_date}}</div>
+												<!-- <div id='tiles' class="flash-countdown color-full" data-timer="0" ></div> -->
+												<div class="my-flash-countdown" id="DateCountdown" data-timer="0"></div>
 											</div>
 											<a class="addcart-link" href="#" @click.prevent="handleBid" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">{{_ToPersian(offerBidCount)}}</div></a>
 											{%endraw%}
@@ -243,6 +245,7 @@
 {{ super() }}
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue-socket.io@2.1.1-b/dist/build.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/TimeCircles0.js')}}"></script>
 
 <div id="myModal" class="modal">
     <div class="modals">
@@ -266,8 +269,8 @@ var app = new Vue({
 		auctionCurrentWinnerImage: null,
 		auctionCurrentOffer: null,
 		offerBidCount: 0,
-		// interval: null,
-		// timerSync: null,
+		interval: null,
+		timerSync: null,
 		// remainingTime: null,
 		deadline: null,
 		activeImage: null,
@@ -287,14 +290,36 @@ var app = new Vue({
 		socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port ,{resource:'A/socket.io', 'force new connection': true}),
 		progress_counter: null,
 		progress_start : null,
+		remained_percent : "width:100%",
+		progress_class: "progress-bar progress-bar-success",
 	},
 	watch:{
 		auctionBasePrice:function() {
-			$("#progressTimer").progressTimer({
-				timeLimit: app.progress_counter,  //total number of seconds
-				warningThreshold: 60,  //seconds remaining triggering switch to warning color
-				dangerThreshold: 10,
-			});
+
+			this.interval = setInterval(()=>{
+
+					var remained = (this.progress_counter / this.progress_start) * 100;
+					// var remained = Number(((this.progress_counter / this.progress_start) * 100).toFixed(4)); // 6.7
+
+					if (this.progress_counter > 6) {
+						this.progress_class = "progress-bar progress-bar-success";
+					}
+
+					if (this.progress_counter <= 6 && this.progress_counter > 3){
+						this.progress_class = "progress-bar progress-bar-warning";
+					}
+
+					if (this.progress_counter <= 3) {
+						this.progress_class = "progress-bar progress-bar-danger";
+					}
+
+					this.remained_percent = "width:"+ remained +"%";
+
+					this.progress_counter -= 0.1;
+					this.progress_counter = Number((this.progress_counter).toFixed(4));
+
+			}, 100);
+
 		},
 	},
 	methods: {
@@ -417,6 +442,7 @@ var app = new Vue({
 				this.progress_counter = auction.remained_time > 0 ? auction.remained_time : 0;
 				this.progress_start = auction.remained_time;
 				console.log(this.progress_counter);
+				console.log(this.remained_time);
 			})
 			.catch((error)=>{
 				console.error(error.response.data);
@@ -454,16 +480,6 @@ var app = new Vue({
 
 	},
 
-	// countdown
-	mounted: function(){
-
-			// this.interval = setInterval(()=>{
-			// 	var seconds = moment.duration(this.remainingTime).asSeconds() - 1;
-			// 	this.remainingTime = moment.utc(seconds*1000).format('HH:mm:ss');
-			// }, 1000);
-
-			// sync timer with server every 3 seconds
-	},
 });
 
 app.socket.on('connect', function() {
@@ -481,14 +497,18 @@ app.socket.emit('sync_auction_join', {room:("{{auction_id}}"+"{{current_user.id}
 app.socket.on('sync_auction_join', function() {
 	console.log("sync_auction_join");
 	app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
-	// 	app.timerSync = setInterval(() => {
-	// 	 app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
-	//  }, 1000);
+		app.timerSync = setInterval(() => {
+		 app.socket.emit('keepAlive', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode()});
+	 },2000);
  });
 
 app.socket.on('disconnect', function() {
 		 console.log('disconnected..');
  });
+
+ app.socket.on('alive', function() {
+ 		 console.log('alive...');
+  });
 
 app.socket.on("update_view", function(data){
 	if(data.users.length==0)
@@ -553,9 +573,10 @@ app.socket.on('accepted', function(data){
 });
 
 app.socket.on("remaining_time", function(seconds){
+
 	console.log("remaining_time : "+ seconds);
 
-	if (seconds <= 11){
+	if (seconds <= 11 && seconds >= 10){
 		app.progress_counter = seconds;
 		app.progress_start = seconds;
 	}
@@ -567,26 +588,54 @@ app.socket.on("remaining_time", function(seconds){
 		running_timer = true;
 		timer = setInterval(check_seconds,1000);
 	}
-	$(".flash-countdown").data('timer', seconds).TimeCircles({
-			"total_duration": seconds
+	$(".my-flash-countdown").data('timer', seconds).TimeCircles({
+		"total_duration": seconds,
+		"animation": "smooth",
+    "bg_width": 1,
+    "fg_width": 0.1,
+    "circle_bg_color": "#f0fff5",
+    "time": {
+        "Days": {
+            "text": "روز",
+            "color": "#40484F",
+            "show": false
+        },
+        "Hours": {
+            "text": "ساعت",
+            "color": "#41c56c",
+            "show": true
+        },
+        "Minutes": {
+            "text": "دقیقه",
+            "color": "#41c56c",
+            "show": true
+        },
+        "Seconds": {
+            "text": "ثانیه",
+            "color": "#41c56c",
+            "show": true
+        }
+    }
 	}).restart();
 
 	});
 
 app.socket.on("auction_done", function(data){
 
-	$('.progress-bar').css('width', 0+'%');
+	 $('.progress-bar').css('width', 0+'%');
 	 clearInterval(timer);
  	 clearInterval(app.timerSync);
+	 clearInterval(app.interval);
 
-	 $(".flash-countdown").TimeCircles().restart().stop();
+
+	 $(".my-flash-countdown").TimeCircles().restart().stop();
 	 if(data.success){
 
 		 $(".error_alert").addClass('hide');
 		 $(".success_alert").removeClass('hide');
 		 $(".success_container").html(data.reason)
 		//  app.remainingTime ="برنده :" + data.winner[0].username;
-		 $(".flash-countdown").html(data.winner.username);
+		 $(".my-flash-countdown").html(data.winner.username);
 		 $('#discount').html(ToPersian(formatCurrency(data.winner.discount)))
 	 }else {
 		 $(".error_alert").removeClass('hide');
@@ -613,30 +662,28 @@ function check_seconds() {
 	timer_sentinal -= 1000;
 	// console.log('timer_sentinal');
 	// console.log(timer_sentinal);
-	seconds = timer_sentinal / 1000;
-
-	if (seconds <= app.progress_start){
-
-			app.progress_counter -= 1;
-			$('.progress-bar').css('width', (app.progress_counter * 100) / app.progress_start +'%');
-			console.log((app.progress_counter *100) / app.progress_start);
-	}
-
-	if (( seconds  < 60  ) && (seconds  > 10) ) {
-		$('#tiles').removeClass('color-full');
-		$('#tiles').addClass('color-half');
-	} else{
-		$('#tiles').addClass('color-full');
-		$('#tiles').removeClass('color-half');
-	}
-	if ( seconds <= 10 ) {
-		$('#tiles').removeClass('color-half');
-		$('#tiles').addClass('color-empty');
-	}
-	else{
-		$('#tiles').addClass('color-full');
-		$('#tiles').removeClass('color-empty');
-	}
+	// seconds = timer_sentinal / 1000;
+	//
+	//
+	// // app.progress_counter -= 1;
+	// // $('.progress-bar').css('width', (app.progress_counter * 100) / app.progress_start +'%');
+	//
+	//
+	// if (( seconds  < 60  ) && (seconds  > 10) ) {
+	// 	$('#tiles').removeClass('color-full');
+	// 	$('#tiles').addClass('color-half');
+	// } else{
+	// 	$('#tiles').addClass('color-full');
+	// 	$('#tiles').removeClass('color-half');
+	// }
+	// if ( seconds <= 10 ) {
+	// 	$('#tiles').removeClass('color-half');
+	// 	$('#tiles').addClass('color-empty');
+	// }
+	// else{
+	// 	$('#tiles').addClass('color-full');
+	// 	$('#tiles').removeClass('color-empty');
+	// }
 
  	if(timer_sentinal == 0){
 		console.log('sentinal');
@@ -652,23 +699,34 @@ $('.close').on('click',function(event){
 	$(this).parent().removeClass('show').addClass('hide')
 });
 
-// progress bar timer
-
-$("#progressTimer").progressTimer({
-	// timeLimit: app.progress_counter,  //total number of seconds
-	// warningThreshold: 40,  //seconds remaining triggering switch to warning color
-	// dangerThreshold: 10,
+$("#DateCountdown").TimeCircles({
+    "animation": "smooth",
+    "bg_width": 1,
+    "fg_width": 0.1,
+    "circle_bg_color": "#f0fff5",
+    "time": {
+        "Days": {
+            "text": "روز",
+            "color": "#40484F",
+            "show": false
+        },
+        "Hours": {
+            "text": "ساعت",
+            "color": "#41c56c",
+            "show": true
+        },
+        "Minutes": {
+            "text": "دقیقه",
+            "color": "#41c56c",
+            "show": true
+        },
+        "Seconds": {
+            "text": "ثانیه",
+            "color": "#41c56c",
+            "show": true
+        }
+    }
 });
-
-// var counterBack = setInterval(function(){
-//   app.progress_counter --;
-//   if (app.progress_counter >= 0){
-//     $('.progress-bar').css('width', app.progress_counter+'%');
-//   } else {
-//     clearInterval(counterBack);
-//   }
-//
-// }, 100);
 
 </script>
 

@@ -2739,7 +2739,12 @@
     line-height: 25px;
   }
   .last-Bid-user {
-    display:none
+    /*display:none*/
+  }
+  .time_circles {
+      position: relative;
+      height: 80px;
+      margin: 30px;
   }
   .item-Bid b {
     width: auto;
