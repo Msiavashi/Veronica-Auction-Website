@@ -1,6 +1,9 @@
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
+import time
+import random
+
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask_login import UserMixin
 from . import Role
@@ -13,10 +16,21 @@ class User(Base,UserMixin):
         except:
          return None
 
+    random.seed(time.time())
     __tablename__ = 'users'
     __table_args__ = (db.UniqueConstraint('username', name='users_username_uc'),)
 
     id = db.Column(db.BigInteger, primary_key=True)
+
+    activation_code = db.Column(db.String(length=10), nullable=False, default = random.randint(100000,1000000))
+    is_verified = db.Column(db.Boolean,nullable =False,default=False)
+    is_active = db.Column(db.Boolean,nullable =False,default=True)
+    is_banned = db.Column(db.Boolean,nullable =False,default=False)
+    verification_attempts = db.Column(db.Integer,nullable =False,default=0)
+    login_attempts = db.Column(db.Integer,nullable =False,default=0)
+    send_sms_attempts = db.Column(db.Integer,nullable =False,default=0)
+
+
     username = db.Column(db.String(length=255), nullable=False)
     alias_name = db.Column(db.String(128), nullable = True)
     first_name = db.Column(db.String(length=100))

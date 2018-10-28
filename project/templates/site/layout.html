@@ -605,7 +605,6 @@
       _handleCheckout: function(){
         axios.post("{{url_for('usercheckoutinit')}}")
         .then((response) => {
-          swal()
           if(response.data.type=="redirect_to_invoice"){
             swal({
               title: 'تایید سفارش',
@@ -771,10 +770,7 @@
               var elementPos2 = app.user_orders.map(function(x) {return x.id; }).indexOf(id);
               app.user_orders.splice( elementPos2, 1 );
             }
-          } else if (
-            // Read more about handling dismissals
-            result.dismiss === swal.DismissReason.cancel
-          ) {
+          } else if (result.dismiss === swal.DismissReason.cancel) {
             swal({
               title:'عملیات کنسل شد',
               text:'هنوز میتونید این محصول رو خریداری کنید',
@@ -782,8 +778,7 @@
               confirmButtonText: 'حله...',
             });
           }
-        })
-
+        });
       },
       _logout(){
         axios.post("{{url_for('userlogout')}}")

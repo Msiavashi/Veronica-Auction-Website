@@ -17888,3 +17888,24 @@ ul.checkout-bar a {
 	height: 40px;
 	border-radius: 15px;
 }
+#activation_code{
+border: 1px solid #aaa;
+height: 30px;
+font-size: 20px;
+margin: 20px;
+}
+
+.activation_button{
+  padding: 10px;
+  margin: 10px;
+  border: 0;
+  border-radius: .25em;
+  background: initial;
+  background-color: #30c5d6;
+  color: #fff;
+  font-size: 1.0625em;
+}
+
+.activation_button:hover{
+  background-color: #10a3b4;
+}

@@ -16,7 +16,7 @@ import eventlet
 eventlet.monkey_patch()
 import redis
 from flask_login import current_user,LoginManager
-from definitions import SESSION_EXPIRE_TIME
+from definitions import SESSION_EXPIRE_TIME,SMS_USERNAME,SMS_PASSWORD
 from flask_session import Session
 from sqlalchemy import create_engine
 
@@ -34,7 +34,7 @@ def check_if_token_in_blacklist(decrypted_token):
     return model.Revoked.is_jti_blacklisted(jti)
 
 # after production comment this
-# Session(app)
+Session(app)
 
 params = {
 	 'pingInterval': 20000,
@@ -104,9 +104,11 @@ def custom_401(error):
 # def handle_csrf_error(e):
 #     return render_template('csrf_error.html', reason=e.description), 400
 
+
 api = Api(app,'/api')
 
 api.add_resource(Auth_API.UserRegistration,'/register')
+api.add_resource(Auth_API.UserVerification,'/user/verification')
 api.add_resource(Auth_API.UserLogin, '/user/login')
 api.add_resource(Auth_API.UserLogout, '/user/logout')
 api.add_resource(Auth_API.UserTokenRefresh, '/refresh/token')

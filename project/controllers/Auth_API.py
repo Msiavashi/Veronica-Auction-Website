@@ -13,6 +13,9 @@ import json
 from ..database import db
 from project import app
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
+from ..melipayamak import SendSMS
+from definitions import MAX_LOGIN_ATTEMPTS, MAX_ACTIVATION_ATTEMPTS, MAX_DEFFER_ACTIVATION_TIME, MAX_MESSAGES_SEND, MAX_AVAILABLE_MESSAGE_TIME
+from datetime import datetime
 
 parser_register = reqparse.RequestParser()
 parser_register.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
@@ -27,10 +30,14 @@ parser_login.add_argument('password', help = 'ورود رمز عبور ضرور�
 parser_login.add_argument('remember_me', required = False)
 parser_login.add_argument('next')
 
-def can_access(f):
-    if not hasattr(f, 'access_control'):
-        return True
-    return _eval_access(**f.access_control) == AccessResult.ALLOWED
+parser_verify = reqparse.RequestParser()
+parser_verify.add_argument('code', help = 'ورود کد فعالسازی الزامی است', required = True)
+
+
+# def can_access(f):
+#     if not hasattr(f, 'access_control'):
+#         return True
+#     return _eval_access(**f.access_control) == AccessResult.ALLOWED
 
 class UserRegistration(Resource):
     def post(self):
@@ -42,21 +49,21 @@ class UserRegistration(Resource):
         if(data['password']!=data['c_password']):
             return make_response(jsonify({"message":{'password': 'رمز عبور با تکرار آن مطابقت ندارد'}}),400)
 
-        new_user = User(data['username'])
-        new_user.username = data['username']
-        new_user.mobile = data['mobile']
-        new_user.password = User.generate_hash(data['password'])
-
         try:
+            new_user = User(data['username'])
+            new_user.username = data['username']
+            new_user.mobile = data['mobile']
+            new_user.password = User.generate_hash(data['password'])
+
             new_user.save_to_db()
             access_token = create_access_token(identity = data['username'],fresh=True,expires_delta=False)
             refresh_token = create_refresh_token(identity = data['username'])
+
             return make_response(jsonify({'success': True,'access_token': access_token,'refresh_token': refresh_token}),200)
         except Exception as e:
             return make_response(jsonify({"message":{"error" : str(e)}}), 500)
     def get(self):
         return make_response(jsonify({"message":"online resources register"}),404)
-
 
 class UserLogin(Resource):
     def post(self):
@@ -68,8 +75,25 @@ class UserLogin(Resource):
         if not current_user:
             return make_response(jsonify({"message" :{"error" :'کاربری با نام کاربری مورد نظر شما پیدا نشد'}}),400)
 
+        if current_user.login_attempts == MAX_LOGIN_ATTEMPTS:
+            current_user.is_verified = False
+            current_user.is_banned = True
+            current_user.is_active = False
+            db.session.add(current_user)
+            db.session.commit()
+            msg = "حساب  کاربری شما موقتا به حالت تعلیق در آمد لطفا با پشتیبانی سایت تماس حاصل کنید"
+            return make_response(jsonify({'message':{"error" : msg}}),401)
+
         if User.verify_hash(data['password'], current_user.password):
 
+            if current_user.is_banned:
+                msg = "متاسفانه حساب کاربری شما در لیست سیاه قرار گرفته است"
+                return make_response(jsonify({'message':{"error" : msg}}),401)
+
+            if not current_user.is_verified:
+                session['username'] = current_user.username
+                msg = "حساب کاربری شما باید از طریق شماره همراه فعال سازی شود"
+                return make_response(jsonify({'message':{"error" : msg,"operation":"verification_required"}}),401)
 
             access_token = create_access_token(identity = data['username'],fresh=True,expires_delta=False)
             refresh_token = create_refresh_token(identity = data['username'])
@@ -149,6 +173,9 @@ class UserLogin(Resource):
             set_access_cookies(resp, access_token)
             return make_response(resp,200)
         else:
+            current_user.login_attempts += 1
+            db.session.add(current_user)
+            db.session.commit()
             return make_response(jsonify({'message':{"error" : 'رمز عبور شما نادرست است'}}),401)
 
     def get(self):
@@ -170,7 +197,6 @@ class UserLogout(Resource):
             return make_response(jsonify({'message': 'Access token has been revoked'}),200)
         except Exception as e:
             return make_response(jsonify({'message':{ 'error' : str(e)}}), 500)
-
 
 class UserLogoutRefresh(Resource):
     @jwt_refresh_token_required
@@ -195,3 +221,102 @@ class UserTokenRefresh(Resource):
             })
         set_access_cookies(resp, access_token)
         return make_response(resp,200)
+
+class UserVerification(Resource):
+    def put(self):
+        if 'username' in session:
+            now = datetime.now()
+            current_user = User.find_by_username(session['username'])
+            if 'last_send_time' not in session:
+                session['last_send_time'] = current_user.updated_at
+
+            if (now - session['last_send_time']).seconds >= MAX_AVAILABLE_MESSAGE_TIME:
+
+                if current_user.send_sms_attempts == MAX_MESSAGES_SEND :
+                    msg = "حداکثر تلاشهای شما جهت دریافت رمز یکبار مصرف انجام گرفته است. لطفا با پشتیبانی سایت تماس حاصل کنید"
+                    return make_response(jsonify({"message":{"success":False,"error":msg}}),400)
+
+                current_user.activation_code = random.randint(100000,1000000)
+                current_user.send_sms_attempts += 1
+                current_user.verification_attempts = 0
+                db.session.add(current_user)
+                db.session.commit()
+                session['last_send_time'] = current_user.updated_at
+
+                text = "فعال سازی حساب کاربری یونی بید" \
+                + '\n' + "کدفعال سازی حساب کاربری شما :" \
+                + '\n' + current_user.activation_code \
+                + '\n' + 'توجه! این کد فعال سازی تا یک دقیقه دیگر منقضی می شود' \
+                + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
+                + '\n' + 'تیم یونی بید www.unibid.ir'
+
+                SendSMS(current_user.mobile,text)
+                return make_response(jsonify({"message":text,"remained_to_expire": MAX_AVAILABLE_MESSAGE_TIME }),200)
+
+            return make_response(jsonify({"remained_to_expire": MAX_AVAILABLE_MESSAGE_TIME - (now - session['last_send_time']).seconds }),200)
+
+        msg = "توکن فعال سازی حساب در دسترس نیست. لطفا دوباره اقدام به ورود به سایت کنید."
+        return make_response(jsonify({"message":{"success":False,"error":msg}}),400)
+
+    def post(self):
+        if 'username' in session:
+
+            data = parser_verify.parse_args()
+            data = request.get_json(force=True)
+
+            verify_code = data['code']
+            current_user = User.find_by_username(session['username'])
+
+            now = datetime.now()
+
+            if ((now - current_user.updated_at).seconds >= MAX_DEFFER_ACTIVATION_TIME) and (current_user.verification_attempts == MAX_ACTIVATION_ATTEMPTS):
+                current_user.verification_attempts = 0
+                db.session.add(current_user)
+                db.session.commit()
+
+            if current_user.verification_attempts == MAX_ACTIVATION_ATTEMPTS:
+                msg = "حداکثر تلاشهای شما جهت فعال سازی حساب کاربری به انجام رسیده است"
+                return make_response(jsonify({"message":{"success":False,"error":msg}}),400)
+
+            if verify_code != current_user.activation_code:
+                current_user.verification_attempts +=1
+                db.session.add(current_user)
+                db.session.commit()
+                msg = "کد وارد شده معتبر نمی باشد"
+                return make_response(jsonify({"message":{"success":False,"error":msg}}),400)
+
+            if (now - current_user.updated_at).seconds >= MAX_AVAILABLE_MESSAGE_TIME:
+                msg = "کد وارد شده شما منقضی شده است"
+                return make_response(jsonify({"message":{"success":False,"error":msg}}),400)
+
+            current_user.is_verified = True
+            current_user.send_sms_attempts = 0
+            current_user.verification_attempts = 0
+            current_user.login_attempts = 0
+            db.session.add(current_user)
+            db.session.commit()
+            text = "فعال سازی حساب کاربری یونی بید" \
+            + '\n' + current_user.username + " عزیز !"
+            + '\n' + "حساب کاربری شما با موفقیت فعال سازی شد" \
+            + '\n' + 'ساعات خوشی را برای شما در سایت یونی بید آرزومندیم'\
+            + '\n' + 'تیم یونی بید www.unibid.ir'
+            SendSMS(current_user.mobile,text)
+            msg = "حساب کاربری شما باموفقیت فعال سازی شد. لطفا به سایت وارد شوید"
+            return make_response(jsonify({"message":{"success":True,"message":msg}}),200)
+
+        msg = "توکن فعال سازی حساب در دسترس نیست. لطفا دوباره اقدام به ورود به سایت کنید."
+        return make_response(jsonify({"message":{"success":False,"error":msg}}),400)
+
+    def get(self):
+        if 'username' in session:
+            current_user = User.find_by_username(session['username'])
+
+            resp = {
+                "username":session['username'],
+                "verification_attempts":MAX_ACTIVATION_ATTEMPTS - current_user.verification_attempts ,
+                "send_attempts":MAX_MESSAGES_SEND - current_user.send_sms_attempts,
+            }
+            return make_response(jsonify(resp),200)
+
+        msg = "توکن فعال سازی حساب در دسترس نیست. لطفا دوباره اقدام به ورود به سایت کنید."
+        return make_response(jsonify({"message":{"success":False,"error":msg}}),400)

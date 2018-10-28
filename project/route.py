@@ -58,7 +58,12 @@ class Route():
     def account_register():
         if current_user.is_authenticated:
             return redirect('/')
+        next = request.args.get('next')
+        if next:
+            return render_template('site/register.html',next=next)
+        
         return render_template('site/register.html')
+
 
     @app.route('/iregister')
     def iregister():
