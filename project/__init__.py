@@ -34,7 +34,7 @@ def check_if_token_in_blacklist(decrypted_token):
     return model.Revoked.is_jti_blacklisted(jti)
 
 # after production comment this
-Session(app)
+# Session(app)
 
 params = {
 	 'pingInterval': 20000,
