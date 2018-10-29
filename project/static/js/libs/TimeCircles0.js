@@ -347,7 +347,17 @@
             d.setSeconds(d.getSeconds() + seconds_to_add);
         }
         else if(!isNaN(this.data.attributes.ref_date)) {
-            this.data.attributes.ref_date += (seconds_to_add * 1000);
+          this.data.attributes.ref_date += (seconds_to_add * 1000);
+        }
+    };
+
+    TC_Instance.prototype.renewTime = function(seconds_to_set) {
+        if(this.data.attributes.ref_date instanceof Date) {
+            var d = this.data.attributes.ref_date;
+            d.setSeconds(new Date().getTime() + seconds_to_set);
+        }
+        else if(!isNaN(this.data.attributes.ref_date)) {
+            this.data.attributes.ref_date =  new Date().getTime() + (seconds_to_set * 1000);
         }
     };
 
@@ -423,7 +433,7 @@
             textElement.addClass('textDiv_' + key);
             textElement.css("top", Math.round(0.35 * this.data.attributes.item_size));
             textElement.css("left", Math.round(i++ * this.data.attributes.item_size));
-            // textElement.css("width", this.data.attributes.item_size);
+            textElement.css("width", this.data.attributes.item_size);
             textElement.appendTo(this.container);
 
             var numberElement = $("<span>");
@@ -480,7 +490,7 @@
                     var key = this.data.drawn_units[i];
 
                     // Set the text value
-                    this.data.text_elements[key].text("0");
+                    this.data.text_elements[key].text("۰۰");
                     var x = (i * this.data.attributes.item_size) + (this.data.attributes.item_size / 2);
                     var y = this.data.attributes.item_size / 2;
                     var color = this.config.time[key].color;
@@ -908,6 +918,12 @@
     TC_Class.prototype.addTime = function(seconds_to_add) {
         this.foreach(function(instance) {
             instance.addTime(seconds_to_add);
+        });
+    };
+
+    TC_Class.prototype.renewTime = function(seconds_to_set) {
+        this.foreach(function(instance) {
+            instance.renewTime(seconds_to_set);
         });
     };
 

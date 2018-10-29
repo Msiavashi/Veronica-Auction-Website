@@ -296,7 +296,7 @@ class UserVerification(Resource):
             db.session.add(current_user)
             db.session.commit()
             text = "فعال سازی حساب کاربری یونی بید" \
-            + '\n' + current_user.username + " عزیز !"
+            + '\n' + current_user.username + " عزیز !"\
             + '\n' + "حساب کاربری شما با موفقیت فعال سازی شد" \
             + '\n' + 'ساعات خوشی را برای شما در سایت یونی بید آرزومندیم'\
             + '\n' + 'تیم یونی بید www.unibid.ir'

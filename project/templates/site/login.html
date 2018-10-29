@@ -144,7 +144,7 @@ var app = new Vue({
 		           cancelButtonText: 'بی خیال...!',
 		           confirmButtonColor: '#3085d6',
 		           cancelButtonColor: '#d33',
-		           reverseButtons: true
+		           showLoaderOnConfirm: true,
 		         }).then((result) => {
 		           if (result.value) {
 
@@ -166,7 +166,8 @@ var app = new Vue({
 													 swal({
 							 						  title: 'فعال سازی حساب کاربری',
 							 							type: "info",
-							 							showCancelButton: true,
+														confirmButtonText: 'اعتبار سنجی',
+														confirmButtonColor: '#3085d6',
 							 							showLoaderOnConfirm: true,
 							 							html:
 							 							'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+

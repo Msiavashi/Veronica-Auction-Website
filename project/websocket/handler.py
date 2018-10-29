@@ -269,7 +269,7 @@ def bid(data):
         users = []
         for user in result:
             user_plan = UserPlan.query.filter_by(user_id=user.id,auction_id=auction_id).first()
-            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
+            user_last_offer = Offer.query.filter_by(user_plan_id=user_plan.id,auction_id=auction_id).order_by('created_at DESC').first()
             current_bids = user_last_offer.current_bids
             current_offer_price = user_last_offer.total_price
             pretty_name = user.first_name + " " + user.last_name if (user.first_name and user.last_name) else user.username

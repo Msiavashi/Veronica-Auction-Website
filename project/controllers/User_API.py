@@ -911,7 +911,7 @@ class UserCheckoutConfirm(Resource):
             return make_response(jsonify({"message":{"message":msg,"success":False}}),400)
 
 class UserApplyPayment(Resource):
-    @jwt_required
+    # @jwt_required
     def get(self,pid):
         payment = Payment.query.get(pid)
 

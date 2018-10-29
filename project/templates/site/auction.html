@@ -117,7 +117,7 @@
 											<div class="countdown-label">{{now_date}}</div>
 											<div id="countdown">
 												<!-- <div id='tiles' class="flash-countdown color-full" data-timer="0" ></div> -->
-												<div class="my-flash-countdown" id="DateCountdown" data-timer="0"></div>
+												<div class="my-flash-countdown" id="DateCountdown" data-timer="1"></div>
 											</div>
 											<a class="addcart-link" href="#" @click.prevent="handleBid" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">{{_ToPersian(offerBidCount)}}</div></a>
 											{%endraw%}
@@ -269,7 +269,7 @@ var app = new Vue({
 		auctionCurrentWinnerImage: null,
 		auctionCurrentOffer: null,
 		offerBidCount: 0,
-		interval: null,
+		// interval: null,
 		timerSync: null,
 		// remainingTime: null,
 		deadline: null,
@@ -288,39 +288,9 @@ var app = new Vue({
 		auctionTitle: "",
 		auctionParticipants: [],
 		socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port ,{resource:'A/socket.io', 'force new connection': true}),
-		progress_counter: null,
-		progress_start : null,
-		remained_percent : "width:100%",
-		progress_class: "progress-bar progress-bar-success",
 	},
 	watch:{
-		auctionBasePrice:function() {
 
-			this.interval = setInterval(()=>{
-
-					var remained = (this.progress_counter / this.progress_start) * 100;
-					// var remained = Number(((this.progress_counter / this.progress_start) * 100).toFixed(4)); // 6.7
-
-					if (this.progress_counter > 6) {
-						this.progress_class = "progress-bar progress-bar-success";
-					}
-
-					if (this.progress_counter <= 6 && this.progress_counter > 3){
-						this.progress_class = "progress-bar progress-bar-warning";
-					}
-
-					if (this.progress_counter <= 3) {
-						this.progress_class = "progress-bar progress-bar-danger";
-					}
-
-					this.remained_percent = "width:"+ remained +"%";
-
-					this.progress_counter -= 0.1;
-					this.progress_counter = Number((this.progress_counter).toFixed(4));
-
-			}, 100);
-
-		},
 	},
 	methods: {
 
@@ -439,10 +409,6 @@ var app = new Vue({
 				this.auctionMaxMembers = auction.max_members;
 				this.auctionParticipants = auction.participants;
 				this.deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
-				this.progress_counter = auction.remained_time > 0 ? auction.remained_time : 0;
-				this.progress_start = auction.remained_time;
-				console.log(this.progress_counter);
-				console.log(this.remained_time);
 			})
 			.catch((error)=>{
 				console.error(error.response.data);
@@ -556,7 +522,6 @@ app.socket.on('accepted', function(data){
 
 	data.users.forEach(user => {
 		if(user.id =='{{current_user.id}}'){
-			if(user.current_bids)
 				app.offerBidCount = user.current_bids;
 			}
 		app.people.push({
@@ -576,66 +541,60 @@ app.socket.on("remaining_time", function(seconds){
 
 	console.log("remaining_time : "+ seconds);
 
-	if (seconds <= 11 && seconds >= 10){
-		app.progress_counter = seconds;
-		app.progress_start = seconds;
-	}
-
-	console.log("remaining_time");
 	stop_loading(loading_element);
 	timer_sentinal = seconds * 1000;
 	if(timer_sentinal!=0 && !running_timer){
 		running_timer = true;
 		timer = setInterval(check_seconds,1000);
 	}
-	$(".my-flash-countdown").data('timer', seconds).TimeCircles({
-		"total_duration": seconds,
-		"animation": "smooth",
+
+	$("#DateCountdown").TimeCircles({
+		"count_past_zero": false,
+    "animation": "smooth",
     "bg_width": 1,
     "fg_width": 0.1,
-    "circle_bg_color": "#f0fff5",
+    "circle_bg_color": "#f1fbdf",
+    "direction":"both",
     "time": {
         "Days": {
             "text": "روز",
-            "color": "#40484F",
+            "color": "#6cdf07",
             "show": false
         },
         "Hours": {
             "text": "ساعت",
-            "color": "#41c56c",
+            "color": "#6cdf07",
             "show": true
         },
         "Minutes": {
             "text": "دقیقه",
-            "color": "#41c56c",
+            "color": "#6cdf07",
             "show": true
         },
         "Seconds": {
             "text": "ثانیه",
-            "color": "#41c56c",
+            "color": "#6cdf07",
             "show": true
         }
     }
-	}).restart();
+	}).renewTime(seconds);
 
 	});
 
 app.socket.on("auction_done", function(data){
 
-	 $('.progress-bar').css('width', 0+'%');
 	 clearInterval(timer);
  	 clearInterval(app.timerSync);
 	 clearInterval(app.interval);
 
-
-	 $(".my-flash-countdown").TimeCircles().restart().stop();
+	 $(".my-flash-countdown").TimeCircles().stop();
 	 if(data.success){
 
 		 $(".error_alert").addClass('hide');
 		 $(".success_alert").removeClass('hide');
 		 $(".success_container").html(data.reason)
 		//  app.remainingTime ="برنده :" + data.winner[0].username;
-		 $(".my-flash-countdown").html(data.winner.username);
+		//  $(".my-flash-countdown").html(data.winner.username);
 		 $('#discount').html(ToPersian(formatCurrency(data.winner.discount)))
 	 }else {
 		 $(".error_alert").removeClass('hide');
@@ -657,6 +616,61 @@ var timer_sentinal = 10000;
 var running_timer = true;
 
 function check_seconds() {
+
+	if($("#DateCountdown").TimeCircles().getTime() <= 4){
+    $("#DateCountdown").TimeCircles({
+        "circle_bg_color": "#fbe5df",
+        "time": {
+            "Days": {
+                "text": "روز",
+                "color": "#f74d2b",
+                "show": true
+            },
+            "Hours": {
+                "text": "ساعت",
+                "color": "#f74d2b",
+                "show": true
+            },
+            "Minutes": {
+                "text": "دقیقه",
+                "color": "#f74d2b",
+                "show": true
+            },
+            "Seconds": {
+                "text": "ثانیه",
+                "color": "#f74d2b",
+                "show": true
+            }
+        }
+    });
+  }else if ($("#DateCountdown").TimeCircles().getTime() <= 7 && $("#DateCountdown").TimeCircles().getTime() > 4){
+    $("#DateCountdown").TimeCircles({
+        "circle_bg_color": "#fbf4df",
+        "time": {
+            "Days": {
+                "text": "روز",
+                "color": "#f5b00a",
+                "show": true
+            },
+            "Hours": {
+                "text": "ساعت",
+                "color": "#f5b00a",
+                "show": true
+            },
+            "Minutes": {
+                "text": "دقیقه",
+                "color": "#f5b00a",
+                "show": true
+            },
+            "Seconds": {
+                "text": "ثانیه",
+                "color": "#f5b00a",
+                "show": true
+            }
+        }
+    });
+  }
+
 
 	running_timer = true;
 	timer_sentinal -= 1000;
@@ -700,32 +714,34 @@ $('.close').on('click',function(event){
 });
 
 $("#DateCountdown").TimeCircles({
-    "animation": "smooth",
-    "bg_width": 1,
-    "fg_width": 0.1,
-    "circle_bg_color": "#f0fff5",
-    "time": {
-        "Days": {
-            "text": "روز",
-            "color": "#40484F",
-            "show": false
-        },
-        "Hours": {
-            "text": "ساعت",
-            "color": "#41c56c",
-            "show": true
-        },
-        "Minutes": {
-            "text": "دقیقه",
-            "color": "#41c56c",
-            "show": true
-        },
-        "Seconds": {
-            "text": "ثانیه",
-            "color": "#41c56c",
-            "show": true
-        }
-    }
+	"count_past_zero": false,
+	"animation": "smooth",
+	"bg_width": 1,
+	"fg_width": 0.1,
+	"circle_bg_color": "#f1fbdf",
+	"direction":"both",
+	"time": {
+			"Days": {
+					"text": "روز",
+					"color": "#6cdf07",
+					"show": false
+			},
+			"Hours": {
+					"text": "ساعت",
+					"color": "#6cdf07",
+					"show": true
+			},
+			"Minutes": {
+					"text": "دقیقه",
+					"color": "#6cdf07",
+					"show": true
+			},
+			"Seconds": {
+					"text": "ثانیه",
+					"color": "#6cdf07",
+					"show": true
+			}
+	}
 });
 
 </script>
