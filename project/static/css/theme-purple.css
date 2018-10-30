@@ -710,7 +710,6 @@ li.menu-item-has-children:hover > .sub-menu {
   display: inline-block;
   border-right: 1px solid #e8e8e8;
   padding: 0 15px;
-  text-transform: uppercase;
   font-size: 12px;
   transition: all 0.5s ease-out 0s;
   -webkit-transition: all 0.5s ease-out 0s;
@@ -17908,4 +17907,17 @@ margin: 20px;
 
 .activation_button:hover{
   background-color: #10a3b4;
+}
+
+.verify-button{
+  background-color: #42bcc8;
+  border: medium none;
+  color: #fff;
+  height: 50px;
+  width: 250px;
+  transition: all 0.5s ease-out 0s;
+  -webkit-transition: all 0.5s ease-out 0s;
+}
+.verify-button:hover{
+  background: #333;
 }

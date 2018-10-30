@@ -134,6 +134,7 @@ var app = new Vue({
          })
          .catch((error)=>{
 					 console.log(error.response.data.message);
+
 					 if (error.response.data.message.operation == "verification_required"){
 						 swal({
 		           title: 'فعال سازی حساب کاربری',
@@ -147,176 +148,108 @@ var app = new Vue({
 		           showLoaderOnConfirm: true,
 		         }).then((result) => {
 		           if (result.value) {
+								 axios.put("{{url_for('userverification')}}",
+				 					{
+				 						headers:
+				 						{
+				 							'Content-Type': 'application/json'
+				 						}
+				 					}).then((response) => {
+				 						console.log(response.data);
+				 						var remained_seconds = response.data.remained_to_expire;
 
-		             axios.put("{{url_for('userverification')}}",
-		               {
-		                 headers:
-		                 {
-		                   'Content-Type': 'application/json'
-		                 }
-		               }).then((response) => {
-										 console.log(response.data);
-										 var remained_seconds = response.data.remained_to_expire;
+				 						axios.get("{{url_for('userverification')}}")
 
-										 axios.get("{{url_for('userverification')}}")
-											 .then((response) => {
-												 console.log(response.data);
-												 if(response.data.send_attempts > 0){
+				 							.then((response) => {
+				 								console.log(response.data);
+				 								html = response.data.send_attempts == 0 ?
+				 								'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+
+				 								'<input id="verification_code" type="number" " maxlength="4" size="4"><br>'+
+				 								'توجه کنید کد فعال سازی شما تا یک دقیقه معتبر است!'+
+				 								'<div id="progress"></div>'+
+				 								'<span> این فرصت آخر شما برای فعال سازی حساب کاربری است </span>'
+				 								:
 
-													 swal({
-							 						  title: 'فعال سازی حساب کاربری',
-							 							type: "info",
-														confirmButtonText: 'اعتبار سنجی',
-														confirmButtonColor: '#3085d6',
-							 							showLoaderOnConfirm: true,
-							 							html:
-							 							'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+
-							 							'<input id="verification_code" type="number" " maxlength="4" size="4"><br>'+
-							 							'توجه کنید کد فعال سازی شما تا یک دقیقه معتبر است!'+
-							 							'<div id="progress"></div>'+
-														'<span>حداکثر '+ToPersian(response.data.send_attempts) +' بار دیگر می توانید کد فعال سازی را درخواست کنید </span>'
-														// 	'<div><input type="button" id="resend_activation_code" class="activation_button" value=" ارسال مجدد ! حداکثر'+ToPersian(response.data.send_attempts)+' فرصت دارید! "></div>'
-							 							,
-							 							preConfirm: (verify) => {
-															this.verification.code = $("#verification_code").val();
+				 								'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+
+				 								'<input id="verification_code" type="number" " maxlength="4" size="4"><br>'+
+				 								'توجه کنید کد فعال سازی شما تا یک دقیقه معتبر است!'+
+				 								'<div id="progress"></div>'+
+				 								'<span>حداکثر '+ToPersian(response.data.send_attempts) +' بار دیگر می توانید کد فعال سازی را درخواست کنید </span>';
 
-															var obj = this.verification;
+				 									swal({
+				 									 title: 'فعال سازی حساب کاربری',
+				 									 type: "info",
+				 									 confirmButtonText: 'اعتبار سنجی',
+				 									 confirmButtonColor: '#3085d6',
+				 									 showLoaderOnConfirm: true,
+				 									 html:html,
+				 									 allowOutsideClick: () => !swal.isLoading(),
 
-												      for (var propName in obj) {
-												        if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
-												          delete obj[propName];
-												        }
-												      }
+				 									 preConfirm: (verify) => {
+				 										 this.verification.code = $("#verification_code").val();
 
-															axios.post("{{url_for('userverification')}}",obj,
-																{
-																	headers:
-																	{
-																		'Content-Type': 'application/json'
-																	}
-																}).then(function (response) {
-																	swal(
-																		'فعال سازی حساب کاربری',
-																		response.data.message.message,
-																		'success'
-																	)
-																 })
-																 .catch((error)=>{
-																	 if (error.response.data.message.error){
-																		 swal(
-										                   'مشکلی پیش اومد',
-										                   error.response.data.message.error,
-										                   'error'
-										                 )
-																	 }
-																	else {
-																		swal(
-																			'مشکلی پیش اومد',
-																			error.response.data.message.code,
-																			'error'
-																		)
-																	}
-																	 console.log(error.response.data);
-																});
+				 										 var obj = this.verification;
 
-							 					  	},
-							 							allowOutsideClick: () => !swal.isLoading(),
-							 						}).then((result) => {
-							 							if (result.value) {
-							 							    swal({
-							 							      title: "فعال سازی حساب کاربری",
-							 							      text:response.data.message.message,
-																	type:"success",
-																	confirmButtonText: 'حله...',
-							 							    })
-							 						  	}
-							 						});
+				 										 for (var propName in obj) {
+				 											 if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
+				 												 delete obj[propName];
+				 											 }
+				 										 }
 
-												 }
-												 else {
-													 swal({
-														title: 'فعال سازی حساب کاربری',
-														type: "info",
-														showCancelButton: true,
-														showLoaderOnConfirm: true,
-														html:
-														'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+
-														'<input id="verification_code" type="number" " maxlength="4" size="4"><br>'+
-														'توجه کنید کد فعال سازی شما تا یک دقیقه معتبر است!'+
-														'<div id="progress"></div>'+
-														'<span> این فرصت آخر شما برای فعال سازی حساب کاربری است </span>'
-														,
-														preConfirm: (verify) => {
-															this.verification.code = $("#verification_code").val();
+				 										 axios.post("{{url_for('userverification')}}",obj,
+				 											 {
+				 												 headers:
+				 												 {
+				 													 'Content-Type': 'application/json'
+				 												 }
+				 											 }).then(function (response) {
 
-															var obj = this.verification;
+				 												 swal({
+				 														title: "فعال سازی حساب کاربری",
+				 														text:response.data.message.message,
+				 														type:"success",
+				 														confirmButtonText: 'حله...',
+				 													}).then((result)=>{
+				 														if(result.value){
+				 															window.location.reload();
+				 														}
+				 													});
 
-															for (var propName in obj) {
-																if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
-																	delete obj[propName];
-																}
-															}
+				 												}).catch((error)=>{
+				 													err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.error;
+				 													swal({
+				 														title:'مشکل در عملیات فعال سازی',
+				 														text :err,
+				 														type: 'error',
+				 													}).then((result)=>{
+				 														if(result.value && error.response.data.message.type == "invalid"){
+				 															this.get_activation_code();
+				 														}
+				 													});
 
-															axios.post("{{url_for('userverification')}}",obj,
-																{
-																	headers:
-																	{
-																		'Content-Type': 'application/json'
-																	}
-																}).then(function (response) {
-																	console.log(response.data);
-																 })
-																 .catch((error)=>{
-																	 if (error.response.data.message.error){
-																		 swal(
-										                   'مشکلی پیش اومد',
-										                   error.response.data.message.error,
-										                   'error'
-										                 )
-																	 }
-																	else {
-																		swal(
-																			'مشکلی پیش اومد',
-																			error.response.data.message.code,
-																			'error'
-																		)
-																	}
-																	 console.log(error.response.data);
-																});
+				 												});
+				 									 },
 
-														},
-														allowOutsideClick: () => !swal.isLoading(),
-													}).then((result) => {
-														if (result.value) {
-																swal({
-																 title: "فعال سازی حساب کاربری",
-																 text:response.data.message.message,
-																 type:"success",
-																 confirmButtonText: 'حله...',
-															 })
-															}
-													});
-												 }
+				 								});
 
-						 						applyswl(remained_seconds);
+				 							 applyswl(remained_seconds);
 
-											 })
-											 .catch((error)=>{
-												 swal(
-													'مشکلی پیش اومد',
-													error.response.data.message.error,
-													'error'
-												)
-											 });
+				 							})
+				 							.catch((error)=>{
+				 								swal(
+				 								 'مشکل در گرفتن کد فعال سازی',
+				 								 error.response.data.message.error,
+				 								 'error'
+				 							 )
+				 							});
+				 					}).catch((error)=>{
+				 						swal(
+				 							'مشکلی پیش اومد',
+				 							error.response.data.message.error,
+				 							'error'
+				 						)
+				 					});
 
-		               })
-		               .catch((error)=>{
-		                 swal(
-		                   'مشکلی پیش اومد',
-		                   error.response.data.message.error,
-		                   'error'
-		                 )
-		               });
 		           } else if (result.dismiss === swal.DismissReason.cancel) {
 		             swal({
 		               title:'دریافت کد فعال سازی کنسل شد!',
@@ -334,7 +267,115 @@ var app = new Vue({
 						 }
 					 }
  				});
-		}
+		},
+
+		get_activation_code:function() {
+
+
+			axios.put("{{url_for('userverification')}}",
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then((response) => {
+					console.log(response.data);
+					var remained_seconds = response.data.remained_to_expire;
+
+					axios.get("{{url_for('userverification')}}")
+
+						.then((response) => {
+							console.log(response.data);
+							html = response.data.send_attempts == 0 ?
+							'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+
+							'<input id="verification_code" type="number" " maxlength="4" size="4"><br>'+
+							'توجه کنید کد فعال سازی شما تا یک دقیقه معتبر است!'+
+							'<div id="progress"></div>'+
+							'<span> این فرصت آخر شما برای فعال سازی حساب کاربری است </span>'
+							:
+
+							'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+
+							'<input id="verification_code" type="number" " maxlength="4" size="4"><br>'+
+							'توجه کنید کد فعال سازی شما تا یک دقیقه معتبر است!'+
+							'<div id="progress"></div>'+
+							'<span>حداکثر '+ToPersian(response.data.send_attempts) +' بار دیگر می توانید کد فعال سازی را درخواست کنید </span>';
+
+								swal({
+								 title: 'فعال سازی حساب کاربری',
+								 type: "info",
+								 confirmButtonText: 'اعتبار سنجی',
+								 confirmButtonColor: '#3085d6',
+								 showLoaderOnConfirm: true,
+								 html:html,
+								 allowOutsideClick: () => !swal.isLoading(),
+
+								 preConfirm: (verify) => {
+									 this.verification.code = $("#verification_code").val();
+
+									 var obj = this.verification;
+
+									 for (var propName in obj) {
+										 if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
+											 delete obj[propName];
+										 }
+									 }
+
+									 axios.post("{{url_for('userverification')}}",obj,
+										 {
+											 headers:
+											 {
+												 'Content-Type': 'application/json'
+											 }
+										 }).then(function (response) {
+
+											 swal({
+													title: "فعال سازی حساب کاربری",
+													text:response.data.message.message,
+													type:"success",
+													confirmButtonText: 'حله...',
+												}).then((result)=>{
+													if(result.value){
+														window.location.reload();
+													}
+												});
+
+											}).catch((error)=>{
+												err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.error;
+												swal({
+													title:'مشکل در عملیات فعال سازی',
+													text :err,
+													type: 'error',
+												}).then((result)=>{
+													if(result.value && error.response.data.message.type == "invalid"){
+														this.get_activation_code();
+													}
+												});
+
+											});
+								 },
+
+							});
+
+						 applyswl(remained_seconds);
+
+						})
+						.catch((error)=>{
+							swal(
+							 'مشکل در گرفتن کد فعال سازی',
+							 error.response.data.message.error,
+							 'error'
+						 )
+						});
+				}).catch((error)=>{
+					swal(
+						'مشکلی پیش اومد',
+						error.response.data.message.error,
+						'error'
+					)
+				});
+
+		},
+
 	}
 });
 

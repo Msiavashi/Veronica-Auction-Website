@@ -7,7 +7,7 @@ from flask import url_for, redirect, render_template, request, abort ,redirect, 
 from datetime import timedelta
 from flask_login import current_user,login_required,logout_user
 from .model import *
-from . import app,login_manager
+from . import app,login_manager,verify_required,iverify_required
 from urlparse import urlparse, urljoin
 from .controllers.Payment_API import MellatGateway
 from definitions import *
@@ -61,7 +61,7 @@ class Route():
         next = request.args.get('next')
         if next:
             return render_template('site/register.html',next=next)
-        
+
         return render_template('site/register.html')
 
 
@@ -81,11 +81,13 @@ class Route():
 
     @app.route("/profile")
     @login_required
+    @verify_required
     def profile():
         return render_template('site/profile.html',tab='default')
 
     @app.route("/profile/<tab>")
     @login_required
+    @verify_required
     def profile_tab(tab):
         print "tab",tab
         if tab == "":
@@ -108,6 +110,7 @@ class Route():
 
     @app.route("/participate/<int:aid>")
     @login_required
+    @iverify_required
     def participate(aid):
         if(not current_user.has_auction(aid)):
             return render_template('site/iframes/package.html',auction_id=aid)
@@ -154,6 +157,7 @@ class Route():
     @app.errorhandler(403)
     def page_not_found(e):
         return render_template('site/403.html'), 403
+
 
     @app.route('/about')
     def about():
@@ -235,6 +239,7 @@ class Route():
         return redirect(url_for('checkout_payment', pid=unpaid_payment.id))
 
     @app.route('/cart')
+    @verify_required
     def cart():
         return render_template('site/cart.html')
 

@@ -86,9 +86,6 @@ var app = new Vue({
 		},
 		next : "{{next}}",
 	},
-	mounted:function(){
-		console.log(this.next);
-	},
 	methods:{
 		handleSubmit: function(){
 			self = this;
@@ -107,17 +104,8 @@ var app = new Vue({
 						'Content-Type': 'application/json'
 					}
 				}).then(function (response) {
-          //handle success
-					$(".error_alert").addClass('hide');
-					$(".success_alert").removeClass('hide');
-					$(".success_container").html('ثبت نام شما با موفقیت انجام شد')
 
-					if(self.next!="None"){
-							window.location = self.next;
-						}
-						else {
-						window.parent.location.reload();
-					}
+					window.location = "/profile/modify"
 
          })
          .catch((error)=>{
@@ -126,8 +114,13 @@ var app = new Vue({
          			  $(".error_container").html(error.response.data.message[propName])
               }
  				});
-		}
+		},
 	}
+});
+
+$('.close').on('click',function(event){
+	event.preventDefault();
+	$(this).parent().removeClass('show').addClass('hide');
 });
 
 </script>

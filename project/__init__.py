@@ -4,6 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 __version__ = '0.1'
+from functools import wraps
 from flask import Flask , session , Response , render_template ,request ,g
 from flask_restful import reqparse, abort, Api, Resource
 from datetime import timedelta
@@ -71,6 +72,29 @@ def make_session_permanent():
 #         g.db.close()
 #     return response
 
+def verify_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if current_user.is_authenticated:
+            if not current_user.is_verified:
+                return render_template('site/verify.html'), 400
+            else:
+                return fn(*args, **kwargs)
+        else:
+            return fn(*args, **kwargs)
+    return wrapper
+
+def iverify_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if current_user.is_authenticated:
+            if not current_user.is_verified:
+                return render_template('site/iframes/verify.html'), 400
+            else:
+                return fn(*args, **kwargs)
+        else:
+            return fn(*args, **kwargs)
+    return wrapper
 
 from project.middleware import *
 app.jinja_env.globals.update(has_role=has_role)
