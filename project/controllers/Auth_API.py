@@ -46,6 +46,12 @@ class UserRegistration(Resource):
         if User.find_by_username(data['username'].lower()):
             return make_response(jsonify({"message":{"username":'کاربری با این مشخصات از قبل تعریف شده است'}}),400)
 
+        if User.find_by_mobile(data['mobile']):
+            return make_response(jsonify({"message":{"mobile":'این شماره موبایل از قبل در سیستم موجود است'}}),400)
+
+        if len(data['mobile']) < 11 or not data['mobile'].isdigit():
+            return make_response(jsonify({"message":{"mobile":'شماره موبایل وارد شده معتبر نیست'}}),400)
+
         if(data['password']!=data['c_password']):
             return make_response(jsonify({"message":{'password': 'رمز عبور با تکرار آن مطابقت ندارد'}}),400)
 

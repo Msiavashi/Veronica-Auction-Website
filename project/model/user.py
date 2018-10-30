@@ -85,6 +85,11 @@ class User(Base,UserMixin):
     def find_by_username(cls, username):
         return cls.query.filter_by(username = username).first()
 
+    @classmethod
+    def find_by_mobile(cls, mobile):
+        return cls.query.filter_by(mobile = mobile).first()
+
+
     @staticmethod
     def generate_hash(password):
         return sha256.hash(password)
