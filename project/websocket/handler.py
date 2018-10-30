@@ -66,12 +66,14 @@ def sync_carts(data):
                 auction = current_user.auctions.join(Item).filter_by(id = order.item.id).order_by('auctions.created_at DESC').first()
                 userplan = current_user.user_plans.join(Auction).filter_by(id=auction.id).first()
                 auctionplan = AuctionPlan.query.filter_by(auction_id=auction.id).join(UserPlan).filter_by(id=userplan.id).first()
-                discounted_price = auctionplan.discount
+                if auctionplan:
+                    discounted_price = auctionplan.discount
 
             elif order.discount_status == OrderDiscountStatus.AUCTIONWINNER:
                 auction = current_user.auctions.join(Item).filter_by(id = order.item.id).order_by('auctions.created_at DESC').first()
                 offer = Offer.query.filter_by(auction_id=auction.id,win=True).first()
-                discounted_price = order.item.price - offer.total_price
+                if offer:
+                    discounted_price = order.item.price - offer.total_price
 
             orders.append({
             "id" : order.id,

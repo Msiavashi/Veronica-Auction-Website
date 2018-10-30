@@ -117,7 +117,7 @@
 											<div class="countdown-label">{{now_date}}</div>
 											<div id="countdown">
 												<!-- <div id='tiles' class="flash-countdown color-full" data-timer="0" ></div> -->
-												<div class="my-flash-countdown" id="DateCountdown" data-timer="4"></div>
+												<div class="my-flash-countdown" id="DateCountdown" v-bind:data-timer="auction_remained_time"></div>
 											</div>
 											<a class="addcart-link" href="#" @click.prevent="handleBid" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">{{_ToPersian(offerBidCount)}}</div></a>
 											{%endraw%}
@@ -245,6 +245,7 @@
 {{ super() }}
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue-socket.io@2.1.1-b/dist/build.min.js"></script>
+
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/TimeCircles0.js')}}"></script>
 
 <div id="myModal" class="modal">
@@ -285,6 +286,7 @@ var app = new Vue({
 		auctionMaxMembers: 0,
 		auctionRatio: 0,
 		auctionMaxPrice: 0,
+		auction_remained_time : 0,
 		auctionTitle: "",
 		auctionParticipants: [],
 		socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port ,{resource:'A/socket.io', 'force new connection': true}),
@@ -409,6 +411,7 @@ var app = new Vue({
 				this.auctionMaxMembers = auction.max_members;
 				this.auctionParticipants = auction.participants;
 				this.deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
+				this.auction_remained_time = auction.remained_time;
 			})
 			.catch((error)=>{
 				console.error(error.response.data);
@@ -586,8 +589,37 @@ app.socket.on("auction_done", function(data){
 	 clearInterval(timer);
  	 clearInterval(app.timerSync);
 	 clearInterval(app.interval);
+	 $("#DateCountdown").TimeCircles({
+ 		"count_past_zero": false,
+     "animation": "smooth",
+     "bg_width": 1,
+     "fg_width": 0.1,
+     "circle_bg_color": "#f1fbdf",
+     "direction":"both",
+     "time": {
+         "Days": {
+             "text": "روز",
+             "color": "#6cdf07",
+             "show": false
+         },
+         "Hours": {
+             "text": "ساعت",
+             "color": "#6cdf07",
+             "show": true
+         },
+         "Minutes": {
+             "text": "دقیقه",
+             "color": "#6cdf07",
+             "show": true
+         },
+         "Seconds": {
+             "text": "ثانیه",
+             "color": "#6cdf07",
+             "show": true
+         }
+     }
+ 	}).renewTime(0);
 
-	 $(".my-flash-countdown").TimeCircles().stop();
 	 if(data.success){
 
 		 $(".error_alert").addClass('hide');

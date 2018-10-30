@@ -1057,15 +1057,17 @@ class UserAuctionView(Resource):
 
     @jwt_required
     def post(self):
-        data = request.get_json(force=True)
-        auction_id = data.get('aid')
-        auction = Auction.query.get(auction_id)
-        if not db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
-            current_user.auction_views.append(auction)
-            db.session.add(current_user)
-            db.session.commit()
-            return make_response(jsonify({"success": True, "message": {"success": "حراجی به لیست مشاهده شده افزوده شد"}}), 200)
-        return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 406)
+        if current_user.is_authenticated:
+            data = request.get_json(force=True)
+            auction_id = data.get('aid')
+            auction = Auction.query.get(auction_id)
+            if not db.session.query(user_auction_views).filter_by(user_id=current_user.id, auction_id=auction_id).scalar():
+                current_user.auction_views.append(auction)
+                db.session.add(current_user)
+                db.session.commit()
+                return make_response(jsonify({"success": True, "message": {"success": "حراجی به لیست مشاهده شده افزوده شد"}}), 200)
+            return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 406)
+        return make_response(jsonify({"success":False,"message":"کاربر لاگین نکرده است"}),400)
 
 
 class UserChargeWalet(Resource):

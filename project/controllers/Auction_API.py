@@ -116,11 +116,19 @@ class AuctionUserParticipation(Resource):
         method_id = int(data.get("method_id", None))
 
         plan = Plan.query.join(AuctionPlan).filter_by(id=plan_id).first()
+        if not plan:
+            return make_response(jsonify({'success':False,"reason":"پلن درخواستی شما موجود نیست"}),400)
+
         auction_plan = AuctionPlan.query.filter_by(plan_id=plan.id,auction_id=auction_id).first()
+
+        if not auction_plan:
+            return make_response(jsonify({'success':False,"reason":"پلن حراجی مورد نظر شما معتبر نیست"}),400)
+
+
         payment_method = PaymentMethod.query.get(method_id)
 
-        if not payment_method or not plan or not auction_plan:
-            return make_response(jsonify({'success':False,"reason":"پلنی برای این حراجی تعریف نشده است"}),400)
+        if not payment_method:
+            return make_response(jsonify({'success':False,"reason":"روش پرداخت انتخابی شما موجود نیست"}),400)
 
         auction = auction_plan.auction
         now = datetime.now()

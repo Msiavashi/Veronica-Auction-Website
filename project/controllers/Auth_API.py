@@ -87,7 +87,7 @@ class UserLogin(Resource):
         data = parser_login.parse_args()
         data = request.get_json(force=True)
 
-        current_user = User.find_by_username(data['username'].lower())
+        current_user = User.find_by_username(data['username'])
 
         if not current_user:
             return make_response(jsonify({"message" :{"error" :'کاربری با نام کاربری مورد نظر شما پیدا نشد'}}),400)

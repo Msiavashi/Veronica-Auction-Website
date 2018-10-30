@@ -2742,9 +2742,9 @@
     /*display:none*/
   }
   .time_circles {
-      position: relative;
+      /*position: relative;
       height: 80px;
-      margin: 30px;
+      margin-right: 30px;*/
   }
   .item-Bid b {
     width: auto;
