@@ -117,7 +117,7 @@
 											<div class="countdown-label">{{now_date}}</div>
 											<div id="countdown">
 												<!-- <div id='tiles' class="flash-countdown color-full" data-timer="0" ></div> -->
-												<div class="my-flash-countdown" id="DateCountdown" v-bind:data-timer="auction_remained_time"></div>
+												<div class="my-flash-countdown" id="DateCountdown"></div>
 											</div>
 											<a class="addcart-link" href="#" @click.prevent="handleBid" id="offer">پیشنهاد <div class="detail-qty border radius" id="offer_count">{{_ToPersian(offerBidCount)}}</div></a>
 											{%endraw%}
@@ -286,9 +286,9 @@ var app = new Vue({
 		auctionMaxMembers: 0,
 		auctionRatio: 0,
 		auctionMaxPrice: 0,
-		auction_remained_time : 0,
 		auctionTitle: "",
 		auctionParticipants: [],
+		auction_remained_milliseconds : 10000,
 		socket : io.connect(location.protocol + '//' + document.domain + ':' + location.port ,{resource:'A/socket.io', 'force new connection': true}),
 	},
 	watch:{
@@ -392,6 +392,7 @@ var app = new Vue({
 	created: function(){
 		axios.get("{{url_for('auctioninstanceview', aid=auction_id)}}")
 			.then((response) => {
+
 				var auction = response.data.auction;
 				this.offerBidCount = auction.max_offers ;
 				this.images = [];
@@ -411,10 +412,11 @@ var app = new Vue({
 				this.auctionMaxMembers = auction.max_members;
 				this.auctionParticipants = auction.participants;
 				this.deadline = new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC");
-				this.auction_remained_time = auction.remained_time;
+				$("#DateCountdown").data("timer",auction.remained_time);
+				$("#DateCountdown").TimeCircles().restart();
 			})
 			.catch((error)=>{
-				console.error(error.response.data);
+				console.log(error.response.data);
 			});
 
 			axios.post("{{url_for('userauctionview')}}",
@@ -430,7 +432,7 @@ var app = new Vue({
 						console.log("view confirmed");
 					})
 					.catch((error)=>{
-						console.error(error.response.data);
+						console.log(error.response.data);
 					});
 	},
 	computed: {
@@ -468,7 +470,11 @@ app.socket.on('sync_auction_join', function() {
 	app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
 		app.timerSync = setInterval(() => {
 		 app.socket.emit('keepAlive', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode()});
-	 },2000);
+	// 	 if (app.auction_remained_milliseconds <= 100){
+	// 		 app.handleBid();
+	// 	 }
+	// },100);
+	},2000);
  });
 
 app.socket.on('disconnect', function() {
@@ -540,47 +546,47 @@ app.socket.on('accepted', function(data){
 	console.log("accepted");
 });
 
-app.socket.on("remaining_time", function(seconds){
+app.socket.on("remaining_time", function(milliseconds){
 
-	console.log("remaining_time : "+ seconds);
-
+	console.log("remaining_time : "+ milliseconds);
+	app.auction_remained_milliseconds = milliseconds;
 	stop_loading(loading_element);
-	timer_sentinal = seconds * 1000;
-	if(timer_sentinal!=0 && !running_timer){
+	if(milliseconds >= 300 && !running_timer){
 		running_timer = true;
 		timer = setInterval(check_seconds,1000);
 	}
 
+	$("#DateCountdown").data("timer",milliseconds/1000);
 	$("#DateCountdown").TimeCircles({
 		"count_past_zero": false,
-    "animation": "smooth",
-    "bg_width": 1,
-    "fg_width": 0.1,
-    "circle_bg_color": "#f1fbdf",
-    "direction":"both",
-    "time": {
-        "Days": {
-            "text": "روز",
-            "color": "#6cdf07",
-            "show": false
-        },
-        "Hours": {
-            "text": "ساعت",
-            "color": "#6cdf07",
-            "show": true
-        },
-        "Minutes": {
-            "text": "دقیقه",
-            "color": "#6cdf07",
-            "show": true
-        },
-        "Seconds": {
-            "text": "ثانیه",
-            "color": "#6cdf07",
-            "show": true
-        }
-    }
-	}).renewTime(seconds);
+		"animation": "smooth",
+		"bg_width": 1,
+		"fg_width": 0.1,
+		"circle_bg_color": "#f1fbdf",
+		"direction":"both",
+		"time": {
+				"Days": {
+						"text": "روز",
+						"color": "#6cdf07",
+						"show": false
+				},
+				"Hours": {
+						"text": "ساعت",
+						"color": "#6cdf07",
+						"show": true
+				},
+				"Minutes": {
+						"text": "دقیقه",
+						"color": "#6cdf07",
+						"show": true
+				},
+				"Seconds": {
+						"text": "ثانیه",
+						"color": "#6cdf07",
+						"show": true
+				}
+		}
+	}).restart();
 
 	});
 
@@ -589,6 +595,7 @@ app.socket.on("auction_done", function(data){
 	 clearInterval(timer);
  	 clearInterval(app.timerSync);
 	 clearInterval(app.interval);
+
 	 $("#DateCountdown").TimeCircles({
  		"count_past_zero": false,
      "animation": "smooth",
@@ -643,13 +650,11 @@ app.socket.on("leave_auction", function(data){
 });
 
 var timer = setInterval(check_seconds,1000);
-
-var timer_sentinal = 10000;
 var running_timer = true;
 
 function check_seconds() {
-
-	if($("#DateCountdown").TimeCircles().getTime() <= 4){
+	seconds = Math.floor(app.auction_remained_milliseconds / 1000);
+	if( seconds <= 4){
     $("#DateCountdown").TimeCircles({
         "circle_bg_color": "#fbe5df",
         "time": {
@@ -675,7 +680,7 @@ function check_seconds() {
             }
         }
     });
-  }else if ($("#DateCountdown").TimeCircles().getTime() <= 7 && $("#DateCountdown").TimeCircles().getTime() > 4){
+  }else if (seconds <= 7 && seconds > 4){
     $("#DateCountdown").TimeCircles({
         "circle_bg_color": "#fbf4df",
         "time": {
@@ -702,42 +707,15 @@ function check_seconds() {
         }
     });
   }
-
-
 	running_timer = true;
-	timer_sentinal -= 1000;
-	// console.log('timer_sentinal');
-	// console.log(timer_sentinal);
-	// seconds = timer_sentinal / 1000;
-	//
-	//
-	// // app.progress_counter -= 1;
-	// // $('.progress-bar').css('width', (app.progress_counter * 100) / app.progress_start +'%');
-	//
-	//
-	// if (( seconds  < 60  ) && (seconds  > 10) ) {
-	// 	$('#tiles').removeClass('color-full');
-	// 	$('#tiles').addClass('color-half');
-	// } else{
-	// 	$('#tiles').addClass('color-full');
-	// 	$('#tiles').removeClass('color-half');
-	// }
-	// if ( seconds <= 10 ) {
-	// 	$('#tiles').removeClass('color-half');
-	// 	$('#tiles').addClass('color-empty');
-	// }
-	// else{
-	// 	$('#tiles').addClass('color-full');
-	// 	$('#tiles').removeClass('color-empty');
-	// }
-
- 	if(timer_sentinal == 0){
+ 	if(app.auction_remained_milliseconds <= 200){
 		console.log('sentinal');
 		start_loading(loading_element);
 		app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
 		clearInterval(timer);
 		running_timer = false;
 	}
+	app.auction_remained_milliseconds -= 1000;
  }
 
 $('.close').on('click',function(event){

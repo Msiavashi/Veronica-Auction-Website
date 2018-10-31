@@ -39,8 +39,8 @@ class MyAdminIndexView(AdminIndexView):
 class UserAdmin(ModelView):
     page_size = 10
     can_view_details = True
-    column_searchable_list = ['first_name', 'last_name','alias_name','username']
-    column_editable_list = ['first_name', 'last_name','alias_name','credit','is_active','is_banned','is_verified']
+    column_searchable_list = ['first_name', 'last_name','alias_name','username','mobile','address.city','address.state.title','address.address','address.postal_code']
+    column_editable_list = ['first_name', 'last_name','alias_name','credit','is_active','is_banned','is_verified','mobile']
     column_exclude_list = ['email','updated_at']
     def is_accessible(self):
         # return True

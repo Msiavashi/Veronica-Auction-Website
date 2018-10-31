@@ -87,25 +87,26 @@ class AuctionViewFinished(Resource):
         offers = []
         for offer in result:
             user = User.query.join(UserPlan).join(Offer).filter_by(id=offer.id).first()
-            auction_participants = []
-            for participant in offer.auction.participants:
-                auction_participants.append({"id":participant.id,"username":participant.username})
-            winner = ""
-            if(user.first_name and user.last_name and offer.win):
-                winner = user.first_name + ' ' + user.last_name
-            else:
-                winner = user.username
+            if user:
+                auction_participants = []
+                for participant in offer.auction.participants:
+                    auction_participants.append({"id":participant.id,"username":participant.username})
+                winner = ""
+                if(user.first_name and user.last_name and offer.win):
+                    winner = user.first_name + ' ' + user.last_name
+                else:
+                    winner = user.username
 
-            offers.append({
-            "auction_id":offer.auction.id,
-            "title":offer.auction.title,
-            "images":offer.auction.item.images,
-            "total_price":int(offer.total_price),
-            "main_price":int(offer.auction.item.price),
-            "start_date":offer.auction.start_date,
-            "participants":auction_participants,
-            "winner":winner,
-            })
+                offers.append({
+                "auction_id":offer.auction.id,
+                "title":offer.auction.title,
+                "images":offer.auction.item.images,
+                "total_price":int(offer.total_price),
+                "main_price":int(offer.auction.item.price),
+                "start_date":offer.auction.start_date,
+                "participants":auction_participants,
+                "winner":winner,
+                })
         return make_response(jsonify(offers),200)
 
 class AuctionUserParticipation(Resource):

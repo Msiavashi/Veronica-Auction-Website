@@ -186,7 +186,7 @@ def loadview(data):
 #authenticated users only
 @socketio.on('bid')
 def bid(data):
-    room = data['auction_id']
+    room = data["auction_id"]
     if not current_user.is_authenticated:
         emit('failed',{"success":False,"reason":"جلسه کاری شما منقضی شده است لطفا دوباره به سایت وارد شوید"})
         return 400
@@ -209,9 +209,8 @@ def bid(data):
         # check for one minutes remained for starting auction
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
 
-        if(last_offer and last_offer.win):
-            get_winner(data)
-            return 200
+        # if(last_offer and last_offer.win):
+        #     return get_winner(data)
 
         now = datetime.now()
         days = (auction.start_date - now).days
@@ -230,13 +229,14 @@ def bid(data):
             emit("failed", {"success":False, "reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید"})
             return 400
 
-        if(remained < 10000 and remained > 0):
-            auction.start_date = now + timedelta(milliseconds=10700)
+        if(remained < 10700):
+            auction.start_date = datetime.now() + timedelta(milliseconds=10700)
             db.session.add(auction)
             db.session.commit()
 
-        elif(remained <=0 ):
-            return auction_done(data)
+        # elif(remained <=200 ):
+        #     print 'done from handler'
+        #     return auction_done(data)
 
 
         offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
@@ -352,20 +352,21 @@ def auction_done(data):
         return 400
 
 def get_winner(data):
-    room = data["room"]
+    room = data["auction_id"]
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
-    last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
+    win_offer = Offer.query.filter_by(auction_id=auction_id,win=True).order_by('offers.created_at DESC').first()
 
-    if last_offer and last_offer.win:
+    if win_offer:
         winner = {
-        "username" : last_offer.user_plan.user.username,
-        "first_name" : last_offer.user_plan.user.first_name,
-        "last_name" : last_offer.user_plan.user.last_name,
-        "avatar" : last_offer.user_plan.user.avatar,
-        "discount" : int(auction.item.price - last_offer.total_price),
+        "username" : win_offer.user_plan.user.username,
+        "first_name" : win_offer.user_plan.user.first_name,
+        "last_name" : win_offer.user_plan.user.last_name,
+        "avatar" : win_offer.user_plan.user.avatar,
+        "discount" : int(auction.item.price - win_offer.total_price),
         }
         emit("auction_done", {"success":True,"reason":"این حراجی به اتمام رسیده است", "winner": winner },room=room)
+        return 200
 
     remained = (auction.start_date - datetime.now()).seconds + 1
     emit("remaining_time",remained,room=room)
@@ -374,13 +375,21 @@ def get_winner(data):
 
 @socketio.on('get_remain_time')
 def get_remain_time(data):
-    room = data['room']
+    room = data["auction_id"]
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
     if(auction.start_date < datetime.now()):
+        print 'done from sync'
         return auction_done(data)
     else:
-        remained = (auction.start_date - datetime.now()).seconds + 1
+        now = datetime.now()
+        days = (auction.start_date - now).days
+        sign = lambda x: (1, -1)[x < 0]
+        millisecond = (auction.start_date - now).seconds * 1000
+        microsecond = (auction.start_date - now).microseconds
+        remained = sign(days) * (millisecond + microsecond / 1000)
+
+        # remained = (auction.start_date - datetime.now()).seconds + 1
         emit("remaining_time", remained,room=room)
     return 200
 
