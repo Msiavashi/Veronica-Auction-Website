@@ -83,7 +83,7 @@ class AuctionUserViewed(Resource):
 
 class AuctionViewFinished(Resource):
     def get(self):
-        result = Offer.query.filter_by(win=True).all()
+        result = Offer.query.filter_by(win=True).order_by("created_at DESC")
         offers = []
         for offer in result:
             user = User.query.join(UserPlan).join(Offer).filter_by(id=offer.id).first()

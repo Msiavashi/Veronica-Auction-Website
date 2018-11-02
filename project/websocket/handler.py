@@ -188,29 +188,38 @@ def loadview(data):
 def bid(data):
     room = data["auction_id"]
     if not current_user.is_authenticated:
-        emit('failed',{"success":False,"reason":"جلسه کاری شما منقضی شده است لطفا دوباره به سایت وارد شوید"})
-        return 400
+        return emit('failed',{"success":False,"reason":"جلسه کاری شما منقضی شده است لطفا دوباره به سایت وارد شوید"})
 
     try:
         auction_id = data['auction_id']
         auction = Auction.query.get(auction_id)
 
         if(auction.start_date < datetime.now()):
-            emit('failed',{"success":False,"reason":"وقت شرکت در حراجی به اتمام رسیده است"})
-            return 400
+            return emit('failed',{"success":False,"reason":"وقت شرکت در حراجی به اتمام رسیده است"})
 
         user_plan = UserPlan.query.filter_by(user_id = current_user.id).join(AuctionPlan).filter_by(auction_id=auction_id).first()
         auc_part = UserAuctionParticipation.query.filter_by(auction_id=auction_id,user_id=current_user.id).first()
 
         if(not (user_plan and auc_part)):
-            emit('failed',{"success":False,"reason":"شما در این حراجی شرکت نکرده اید و مجوز ارسال پیشنهاد ندارید"})
-            return 400
+            return emit('failed',{"success":False,"reason":"شما در این حراجی شرکت نکرده اید و مجوز ارسال پیشنهاد ندارید"})
 
         # check for one minutes remained for starting auction
         last_offer = Offer.query.filter_by(auction_id=auction_id).order_by('offers.created_at DESC').first()
 
-        # if(last_offer and last_offer.win):
-        #     return get_winner(data)
+        if(last_offer and last_offer.win):
+            return get_winner(data)
+
+        remained = (auction.start_date - datetime.now()).seconds
+
+        if(remained > 60):
+            return emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
+
+        my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
+        if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
+            return emit("failed", {"success":False, "reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید"})
+
+        if(my_last_offer and my_last_offer.current_bids == 0):
+            return emit("failed", {"success":False,"reason":"پیشنهادات شما به پایان رسید"})
 
         now = datetime.now()
         days = (auction.start_date - now).days
@@ -218,25 +227,18 @@ def bid(data):
 
         millisecond = (auction.start_date - now).seconds * 1000
         microsecond = (auction.start_date - now).microseconds
-        remained = sign(days) * (millisecond + microsecond / 1000)
+        remained = sign(days) * (millisecond + microsecond/1000)
+        print "remained :",remained
 
-        if(remained > 60000):
-            emit('failed',{"success":False,"reason":"تا یک دقیقه به شروع حراجی امکان ارسال پیشنهاد وجود ندارد"})
-            return 400
+        if(remained <= 0 ):
+            print 'done from handler'
+            return auction_done(data)
 
-        my_last_offer = Offer.query.join(UserPlan).filter_by(id=user_plan.id,auction_id=auction_id).order_by('offers.created_at DESC').first()
-        if(last_offer and my_last_offer and my_last_offer.id==last_offer.id):
-            emit("failed", {"success":False, "reason":"امکان ارسال پیشنهاد روی پیشنهاد خود را ندارید"})
-            return 400
-
-        if(remained < 10700):
+        elif(remained < 10700 and remained >0):
+            remained = 10700
             auction.start_date = datetime.now() + timedelta(milliseconds=10700)
             db.session.add(auction)
             db.session.commit()
-
-        # elif(remained <=200 ):
-        #     print 'done from handler'
-        #     return auction_done(data)
 
 
         offer_count = Offer.query.filter_by(auction_id=auction_id).count() + 1
@@ -253,8 +255,8 @@ def bid(data):
                     offer.total_price = auction.max_price
                 offer.current_bids = my_last_offer.current_bids - 1
             else:
-                emit("failed", {"success":False,"reason":"پیشنهادات شما به پایان رسید"})
-                return 400
+                return emit("failed", {"success":False,"reason":"پیشنهادات شما به پایان رسید"})
+                # leave_auction(data)
         elif(last_offer):
             #get last_offer price for offer
             offer.total_price = last_offer.total_price + (BASE_BID_PRICE * auction.ratio)
@@ -283,12 +285,10 @@ def bid(data):
                 "id": user.id
             })
 
-        emit("accepted", {"success": True, "current_bids": offer.current_bids, "total_price": str(offer.total_price) ,"users":users},room=room)
-        return 200
+        return emit("accepted", {"success": True, "current_bids": offer.current_bids, "total_price": str(offer.total_price) ,"users":users,"remained_time":remained},room=room)
 
     except Exception as e:
-        emit("failed", {"success":False,"reason": e.message})
-    return 200
+        return emit("failed", {"success":False,"reason": e.message})
 
 def auction_done(data):
     room = data["auction_id"]
@@ -356,7 +356,6 @@ def get_winner(data):
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
     win_offer = Offer.query.filter_by(auction_id=auction_id,win=True).order_by('offers.created_at DESC').first()
-
     if win_offer:
         winner = {
         "username" : win_offer.user_plan.user.username,
@@ -378,7 +377,7 @@ def get_remain_time(data):
     room = data["auction_id"]
     auction_id = data['auction_id']
     auction = Auction.query.get(auction_id)
-    if(auction.start_date < datetime.now()):
+    if(auction.start_date <= datetime.now()):
         print 'done from sync'
         return auction_done(data)
     else:
@@ -387,11 +386,12 @@ def get_remain_time(data):
         sign = lambda x: (1, -1)[x < 0]
         millisecond = (auction.start_date - now).seconds * 1000
         microsecond = (auction.start_date - now).microseconds
-        remained = sign(days) * (millisecond + microsecond / 1000)
+        remained = sign(days) * (millisecond + microsecond/ 1000)
 
         # remained = (auction.start_date - datetime.now()).seconds + 1
         emit("remaining_time", remained,room=room)
     return 200
+
 
 @socketio.on('keepAlive')
 def keepAlive(data):

@@ -3,7 +3,6 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/libs/TimeCircles0.css') }}"/>
 
-
 <div id="app" class="content-page">
 	<div v-cloak class="container">
 		<div class="bread-crumb radius">
@@ -470,12 +469,14 @@ app.socket.on('sync_auction_join', function() {
 	app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
 		app.timerSync = setInterval(() => {
 		 app.socket.emit('keepAlive', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode()});
-	// 	 if (app.auction_remained_milliseconds <= 100){
-	// 		 app.handleBid();
-	// 	 }
-	// },100);
-	},2000);
+	},1000);
  });
+
+// var test_timer = setInterval(() => {
+// 	var rnd = Math.floor(Math.random() * 10000) + 1000;
+// 	if (app.auction_remained_milliseconds <= rnd)
+// 		app.handleBid();
+// },1000);
 
 app.socket.on('disconnect', function() {
 		 console.log('disconnected..');
@@ -542,21 +543,19 @@ app.socket.on('accepted', function(data){
 	});
 
 	app.$forceUpdate();
-	app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
-	console.log("accepted");
+	// app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
+	console.log("accepted : "+data.remained_time);
+	update_timer(data.remained_time);
 });
 
-app.socket.on("remaining_time", function(milliseconds){
-
-	console.log("remaining_time : "+ milliseconds);
+function update_timer(milliseconds) {
 	app.auction_remained_milliseconds = milliseconds;
 	stop_loading(loading_element);
-	if(milliseconds >= 300 && !running_timer){
+	if(milliseconds > 0 && !running_timer){
 		running_timer = true;
 		timer = setInterval(check_seconds,1000);
 	}
-
-	$("#DateCountdown").data("timer",milliseconds/1000);
+	$("#DateCountdown").data("timer",Math.ceil(milliseconds/1000));
 	$("#DateCountdown").TimeCircles({
 		"count_past_zero": false,
 		"animation": "smooth",
@@ -587,66 +586,11 @@ app.socket.on("remaining_time", function(milliseconds){
 				}
 		}
 	}).restart();
+}
 
-	});
-
-app.socket.on("auction_done", function(data){
-
-	 clearInterval(timer);
- 	 clearInterval(app.timerSync);
-	 clearInterval(app.interval);
-
-	 $("#DateCountdown").TimeCircles({
- 		"count_past_zero": false,
-     "animation": "smooth",
-     "bg_width": 1,
-     "fg_width": 0.1,
-     "circle_bg_color": "#f1fbdf",
-     "direction":"both",
-     "time": {
-         "Days": {
-             "text": "روز",
-             "color": "#6cdf07",
-             "show": false
-         },
-         "Hours": {
-             "text": "ساعت",
-             "color": "#6cdf07",
-             "show": true
-         },
-         "Minutes": {
-             "text": "دقیقه",
-             "color": "#6cdf07",
-             "show": true
-         },
-         "Seconds": {
-             "text": "ثانیه",
-             "color": "#6cdf07",
-             "show": true
-         }
-     }
- 	}).renewTime(0);
-
-	 if(data.success){
-
-		 $(".error_alert").addClass('hide');
-		 $(".success_alert").removeClass('hide');
-		 $(".success_container").html(data.reason)
-		//  app.remainingTime ="برنده :" + data.winner[0].username;
-		//  $(".my-flash-countdown").html(data.winner.username);
-		 $('#discount').html(ToPersian(formatCurrency(data.winner.discount)))
-	 }else {
-		 $(".error_alert").removeClass('hide');
-		 $(".error_container").html(data.reason);
-	 }
-	  stop_loading(loading_element);
-		console.log('here i am done ...');
-		app.socket.emit('leave_auction', {room: "{{auction_id}}".hashCode(),auction_id: "{{auction_id}}"});
-});
-
-app.socket.on("leave_auction", function(data){
-	console.log("leave_auction...");
-	app.socket.disconnect();
+app.socket.on("remaining_time", function(milliseconds){
+	console.log("remained_time : " + milliseconds);
+	update_timer(milliseconds);
 });
 
 var timer = setInterval(check_seconds,1000);
@@ -654,6 +598,7 @@ var running_timer = true;
 
 function check_seconds() {
 	seconds = Math.floor(app.auction_remained_milliseconds / 1000);
+
 	if( seconds <= 4){
     $("#DateCountdown").TimeCircles({
         "circle_bg_color": "#fbe5df",
@@ -707,16 +652,83 @@ function check_seconds() {
         }
     });
   }
+	app.auction_remained_milliseconds -= 1000;
 	running_timer = true;
- 	if(app.auction_remained_milliseconds <= 200){
+
+ 	if(app.auction_remained_milliseconds <= 0){
 		console.log('sentinal');
+		running_timer = false;
 		start_loading(loading_element);
 		app.socket.emit('get_remain_time', {room:("{{auction_id}}"+"{{current_user.id}}").hashCode(),auction_id: "{{auction_id}}"});
 		clearInterval(timer);
-		running_timer = false;
 	}
-	app.auction_remained_milliseconds -= 1000;
  }
+
+ app.socket.on("auction_done", function(data){
+
+ // 	 clearInterval(test_timer);
+ 	 clearInterval(timer);
+	 clearInterval(app.timerSync);
+ 	 clearInterval(app.interval);
+
+ 	 $("#DateCountdown").TimeCircles({
+  		"count_past_zero": false,
+      "animation": "smooth",
+      "bg_width": 1,
+      "fg_width": 0.1,
+      "circle_bg_color": "#f1fbdf",
+      "direction":"both",
+      "time": {
+          "Days": {
+              "text": "روز",
+              "color": "#6cdf07",
+              "show": false
+          },
+          "Hours": {
+              "text": "ساعت",
+              "color": "#6cdf07",
+              "show": true
+          },
+          "Minutes": {
+              "text": "دقیقه",
+              "color": "#6cdf07",
+              "show": true
+          },
+          "Seconds": {
+              "text": "ثانیه",
+              "color": "#6cdf07",
+              "show": true
+          }
+      }
+  	}).renewTime(0);
+
+ 	 if(data.success){
+
+ 		 $(".error_alert").addClass('hide');
+ 		 $(".success_alert").removeClass('hide');
+ 		 $(".success_container").html(data.reason)
+ 		//  app.remainingTime ="برنده :" + data.winner[0].username;
+ 		//  $(".my-flash-countdown").html(data.winner.username);
+ 		 $('#discount').html(ToPersian(formatCurrency(data.winner.discount)))
+ 	 }else {
+ 		 $(".error_alert").removeClass('hide');
+ 		 $(".error_container").html(data.reason);
+ 	 }
+ 	  stop_loading(loading_element);
+ 		console.log('here i am done ...');
+ 		app.socket.emit('leave_auction', {room: "{{auction_id}}".hashCode(),auction_id: "{{auction_id}}"});
+ });
+
+ app.socket.on("leave_auction", function(data){
+ // 	clearInterval(test_timer);
+ 	clearInterval(timer);
+ 	clearInterval(app.timerSync);
+ 	clearInterval(app.interval);
+ 	stop_loading(loading_element);
+ 	console.log('here i am done ...');
+ 	console.log("leave_auction...");
+ 	app.socket.disconnect();
+ });
 
 $('.close').on('click',function(event){
 	event.preventDefault();

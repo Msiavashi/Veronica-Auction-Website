@@ -913,7 +913,7 @@ class UserCheckoutConfirm(Resource):
             return make_response(jsonify({"message":{"message":msg,"success":False}}),400)
 
 class UserApplyPayment(Resource):
-    # @jwt_required
+    @jwt_required
     def get(self,pid):
         payment = Payment.query.get(pid)
 
@@ -926,6 +926,9 @@ class UserApplyPayment(Resource):
             if(unpaid_user_plan):
                 if(not current_user.has_auction(unpaid_user_plan.auction)):
                     current_user.auctions.append(unpaid_user_plan.auction)
+                    db.session.add(current_user)
+                    db.session.commit()
+
             elif(orders):
                 for order in orders:
                     shipment = Shipment.query.filter_by(order_id=order.id).first()
@@ -939,6 +942,7 @@ class UserApplyPayment(Resource):
                             stmt = user_gifts.update().where(and_(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id)).values(used=True)
                             db.engine.execute(stmt)
 
+                    db.session.add(order)
                     db.session.add(shipment)
                     db.session.commit()
             else:
