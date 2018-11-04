@@ -2,8 +2,57 @@
 {% block title %} ورود به سایت {% endblock %}
 {% block content %}
 
-<div class="content-page woocommerce">
-	<div id="app" class="container">
+	<div class="container" id="app">
+		<div class="row">
+		<div class="col-md-12">
+			<h2 class="title-shop-page">ورود به حساب کاربری یونی بید</h2>
+			<div class="register-content-box">
+				<div class="row">
+					<div class="form">
+					<div class="thumbnail"><img src="/static/images/theme/login-icon.svg"/></div>
+
+					<div class="alert alert-danger error_alert hide">
+						<a href="#" class="close" aria-label="close">×</a>
+						<div class="error_container"></div>
+					</div>
+
+					<div class="alert alert-success alert-dismissable success_alert hide">
+						<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+						<div class="success_container"></div>
+					</div>
+
+					<form class="login-form"  @submit.prevent="handleSubmit">
+						<input type="text" v-model="loginInformation.username" placeholder="نام کاربری"/>
+						<input type="password" v-model="loginInformation.password" placeholder="رمز عبور"/>
+						<input type="submit" value="ورود به حساب کاربری"/>
+						<div class="form-my-account">
+							<div class="table create-account">
+								<div class="text-left">
+									<p>
+										<input v-model="loginInformation.remember_me" type="checkbox"  id="remember_me" /> <label for="remember_me">مرا به خاطر بسپار</label>
+									</p>
+								</div>
+								<div class="text-right">
+									<a href="/forgotpassword" class="color">رمز عبور خود را فراموش کرده اید؟</a>
+								</div>
+							</div>
+						</div>
+
+						<p class="message">هنوز ثبت نام نکرده اید؟ <a href="/register">ثبت نام کنید</a></p>
+					</form>
+
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+	</div>
+
+	<!-- <div id="app" class="container">
 		<div class="row">
 			<div class="col-md-12">
 				<h2 class="title-shop-page">حساب کاربری</h2>
@@ -44,15 +93,15 @@
 												<a href="#" class="color">رمز عبور خود را فراموش کرده اید؟</a>
 											</div>
 										</div>
-										<!-- <h2 class="title18 social-login-title">یا از طریق زیر وارد شوید</h2> -->
-										<!-- <div class="social-login-block table text-center">
+									 <h2 class="title18 social-login-title">یا از طریق زیر وارد شوید</h2>
+										<div class="social-login-block table text-center">
 											<div class="social-login-btn">
 												<a href="#" class="login-fb-link">Facebook</a>
 											</div>
 											<div class="social-login-btn">
 												<a href="#" class="login-goo-link">Google</a>
 											</div>
-										</div> -->
+										</div>
 									</form>
 								</div>
 							</div>
@@ -73,12 +122,12 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
+
 </div>
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-<script type="text/javascript" src="{{url_for('static',filename='js/libs/progressbar.min.js')}}"></script>
 
 <script>
 
@@ -136,130 +185,7 @@ var app = new Vue({
 					 console.log(error.response.data.message);
 
 					 if (error.response.data.message.operation == "verification_required"){
-						 swal({
-		           title: 'فعال سازی حساب کاربری',
-		           text: "حساب کاربری شما فعال نیست. لطفا جهت دریافت و ورود کد فعال سازی یکبارمصرف خود عملیات فعال سازی را انجام دهید!",
-							 type: 'warning',
-		           showCancelButton: true,
-		           confirmButtonText: 'عملیات فعال سازی!',
-		           cancelButtonText: 'بی خیال...!',
-		           confirmButtonColor: '#3085d6',
-		           cancelButtonColor: '#d33',
-		           showLoaderOnConfirm: true,
-		         }).then((result) => {
-		           if (result.value) {
-								 axios.put("{{url_for('userverification')}}",
-				 					{
-				 						headers:
-				 						{
-				 							'Content-Type': 'application/json'
-				 						}
-				 					}).then((response) => {
-				 						console.log(response.data);
-				 						var remained_seconds = response.data.remained_to_expire;
-
-				 						axios.get("{{url_for('userverification')}}")
-
-				 							.then((response) => {
-				 								console.log(response.data);
-				 								html = response.data.send_attempts == 0 ?
-				 								'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+
-				 								'<input id="verification_code" type="number" " maxlength="4" size="4"><br>'+
-				 								'توجه کنید کد فعال سازی شما تا یک دقیقه معتبر است!'+
-				 								'<div id="progress"></div>'+
-				 								'<span> این فرصت آخر شما برای فعال سازی حساب کاربری است </span>'
-				 								:
-
-				 								'لطفا کد فعال سازی که برای شما پیامک شده است را در کادر زیر وارد کنید : <br>'+
-				 								'<input id="verification_code" type="number" " maxlength="4" size="4"><br>'+
-				 								'توجه کنید کد فعال سازی شما تا یک دقیقه معتبر است!'+
-				 								'<div id="progress"></div>'+
-				 								'<span>حداکثر '+ToPersian(response.data.send_attempts) +' بار دیگر می توانید کد فعال سازی را درخواست کنید </span>';
-
-				 									swal({
-				 									 title: 'فعال سازی حساب کاربری',
-				 									 type: "info",
-				 									 confirmButtonText: 'اعتبار سنجی',
-				 									 confirmButtonColor: '#3085d6',
-				 									 showLoaderOnConfirm: true,
-				 									 html:html,
-				 									 allowOutsideClick: () => !swal.isLoading(),
-
-				 									 preConfirm: (verify) => {
-				 										 this.verification.code = $("#verification_code").val();
-
-				 										 var obj = this.verification;
-
-				 										 for (var propName in obj) {
-				 											 if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
-				 												 delete obj[propName];
-				 											 }
-				 										 }
-
-				 										 axios.post("{{url_for('userverification')}}",obj,
-				 											 {
-				 												 headers:
-				 												 {
-				 													 'Content-Type': 'application/json'
-				 												 }
-				 											 }).then(function (response) {
-
-				 												 swal({
-				 														title: "فعال سازی حساب کاربری",
-				 														text:response.data.message.message,
-				 														type:"success",
-				 														confirmButtonText: 'حله...',
-				 													}).then((result)=>{
-				 														if(result.value){
-				 															window.location.reload();
-				 														}
-				 													});
-
-				 												}).catch((error)=>{
-				 													err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.error;
-				 													swal({
-				 														title:'مشکل در عملیات فعال سازی',
-				 														text :err,
-				 														type: 'error',
-				 													}).then((result)=>{
-				 														if(result.value && error.response.data.message.type == "invalid"){
-				 															this.get_activation_code();
-				 														}
-				 													});
-
-				 												});
-				 									 },
-
-				 								});
-
-				 							 applyswl(remained_seconds);
-
-				 							})
-				 							.catch((error)=>{
-				 								swal(
-				 								 'مشکل در گرفتن کد فعال سازی',
-				 								 error.response.data.message.error,
-				 								 'error'
-				 							 )
-				 							});
-				 					}).catch((error)=>{
-				 						swal(
-				 							'مشکلی پیش اومد',
-				 							error.response.data.message.error,
-				 							'error'
-				 						)
-				 					});
-
-		           } else if (result.dismiss === swal.DismissReason.cancel) {
-		             swal({
-		               title:'دریافت کد فعال سازی کنسل شد!',
-		               text:'جهت استفاده ازامکانات سایت نیاز به فعال سازی حساب کاربری خود دارید',
-		               type:'error',
-		               confirmButtonText: 'صلاح مملکت خویش خسروان دانند...',
-									 confirmButtonColor: '#d33',
-		             });
-		           }
-		         });
+						 window.location = "/verify";
 					 }else {
 						 $(".error_alert").removeClass('hide');
 						 for (var propName in error.response.data.message) {
@@ -378,38 +304,6 @@ var app = new Vue({
 
 	}
 });
-
-// $(document).on('click','#resend_activation_code',function(){
-// 	bar.set(1);
-// 	bar.animate(0);
-// });
-
-var bar = null;
-function applyswl(remained) {
-	bar = new ProgressBar.Line(progress, {
-	  color: '#000',
-	  strokeWidth: 10,
-	  trailWidth: 10,
-	  easing: 'linear',
-	  duration: remained * 1000,
-	  from: { color: '#000', width: 15 },
-	  to: { color: '#fff', width: 15},
-	  step: function(state, circle) {
-	    circle.path.setAttribute('stroke', state.color);
-	    circle.path.setAttribute('stroke-width', state.width);
-
-	    var value = Math.round(circle.value() * remained);
-	    if (value < 10) {
-	      circle.setText(ToPersian('0'+value));
-	    } else {
-	      circle.setText(ToPersian(value));
-	    }
-
-	  }
-	});
-	bar.set(1);
-	bar.animate(0);
-}
 
 $('.close').on('click',function(event){
 	event.preventDefault();

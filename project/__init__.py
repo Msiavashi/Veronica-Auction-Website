@@ -20,6 +20,7 @@ from flask_login import current_user,LoginManager
 from definitions import SESSION_EXPIRE_TIME,SMS_USERNAME,SMS_PASSWORD
 from flask_session import Session
 from sqlalchemy import create_engine
+import melipayamak
 
 REDIS_URL = "redis://localhost:6379/0"
 
@@ -137,6 +138,7 @@ api.add_resource(Auth_API.UserLogin, '/user/login')
 api.add_resource(Auth_API.UserLogout, '/user/logout')
 api.add_resource(Auth_API.UserTokenRefresh, '/refresh/token')
 api.add_resource(Auth_API.UserLogoutRefresh, '/refresh/logout')
+api.add_resource(Auth_API.UserForgotPassword, '/user/forgot/password')
 
 api.add_resource(Site_API.SiteCategoryMenuItems, '/site/category/menu/items')
 api.add_resource(Site_API.SiteSearchAuctions, '/site/search/auctions/<keyword>')

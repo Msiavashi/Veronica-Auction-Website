@@ -14,18 +14,15 @@ from flask_login import LoginManager, UserMixin,login_required, login_user, logo
 from ..model.user_message import UserMessage
 from ..model.user_gift import *
 from ..model.order import *
-import definitions
 from werkzeug.utils import secure_filename
 from ..utils import Payload
-from definitions import AVATAR_DIR
-from definitions import MESSAGE_SUBJECTS
-from definitions import MAXIMUM_ORDERS
-from definitions import COUPONCODE
+from definitions import COUPONCODE,MAX_INVITOR_POLICY,MAXIMUM_ORDERS,MESSAGE_SUBJECTS,AVATAR_DIR
 import copy
 import random
 from datetime import datetime
 from flask_jwt_extended import JWTManager,jwt_required,jwt_refresh_token_required
 from sqlalchemy import or_ , and_
+from ..melipayamak import SendSMS
 
 parser_user_address = reqparse.RequestParser()
 parser_user_address.add_argument('state', help = 'ورود استان ضروری است', required = True)
@@ -144,6 +141,12 @@ class UserBasicInfo(Resource):
 
             if(already_invited):
                 msg = "جایزه کد معرفی شما قبلا استفاده شده است"
+                return make_response(jsonify({"message":{"error":msg}}),400)
+
+            invitor_count = User.query.filter_by(invitor=invitor_code).count
+
+            if User.query.filter_by(invitor=invitor_code).count() >= MAX_INVITOR_POLICY:
+                msg = "تعداد افراد معرفی شده توسط " + invitor_code + " به پایان رسیده است."
                 return make_response(jsonify({"message":{"error":msg}}),400)
 
             gift = Gift.query.filter_by(title=COUPONCODE).first()
@@ -265,9 +268,8 @@ class UserInformation(Resource):
         invitor_code = request.form.get('invitor-code',None)
 
         if(invitor_code):
-            msg ="کد دعوت بصورت موقت غیر فعال می باشد"
+            msg ="عملیات کد دعوت از این بخش فعلا غیر فعال است"
             return make_response(jsonify({"message":{"error":msg}}),500)
-
 
             invitor = User.query.filter_by(username=invitor_code).first()
 
@@ -277,6 +279,34 @@ class UserInformation(Resource):
             if(invitor.id == current_user.id):
                 msg ="شما قادر به معرفی خود نیستید"
                 return make_response(jsonify({"message":{"error":msg}}),500)
+
+            already_invited = current_user.gifts.filter_by(title=COUPONCODE).first()
+
+            if(already_invited):
+                msg = "جایزه کد معرفی شما قبلا استفاده شده است"
+                return make_response(jsonify({"message":{"error":msg}}),400)
+
+            if User.query.filter_by(invitor=invitor_code).count() >= MAX_INVITOR_POLICY:
+                msg = ".معرف شما از حداکثر تعداد معرفی شدگان خود استفاده کرده است" \
+                + " دقت فرمایید که هرفرد تنها قادر به معرفی "+MAX_INVITOR_POLICY+" نفر است."
+
+                return make_response(jsonify({"message":{"error":msg}}),400)
+
+                gift = Gift.query.filter_by(title=COUPONCODE).first()
+                if not gift:
+                    msg = "جایزه معرفی کاربران در سیستم تعریف نشده است"
+                    return make_response(jsonify({"message":{"error":msg}}),400)
+
+                if gift and not gift.expired:
+                    current_user.gifts.append(gift)
+                    current_user.credit += gift.amount
+                    db.session.add(current_user)
+                    db.session.commit()
+                    invitor = User.query.filter_by(username=current_user.invitor).first()
+                    if invitor:
+                        invitor.credit += gift.amount
+                        db.session.add(invitor)
+                        db.session.commit()
 
             gift = Gift.query.filter_by(title=COUPONCODE).first()
             if gift:
@@ -929,6 +959,34 @@ class UserApplyPayment(Resource):
                     db.session.add(current_user)
                     db.session.commit()
 
+                    already_invited = current_user.gifts.filter_by(title=COUPONCODE).first()
+                    if not already_invited and current_user.invitor and User.query.filter_by(invitor=current_user.invitor).count() < MAX_INVITOR_POLICY:
+                        gift = Gift.query.filter_by(title=COUPONCODE).first()
+                        if gift and not gift.expired:
+                            current_user.gifts.append(gift)
+                            current_user.credit += gift.amount
+                            db.session.add(current_user)
+                            db.session.commit()
+                            text = "دریافت هدیه دعوت دوستان" \
+                            + '\n' + "کاربر عزیز‌ : " + current_user.username \
+                            + '\n' + ' کیف پول شما به میزان' + str(int(gift.amount)) + ' تومان شارژ شد.'\
+                            + '\n' + 'با دعوت از دوستان خود با شرکت آنها در اولین حراجی هدیه معرفی خود را دریافت کنید.'\
+                            + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
+                            + '\n' + 'تیم یونی بید www.unibid.ir'
+                            SendSMS(current_user.mobile,text)
+
+                            invitor = User.query.filter_by(username=current_user.invitor).first()
+                            if invitor:
+                                invitor.credit += gift.amount
+                                db.session.add(invitor)
+                                db.session.commit()
+                                remained_invitation_coupons = User.query.filter_by(invitor=invitor.username).count()
+                                text = "دریافت هدیه دعوت دوستان" \
+                                + '\n' + "کاربر عزیز‌ : " + invitor.username \
+                                + '\n' + 'کیف پول شما به میزان' + str(int(gift.amount)) + ' تومان جهت معرفی' + current_user.username + ' شارژ شد.'\
+                                + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
+                                + '\n' + 'تیم یونی بید www.unibid.ir'
+                                SendSMS(invitor.mobile,text)
             elif(orders):
                 for order in orders:
                     shipment = Shipment.query.filter_by(order_id=order.id).first()

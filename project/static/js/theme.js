@@ -120,19 +120,22 @@ function detail_gallery(){
 //Document Ready
 jQuery(document).ready(function(){
 	//Switch Register
-	$('.login-to-register').on('click',function(event){
-		event.preventDefault();
-		$(this).toggleClass('login-status');
-		if($(this).hasClass('login-status')){
-			$(this).text($(this).attr('data-login'));
-			$(this).parents('.register-content-box').find('.block-login').hide();
-			$(this).parents('.register-content-box').find('.block-register').show();
-		}else{
-			$(this).text($(this).attr('data-register'));
-			$(this).parents('.register-content-box').find('.block-login').show();
-			$(this).parents('.register-content-box').find('.block-register').hide();
-		}
-	});
+
+	// $('.login-to-register').on('click',function(event){
+	// 	event.preventDefault();
+	// 	$(this).toggleClass('login-status');
+	// 	console.log($(this).hasClass('login-status'));
+	// 	if($(this).hasClass('login-status')){
+	// 		$(this).text($(this).attr('data-login'));
+	// 		$(this).parents('.register-content-box').find('.block-login').hide();
+	// 		$(this).parents('.register-content-box').find('.block-register').show();
+	// 	}else{
+	// 		$(this).text($(this).attr('data-register'));
+	// 		$(this).parents('.register-content-box').find('.block-login').show();
+	// 		$(this).parents('.register-content-box').find('.block-register').hide();
+	// 	}
+	// });
+
 	//Drop Box Hover
 	$('.dropdown-box').on('mouseover',function(){
 		$('body').addClass('overlay');
@@ -595,3 +598,12 @@ $(".fold-table tr.view").on("click", function(){
 	}
 });
 });
+
+// login
+// $('.message a').click(function(){
+// 	$('.clickopen').animate({height: "toggle", opacity: "toggle"}, "slow");
+//  });
+//
+//  $('.clickactions').click(function(){
+// 	$('.clickopen2').animate({height: "toggle", opacity: "toggle"}, "slow");
+//  });

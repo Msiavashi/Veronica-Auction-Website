@@ -1,0 +1,84 @@
+{% extends 'site/layout.html' %}
+{% block title %} فراموشی رمز عبور {% endblock %}
+{% block content %}
+
+	<div class="container" id="app">
+		<div class="row">
+		<div class="col-md-12">
+			<h2 class="title-shop-page"> ریکاوری رمز عبور حساب کاربری یونی بید</h2>
+			<div class="register-content-box">
+				<div class="row">
+					<div class="form">
+					<div class="thumbnail"><img src="/static/images/theme/login-icon.svg"/></div>
+					<form class="code-login-form" @submit.prevent="handleSubmit">
+						<input type="number" v-model="mobile" placeholder="شماره موبایل"/>
+						<input type="submit" value="دریافت رمز عبور موقت" />
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{url_for('static',filename='js/libs/progressbar.min.js')}}"></script>
+
+<script>
+
+app = new Vue({
+
+	el : "#app",
+
+	data:{
+		mobile : "",
+	},
+	methods:{
+
+		handleSubmit:function() {
+
+			var obj = {"mobile":this.mobile};
+
+			for (var propName in obj) {
+				if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
+					delete obj[propName];
+				}
+			}
+
+			axios.post("{{url_for('userforgotpassword')}}",obj,
+				{
+					headers:
+					{
+						'Content-Type': 'application/json'
+					}
+				}).then(function (response) {
+
+					swal({
+						 title: "فراموشی رمز عبور",
+						 text:response.data.message.message,
+						 type:"success",
+						 confirmButtonText: 'حله...',
+					 }).then((result)=>{
+						 if(result.value){
+							 window.location ="/login";
+						 }
+					 });
+
+				 }).catch((error)=>{
+					 err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.error;
+					 swal({
+						 title:'مشکل درعملیات فراموشی رمزعبور',
+						 text :err,
+						 type: 'error',
+					 });
+
+				 });
+		},
+	},
+
+});
+
+</script>
+{% endblock scripts %}

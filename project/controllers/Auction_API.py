@@ -14,6 +14,8 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_login import login_required ,current_user
 from decimal import Decimal
 import random
+from definitions import COUPONCODE,MAX_INVITOR_POLICY
+from ..melipayamak import SendSMS
 
 class AuctionTestJson(Resource):
     def post(self):
@@ -88,9 +90,6 @@ class AuctionViewFinished(Resource):
         for offer in result:
             user = User.query.join(UserPlan).join(Offer).filter_by(id=offer.id).first()
             if user:
-                auction_participants = []
-                for participant in offer.auction.participants:
-                    auction_participants.append({"id":participant.id,"username":participant.username})
                 winner = ""
                 if(user.first_name and user.last_name and offer.win):
                     winner = user.first_name + ' ' + user.last_name
@@ -104,7 +103,7 @@ class AuctionViewFinished(Resource):
                 "total_price":int(offer.total_price),
                 "main_price":int(offer.auction.item.price),
                 "start_date":offer.auction.start_date,
-                "participants":auction_participants,
+                "participants":offer.auction.participants.count(),
                 "winner":winner,
                 })
         return make_response(jsonify(offers),200)
@@ -196,6 +195,36 @@ class AuctionUserParticipation(Resource):
 
             db.session.add(current_user)
             db.session.commit()
+
+            already_invited = current_user.gifts.filter_by(title=COUPONCODE).first()
+            if not already_invited and current_user.invitor and User.query.filter_by(invitor=current_user.invitor).count() < MAX_INVITOR_POLICY:
+                gift = Gift.query.filter_by(title=COUPONCODE).first()
+                if gift and not gift.expired:
+                    current_user.gifts.append(gift)
+                    current_user.credit += gift.amount
+                    db.session.add(current_user)
+                    db.session.commit()
+                    text = "دریافت هدیه دعوت دوستان" \
+                    + '\n' + "کاربر عزیز‌ : " + current_user.username \
+                    + '\n' + ' کیف پول شما به میزان' + str(int(gift.amount)) + ' تومان شارژ شد.'\
+                    + '\n' + 'با دعوت از دوستان خود با شرکت آنها در اولین حراجی هدیه معرفی خود را دریافت کنید.'\
+                    + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
+                    + '\n' + 'تیم یونی بید www.unibid.ir'
+                    SendSMS(current_user.mobile,text)
+
+                    invitor = User.query.filter_by(username=current_user.invitor).first()
+                    if invitor:
+                        invitor.credit += gift.amount
+                        db.session.add(invitor)
+                        db.session.commit()
+                        remained_invitation_coupons = User.query.filter_by(invitor=invitor.username).count()
+                        text = "دریافت هدیه دعوت دوستان" \
+                        + '\n' + "کاربر عزیز‌ : " + invitor.username \
+                        + '\n' + 'کیف پول شما به میزان' + str(int(gift.amount)) + ' تومان جهت معرفی' + current_user.username + ' شارژ شد.'\
+                        + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
+                        + '\n' + 'تیم یونی بید www.unibid.ir'
+                        SendSMS(invitor.mobile,text)
+
             msg = "شرکت در حراجی با موفقیت انجام شد"
             return make_response(jsonify({"success":True,"type":"registered","message":msg}),200)
 

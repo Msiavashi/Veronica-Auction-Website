@@ -47,6 +47,24 @@ class Route():
             return render_template('site/iframes/ilogin.html', next=next)
         return render_template('site/login.html',next=next)
 
+    @app.route('/verify')
+    def account_forgot():
+        if current_user.is_authenticated:
+            return redirect('/')
+        if not "username" in session:
+            return redirect('/login')
+        next = request.args.get('next')
+        return render_template('site/verify.html',next=next)
+
+    @app.route('/forgotpassword')
+    def account_verify():
+        if current_user.is_authenticated:
+            return redirect('/')
+
+        next = request.args.get('next')
+        return render_template('site/forgot.html',next=next)
+
+
 
     @app.route('/ilogin')
     def ilogin():

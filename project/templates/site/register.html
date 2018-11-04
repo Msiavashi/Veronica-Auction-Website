@@ -1,7 +1,53 @@
 {% extends 'site/layout.html' %}
 {% block title %} ثبت نام {% endblock %}
 {% block content %}
-<div class="content-page woocommerce">
+
+<div class="container" id="app">
+	<div class="row">
+	<div class="col-md-12">
+		<h2 class="title-shop-page">ثبت نام در یونی بید</h2>
+		<div class="register-content-box">
+			<div class="row">
+				<div class="form">
+				<div class="thumbnail"><img src="/static/images/theme/login-icon.svg"/></div>
+
+				<div class="alert alert-danger error_alert hide">
+					<a href="#" class="close" aria-label="close">×</a>
+					<div class="error_container"></div>
+				</div>
+				<div class="alert alert-success alert-dismissable success_alert hide">
+					<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+					<div class="success_container"></div>
+				</div>
+
+				<form class="register-form"  @submit.prevent="handleSubmit">
+					<input v-model="registerInformation.username" type="text" placeholder="نام کاربری"/>
+					<input v-model="registerInformation.password" type="password" placeholder="رمز عبور"/>
+					<input v-model="registerInformation.c_password" type="password" placeholder="تکرار رمز عبور"/>
+					<input v-model="registerInformation.mobile" type="text" placeholder="شماره موبایل"/>
+					<input v-model="registerInformation.invitor" type="text" placeholder="کد معرف"/>
+					<div class="form-my-account">
+						<div class="table create-account">
+							<div class="text-left">
+								<p>
+									<input v-model="registerInformation.accept_roles" type="checkbox"  id="accept_roles" name="accept_roles"/><label for="accept_roles"><a href="/roles" class="color">قوانین و مقررات سایت </a> را مطالعه کرده ام و قبول دارم <span class="required">*</span></label>
+								</p>
+							</div>
+						</div>
+					</div>
+					<input type="submit" value="ثبت نام" />
+					<p class="message">قبلا ثبت نام کرده اید؟ <a href="/login">ورود به حساب کاربری</a></p>
+
+				</form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+<!-- <div class="content-page woocommerce">
 	<div class="container" id="app">
 		<div class="row">
 			<div class="col-md-12">
@@ -65,7 +111,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> -->
 {% endblock %}
 {% block scripts %}
 {{ super() }}
@@ -83,6 +129,7 @@ var app = new Vue({
 			c_password : "",
 			mobile : "",
 			accept_roles : false,
+			invitor : "",
 		},
 		next : "{{next}}",
 	},
@@ -96,6 +143,8 @@ var app = new Vue({
           delete obj[propName];
         }
       }
+
+
 			console.log(this.registerInformation);
 			axios.post("{{url_for('userregistration')}}",obj,
 				{
@@ -105,7 +154,7 @@ var app = new Vue({
 					}
 				}).then(function (response) {
 
-					window.location = "/profile/modify"
+					window.location = "/verify"
 
          })
          .catch((error)=>{

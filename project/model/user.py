@@ -24,7 +24,7 @@ class User(Base,UserMixin):
 
     activation_code = db.Column(db.String(length=10), nullable=False, default = random.randint(100000,1000000))
     is_verified = db.Column(db.Boolean,nullable =False,default=False)
-    is_active = db.Column(db.Boolean,nullable =False,default=True)
+    is_active = db.Column(db.Boolean,nullable =False,default=False)
     is_banned = db.Column(db.Boolean,nullable =False,default=False)
     verification_attempts = db.Column(db.Integer,nullable =False,default=0)
     login_attempts = db.Column(db.Integer,nullable =False,default=0)

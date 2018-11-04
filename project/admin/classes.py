@@ -40,7 +40,7 @@ class UserAdmin(ModelView):
     page_size = 10
     can_view_details = True
     column_searchable_list = ['first_name', 'last_name','alias_name','username','mobile','address.city','address.state.title','address.address','address.postal_code']
-    column_editable_list = ['first_name', 'last_name','alias_name','credit','is_active','is_banned','is_verified','mobile']
+    column_editable_list = ['first_name', 'last_name','alias_name','credit','is_active','is_banned','is_verified','mobile','send_sms_attempts','login_attempts','verification_attempts']
     column_exclude_list = ['email','updated_at']
     def is_accessible(self):
         # return True
@@ -220,7 +220,7 @@ class OfferAdmin(ModelView):
     page_size = 30
     can_view_details = True
     column_searchable_list = ['user_plan.auction_plan.plan.title','user_plan.user.first_name','user_plan.user.last_name','user_plan.user.alias_name','user_plan.user.username','auction.title','win']
-
+    column_editable_list = ['win']
     def is_accessible(self):
         # return True
         return current_user.has_role('admin')
