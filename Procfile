@@ -6,3 +6,13 @@ server1 : gunicorn --worker-class eventlet -w 1 -b 127.0.0.1:8001 runserver:app 
 dev : gunicorn --worker-class eventlet -w 1 -b 127.0.0.1:9001 runserver:app -u root -g apache --threads 4 --keep-alive 10
 
 flask_sockets remote :nohup gunicorn -w 4 -b 0.0.0.0:8000 -k flask_sockets.worker --reload runserver:app -u root -g apache &
+
+
+SELECT username, created_at FROM users
+     WHERE UPPER(username) IN
+     (SELECT UPPER(username) FROM users GROUP BY UPPER(username) HAVING COUNT(*) > 1)
+ ORDER BY username, created_at
+
+ SELECT count(*) FROM users
+      WHERE UPPER(username) IN
+      (SELECT UPPER(username) FROM users GROUP BY UPPER(username) HAVING COUNT(*) > 1);

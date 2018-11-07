@@ -11,7 +11,7 @@
 					<div class="form">
 					<div class="thumbnail"><img src="/static/images/theme/login-icon.svg"/></div>
 					<form class="code-login-form" @submit.prevent="handleSubmit">
-						<input type="number" v-model="mobile" placeholder="شماره موبایل"/>
+						<input type="text" v-on:keypress="isNumber($event)" v-model="mobile" placeholder="شماره موبایل (فقط اعداد بصورت انگلیسی)"/>
 						<input type="submit" value="دریافت رمز عبور موقت" />
 					</form>
 					</div>
@@ -24,7 +24,6 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-<script type="text/javascript" src="{{url_for('static',filename='js/libs/progressbar.min.js')}}"></script>
 
 <script>
 
@@ -75,6 +74,18 @@ app = new Vue({
 					 });
 
 				 });
+		},
+
+		isNumber: function(evt) {
+			evt = (evt) ? evt : window.event;
+			var charCode = (evt.which) ? evt.which : evt.keyCode;
+			// if ((charCode > 31 && (charCode < 48 || charCode > 57)) && (charCode < 1776 || charCode > 1785) && charCode !== 46) {
+			if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+				evt.preventDefault();
+			}
+			else {
+				return true;
+			}
 		},
 	},
 

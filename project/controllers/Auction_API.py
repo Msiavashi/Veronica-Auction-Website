@@ -84,8 +84,14 @@ class AuctionUserViewed(Resource):
             return make_response(jsonify(auctions),200)
 
 class AuctionViewFinished(Resource):
-    def get(self):
-        result = Offer.query.filter_by(win=True).order_by("created_at DESC")
+    def get(arg):
+        return make_response(jsonify({"finished":Offer.query.filter_by(win=True).count()}),200)
+
+    def put(self):
+        data = request.get_json(force=True)
+        start = data['start']
+        stop = data['stop']
+        result = Offer.query.filter_by(win=True).order_by("created_at DESC").slice(start,stop)
         offers = []
         for offer in result:
             user = User.query.join(UserPlan).join(Offer).filter_by(id=offer.id).first()

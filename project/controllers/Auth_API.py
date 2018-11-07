@@ -19,11 +19,11 @@ from datetime import datetime,timedelta
 
 parser_register = reqparse.RequestParser()
 parser_register.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
-parser_register.add_argument('mobile', help = 'ورود شماره همراه ضروری است', required = True)
 parser_register.add_argument('password', help = 'ورود رمز عبور ضروری است', required = True)
 parser_register.add_argument('c_password', help = 'ورود تکرار رمز عبور ضروری است', required = True)
-parser_register.add_argument('invitor', required = False)
+parser_register.add_argument('mobile', help = 'ورود شماره موبایل ضروری است', required = True)
 parser_register.add_argument('accept_roles', help = 'تایید مقررات سایت الزامی است', required = True)
+parser_register.add_argument('invitor', required = False)
 
 parser_login = reqparse.RequestParser()
 parser_login.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
@@ -49,18 +49,27 @@ class UserRegistration(Resource):
         if User.find_by_username(data['username'].lower()):
             return make_response(jsonify({"message":{"username":'کاربری با این مشخصات از قبل تعریف شده است'}}),400)
 
-        if User.find_by_mobile(data['mobile']):
-            return make_response(jsonify({"message":{"mobile":'این شماره موبایل از قبل در سیستم موجود است'}}),400)
+        if data['username'].isdigit():
+            return make_response(jsonify({"message":{"username":'نام کاربری شما نمی تواند بصورت عدد باشد'}}),400)
 
-        if len(data['mobile']) < 11 or not data['mobile'].isdigit():
-            return make_response(jsonify({"message":{"mobile":'شماره موبایل وارد شده معتبر نیست'}}),400)
+        if len(data['username']) > 32 or len(data['username']) < 3:
+            return make_response(jsonify({"message":{"username":'نام کاربری انتخاب شده باید حداقل ۳حرفی و یا حداکثر ۳۲ حرفی باشد.'}}),400)
+
+        if len(data['password']) > 32 or len(data['password']) < 4:
+            return make_response(jsonify({"message":{"username":'رمز عبور انتخابی شما باید حداقل ۴ وحداکثر ۳۲ کاراکتری باشد'}}),400)
 
         if(data['password']!=data['c_password']):
             return make_response(jsonify({"message":{'password': 'رمز عبور با تکرار آن مطابقت ندارد'}}),400)
 
+        if User.find_by_mobile(data['mobile']):
+            return make_response(jsonify({"message":{"mobile":'این شماره موبایل از قبل در سیستم موجود است'}}),400)
+
+        if len(data['mobile']) > 13 or len(data['mobile']) < 11 or not data['mobile'].isdigit():
+            return make_response(jsonify({"message":{"mobile":'شماره موبایل وارد شده معتبر نیست'}}),400)
+
         if 'invitor' in data and data['invitor']:
 
-            if not User.find_by_username(data['invitor'].lower()):
+            if not User.find_by_username(data['invitor']):
                 msg = "کاربری با کد معرفی مورد نظر شما وجود ندارد. لطفا کد معرف خود را بطور صحیح وارد کنید ویا این قسمت را خالی رها کنید. "
                 return make_response(jsonify({"message":{"invitor":msg}}),400)
 
@@ -265,14 +274,13 @@ class UserVerification(Resource):
             now = datetime.now()
             data = request.get_json(force=True)
 
-            if 'resend' in data and data['resend']:
-                session['last_send_time'] = session['last_send_time'] + timedelta(seconds=60)
-
             if 'last_send_time' not in session:
-                session['last_send_time'] = now + timedelta(seconds=60)
+                session['last_send_time'] = now + timedelta(seconds=MAX_AVAILABLE_MESSAGE_TIME)
+
+            if 'resend' in data and data['resend']:
+                session['last_send_time'] = now + timedelta(seconds=MAX_AVAILABLE_MESSAGE_TIME)
 
             if (now - session['last_send_time']).seconds >= MAX_AVAILABLE_MESSAGE_TIME:
-
                 if current_user.send_sms_attempts == MAX_MESSAGES_SEND :
                     msg = "حد اکثر تلاشهای شما جهت دریافت کد فعال سازی به اتمام رسیده است. لطفا جهت پیگیری با پشتیبانی سایت تماس حاصل کنید."
                     return make_response(jsonify({"message":{"success":False,"error":msg,"type":"policy"}}),400)
@@ -287,7 +295,7 @@ class UserVerification(Resource):
                 text = "فعال سازی حساب کاربری یونی بید" \
                 + '\n' + "کدفعال سازی حساب کاربری شما :" \
                 + '\n' + current_user.activation_code \
-                + '\n' + 'توجه! این کد فعال سازی پس از گذشت ۶۰ ثانیه منقضی می شود.'\
+                + '\n' + ' توجه! این کد پس از گذشت ' + str(MAX_AVAILABLE_MESSAGE_TIME) + ' ثانیه منقضی خواهد شد.'\
                 + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
                 + '\n' + 'تیم یونی بید www.unibid.ir'
 
@@ -324,7 +332,7 @@ class UserVerification(Resource):
                 msg = "کد وارد شده معتبر نمی باشد"
                 return make_response(jsonify({"message":{"success":False,"error":msg,"type":"invalid"}}),400)
 
-            if (now - current_user.updated_at).seconds >= MAX_AVAILABLE_MESSAGE_TIME:
+            if (now - session['last_send_time']).seconds >= MAX_AVAILABLE_MESSAGE_TIME:
                 msg = "کد وارد شده شما منقضی شده است"
                 return make_response(jsonify({"message":{"success":False,"error":msg,"type":"expire"}}),400)
 
@@ -365,18 +373,10 @@ class UserVerification(Resource):
         return make_response(jsonify({"message":{"success":False,"error":msg}}),400)
 
     def get(self):
-        if "username" in session:
-            current_user = User.find_by_username(session['username'])
-
-            resp = {
-                "username":current_user.username,
-                "verification_attempts":MAX_ACTIVATION_ATTEMPTS - current_user.verification_attempts ,
-                "send_attempts":MAX_MESSAGES_SEND - current_user.send_sms_attempts,
-            }
-            return make_response(jsonify(resp),200)
-
-        msg = "توکن فعال سازی حساب در دسترس نیست. لطفا دوباره اقدام به ورود به سایت کنید."
-        return make_response(jsonify({"message":{"success":False,"error":msg}}),400)
+        resp = {
+            "message_ttl":MAX_AVAILABLE_MESSAGE_TIME,
+        }
+        return make_response(jsonify(resp),200)
 
 class UserForgotPassword(Resource):
     def get(self):

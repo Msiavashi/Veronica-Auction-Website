@@ -48,6 +48,7 @@
 					</div>
 				</div>
 			</div>
+		<div v-if="show" class="btn-loadmore"><a href="#"><i aria-hidden="true" class="fa fa-spinner fa-spin"></i></a></div>
 	</div>
 </div>
 <a href="#" class="radius scroll-top"><i class="fa fa-angle-up" aria-hidden="true"></i></a>
@@ -66,7 +67,11 @@
 		el : "#app",
 
 		data:{
-			offers : []
+			offers : [],
+			seen : 0,
+			total : 4,
+			all_auctions :0,
+			show : true,
 		},
 		methods:{
 			_prepare_auction_images(images){
@@ -84,17 +89,75 @@
 			_createAuctionLink(id){
 				return "/view/auction/"+id;
 			},
+			_getInitialAuctions(){
+				data = {"start":this.seen,"stop":this.total};
+				console.log(data);
+
+				axios.put("{{url_for('auctionviewfinished')}}",data,{
+					headers:
+						{
+							'Content-Type': 'application/json'
+						}
+				}).then((response) => {
+						this.offers = response.data;
+						this.seen = this.offers.length;
+						this.show = false;
+					})
+					.catch((response)=>{
+						console.error(response);
+					});
+
+			},
+			scroll (offers) {
+
+				dataNotReceived = false;
+    		window.onscroll = () => {
+
+				let bottomOfWindow = document.documentElement.scrollTop >= document.getElementById('footer').offsetTop - 400 || document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight ;
+	      if (bottomOfWindow && !dataNotReceived) {
+					console.log("dataNotReceived = true");
+					dataNotReceived = true;
+					if (this.seen < this.all_auctions && dataNotReceived) {
+						data = {"start":this.seen ,"stop":this.seen + this.total};
+						console.log(data);
+
+						axios.put("{{url_for('auctionviewfinished')}}",data,{
+							headers:
+								{
+									'Content-Type': 'application/json'
+								}
+						}).then((response) => {
+								 response.data.forEach((item)=>{
+								   if (!this.offers.find(x=>x.auction_id == item.auction_id)){
+										 this.offers.push(item);
+										 this.seen +=1;
+									 }
+								 });
+								 dataNotReceived = false;
+								 this.show = false;
+						 }).catch((error)=>{
+								console.error(error.response);
+						});
+					}
+		     }
+		   };
+		  },
 
 		},
-		mounted: function(){
+		beforeMount() {
 
 			axios.get("{{url_for('auctionviewfinished')}}")
-				.then((response) => {
-					this.offers = response.data;
-				})
-				.catch((response)=>{
+			.then((response) => {
+				this.all_auctions = response.data.finished;
+				console.log("all finished :"+this.all_auctions);
+			}).catch((response)=>{
 					console.error(response);
 				});
+
+  		this._getInitialAuctions();
+		},
+		mounted: function(){
+			this.scroll(this.offers);
 		},
 
 		updated:function() {

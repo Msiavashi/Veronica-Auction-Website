@@ -11,9 +11,9 @@
 					<div class="form">
 					<div class="thumbnail"><img src="/static/images/theme/login-icon.svg"/></div>
 					<form class="code-login-form" @submit.prevent="handleSubmit">
-						<input type="text" class="rounded-text" v-model="verification.code" placeholder="- - - - - -" maxlength="6"/>
+						<input type="number" class="rounded-text" v-model="verification.code" v-on:keypress="isNumber($event)" placeholder="- - - - - -"/>
 						{%raw%}
-						<p> کد فعال سازی شما تا <span>{{_ToPersian(remained_seconds)}}</span> ثانیه دیگر معتبر است . </p>
+						<p> کد فعال سازی شما تا <span>{{_ToPersian(remained_seconds_live)}}</span> ثانیه دیگر معتبر است . </p>
 						<div id="progress"></div>
 						<p class="message">موفق به دریافت کد فعال سازی نشدید؟<a href="#" v-on:click="resend=true; get_activation_code();"> دریافت مجدد کد فعال سازی </a></p>
 						<h5>{{_ToPersian(max_attempts)}} بار دیگر جهت دریافت کد فعال سازی فرصت دارید.</h5>
@@ -42,13 +42,16 @@
 		data:{
 			verification:{
 				mobile : null,
-				code : "",
+				code : null,
 				attempts : 0,
 			},
+			remained_seconds_live : 0,
 			remained_seconds : 0,
+			ttl : 0,
 			max_attempts : 0,
 			resend :false,
 		},
+
 		methods:{
 
 			get_activation_code:function() {
@@ -168,9 +171,27 @@
 						 });
 			},
 
+			isNumber: function(evt) {
+	      evt = (evt) ? evt : window.event;
+	      var charCode = (evt.which) ? evt.which : evt.keyCode;
+				// if ((charCode > 31 && (charCode < 48 || charCode > 57)) && (charCode < 1776 || charCode > 1785) && charCode !== 46) {
+	      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+	        evt.preventDefault();
+	      }
+				else {
+	        return true;
+	      }
+	    },
+
 		},
 
 		mounted: function(){
+
+			axios.get("{{url_for('userverification')}}")
+			.then((response) => {
+				this.ttl = response.data.message_ttl;
+			});
+
 			axios.put("{{url_for('userverification')}}",
 				{
 					headers:
@@ -180,6 +201,7 @@
 				}).then((response) => {
 					console.log(response.data);
 					this.remained_seconds = response.data.remained_to_expire;
+					this.remained_seconds_live = response.data.remained_to_expire;
 					this.max_attempts = response.data.send_attempts;
 					apply_progress();
 					bar = null;
@@ -210,17 +232,18 @@
 				circle.path.setAttribute('stroke', state.color);
 				circle.path.setAttribute('stroke-width', state.width);
 
-				var value = Math.round(circle.value() * 60);
+				var value = Math.round(circle.value() * app.ttl);
+				app.remained_seconds_live = value;
 
 				if (value < 10) {
-					circle.setText(ToPersian('0'+value));
+					circle.setText("فقط " + ToPersian(value) + " ثانیه ...");
 				} else {
-					circle.setText(ToPersian(value));
+					circle.setText(ToPersian(value)+" ثانیه ...");
 				}
 
 			}
 		});
-		bar.set(app.remained_seconds/60);
+		bar.set(app.remained_seconds/app.ttl);
 		bar.animate(0);
 	}
 

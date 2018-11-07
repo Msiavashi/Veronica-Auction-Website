@@ -12,7 +12,6 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_jwt_extended import JWTManager
 # from flask_wtf.csrf import CSRFProtect, CSRFError
 from flask_socketio import SocketIO
-import websocket
 import eventlet
 eventlet.monkey_patch()
 import redis
@@ -45,7 +44,6 @@ params = {
 #
 # socketio = SocketIO(logger=True, engineio_logger=True, **params)
 
-
 socketio = SocketIO(**params)
 socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet',manage_session=False)
 
@@ -61,6 +59,8 @@ login_manager.login_view = 'site.login'
 @app.before_request
 def make_session_permanent():
     session.permanent = True
+    session.permanent_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
+    app.permanent_session = True
     app.permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
 #     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 #     conn = engine.connect()

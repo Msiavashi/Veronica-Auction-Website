@@ -17982,7 +17982,7 @@ margin: 20px;
 }
 .register-content-box .form input[type=submit] {
   outline: 0;
-  background: #EF3B3A;
+  background: #42bcc8;
   width: 100%;
   border: 0;
   padding: 15px;
@@ -17996,6 +17996,9 @@ margin: 20px;
   cursor: pointer;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+.register-content-box .form input[type=submit]:hover{
+  background: #333;
 }
 .register-content-box .form .message {
   margin: 15px 0 0;

@@ -21,10 +21,10 @@
 				</div>
 
 				<form class="register-form"  @submit.prevent="handleSubmit">
-					<input v-model="registerInformation.username" type="text" placeholder="نام کاربری"/>
-					<input v-model="registerInformation.password" type="password" placeholder="رمز عبور"/>
-					<input v-model="registerInformation.c_password" type="password" placeholder="تکرار رمز عبور"/>
-					<input v-model="registerInformation.mobile" type="text" placeholder="شماره موبایل"/>
+					<input v-model="registerInformation.username" type="text" placeholder="نام کاربری (حداقل ۳ حرفی)"/>
+					<input v-model="registerInformation.password" type="password" placeholder="رمز عبور(حداقل ۴ کاراکتری)"/>
+					<input v-model="registerInformation.c_password" type="password" placeholder="تکرار رمز عبور(مشابه رمز عبور)"/>
+					<input v-model="registerInformation.mobile" v-on:keypress="isNumber($event)" type="text" placeholder="شماره موبایل (فقط عدد بصورت انگلیسی)" :maxlength="11"/>
 					<input v-model="registerInformation.invitor" type="text" placeholder="کد معرف"/>
 					<div class="form-my-account">
 						<div class="table create-account">
@@ -143,9 +143,6 @@ var app = new Vue({
           delete obj[propName];
         }
       }
-
-
-			console.log(this.registerInformation);
 			axios.post("{{url_for('userregistration')}}",obj,
 				{
 					headers:
@@ -163,6 +160,17 @@ var app = new Vue({
          			  $(".error_container").html(error.response.data.message[propName])
               }
  				});
+		},
+		isNumber: function(evt) {
+			evt = (evt) ? evt : window.event;
+			var charCode = (evt.which) ? evt.which : evt.keyCode;
+			// if ((charCode > 31 && (charCode < 48 || charCode > 57)) && (charCode < 1776 || charCode > 1785) && charCode !== 46) {
+			if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+				evt.preventDefault();
+			}
+			else {
+				return true;
+			}
 		},
 	}
 });
