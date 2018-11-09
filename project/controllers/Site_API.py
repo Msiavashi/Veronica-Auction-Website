@@ -143,7 +143,7 @@ class SiteCategoryForAuctions(Resource):
                     "participants":auction_participants,
                     "start_date":auction.start_date
                     })
-                result.append({"title" : category.title,"auctions":auction_result})
+                result.append({"title" : category.title,"icon":category.icon,"auctions":auction_result})
         return make_response(jsonify(result),200)
 
 class SiteCategoryProducts(Resource):

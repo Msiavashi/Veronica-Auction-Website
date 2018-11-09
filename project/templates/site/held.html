@@ -11,7 +11,7 @@
 					</div>
 					<div class="list-topsale15">
 						<div class="row">
-							<template v-for="offer in offers">
+							<template v-if="offers.length" v-for="offer in offers">
 								{%raw%}
 									<div class="col-md-6 col-sm-6 col-xs-12">
 									<div class="item-product15 wow slideInUp">
@@ -89,37 +89,18 @@
 			_createAuctionLink(id){
 				return "/view/auction/"+id;
 			},
-			_getInitialAuctions(){
-				data = {"start":this.seen,"stop":this.total};
-				console.log(data);
 
-				axios.put("{{url_for('auctionviewfinished')}}",data,{
-					headers:
-						{
-							'Content-Type': 'application/json'
-						}
-				}).then((response) => {
-						this.offers = response.data;
-						this.seen = this.offers.length;
-						this.show = false;
-					})
-					.catch((response)=>{
-						console.error(response);
-					});
-
-			},
-			scroll (offers) {
+			scroll(){
 
 				dataNotReceived = false;
     		window.onscroll = () => {
 
 				let bottomOfWindow = document.documentElement.scrollTop >= document.getElementById('footer').offsetTop - 400 || document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight ;
 	      if (bottomOfWindow && !dataNotReceived) {
-					console.log("dataNotReceived = true");
+
 					dataNotReceived = true;
 					if (this.seen < this.all_auctions && dataNotReceived) {
 						data = {"start":this.seen ,"stop":this.seen + this.total};
-						console.log(data);
 
 						axios.put("{{url_for('auctionviewfinished')}}",data,{
 							headers:
@@ -144,20 +125,35 @@
 		  },
 
 		},
-		beforeMount() {
+
+		created: function(){
+
+			data = {"start":this.seen,"stop":this.total};
+
+			axios.put("{{url_for('auctionviewfinished')}}",data,{
+				headers:
+					{
+						'Content-Type': 'application/json'
+					}
+			}).then((response) => {
+
+					this.offers = response.data;
+					this.seen = this.offers.length;
+					this.show = false;
+				})
+				.catch((error)=>{
+					console.log(error.response);
+				});
 
 			axios.get("{{url_for('auctionviewfinished')}}")
 			.then((response) => {
 				this.all_auctions = response.data.finished;
 				console.log("all finished :"+this.all_auctions);
-			}).catch((response)=>{
-					console.error(response);
+			}).catch((error)=>{
+					console.error(error.response);
 				});
 
-  		this._getInitialAuctions();
-		},
-		mounted: function(){
-			this.scroll(this.offers);
+			this.scroll();
 		},
 
 		updated:function() {
