@@ -783,6 +783,7 @@
           }
         });
       },
+
       _logout(){
         axios.post("{{url_for('userlogout')}}")
           .then((response) => {
@@ -805,6 +806,7 @@
             window.location = '/logout';
           });
       },
+      
     },
 
     computed:{

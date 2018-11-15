@@ -251,7 +251,6 @@ var app = new Vue({
           delete obj[propName];
         }
       }
-      console.log(obj);
 
       axios.post("{{url_for('usercheckoutconfirm',pid=pid)}}",obj,
 				{
@@ -339,8 +338,6 @@ var app = new Vue({
    axios.get("{{url_for('userbasicinfo')}}")
      .then(function (response) {
        self.info = response.data[0];
-       console.log(self.info);
-
        self.information.first_name = self.info.first_name;
        self.information.email = self.info.email;
        self.information.last_name = self.info.last_name;

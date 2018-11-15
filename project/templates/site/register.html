@@ -156,9 +156,9 @@ var app = new Vue({
          })
          .catch((error)=>{
               $(".error_alert").removeClass('hide');
-              for (var propName in error.response.data.message) {
-         			  $(".error_container").html(error.response.data.message[propName])
-              }
+							for (var propName in error.response.data.message) {
+ 							 $(".error_container").html(error.response.data.message[propName]);
+ 						 }
  				});
 		},
 		isNumber: function(evt) {

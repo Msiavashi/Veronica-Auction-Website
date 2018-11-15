@@ -48,17 +48,23 @@ var app = new Vue({
 		payment_id : {{pid}}
 	},
 	mounted:function() {
-		axios.get("{{url_for('userapplypayment',pid=pid)}}")
-		.then((response) => {
-			console.log(response.data);
+
+		axios.post("{{url_for('userapplypayment')}}",
+		{"pid": "{{pid}}"},
+		{
+			headers:
+			{
+				'Content-Type': 'application/json',
+				"X-CSRF-TOKEN" : getCookie('csrf_access_token'),
+			}
+		}).then((response) => {
 			this.payment_status = response.data.success;
 			this.payment_ref_id =  "کد پیگیری : " + response.data.token;
 			this.payment_message = response.data.message;
 		})
-		.catch((response)=>{
-			console.error(response);
+		.catch((error)=>{
+			console.log(error.response.data);
 		});
-
 	}
 });
 

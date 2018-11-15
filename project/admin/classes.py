@@ -39,7 +39,7 @@ class MyAdminIndexView(AdminIndexView):
 class UserAdmin(ModelView):
     page_size = 10
     can_view_details = True
-    column_searchable_list = ['first_name', 'last_name','alias_name','username','mobile','address.city','address.state.title','address.address','address.postal_code']
+    column_searchable_list = ['first_name', 'last_name','alias_name','username','mobile','address.city','address.state.title','address.address','address.postal_code','is_verified']
     column_editable_list = ['first_name', 'last_name','alias_name','credit','is_active','is_banned','is_verified','mobile','send_sms_attempts','login_attempts','verification_attempts']
     column_exclude_list = ['email','updated_at']
     def is_accessible(self):
@@ -104,6 +104,10 @@ class ItemAdmin(ModelView):
                                                             thumbnail_size=(64, 64, 1))}
 
 class AdvertisementAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['title', 'description','show']
+    column_editable_list = ['title', 'description','show','link_title','discount']
     def is_accessible(self):
         # return True
         return current_user.has_role('admin')
@@ -253,6 +257,7 @@ class PaymentAdmin(ModelView):
     page_size = 10
     can_view_details = True
     column_searchable_list = ['user.first_name','user.last_name','user.alias_name','user.username','payment_method.title','GUID', 'ref_id','status','amount','type']
+    column_editable_list = ['status','type']
     column_exclude_list = ['sale_order_id','sale_refrence_id','details']
 
     def is_accessible(self):

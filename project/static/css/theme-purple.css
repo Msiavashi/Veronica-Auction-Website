@@ -15839,7 +15839,6 @@ a.protect-icon:hover {
   border: 1px solid #e5e5e5;
   color: #999;
   padding: 10px 15px;
-  text-transform: uppercase;
   width: 100%;
 }
 .check-billing {
@@ -17263,6 +17262,7 @@ td.product-info-total .product-info .desc {
 #tab3:checked ~ #content3,
 #tab4:checked ~ #content4,
 #tab5:checked ~ #content5,
+#tab7:checked ~ #content7,
 #tab6:checked ~ #content6 {
   display: block;
   padding: 20px;

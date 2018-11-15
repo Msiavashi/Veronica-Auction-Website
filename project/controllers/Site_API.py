@@ -204,9 +204,18 @@ class SiteCategoryProductFilters(Resource):
 
 class SiteAuctionCarouselAds(Resource):
     def get(self):
-        auctions = Auction.query.join(Advertisement).filter(Advertisement.show==True)
-        auction_schema = AuctionSchema(many=True)
-        return make_response(jsonify(auction_schema.dump(auctions)),200)
+        auctions = Auction.query.join(Advertisement).filter(Advertisement.show==True,Auction.start_date > datetime.now()).order_by("start_date DESC")
+        result = []
+        for auction in auctions:
+            result.append({
+                "id":auction.id,
+                "title":auction.advertisement.title,
+                "description":auction.advertisement.description,
+                "link_title":auction.advertisement.link_title,
+                "images":auction.advertisement.images,
+                "discount":auction.advertisement.discount
+            })
+        return make_response(jsonify(result),200)
 
 class SiteCategoryCarouselAds(Resource):
     def get(self,cid):

@@ -173,7 +173,7 @@ var app = new Vue({
           //handle success
 					$(".error_alert").addClass('hide');
 					$(".success_alert").removeClass('hide');
-					$(".success_container").html('ورود شما با موفقیت انجام ')
+					$(".success_container").html('ورود شما با موفقیت انجام گرفت')
 					if(self.next!="None"){
 							window.location = self.next;
 						}
@@ -184,12 +184,13 @@ var app = new Vue({
          .catch((error)=>{
 					 console.log(error.response.data.message);
 
-					 if (error.response.data.message.operation == "verification_required"){
+					 if (error.response.data.message.field == "verification"){
+
 						 window.location = "/verify";
 					 }else {
 						 $(".error_alert").removeClass('hide');
 						 for (var propName in error.response.data.message) {
-							 $(".error_container").html(error.response.data.message[propName])
+							 $(".error_container").html(error.response.data.message[propName]);
 						 }
 					 }
  				});
@@ -256,7 +257,7 @@ var app = new Vue({
 
 											 swal({
 													title: "فعال سازی حساب کاربری",
-													text:response.data.message.message,
+													text:response.data.message.content,
 													type:"success",
 													confirmButtonText: 'حله...',
 												}).then((result)=>{
@@ -266,7 +267,7 @@ var app = new Vue({
 												});
 
 											}).catch((error)=>{
-												err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.error;
+												err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.content;
 												swal({
 													title:'مشکل در عملیات فعال سازی',
 													text :err,
@@ -288,14 +289,14 @@ var app = new Vue({
 						.catch((error)=>{
 							swal(
 							 'مشکل در گرفتن کد فعال سازی',
-							 error.response.data.message.error,
+							 error.response.data.message.content,
 							 'error'
 						 )
 						});
 				}).catch((error)=>{
 					swal(
 						'مشکلی پیش اومد',
-						error.response.data.message.error,
+						error.response.data.message.content,
 						'error'
 					)
 				});

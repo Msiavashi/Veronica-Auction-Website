@@ -24,19 +24,11 @@ from flask_jwt_extended import JWTManager,jwt_required,jwt_refresh_token_require
 from sqlalchemy import or_ , and_
 from ..melipayamak import SendSMS
 
-parser_user_address = reqparse.RequestParser()
-parser_user_address.add_argument('state', help = 'ورود استان ضروری است', required = True)
-parser_user_address.add_argument('city', help = 'ورود شهر ضروری است', required = True)
-parser_user_address.add_argument('address', help = 'ورود آدرس ضروری است', required = True)
-parser_user_address.add_argument('postal_code', help = 'ورود کد پستی ضروری است', required = True)
-
-parser_user_account = reqparse.RequestParser()
-parser_user_account.add_argument('mobile', help = 'ورود شماره تلفن ضروری است', required = True)
 
 parser_user_message = reqparse.RequestParser()
 parser_user_message.add_argument('subject', help = 'ورود موضوع پیام ضروری است', required = True)
 parser_user_message.add_argument('title', help = 'ورود عنوان پیام ضروری است', required = True)
-parser_user_message.add_argument('message', help = 'متنی برای پیام وارد نکرده اید', required = True)
+parser_user_message.add_argument('description', help = 'متنی برای پیام وارد نکرده اید', required = True)
 
 parse_payment_account = reqparse.RequestParser()
 parse_payment_account.add_argument('first_name', help = 'ورود نام ضروری است', required = True)
@@ -80,9 +72,9 @@ class UserBasicInfo(Resource):
         current_user.last_name = request.form.get('last-name')
         current_user.work_place = request.form.get('work-place')
         current_user.mobile = user_data['mobile']
-        current_user.email = request.form.get('email')
+        current_user.email = user_data('email')
 
-        address_data = parser_user_address.parse_args()
+
 
         if(not current_user.address):
             address = Address()
@@ -173,6 +165,7 @@ class UserInformation(Resource):
 
         credit = current_user.credit
         enrolled_auctions = UserAuctionParticipation.query.filter_by(user_id=current_user.id).count()
+
         invitations = User.query.filter_by(invitor=current_user.username).count()
 
         bought_items = Order.query.filter_by(user_id = current_user.id, status=OrderStatus.PAID).count()
@@ -188,97 +181,144 @@ class UserInformation(Resource):
             item = Item.query.filter_by(id = auction.item_id).first()
             offer = Offer.query.filter_by(auction_id = auction.id, win=True).first()
             total_discount += item.price - offer.total_price
-        states = State.query.order_by('title').distinct().all()
-        state_schema = StateSchema(many=True)
+
+        states = []
+        for state in State.query.order_by('title').distinct().all():
+            states.append({
+            "id":state.id,
+            "title":state.title
+            })
 
         avatars = []
         for root, dirs, files in os.walk(AVATAR_DIR):
             for filename in files:
                 avatars.append({"name":filename})
+        user_address = None
+        if current_user.address:
+            address_state = None
+            user_address = current_user.address
+            if current_user.address.state:
+                address_state = {"id":current_user.address.state.id,"title":current_user.address.state.title}
+            user_address = {
+            "address":user_address.address,
+            "state":address_state,
+            "city":user_address.city,
+            "address":user_address.address,
+            "postal_code":int(user_address.postal_code),
+            }
+        user_info = {
+        "alias_name":current_user.alias_name,
+        "first_name":current_user.first_name,
+        "last_name":current_user.last_name,
+        "work_place":current_user.work_place,
+        "email":current_user.email,
+        "address":user_address,
+        "mobile":current_user.mobile,
+        "avatar":current_user.avatar
+        }
 
-        info = {
-            "total_discount": str(total_discount),
+        result = {
+            "total_discount": int(total_discount),
             "won_auctions": len(won_offers),
             "total_boughts": bought_items,
             "total_enrolled_auctions": enrolled_auctions,
             "total_invitations": invitations,
             "invitation_code": current_user.username,
-            "states":state_schema.dump(states),
-            "info":UserSchema().dump(current_user),
+            "states":states,
+            "user_information":user_info,
             "avatars":avatars,
-            "subjects":MESSAGE_SUBJECTS
+            "message_subjects":MESSAGE_SUBJECTS
         }
-        return make_response(jsonify(info),200)
+        return make_response(jsonify(result),200)
 
     @jwt_required
     def post(self):
-        # json_data = request.get_json(force=True)
+        user_data = request.get_json(force=True)
+        user_mobile = user_data.get("mobile", None)
 
-        user_data = parser_user_account.parse_args()
+        if not user_mobile:
+            msg ="ورود شماره همراه ضروری است"
+            return make_response(jsonify({"message":{"success":False,'type':"state",'text':msg}}),400)
 
-        current_user.alias_name = request.form.get('alias-name')
-        current_user.first_name = request.form.get('first-name')
-        current_user.last_name = request.form.get('last-name')
-        current_user.work_place = request.form.get('work-place')
-        current_user.mobile = user_data['mobile']
-        current_user.email = request.form.get('email')
+        if user_mobile!=current_user.mobile and User.find_by_mobile(user_mobile):
+            msg ="کاربری با این شماره همراه از قبل در سیستم تعریف شده است. اگر قادر به اصلاح شماره همراه خودتان نیستید با پشتیبانی تماس حاصل فرمایید."
+            return make_response(jsonify({"message":{"success":False,'type':"state",'text':msg}}),400)
 
-        address_data = parser_user_address.parse_args()
+        current_user.alias_name = user_data.get("alias_name", None)
+        current_user.first_name = user_data.get("first_name", None)
+        current_user.last_name = user_data.get("last_name", None)
+        current_user.work_place = user_data.get("work_place", None)
+        current_user.email = user_data.get("email", None)
+
+        user_address = user_data.get("address", None)
+        user_address_state = user_address.get("state", None)
+        user_address_city = user_address.get("city", None)
+        user_address_address= user_address.get("address", None)
+        user_address_postal_code = user_address.get("postal_code", None)
+
+        if not user_address_state:
+            msg ="ورود استان ضروری است"
+            return make_response(jsonify({"message":{"success":False,'type':"state",'text':msg}}),400)
+
+        if not user_address_city:
+            msg ="ورود شهر محل سکونت ضروری است"
+            return make_response(jsonify({"message":{"success":False,'type':"city",'text':msg}}),400)
+
+        if not user_address_address:
+            msg ="ورود آدرس دقیق پستی ضروری است"
+            return make_response(jsonify({"message":{"success":False,'type':"address",'text':msg}}),400)
+
+        if not user_address_postal_code:
+            msg ="ورود کد پستی ضروری است"
+            return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
+
+        if not (str(user_address_postal_code)).isdigit():
+            msg ="کدپستی باید بصورت عددی باشد"
+            return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
+
+        if len(str(user_address_postal_code)) < 10 or len(str(user_address_postal_code)) > 11:
+            msg ="کد پستی باید ۱۰ رقمی باشد"
+            return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
 
         if(not current_user.address):
             address = Address()
-            address.city = address_data['city']
-            address.address = address_data['address']
-            state = State.query.get(address_data['state'])
+            address.city = user_address_city
+            address.address = user_address_address
+            state = State.query.get(user_address_state['id'])
             address.state = state
-            address.postal_code = address_data['postal_code']
+            address.postal_code = user_address_postal_code
             try:
                 db.session.add(address)
                 db.session.commit()
                 current_user.address = address
             except Exception as e:
-                return make_response(jsonify({"message": e.message}), 500)
+                return make_response(jsonify({"message":{'success':False,'text':e.message}}),500)
         else:
-            current_user.address.city = address_data['city']
-            current_user.address.address = address_data['address']
-            state = State.query.get(address_data['state'])
+            current_user.address.city = user_address_city
+            current_user.address.address = user_address_address
+            state = State.query.get(user_address_state['id'])
             current_user.address.state = state
-            current_user.address.postal_code = address_data['postal_code']
+            current_user.address.postal_code = user_address_postal_code
 
-        avatar_index = request.form.get('avatar-index',None)
+        avatar_index = user_data['avatar']
         if(avatar_index):
-            current_user.avatar = "['"+request.form.get('avatar-index')+"']"
-
-        old_password = request.form.get('current-password',None)
-        new_password = request.form.get('password',None)
-        repeat_password = request.form.get('c_password',None)
-
-        if new_password :
-            if not User.verify_hash(old_password, current_user.password):
-                msg = " رمز عبور قبلی شما نادرست است"
-                return  make_response(jsonify({"message":{"error":msg}}),403)
-
-            if new_password != repeat_password:
-                msg = "رمز عبور جدید با تکرار رمز عبور همخوانی ندارد"
-                return make_response(jsonify({"message": {"confirm-password":msg}}),403)
-
-            current_user.password = User.generate_hash(new_password)
+            current_user.avatar = "['"+avatar_index+"']"
 
         #handle invitor copun code
-        invitor_code = request.form.get('invitor-code',None)
+        invitor_code = user_data.get("invitor", None)
 
         if(invitor_code):
             msg ="عملیات کد دعوت از این بخش فعلا غیر فعال است"
-            return make_response(jsonify({"message":{"error":msg}}),500)
+            return make_response(jsonify({"message":{"success":False,'text':msg}}),400)
 
             invitor = User.query.filter_by(username=invitor_code).first()
 
             if(not invitor):
                 msg ="کد معرف مورد نظر موجود نمی باشد"
-                return make_response(jsonify({"message":{"error":msg}}),500)
+                return make_response(jsonify({"message":{"error":msg}}),400)
             if(invitor.id == current_user.id):
                 msg ="شما قادر به معرفی خود نیستید"
-                return make_response(jsonify({"message":{"error":msg}}),500)
+                return make_response(jsonify({"message":{"error":msg}}),400)
 
             already_invited = current_user.gifts.filter_by(title=COUPONCODE).first()
 
@@ -326,17 +366,25 @@ class UserInformation(Resource):
                     stmt = user_gifts.update().where(and_(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id)).values(used=True)
                     db.engine.execute(stmt)
 
-
         try:
-            db.session.add(current_user)
-            db.session.commit()
-
-            msg = " اطلاعات شما با موفقیت ذخیره شد "
-            if new_password :
+            if user_mobile!=current_user.mobile:
+                current_user.mobile = user_data.get("mobile", None)
+                current_user.is_verified = False
+                current_user.verification_attempts = 0
+                current_user.send_sms_attempts = 0
+                db.session.add(current_user)
+                db.session.commit()
                 logout_user()
-            return make_response(jsonify({"message":{"success":msg}}),200)
+                msg = "تغییرات موردنظر شما با موفقیت اعمال شد. به دلیل اعلام شماره همراه جدید جهت انجام مجدد اعتبار سنجی خود از سیستم خارج می شوید!"
+                return make_response(jsonify({"message":{"success":True,'field':"relogin",'text':msg}}),200)
+            else:
+                db.session.add(current_user)
+                db.session.commit()
+                msg = " اطلاعات شما با موفقیت ذخیره شد "
+                return make_response(jsonify({"message":{"success":True,'text':msg}}),200)
+
         except Exception as e:
-            return make_response(jsonify({"message":{"error":e.message}}), 500)
+            return make_response(jsonify({"message":{"success":False,'text':e.message}}), 500)
 
 class UserContactUs(Resource):
 
@@ -351,7 +399,7 @@ class UserContactUs(Resource):
         new_message = UserMessage()
         new_message.title = user_message['title']
         new_message.subject = user_message['subject']
-        new_message.message = user_message['message']
+        new_message.message = user_message['description']
         new_message.user = current_user
         if 'file' in request.files:
             file = request.files['file']
@@ -367,7 +415,7 @@ class UserContactUs(Resource):
         db.session.add(new_message)
         db.session.commit()
         msg ="پیام شما با موفقیت ارسال شد. در اولین فرصت جهت پیگیری با شما تماس خواهیم گرفت"
-        return make_response(jsonify({"message":{"success":msg}}),200)
+        return make_response(jsonify({"message":{"success":True,"text":msg}}),200)
         # flash("پیام با موفقیت ارسال شد")
         # return redirect(url_for('profile'))
 
@@ -685,7 +733,7 @@ class UserCoupons(Resource):
                     return make_response(jsonify({"reason":msg}),400)
                 else:
                     msg = "این کوپن تخفیف قبلا برای سبد خرید شما ثبت شده است"
-                    return make_response(jsonify({"code":coupon.id, "title":coupon.title, "amount":str(coupon.amount), "reason":msg,"success":True}),200)
+                    return make_response(jsonify({"code":coupon.id, "title":coupon.title, "amount":str(coupon.amount), "reason":msg,"success":False}),200)
             else:
                 current_user.gifts.append(coupon)
                 db.session.add(current_user)
@@ -944,7 +992,10 @@ class UserCheckoutConfirm(Resource):
 
 class UserApplyPayment(Resource):
     @jwt_required
-    def get(self,pid):
+    def post(self):
+        data = request.get_json(force=True)
+        pid = data.get("pid", None)
+
         payment = Payment.query.get(pid)
 
         unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).first()
@@ -1155,7 +1206,7 @@ class UserChargeWalet(Resource):
         db.session.commit()
 
         msg = " برای پرداخت به صفحه تایید هدایت می شوید"
-        return make_response(jsonify({'success':True,"operation":"redirect_to_bank","pid":payment.id,"message":msg}),200)
+        return make_response(jsonify({'success':True,"type":"redirect_to_bank","pid":payment.id,"text":msg}),200)
 
     @jwt_required
     def delete(self):

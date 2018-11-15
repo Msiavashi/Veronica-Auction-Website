@@ -16,18 +16,18 @@
 				<div v-if="ad_auctions" class="col-md-12 col-sm-12 col-xs-12">
 					<div class="wrap-banner-slider1">
 						<div class="banner-slider banner-slider1">
-							<div v-wrapitem data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
+							<div v-wrapitemhot data-autoplay = "true"  data-pagination = "false" data-navigation = "true"  data-itemscustom = "[[0,1]]" data-transition = "fade">
 								<template v-for="item in ad_auctions">
 									{%raw%}
 									<div class="item-banner item-banner1">
 	 								<div class="banner-thumb">
-	 									<a href="#"><img v-bind:src="prepare_ad_images(item.advertisement.images)" alt="" /></a>
+	 									<a href="#"><img v-bind:src="prepare_ad_images(item.images)" alt="" /></a>
 	 								</div>
 	 								<div class="banner-info animated" data-animated="zoomInRight"  >
-	 									<h2 class="title30">{{item.advertisement.title}}</h2>
-	 									<h2 class="title30 color">تخفیف : تا {{_ToPersian(item.advertisement.discount)}}%  قیمت </h2>
-	 									<p>{{item.advertisement.description}}</p>
-	 									<a v-bind:href="_createAuctionLink(item.id)" class="shopnow">{{item.advertisement.link_title}}</a>
+	 									<h2 class="title30">{{item.title}}</h2>
+	 									<h2 class="title30 color">تخفیف : تا {{_ToPersian(item.discount)}}%  قیمت </h2>
+	 									<p>{{item.description}}</p>
+	 									<a v-bind:href="_createAuctionLink(item.id)" class="shopnow">{{item.link_title}}</a>
 	 								</div>
 	 							  </div>
 									{%endraw%}
@@ -532,7 +532,9 @@
 		mounted: function(){
 				axios.get("{{url_for('siteauctioncarouselads')}}")
 					.then((response) => {
-						this.ad_auctions = response.data[0];
+						response.data.forEach( ad => {
+							this.ad_auctions.push(ad);
+						});
 					})
 					.catch((response)=>{
 						console.error(response);

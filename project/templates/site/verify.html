@@ -55,6 +55,7 @@
 		methods:{
 
 			get_activation_code:function() {
+				start_loading(loading_element);
 				data = {"resend":this.resend}
 				axios.put("{{url_for('userverification')}}", data ,
 					{
@@ -63,13 +64,14 @@
 							'Content-Type': 'application/json'
 						}
 					}).then((response) => {
-						console.log(response.data);
+						stop_loading(loading_element);
 						window.location="/verify";
 
 					}).catch((error)=>{
+						stop_loading(loading_element);
 						swal(
 							'مشکلی پیش اومد',
-							error.response.data.message.error,
+							error.response.data.message.text,
 							'error'
 						)
 					});
@@ -77,6 +79,7 @@
 
 			verify_activation_code:function() {
 				this.verification.code = $("#verification_code").val();
+				start_loading(loading_element);
 
 				var obj = this.verification;
 
@@ -93,10 +96,11 @@
 							'Content-Type': 'application/json'
 						}
 					}).then(function (response) {
+						stop_loading(loading_element);
 
 						swal({
 							 title: "فعال سازی حساب کاربری",
-							 text:response.data.message.message,
+							 text:response.data.text,
 							 type:"success",
 							 confirmButtonText: 'حله...',
 						 }).then((result)=>{
@@ -106,7 +110,8 @@
 						 });
 
 					 }).catch((error)=>{
-						 err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.error;
+						 stop_loading(loading_element);
+						 err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.text;
 						 swal({
 							 title:'مشکل در عملیات فعال سازی',
 							 text :err,
@@ -125,6 +130,7 @@
 			},
 
 			handleSubmit:function() {
+				start_loading(loading_element);
 
 					var obj = this.verification;
 
@@ -141,22 +147,21 @@
 								'Content-Type': 'application/json'
 							}
 						}).then(function (response) {
-							console.log(response.data);
-
+							stop_loading(loading_element);
 							swal({
 								 title: "فعال سازی حساب کاربری",
-								 text:response.data.message,
+								 text:response.data.text,
 								 type:"success",
 								 confirmButtonText: 'حله...',
 							 }).then((result)=>{
 								 if(result.value){
-
 									 window.location = "/profile/modify";
 								 }
 							 });
 
 						 }).catch((error)=>{
-							 err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.error;
+							 stop_loading(loading_element);
+							 err = error.response.data.message.code ? error.response.data.message.code : error.response.data.message.text;
 							 swal({
 								 title:'مشکل در عملیات فعال سازی',
 								 text :err,
@@ -186,6 +191,7 @@
 		},
 
 		mounted: function(){
+			start_loading(loading_element);
 
 			axios.get("{{url_for('userverification')}}")
 			.then((response) => {
@@ -199,7 +205,7 @@
 						'Content-Type': 'application/json'
 					}
 				}).then((response) => {
-					console.log(response.data);
+					stop_loading(loading_element);
 					this.remained_seconds = response.data.remained_to_expire;
 					this.remained_seconds_live = response.data.remained_to_expire;
 					this.max_attempts = response.data.send_attempts;
@@ -207,9 +213,10 @@
 					bar = null;
 
 				}).catch((error)=>{
+					stop_loading(loading_element);
 					swal(
 						'مشکلی پیش اومد',
-						error.response.data.message.error,
+						error.response.data.message.text,
 						'error'
 					)
 				});

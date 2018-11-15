@@ -59,9 +59,9 @@ login_manager.login_view = 'site.login'
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    session.permanent_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
+    session.permanent_lifetime = timedelta(days=SESSION_EXPIRE_TIME)
     app.permanent_session = True
-    app.permanent_session_lifetime = timedelta(minutes=SESSION_EXPIRE_TIME)
+    app.permanent_session_lifetime = timedelta(days=SESSION_EXPIRE_TIME)
 #     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 #     conn = engine.connect()
 #     g.db = conn
@@ -130,6 +130,7 @@ def custom_401(error):
 #     return render_template('csrf_error.html', reason=e.description), 400
 
 
+# api = Api(app,'/api',decorators=[csrf.exempt])
 api = Api(app,'/api')
 
 api.add_resource(Auth_API.UserRegistration,'/register')
@@ -139,6 +140,7 @@ api.add_resource(Auth_API.UserLogout, '/user/logout')
 api.add_resource(Auth_API.UserTokenRefresh, '/refresh/token')
 api.add_resource(Auth_API.UserLogoutRefresh, '/refresh/logout')
 api.add_resource(Auth_API.UserForgotPassword, '/user/forgot/password')
+api.add_resource(Auth_API.UserChangePassword, '/user/change/password')
 
 api.add_resource(Site_API.SiteCategoryMenuItems, '/site/category/menu/items')
 api.add_resource(Site_API.SiteSearchAuctions, '/site/search/auctions/<keyword>')
@@ -180,7 +182,7 @@ api.add_resource(Payment_API.MellatGatewayCallBack, '/user/mellat/gateway/callba
 api.add_resource(Payment_API.ZarinpalGateway, '/zarinpal/gateway')
 api.add_resource(Payment_API.ZarinpalGatewayCallback, '/user/zarinpal/gateway/callback')
 
-api.add_resource(User_API.UserApplyPayment, '/user/apply/payment/<int:pid>')
+api.add_resource(User_API.UserApplyPayment, '/user/apply/payment')
 api.add_resource(User_API.UserCartOrder, '/user/cart/order')
 api.add_resource(User_API.UserCartCheckout, '/user/cart/checkout')
 

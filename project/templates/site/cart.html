@@ -174,9 +174,10 @@ var app = new Vue({
   methods:{
 
 		handleCheckout: function(){
+			start_loading(loading_element);
 			axios.post("{{url_for('usercheckoutinit')}}")
 			.then((response) => {
-				swal()
+				stop_loading(loading_element);
 				if(response.data.type=="redirect_to_invoice"){
 					swal({
 						title: 'تایید سفارش',
@@ -192,6 +193,7 @@ var app = new Vue({
 				}
 			})
 			.catch((response) => {
+				stop_loading(loading_element);
 				swal(
 					'مشکلی پیش اومد',
 					response.data.message,
@@ -202,6 +204,7 @@ var app = new Vue({
 		},
 
 		deleteFromCart:function(id,event){
+			start_loading(loading_element);
 
 			event.preventDefault();
 			self = this;
@@ -216,6 +219,7 @@ var app = new Vue({
 				cancelButtonColor: '#d33',
 				reverseButtons: true
 			}).then((result) => {
+				stop_loading(loading_element);
 				if (result.value) {
 
 					cart = myapp.mycarts.find(x => x.id == id);
@@ -234,6 +238,7 @@ var app = new Vue({
 							)
 						})
 						.catch((response)=>{
+							stop_loading(loading_element);
 							swal(
 								'مشکلی پیش اومد',
 								'حذف سفارش با مشکل مواجه شد',
@@ -259,10 +264,17 @@ var app = new Vue({
 		},
 
 		handleCoupon: function(){
-			axios.post("{{url_for('usercoupons')}}", {
-				"coupon": this.coupon
-			})
-			.then((response) => {
+			start_loading(loading_element);
+			data = {"coupon": this.coupon};
+			axios.post("{{url_for('usercoupons')}}",data,
+			{
+				headers:
+					{
+						'Content-Type': 'application/json',
+						"X-CSRF-TOKEN" : getCookie('csrf_access_token'),
+					}
+			}).then((response) => {
+				stop_loading(loading_element);
 				swal(
 					'کوپن تخفیف',
 					response.data.reason,
@@ -277,6 +289,7 @@ var app = new Vue({
 				}
 			})
 			.catch((error) => {
+				stop_loading(loading_element);
 				swal(
 					'کوپن تخفیف',
 					error.response.data.reason,
@@ -287,6 +300,8 @@ var app = new Vue({
 		},
 
 		deleteCoupon:function(code,event){
+
+
 			event.preventDefault();
 
 			swal({
@@ -301,6 +316,7 @@ var app = new Vue({
 				reverseButtons: true
 			}).then((result) => {
 				if (result.value) {
+					start_loading(loading_element);
 
 					item = this.discounts.find(x=>x.code == code);
 					axios.delete("{{url_for('usercoupons')}}",
@@ -308,9 +324,11 @@ var app = new Vue({
 							data:{"coupon_code": code},
 							headers:
 							{
-								'Content-Type': 'application/json'
+								'Content-Type': 'application/json',
+								"X-CSRF-TOKEN" : getCookie('csrf_access_token'),
 							}
 						}).then((response) => {
+							stop_loading(loading_element);
 							swal(
                 'انجام شد',
                 'کوپن تخفیف شما با موفقیت حذف شد',
@@ -318,6 +336,7 @@ var app = new Vue({
               )
 						})
 						.catch((response)=>{
+							stop_loading(loading_element);
 							swal(
 								'مشکلی پیش اومد',
 								'حذف سفارش با مشکل مواجه شد',
@@ -394,6 +413,7 @@ var app = new Vue({
 		},
 
 		updateCarts(){
+			start_loading(loading_element);
 			axios.patch("{{url_for('usercartorder')}}",
 				{
 					"order_id": cart.id,
@@ -405,6 +425,7 @@ var app = new Vue({
 						'Content-Type': 'application/json'
 					}
 				}).then((response) => {
+					stop_loading(loading_element);
 					if(response){
 						myapp.mycarts = [];
 						this.user_orders = [];
@@ -431,8 +452,9 @@ var app = new Vue({
 					}
 					this.user_orders = myapp.mycarts;
 				})
-				.catch((response)=>{
-					console.log(response);
+				.catch((error)=>{
+					stop_loading(loading_element);
+					console.log(error.response.data);
 				});
 
 		},
@@ -463,9 +485,10 @@ var app = new Vue({
   },
 
 	mounted:function() {
-
+		start_loading(loading_element);
 		axios.get("{{url_for('usercoupons')}}")
 			.then((response) => {
+				stop_loading(loading_element);
 				response.data.forEach(discount =>{
 					this.coupon_discount += parseInt(discount.amount);
 					this.discounts.push({id: 0, code :discount.code, title :'تخفیف داده شده کوپن تخفیف : '+ discount.title , discount: parseInt(discount.amount) });
@@ -473,15 +496,10 @@ var app = new Vue({
 				});
 			})
 			.catch((response)=>{
+				stop_loading(loading_element);
 				this.coupon_discounts = null;
 			});
-			stop_loading(loading_element);
 	},
-
-	updated:function() {
-		stop_loading(loading_element);
-	}
-
 });
 
 </script>

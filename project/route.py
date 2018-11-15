@@ -111,7 +111,7 @@ class Route():
         if tab == "":
             return render_template('site/profile.html',tab='default')
 
-        tabs = {'modify','sendmessage','payments','invitor','walet'}
+        tabs = {'modify','sendmessage','payments','invitor','walet','changepass'}
         if tab in tabs:
             return render_template('site/profile.html',tab=tab)
         return abort(404)
