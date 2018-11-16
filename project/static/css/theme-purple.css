@@ -17679,7 +17679,7 @@ ul.checkout-bar a {
     box-shadow: inset 2px 2px 2px 0px rgba(0, 0, 0, 0.2);
     content: "";
     height: 15px;
-    width: 100%;
+    width: 65%;
     left: 50%;
     position: absolute;
     top: -50px;
@@ -18036,4 +18036,16 @@ margin: 20px;
 .rounded-text {
   border-radius: 15px!important;
   font-size: 32px!important;
+}
+
+.overflow{
+  overflow: auto;
+}
+
+.overflowx{
+  overflow-x: auto;
+}
+
+.overflowy{
+  overflow-y: auto;
 }

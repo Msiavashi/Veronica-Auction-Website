@@ -146,8 +146,9 @@ class UserLogin(Resource):
                 msg = "حساب کاربری شما باید از طریق شماره همراه فعال سازی شود"
                 return make_response(jsonify({'message':{"success":False,"field":"verification","text":msg}}),401)
 
-            access_token = create_access_token(identity = data['username'].lower(),fresh=True,expires_delta=False)
-            refresh_token = create_refresh_token(identity = data['username'].lower())
+            expires = timedelta(days=31)
+            access_token = create_access_token(identity = data['username'].lower(),expires_delta=False)
+            refresh_token = create_refresh_token(identity = data['username'].lower(),expires_delta=False)
 
             # Set the JWT cookies in the response
             redirect_to_auction = False

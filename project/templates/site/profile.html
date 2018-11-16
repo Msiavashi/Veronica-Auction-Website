@@ -41,7 +41,7 @@
 												<i class="fa fa-usd fa-5x"></i>
 											</div>
 											<div class="col-xs-9 text-right">
-												<div class="huge">{{_ToPersianCurrency(info.credit)}}</span> تومان</div>
+												<div class="huge">{{_ToPersianCurrency(information.credit)}}</span> تومان</div>
 												<div>موجودی</div>
 											</div>
 											</div>
@@ -183,7 +183,7 @@
  													</select>
  													</p>
 													<p><input v-if="information.address" v-model="information.address.city" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شهر *"/></p>
- 													<p><input v-if="information.address" v-model="information.address.address" type="text"  v-bind:value="info.address ? info.address.address : '' "  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
+ 													<p><input v-if="information.address" v-model="information.address.address" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
  													<p><input v-if="information.address" v-model="information.address.postal_code" type="number"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="کدپستی *"/></p>
 													<p><input v-if="information.address" v-model="information.mobile" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شماره همراه *"/></p>
 
@@ -260,7 +260,7 @@
 							</div>
 						</section>
 
-						<section id="content4" class="tab-content">
+						<section id="content4" class="tab-content overflow">
 							<h3>پرداختی ها</h3>
 							<table class="fold-table">
 									<thead>
@@ -274,23 +274,25 @@
 										</tr>
 									</thead>
 									{%raw%}
-									<tbody v-for="payment in paymentsinfo">
+									<tbody v-payment v-for="payment in paymentsinfo">
 										<tr class="view">
 											<td>{{_ToPersian(payment.GUID)}}</td>
 											<td>{{_ToPersianCurrency(payment.amount)}} تومان  </td>
-											<td>{{_toLocalDate(payment.created_at)}}</td>
+											<td>{{_toLocalDate(payment.date)}}</td>
 											<td>{{_convertType(payment.type)}}</td>
 											<td>{{_convertStatus(payment.status)}}</td>
-											<td>{{payment.payment_method.title}}</td>
+											<td>{{payment.method}}</td>
 										</tr>
-										<!-- <tr class="fold">
+										<tr class="fold">
 											<td colspan="7">
 												<div class="fold-content">
-													<h4> فاکتور خرید : <span data-bind="text:ToPersian(id+payment_method.id)"></span></h4>
-													<div data-bind="foreach:messages">
-														<p data-bind="text:title +' : '+ message"></p>
+													<h4> فاکتور خرید : {{payment.GUID}}</span></h4>
+													<div v-for="message in  payment.messages">
+														<p>{{message.title}} : {{message.message}}</p>
 													</div>
-													<table class="small-friendly">
+													<template v-if="payment.order">
+
+														<table class="small-friendly">
 														<thead>
 															<tr>
 															<th>محصول</th>
@@ -301,69 +303,78 @@
 															<th>مبلغ پرداختی</th>
 														</tr>
 														</thead>
-														<tbody data-bind="foreach:orders">
+														<tbody>
 															<tr>
-																<td data-bind="text:item.product.title +' '+item.title"></td>
-																<td data-bind="text:ToPersian(total)"></td>
-																<td data-bind="text:ToPersian(formatCurrency(item.price))"></td>
-																<td data-bind="text:ToPersian(formatCurrency(item.price * total))"></td>
-																<td data-bind="text:ToPersian(formatCurrency(total_discount))"></td>
-																<td data-bind="text:ToPersian(formatCurrency(item.price * total - total_discount))"></td>
+																<td>{{payment.order.title}}</td>
+																<td>{{_ToPersian(payment.order.total)}}</td>
+																<td>{{_ToPersianCurrency(payment.order.main_price)}}</td>
+																<td>{{_ToPersianCurrency(payment.order.total_price)}}</td>
+																<td>{{_ToPersianCurrency(payment.order.discount)}}</td>
+																<td>{{_ToPersianCurrency(payment.order.paid)}}</td>
 															</tr>
 														</tbody>
 													</table>
-													<div class="checkout-wrap" data-bind="if:status==1">
-															<ul class="checkout-bar">
-																<li class="active">سفارش</li>
-																<li class="next">تایید سفارش</li>
-																<li class="">انبارداری</li>
-																<li class="">تحویل پست</li>
-																<li class="">خریدار</li>
-															</ul>
-													</div>
-													<div class="checkout-wrap" data-bind="if:status==2">
-															<ul class="checkout-bar">
-																<li class="visited first">سفارش</li>
-																<li class="active">تایید سفارش</li>
-																<li class="next">انبارداری</li>
-																<li class="">تحویل پست</li>
-																<li class="">خریدار</li>
-															</ul>
-													</div>
-													<div class="checkout-wrap" data-bind="if:status==3">
-															<ul class="checkout-bar">
-																<li class="visited first">سفارش</li>
-																<li class="previous visited">تایید سفارش</li>
-																<li class="active">انبارداری</li>
-																<li class="next">تحویل پست</li>
-																<li class="">خریدار</li>
-															</ul>
-													</div>
-													<div class="checkout-wrap" data-bind="if:status==4">
-															<ul class="checkout-bar">
-																<li class="visited first">سفارش</li>
-																<li class="previous visited">تایید سفارش</li>
-																<li class="previous visited">انبارداری</li>
-																<li class="active">تحویل پست</li>
-																<li class="next">خریدار</li>
-															</ul>
-													</div>
-													<div class="checkout-wrap" data-bind="if:status==5">
-															<ul class="checkout-bar">
-																<li class="visited first">سفارش</li>
-																<li class="previous visited">تایید سفارش</li>
-																<li class="previous visited">انبارداری</li>
-																<li class="previous visited">تحویل پست</li>
-																<li class="active">خریدار</li>
 
-															</ul>
-													</div>
+														<template  v-if="payment.order.shipment">
+
+															<div class="checkout-wrap" v-if="payment.order.shipment.status==500">
+																	<ul class="checkout-bar">
+																		<li class="active">سفارش</li>
+																		<li class="next">تایید سفارش</li>
+																		<li class="">انبارداری</li>
+																		<li class="">تحویل پست</li>
+																		<li class="">خریدار</li>
+																	</ul>
+															</div>
+
+															<div class="checkout-wrap" v-if="payment.order.shipment.status==400">
+																	<ul class="checkout-bar">
+																		<li class="visited first">سفارش</li>
+																		<li class="active">تایید سفارش</li>
+																		<li class="next">انبارداری</li>
+																		<li class="">تحویل پست</li>
+																		<li class="">خریدار</li>
+																	</ul>
+															</div>
+
+															<div class="checkout-wrap" v-if="payment.order.shipment.status==300">
+																	<ul class="checkout-bar">
+																		<li class="visited first">سفارش</li>
+																		<li class="previous visited">تایید سفارش</li>
+																		<li class="active">انبارداری</li>
+																		<li class="next">تحویل پست</li>
+																		<li class="">خریدار</li>
+																	</ul>
+															</div>
+
+															<div class="checkout-wrap" v-if="payment.order.shipment.status==200">
+																	<ul class="checkout-bar">
+																		<li class="visited first">سفارش</li>
+																		<li class="previous visited">تایید سفارش</li>
+																		<li class="previous visited">انبارداری</li>
+																		<li class="active">تحویل پست</li>
+																		<li class="next">خریدار</li>
+																	</ul>
+															</div>
+
+															<div class="checkout-wrap" v-if="payment.order.shipment.status==100">
+																	<ul class="checkout-bar">
+																		<li class="visited first">سفارش</li>
+																		<li class="previous visited">تایید سفارش</li>
+																		<li class="previous visited">انبارداری</li>
+																		<li class="previous visited">تحویل پست</li>
+																		<li class="active">خریدار</li>
+																	</ul>
+															</div>
+
+														</template>
+
+													</template>
+
 												</div>
 											</td>
-										</tr> -->
+										</tr>
 									</tbody>
-									<!-- ko text: triggerPaymentTable() -->
-									<!-- /ko -->
 									</table>
 									{%endraw%}
 						</section>
@@ -372,7 +383,7 @@
 							<h3>کد معرفی</h3>
 							<p>با دعوت از دوستان و آشنایان خود به یونی بید از طریق کد معرف خود، ۲۰ هزار تومان هدیه دو طرف از ما دریافت کنید! </p>
 							<p>هدیه کد معرف، پس از اولین شرکت در حراجی توسط شخصی که معرفی شده اعمال میشود.</p>
-							<div class="CodeM">کد معرف : {%raw%}{{info.username}}{%endraw%}</span></div>
+							<div class="CodeM">کد معرف : {%raw%}{{information.username}}{%endraw%}</span></div>
 						</section>
 
 						<section id="content6" class="tab-content">
@@ -516,10 +527,10 @@ var app = new Vue({
 
 		axios.get("{{url_for('paymentsinfo',pagenum=1,pagesize=10)}}")
 			.then((response) => {
-				this.paymentsinfo = response.data[0]
+				this.paymentsinfo = response.data;
 			})
-			.catch((response)=>{
-				console.error(response);
+			.catch((error)=>{
+				console.log(error.response.data);
 			});
 	},
 
@@ -870,64 +881,21 @@ var app = new Vue({
 		});
 	},
 
+	directives:{
+		payment:{
+			inserted:function(el) {
+				$(".fold-table tr.view").on("click", function(){
+					if($(this).hasClass("open")) {
+					$(this).removeClass("open").next(".fold").removeClass("open");
+					} else {
+					$(".fold-table tr.view").removeClass("open").next(".fold").removeClass("open");
+					$(this).addClass("open").next(".fold").addClass("open");
+					}
+				});
+			}
+		},
+	}
+
 });
-
-// $(document).on('submit','#profile_form',function(event) {
-//
-//    event.preventDefault();
-//
-// 	 selected_avatar = ($($('.current')).attr('src'));
-//
-// 	 if(selected_avatar){
-// 		 selected_avatar = selected_avatar.split('/')
-// 		 avatar = selected_avatar[selected_avatar.length-1];
-// 		 $('#avatar_index').val(avatar)
-// 	 }
-//    var $form = $( this );
-//    var data = getFormData($form);
-// 	 var url = "{{url_for('userinformation')}}";
-//    var posting = $.post( url, data);
-//    posting.done(function( data ) {
-//  		$(".error_alert").addClass('hide');
-//  		$(".success_alert").removeClass('hide');
-//  		$(".success_container").html('اطلاعات شما با موفقیت ثبت شد')
-//    });
-//  		posting.fail(function(xhr, status, error) {
-//  		obj = JSON.parse(xhr.responseText);
-//  		$.each(obj.message, function (key, item) {
-//  			$(".error_alert").removeClass('hide');
-//  			$(".error_container").html(item)
-//  			});
-//      });
-//  });
-
-$(document).on('submit','#message_form',function(event) {
-    event.preventDefault();
-    var $form = $( this );
-    var data = getFormData($form);
-
- 	  var url = "{{url_for('usercontactus')}}";
-    var posting = $.post( url, data);
-
-    posting.done(function( data ) {
-  		$(".sendmessage_error").addClass('hide');
-  		$(".sendmessage_success").removeClass('hide');
-			$(".sendmessage_success_container").html(data.message.success)
-    });
-
-		posting.fail(function(xhr, status, error) {
-		obj = JSON.parse(xhr.responseText);
-  		$.each(obj.message, function (key, item) {
-  			$(".sendmessage_error").removeClass('hide');
-  			$(".sendmessage_error_container").html(item)
-  			});
-      });
-  });
-
-	$('.close').on('click',function(event){
-		event.preventDefault();
-		$(this).parent().removeClass('show').addClass('hide')
-	});
-
 </script>
 {% endblock scripts %}

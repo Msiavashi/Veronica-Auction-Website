@@ -267,6 +267,7 @@ class PaymentAdmin(ModelView):
 class ShipmentAdmin(ModelView):
     page_size = 10
     can_view_details = True
+    column_editable_list = ['status','send_date','recieve_date']
     column_searchable_list = ['guid','status','order.status','order.discount_status','order.item.title','order.item.product.title','order.user.first_name','order.user.last_name','order.user.alias_name','order.user.username','order.payment.GUID', 'order.payment.ref_id','order.payment.status','order.payment.amount','order.payment.type','insurance.company']
 
     def is_accessible(self):

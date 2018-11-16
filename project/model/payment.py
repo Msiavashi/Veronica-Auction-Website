@@ -17,14 +17,14 @@ class PaymentStatus:
     UNPAID = 0
 
 class PaymentType:
-    NOTITLE = 0
-    PLAN = 1000
-    WALET = 2000
-    PRODUCT = 3000
-    FREE = 4000
+    NOTITLE = "0"
+    PLAN = "1000"
+    WALET = "2000"
+    PRODUCT = "3000"
+    FREE = "4000"
 
 class Payment(Base):
-    random.seed(time.time())
+    random.seed(datetime.now())
     __tablename__ = 'payments'
     id = db.Column(db.Integer, primary_key=True)
     GUID = db.Column(db.String(64) ,default = random.randint(100000000000,10000000000000000) , onupdate=random.randint(100000000000,10000000000000000))

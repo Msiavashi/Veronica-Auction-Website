@@ -50,9 +50,58 @@ parse_payment_account.add_argument('payment_method',help='ورود روش پرد
 class PaymentsInfo(Resource):
     @jwt_required
     def get(self,pagenum,pagesize):
-        payments = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').paginate(pagenum, pagesize, True).items
-        paymentSchema = PaymentSchema(many=True)
-        return make_response(jsonify(paymentSchema.dump(payments)),200)
+        result = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').all()
+        payments = []
+        for payment in result:
+            order = None
+            plan = None
+            if (payment.type == PaymentType.PRODUCT):
+                order_result = Order.query.filter_by(payment_id=payment.id).first()
+                shipment = None
+                if order_result:
+                    shipment_result = Shipment.query.filter_by(order_id=order_result.id).first()
+                    if shipment_result:
+                        shipment={
+                        "method":shipment_result.shipment_method.title,
+                        "status":shipment_result.status,
+                        "send_date":shipment_result.send_date,
+                        }
+                    order = {
+                    "title":order_result.item.title,
+                    "total":order_result.total,
+                    "main_price":str(order_result.item.price),
+                    "total_price":str(order_result.total * order_result.item.price),
+                    "discount":str(order_result.total_discount),
+                    "paid":str(order_result.total * order_result.item.price - order_result.total_discount),
+                    "shipment":shipment,
+                    }
+            elif payment.type==PaymentType.PLAN:
+                unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).first()
+                if unpaid_user_plan:
+                    plan={
+                    "title":unpaid_user_plan.auction_plan.plan.title,
+                    "price":str(unpaid_user_plan.auction_plan.price),
+                    "offers":unpaid_user_plan.auction_plan.max_offers,
+                    }
+            messages = []
+            for message in payment.messages:
+                messages.append({
+                "title":message.title,
+                "message":message.message,
+                "date":message.created_at,
+                })
+            payments.append({
+            "GUID":payment.GUID,
+            "amount":str(payment.amount),
+            "date":payment.created_at,
+            "type":payment.type,
+            "status":payment.status,
+            "method":payment.payment_method.title,
+            "plan":plan,
+            "order":order,
+            "messages":messages,
+            })
+        return make_response(jsonify(payments),200)
 
 class UserBasicInfo(Resource):
     @jwt_required
@@ -162,6 +211,9 @@ class UserBasicInfo(Resource):
 class UserInformation(Resource):
     @jwt_required
     def get(self):
+        if not current_user.is_authenticated:
+            msg ="برای استفاده از این اطلاعات باید لاگین کنید"
+            return make_response(jsonify({"message":{"success":False,'type':"login",'text':msg}}),500)
 
         credit = current_user.credit
         enrolled_auctions = UserAuctionParticipation.query.filter_by(user_id=current_user.id).count()
@@ -207,6 +259,8 @@ class UserInformation(Resource):
             "postal_code":int(user_address.postal_code),
             }
         user_info = {
+        "credit":str(current_user.credit),
+        "username":current_user.username,
         "alias_name":current_user.alias_name,
         "first_name":current_user.first_name,
         "last_name":current_user.last_name,
@@ -233,16 +287,20 @@ class UserInformation(Resource):
 
     @jwt_required
     def post(self):
+        if not current_user.is_authenticated:
+            msg ="برای استفاده از این اطلاعات باید لاگین کنید"
+            return make_response(jsonify({"message":{"success":False,'type':"login",'text':msg}}),500)
+
         user_data = request.get_json(force=True)
         user_mobile = user_data.get("mobile", None)
 
         if not user_mobile:
             msg ="ورود شماره همراه ضروری است"
-            return make_response(jsonify({"message":{"success":False,'type':"state",'text':msg}}),400)
+            return make_response(jsonify({"message":{"success":False,'type':"mobile",'text':msg}}),400)
 
         if user_mobile!=current_user.mobile and User.find_by_mobile(user_mobile):
             msg ="کاربری با این شماره همراه از قبل در سیستم تعریف شده است. اگر قادر به اصلاح شماره همراه خودتان نیستید با پشتیبانی تماس حاصل فرمایید."
-            return make_response(jsonify({"message":{"success":False,'type':"state",'text':msg}}),400)
+            return make_response(jsonify({"message":{"success":False,'type':"mobile",'text':msg}}),400)
 
         current_user.alias_name = user_data.get("alias_name", None)
         current_user.first_name = user_data.get("first_name", None)
@@ -251,10 +309,14 @@ class UserInformation(Resource):
         current_user.email = user_data.get("email", None)
 
         user_address = user_data.get("address", None)
-        user_address_state = user_address.get("state", None)
-        user_address_city = user_address.get("city", None)
-        user_address_address= user_address.get("address", None)
-        user_address_postal_code = user_address.get("postal_code", None)
+        if not user_address:
+            msg ="ورود اطلاعات مربوط به آدرس ضروری است"
+            return make_response(jsonify({"message":{"success":False,'type':"address",'text':msg}}),400)
+
+        user_address_state = user_data.get("state", None)
+        user_address_city = user_data.get("city", None)
+        user_address_address= user_data.get("address", None)
+        user_address_postal_code = user_data.get("postal_code", None)
 
         if not user_address_state:
             msg ="ورود استان ضروری است"
@@ -300,7 +362,7 @@ class UserInformation(Resource):
             current_user.address.state = state
             current_user.address.postal_code = user_address_postal_code
 
-        avatar_index = user_data['avatar']
+        avatar_index = user_data.get("avatar", None)
         if(avatar_index):
             current_user.avatar = "['"+avatar_index+"']"
 
