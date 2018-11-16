@@ -23,7 +23,6 @@ parser_register.add_argument('password', help = 'ورود رمز عبور ضرو
 parser_register.add_argument('c_password', help = 'ورود تکرار رمز عبور ضروری است', required = True)
 parser_register.add_argument('mobile', help = 'ورود شماره موبایل ضروری است', required = True)
 parser_register.add_argument('accept_roles', help = 'تایید مقررات سایت الزامی است', required = True)
-parser_register.add_argument('invitor', required = False)
 
 parser_login = reqparse.RequestParser()
 parser_login.add_argument('username', help = 'ورود نام کاربری ضروری است', required = True)
@@ -73,8 +72,9 @@ class UserRegistration(Resource):
         if len(data['mobile']) > 13 or len(data['mobile']) < 11 or not data['mobile'].isdigit():
             return make_response(jsonify({"message":{"success":False,"field":"mobile","text":'شماره موبایل وارد شده معتبر نیست'}}),400)
 
-        if 'invitor' in data and data['invitor']:
+        invitor = data.get("invitor", None)
 
+        if invitor:
             if not User.find_by_username(data['invitor']):
                 msg = "کاربری با کد معرفی مورد نظر شما وجود ندارد. لطفا کد معرف خود را بطور صحیح وارد کنید ویا این قسمت را خالی رها کنید. "
                 return make_response(jsonify({"message":{"success":False,"field":"invitor","text":msg}}),400)
@@ -89,7 +89,7 @@ class UserRegistration(Resource):
             new_user.username = data['username'].lower()
             new_user.mobile = data['mobile']
             new_user.password = User.generate_hash(data['password'])
-            new_user.invitor = data['invitor']
+            new_user.invitor = invitor
 
             new_user.save_to_db()
 

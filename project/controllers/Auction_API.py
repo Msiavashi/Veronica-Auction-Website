@@ -18,6 +18,7 @@ from definitions import COUPONCODE,MAX_INVITOR_POLICY
 from ..melipayamak import SendSMS
 
 class AuctionTestJson(Resource):
+    @jwt_required
     def post(self):
         data = request.get_json(force=True)
         auction_id = data['auction_id']
@@ -43,6 +44,7 @@ class AuctionTestJson(Resource):
         return make_response(jsonify({"success":True, "current_offer_price": str(last_offer.total_price),"users": users}),200)
 
 class AuctionTest(Resource):
+    @jwt_required
     def post(self):
         data = request.get_json(force=True)
         auction_id = data['auction_id']
@@ -60,7 +62,6 @@ class AuctionTest(Resource):
         user_schema = UserSchema(many=True)
 
         return make_response(jsonify({"success":True, "current_offer_price": str(last_offer.total_price),"users": user_schema.dump(users)}),200)
-
 
 class AuctionUserViewed(Resource):
     def get(self):
@@ -115,6 +116,7 @@ class AuctionViewFinished(Resource):
         return make_response(jsonify(offers),200)
 
 class AuctionUserParticipation(Resource):
+    @jwt_required
     def post(self):
         data = request.get_json(force=True)
         plan_id = int(data.get("plan_id", None))

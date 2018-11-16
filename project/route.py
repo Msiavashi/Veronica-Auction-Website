@@ -48,7 +48,7 @@ class Route():
         return render_template('site/login.html',next=next)
 
     @app.route('/verify')
-    def account_forgot():
+    def account_verify():
         if current_user.is_authenticated:
             return redirect('/')
         if not "username" in session:
@@ -57,12 +57,22 @@ class Route():
         return render_template('site/verify.html',next=next)
 
     @app.route('/forgotpassword')
-    def account_verify():
+    def account_forgot():
         if current_user.is_authenticated:
             return redirect('/')
 
         next = request.args.get('next')
         return render_template('site/forgot.html',next=next)
+
+    @app.route('/iforgot')
+    def account_iforgot():
+        if current_user.is_authenticated:
+            return redirect('/')
+
+        next = request.args.get('next')
+        return render_template('site/iframes/iforgot.html',next=next)
+
+
 
 
 
@@ -70,7 +80,15 @@ class Route():
     def ilogin():
         if current_user.is_authenticated:
             return redirect('/')
-        return render_template('site/iframes/ilogin.html')
+        next = request.args.get('next')
+        return render_template('site/iframes/ilogin.html',next=next)
+
+    @app.route('/iverify')
+    def iverify():
+        if current_user.is_authenticated:
+            return redirect('/')
+        next = request.args.get('next')
+        return render_template('site/iframes/iverify.html',next=next)
 
     @app.route('/register/')
     def account_register():
@@ -206,6 +224,10 @@ class Route():
     @app.route('/roles')
     def roles():
         return render_template('site/roles.html')
+
+    @app.route('/iroles')
+    def iroles():
+        return render_template('site/iframes/iroles.html')
 
     @app.route('/help')
     def help():

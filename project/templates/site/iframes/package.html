@@ -82,16 +82,12 @@
 	</div>
 </div>
 
-<div id="myModal" class="modal">
-    <div class="modals">
-        <div class="loader"></div>
-    </div>
-</div>
 {% endblock %}
 {% block scripts %}
 {{ super() }}
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script>
 <script>
+start_loading(loading_element);
 
 var app = new Vue({
 
@@ -132,6 +128,8 @@ var app = new Vue({
 	 		this.payment_method_id = method_id;
 		},
 		_placePlanOrder(){
+			start_loading(loading_element);
+
 			if (this.amount > this.credit && $("#payment_method_cheque").is(':checked') ){
 					swal(
 						'مشکلی پیش اومد',
@@ -151,9 +149,11 @@ var app = new Vue({
 				{
 					headers:
 					{
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
+						"X-CSRF-TOKEN" : getCookie('csrf_access_token'),
 					}
 				}).then((response) => {
+					stop_loading(loading_element);
 						if(response.data.type=="redirect_to_bank")
 						{
 							swal({
@@ -181,6 +181,7 @@ var app = new Vue({
 							})
 						}
 			}).catch((error)=>{
+				stop_loading(loading_element);
 					swal(
 						'مشکلی پیش اومد',
 						error.response.data.reason,
@@ -199,6 +200,7 @@ var app = new Vue({
 				stop_loading(loading_element);
 			})
 			.catch((response)=>{
+				stop_loading(loading_element);
 				swal(
 					'مشکلی پیش اومد',
 					'برای حراجی پلن تعریف نشده است لطفا با پشتیبانی سایت تماس حاصل کنید',

@@ -7,19 +7,19 @@
 			<div class="col-md-12">
 				<!-- <h2 class="title-shop-page">پنل کاربری</h2> -->
 				<div id="tabMenu" class="tab_container">
-						<input class="tabinput" id="tab1" type="radio" name="tabs" :checked="is_active_tab('default')">
+						<input class="tabinput" id="tab1" type="radio" name="tabs" @click="tab_selector='default'" :checked="is_active_tab('default')">
 						<label class="tablabel" for="tab1"><i class="fa fa-dashboard"></i><span>داشبورد</span></label>
 
 						<input class="tabinput" id="tab2" type="radio" name="tabs" @click="tab_selector='modify'" :checked="is_active_tab('modify')">
 						<label class="tablabel" for="tab2"><i class="fa fa-pencil-square-o"></i><span>ویرایش اطلاعات</span></label>
 
-						<input class="tabinput" id="tab3" type="radio" name="tabs" :checked="is_active_tab('sendmessage')">
+						<input class="tabinput" id="tab3" type="radio" name="tabs" @click="tab_selector='sendmessage'" :checked="is_active_tab('sendmessage')">
 						<label class="tablabel" for="tab3"><i class="fa fa-comments"></i><span>ارسال پیام</span></label>
 
-						<input class="tabinput" id="tab4" type="radio" name="tabs" :checked="is_active_tab('payments')">
+						<input class="tabinput" id="tab4" type="radio" name="tabs" @click="tab_selector='payments'" :checked="is_active_tab('payments')">
 						<label class="tablabel" for="tab4"><i class="fa fa-legal"></i><span>پرداختی ها</span></label>
 
-						<input class="tabinput" id="tab5" type="radio" name="tabs" :checked="is_active_tab('invitor')">
+						<input class="tabinput" id="tab5" type="radio" name="tabs" @click="tab_selector='invitor'" :checked="is_active_tab('invitor')">
 						<label class="tablabel" for="tab5"><i class="fa fa-code"></i><span>کد معرف</span></label>
 
 						<input class="tabinput" id="tab6" type="radio" name="tabs" @click="tab_selector='walet'" :checked="is_active_tab('walet')">
@@ -177,9 +177,9 @@
 											 <div class="check-billing">
  												{%raw%}
 													<p>
- 													<select v-if="information.address" v-model="information.address.state.id" id="state">
+ 													<select v-if="information.address" v-model="information.address.state" id="state">
 														<option value="" disabled selected>--استان--</option>
- 														<option v-for="state in states" v-bind:value="state.id" :selected="information.address && information.address.state.id == state.id" >{{ state.title }}</option>
+ 														<option v-for="state in states" v-bind:value="state" :selected="information.address && information.address.state.id == state.id" >{{ state.title }}</option>
  													</select>
  													</p>
 													<p><input v-if="information.address" v-model="information.address.city" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شهر *"/></p>
@@ -484,7 +484,7 @@ var app = new Vue({
 		},
 		message:{
 			title:"",
-			subject:0,
+			subject:1,
 			description:"",
 		},
 		avatars : [] ,
@@ -858,11 +858,27 @@ var app = new Vue({
 				})
 				.catch((error)=>{
 					stop_loading(loading_element);
-					swal(
-						'مشکلی پیش اومد',
-						error.response.data.message.text,
-						'error'
-					);
+					if(error.response.data.message.text){
+						swal(
+							'مشکلی پیش اومد',
+							error.response.data.message.text,
+							'error'
+						);
+					}else {
+						err = "";
+						for (var propName in error.response.data.message) {
+						 err = error.response.data.message[propName];
+					  }
+
+						swal(
+							'مشکلی پیش اومد',
+							 err,
+							'error'
+						);
+					}
+
+
+
 				});
 		},
 

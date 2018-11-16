@@ -309,46 +309,42 @@ class UserInformation(Resource):
         current_user.email = user_data.get("email", None)
 
         user_address = user_data.get("address", None)
+
         if not user_address:
             msg ="ورود اطلاعات مربوط به آدرس ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"address",'text':msg}}),400)
 
-        user_address_state = user_data.get("state", None)
-        user_address_city = user_data.get("city", None)
-        user_address_address= user_data.get("address", None)
-        user_address_postal_code = user_data.get("postal_code", None)
-
-        if not user_address_state:
+        if not user_address['state']:
             msg ="ورود استان ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"state",'text':msg}}),400)
 
-        if not user_address_city:
+        if not user_address['city']:
             msg ="ورود شهر محل سکونت ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"city",'text':msg}}),400)
 
-        if not user_address_address:
+        if not user_address['address']:
             msg ="ورود آدرس دقیق پستی ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"address",'text':msg}}),400)
 
-        if not user_address_postal_code:
+        if not user_address['postal_code']:
             msg ="ورود کد پستی ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
 
-        if not (str(user_address_postal_code)).isdigit():
+        if not (str(user_address['postal_code'])).isdigit():
             msg ="کدپستی باید بصورت عددی باشد"
             return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
 
-        if len(str(user_address_postal_code)) < 10 or len(str(user_address_postal_code)) > 11:
+        if len(str(user_address['postal_code'])) < 10 or len(str(user_address['postal_code'])) > 11:
             msg ="کد پستی باید ۱۰ رقمی باشد"
             return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
 
         if(not current_user.address):
             address = Address()
-            address.city = user_address_city
-            address.address = user_address_address
-            state = State.query.get(user_address_state['id'])
+            address.city = user_address['city']
+            address.address = user_address['address']
+            state = State.query.get(user_address['state']['id'])
             address.state = state
-            address.postal_code = user_address_postal_code
+            address.postal_code = user_address['postal_code']
             try:
                 db.session.add(address)
                 db.session.commit()
@@ -356,11 +352,11 @@ class UserInformation(Resource):
             except Exception as e:
                 return make_response(jsonify({"message":{'success':False,'text':e.message}}),500)
         else:
-            current_user.address.city = user_address_city
-            current_user.address.address = user_address_address
-            state = State.query.get(user_address_state['id'])
+            current_user.address.city = user_address['city']
+            current_user.address.address = user_address['address']
+            state = State.query.get(user_address['state']['id'])
             current_user.address.state = state
-            current_user.address.postal_code = user_address_postal_code
+            current_user.address.postal_code = user_address['postal_code']
 
         avatar_index = user_data.get("avatar", None)
         if(avatar_index):
@@ -902,6 +898,7 @@ class UserCheckOutInit(Resource):
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
+    @jwt_required
     def post(self, pid):
         data = parse_payment_account.parse_args()
         shipment_method = data['shipment_method']

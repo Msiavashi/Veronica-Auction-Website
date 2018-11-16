@@ -1554,7 +1554,7 @@
   }
   .form-my-account,
   .form-my-account > p {
-    max-width: none;
+    /*max-width: none;*/
   }
   .harry-shop-intro {
     margin-right: 0;
