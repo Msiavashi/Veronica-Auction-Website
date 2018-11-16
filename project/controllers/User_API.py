@@ -253,17 +253,13 @@ class UserInformation(Resource):
                 avatars.append({"name":filename})
         user_address = None
         if current_user.address:
-            address_state = None
-            user_address = current_user.address
-            if current_user.address.state:
-                address_state = {"id":current_user.address.state.id,"title":current_user.address.state.title}
             user_address = {
-            "address":user_address.address,
-            "state":address_state,
-            "city":user_address.city,
-            "address":user_address.address,
-            "postal_code":int(user_address.postal_code),
+            "state":current_user.address.state.id,
+            "city":current_user.address.city,
+            "address":current_user.address.address,
+            "postal_code":int(current_user.address.postal_code),
             }
+
         user_info = {
         "credit":str(current_user.credit),
         "username":current_user.username,
@@ -272,9 +268,8 @@ class UserInformation(Resource):
         "last_name":current_user.last_name,
         "work_place":current_user.work_place,
         "email":current_user.email,
-        "address":user_address,
         "mobile":current_user.mobile,
-        "avatar":current_user.avatar
+        "avatar":current_user.avatar,
         }
 
         messages = []
@@ -297,7 +292,8 @@ class UserInformation(Resource):
             "user_information":user_info,
             "avatars":avatars,
             "message_subjects":MESSAGE_SUBJECTS,
-            "messages":messages
+            "messages":messages,
+            "user_address":user_address,
         }
         return make_response(jsonify(result),200)
 
@@ -324,43 +320,41 @@ class UserInformation(Resource):
         current_user.work_place = user_data.get("work_place", None)
         current_user.email = user_data.get("email", None)
 
+        user_state = user_data.get("state", None)
+        user_city = user_data.get("city", None)
         user_address = user_data.get("address", None)
+        user_postal_code = user_data.get("postal_code", None)
 
-        if not user_address:
-            msg ="ورود اطلاعات مربوط به آدرس ضروری است"
-            return make_response(jsonify({"message":{"success":False,'type':"address",'text':msg}}),400)
-
-        if not user_address['state']:
+        if not user_state:
             msg ="ورود استان ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"state",'text':msg}}),400)
 
-        if not user_address['city']:
+        if not user_city:
             msg ="ورود شهر محل سکونت ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"city",'text':msg}}),400)
 
-        if not user_address['address']:
+        if not user_address:
             msg ="ورود آدرس دقیق پستی ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"address",'text':msg}}),400)
 
-        if not user_address['postal_code']:
+        if not user_postal_code:
             msg ="ورود کد پستی ضروری است"
             return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
 
-        if not (str(user_address['postal_code'])).isdigit():
+        if not (str(user_postal_code)).isdigit():
             msg ="کدپستی باید بصورت عددی باشد"
             return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
 
-        if len(str(user_address['postal_code'])) < 10 or len(str(user_address['postal_code'])) > 11:
+        if len(str(user_postal_code)) < 10 or len(str(user_postal_code)) > 11:
             msg ="کد پستی باید ۱۰ رقمی باشد"
             return make_response(jsonify({"message":{"success":False,'type':"postal_code",'text':msg}}),400)
 
         if(not current_user.address):
             address = Address()
-            address.city = user_address['city']
-            address.address = user_address['address']
-            state = State.query.get(user_address['state']['id'])
-            address.state = state
-            address.postal_code = user_address['postal_code']
+            address.city = user_city
+            address.address = user_address
+            address.state = State.query.get(user_state)
+            address.postal_code = user_postal_code
             try:
                 db.session.add(address)
                 db.session.commit()
@@ -368,15 +362,13 @@ class UserInformation(Resource):
             except Exception as e:
                 return make_response(jsonify({"message":{'success':False,'text':e.message}}),500)
         else:
-            current_user.address.city = user_address['city']
-            current_user.address.address = user_address['address']
-            state = State.query.get(user_address['state']['id'])
-            current_user.address.state = state
-            current_user.address.postal_code = user_address['postal_code']
+            current_user.address.city = user_city
+            current_user.address.address = user_address
+            current_user.address.state = State.query.get(user_state)
+            current_user.address.postal_code = user_postal_code
 
-        avatar_index = user_data.get("avatar", None)
-        if(avatar_index):
-            current_user.avatar = "['"+avatar_index+"']"
+        avatar = user_data.get("avatar", None)
+        current_user.avatar = "['"+avatar+"']"
 
         #handle invitor copun code
         invitor_code = user_data.get("invitor", None)

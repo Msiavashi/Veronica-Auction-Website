@@ -1761,7 +1761,7 @@ margin-bottom: 0;
   position: relative;
 }
 .item-product .product-extra-link {
-  bottom: 20px;
+  bottom: 70px;
   left: 0;
   position: absolute;
   width: 100%;
@@ -1852,12 +1852,30 @@ margin-bottom: 0;
   position: absolute;
   top: -16px;
 }
-.product-price ins {
+.product-price > ins {
+  font-size: 14px;
+  font-weight: normal;
+  /*margin: 0 5px;*/
+  text-decoration: none;
+  color:#000
+}
+.product-auction > ins {
   font-size: 18px;
   font-weight: normal;
   margin: 0 5px;
   text-decoration: none;
-  color:#000
+  color:#42bcc8
+}
+.product-auction > del {
+  color: #999;
+  padding: 0 5px;
+  position: relative;
+  text-decoration: none;
+}
+
+.product-price .devider{
+  border: 1px solid #e5e5e5;
+  margin: 0px;
 }
 .product-price > del {
   color: #999;
@@ -1865,7 +1883,7 @@ margin-bottom: 0;
   position: relative;
   text-decoration: none;
 }
-.product-price > del::after {
+.product-auction > del::after {
   background: #999 none repeat scroll 0 0;
   content: "";
   height: 1px;
@@ -14745,6 +14763,7 @@ a.protect-icon:hover {
   height: 58px;
   width: 80%;
   padding: 10px;
+  text-align: center;
 }
 
 .deal-timer18 .poly-timer span.text::after {

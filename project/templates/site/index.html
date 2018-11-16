@@ -103,10 +103,10 @@
 
 											{%if current_user.is_authenticated%}
 											<div v-if="auction.is_participant">
-												<a v-bind:href="auction.link" class="btn-rect white bg-color5 radius"><span>نمایش حراجی</span></a>
+												<a v-bind:href="auction.link" class="btn-rect white bg-color5 radius"><span>ورود به حراجی</span></a>
 											</div>
 											<div v-if="!auction.is_participant">
-												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color1 radius"><span>شرکت در حراجی</span></a>
+												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color1 radius"><span>ثبت نام در حراجی</span></a>
 											</div>
 											{%else%}
 												<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color3 radius"><span>ورود</span></a>
@@ -179,12 +179,12 @@
 
 										{%if current_user.is_authenticated%}
 										<div v-if="auction.is_participant">
-											<a v-bind:href="auction.link" class="addcart-link bg-color5 "><span>نمایش حراجی</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color5 "><span>ورود به حراجی</span></a>
 											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 										</div>
 
 										<div v-if="!auction.is_participant">
-											<a v-bind:href="auction.link" class="addcart-link bg-color1 quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color1 quickview-link fancybox.iframe "><span>ثبت نام در حراجی</span></a>
 											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 										</div>
 
@@ -237,11 +237,11 @@
 
 										{%if current_user.is_authenticated%}
 										<div v-if="auction.is_participant">
-											<a v-bind:href="auction.link" class="addcart-link bg-color5 "><span>نمایش حراجی</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color5 "><span>ورود به حراجی</span></a>
 											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 										</div>
 										<div v-if="!auction.is_participant">
-											<a v-bind:href="auction.link" class="addcart-link bg-color1 quickview-link fancybox.iframe "><span>شرکت در حراجی</span></a>
+											<a v-bind:href="auction.link" class="addcart-link bg-color1 quickview-link fancybox.iframe "><span>ثبت نام در حراجی</span></a>
 											<a href="#" class="wishlist-link"><i class="fa fa-heart" aria-hidden="true"></i></a>
 										</div>
 
@@ -275,7 +275,7 @@
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for1.png" alt="" /></a>
 						<h2 class="title14">شرکت کنید</h2>
-						<p> شما میتوانید با شرکت در حراجی های یونی بید کالای مورد نظر خود را تا ۷۰ درصد تخفیف خریداری کنید </p>
+						<p> شما میتوانید با ثبت نام در حراجی های یونی بید کالای مورد نظر خود را تا ۷۰ درصد تخفیف خریداری کنید </p>
 					</div>
 					<div class="item-service3 white">
 						<a class="service-icon" href="#"><img src="static/images/theme/for2.png" alt="" /></a>
@@ -328,15 +328,15 @@
 								<h2 class="title14"><a v-bind:href="auction.view_link">{{auction.title}}</a></h2>
 								<div class="product-info">
 									<div class="product-price">
-										<ins>شروع از : {{auction.base_price}}</ins>
+										<ins>شروع حراجی : {{auction.base_price}}<br>سقف حراجی : {{auction.max_price}}</ins>
 										{%endraw%}
 
 										{%if current_user.is_authenticated%}
 										<div v-if="auction.is_participant">
-											<a v-bind:href="auction.link" class="btn-rect white bg-color5 radius"><span>نمایش حراجی</span></a>
+											<a v-bind:href="auction.link" class="btn-rect white bg-color5 radius"><span>ورود به حراجی</span></a>
 										</div>
 										<div v-if="!auction.is_participant">
-											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color1 radius"><span>شرکت در حراجی</span></a>
+											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color1 radius"><span>ثبت نام در حراجی</span></a>
 										</div>
 										{%else%}
 											<a v-bind:href="auction.link" class="quickview-link fancybox.iframe btn-rect white bg-color3 radius"><span>ورود</span></a>
@@ -639,8 +639,8 @@
 										link : participated ? "/view/auction/"+auction.id : "/participate/"+ auction.id,
 										is_participant : participated,
 										start_date:new persianDate(new Date(new Date(auction.start_date).format("yyyy/M/d HH:mm:ss","UTC"))).format("dddd D MMMM ماه YY ساعت HH:mm:ss"),
-										base_price : ToPersian(formatCurrency(auction.base_price))});
-
+										base_price : ToPersian(formatCurrency(auction.base_price)),
+										max_price : ToPersian(formatCurrency(auction.max_price))});
 							});
 							this.categories.push({
 								title : item.title,

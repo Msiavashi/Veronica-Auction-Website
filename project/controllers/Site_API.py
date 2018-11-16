@@ -122,7 +122,7 @@ class SiteCategoryForAuctions(Resource):
         result = []
         for category in categories:
             auction_schema = AuctionSchema(many=True)
-            auctions = Auction.query.filter(Auction.start_date >= now).join(Item).join(Product).join(Category).filter_by(id = category.id)
+            auctions = Auction.query.filter(Auction.start_date >= now).join(Item).join(Product).join(Category).filter_by(id = category.id).order_by("start_date DESC").all()
             auction_result =[]
             if(auctions):
                 for auction in auctions:
@@ -139,6 +139,7 @@ class SiteCategoryForAuctions(Resource):
                     "title":title,
                     "images":auction.item.images,
                     "base_price":str(auction.base_price),
+                    "max_price":str(auction.max_price),
                     "remained_time":remained_time,
                     "participants":auction_participants,
                     "start_date":auction.start_date
@@ -167,9 +168,9 @@ class SiteCategoryProductFilters(Resource):
         now = datetime.now()
         result = None
         if order_by_price=="price":
-            result = Auction.query.join(Item).order_by("price "+ order_by).join(Product).join(Category).filter_by(id = cid).limit(total)
+            result = Auction.query.filter(Auction.start_date >= now).join(Item).order_by("price "+ order_by).join(Product).join(Category).filter_by(id = cid).limit(total)
         else:
-            result = Auction.query.order_by("start_date "+ order_by).join(Item).join(Product).join(Category).filter_by(id = cid).limit(total)
+            result = Auction.query.filter(Auction.start_date >= now).order_by("start_date "+ order_by).join(Item).join(Product).join(Category).filter_by(id = cid).limit(total)
 
         auctions=[]
         for auction in result:
@@ -240,7 +241,7 @@ class SiteTodayEvents(Resource):
 class SiteTodayAuctions(Resource):
     def get(self):
         now = datetime.now()
-        results = Auction.query.all()
+        results = Auction.query.order_by("start_date DESC").all()
         auctions=[]
         for auction in results:
             if((auction.start_date - now).days == 0) :
@@ -270,7 +271,7 @@ class SiteMostpopularAuctions(Resource):
         for r in res:
             ids.append(r.id)
 
-        result = db.session.query(Auction).filter(Auction.id.in_(ids)).all()
+        result = db.session.query(Auction).filter(Auction.id.in_(ids)).order_by("start_date DESC").all()
 
         auctions =[]
         for auction in result:
@@ -300,7 +301,7 @@ class SiteMostviewedAuctions(Resource):
         for r in res:
             ids.append(r.id)
 
-        result = db.session.query(Auction).filter(Auction.id.in_(ids)).all()
+        result = db.session.query(Auction).filter(Auction.id.in_(ids)).order_by("start_date DESC").all()
 
         auctions =[]
         for auction in result:

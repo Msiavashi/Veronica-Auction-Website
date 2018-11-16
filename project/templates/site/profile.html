@@ -176,15 +176,15 @@
 											 <div class="check-billing">
  												{%raw%}
 													<p>
- 													<select v-if="information.address" v-model="information.address.state" id="state">
+ 													<select v-model="information.state" id="state">
 														<option value="" disabled selected>--استان--</option>
- 														<option v-for="state in states" v-bind:value="state" :selected="information.address && information.address.state.id == state.id" >{{ state.title }}</option>
+ 														<option v-for="state in states" v-bind:value="state.id" :selected="information.address && information.state == state.id" >{{ state.title }}</option>
  													</select>
  													</p>
-													<p><input v-if="information.address" v-model="information.address.city" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شهر *"/></p>
- 													<p><input v-if="information.address" v-model="information.address.address" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
- 													<p><input v-if="information.address" v-model="information.address.postal_code" type="number"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="کدپستی *"/></p>
-													<p><input v-if="information.address" v-model="information.mobile" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شماره همراه *"/></p>
+													<p><input v-model="information.city" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شهر *"/></p>
+ 													<p><input v-model="information.address" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="آدرس *"/></p>
+ 													<p><input v-model="information.postal_code" type="number"  onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="کدپستی *"/></p>
+													<p><input v-model="information.mobile" type="text" onblur="if (this.value=='') this.value = this.defaultValue" onfocus="if (this.value==this.defaultValue) this.value = ''" placeholder="شماره همراه *"/></p>
 
  												{%endraw%}
  										</div>
@@ -520,7 +520,10 @@ var app = new Vue({
 	    work_place : "",
 	    mobile : "",
 	    email : "",
-	    address:null,
+			state:0,
+			city:"",
+			address:"",
+			postal_code:0
     },
 		auth:{
 			old_password:"",
@@ -556,9 +559,14 @@ var app = new Vue({
 
 		axios.get("{{url_for('userinformation')}}")
 			.then((response) => {
-				console.log(response.data);
 				this.avatars = response.data.avatars;
 				this.information = response.data.user_information;
+				if(response.data.user_address){
+					this.information.address = response.data.user_address.address;
+					this.information.state = response.data.user_address.state;
+					this.information.city = response.data.user_address.city;
+					this.information.postal_code = response.data.user_address.postal_code;
+				}
 				this.information.messages = response.data.messages;
 				this.states = response.data.states;
 				this.subjects = response.data.message_subjects;
