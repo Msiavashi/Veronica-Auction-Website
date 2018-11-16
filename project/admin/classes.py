@@ -300,6 +300,9 @@ class UserAuctionParticipationAdmin(ModelView):
         return current_user.has_role('admin')
 
 class UserMessageAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['title','subject','message','user.username','user.first_name','user.last_name','user.alias_name']
     def is_accessible(self):
         return current_user.has_role('admin')
 

@@ -513,8 +513,8 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/theme.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.jcarousellite.js')}}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/jquery.elevatezoom.js')}}"></script>
-  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/libs/knockout.js')}}"></script> -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/vue.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/libs/vue-dev.js')}}"></script> -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/axios.min.js')}}"></script>
   <!-- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script> -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/libs/socket.io.dev.js')}}"></script>
@@ -785,12 +785,26 @@
       },
 
       _logout(){
-        axios.post("{{url_for('userlogout')}}")
-          .then((response) => {
+        axios.post("{{url_for('userlogout')}}",
+        {
+          headers:
+          {
+            'Content-Type': 'application/json',
+            "X-CSRF-TOKEN" : getCookie('csrf_access_token'),
+          }
+        }
+      ).then((response) => {
             if(response.data){
 
-              axios.post("{{url_for('userlogoutrefresh')}}")
-                .then((response) => {
+            axios.post("{{url_for('userlogoutrefresh')}}",
+            {
+              headers:
+              {
+                'Content-Type': 'application/json',
+  							"X-CSRF-TOKEN" : getCookie('csrf_access_token'),
+              }
+            }
+            ).then((response) => {
                   if(response.data){
                     window.location = '/logout';
                   }
@@ -806,7 +820,7 @@
             window.location = '/logout';
           });
       },
-      
+
     },
 
     computed:{

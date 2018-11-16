@@ -29,7 +29,11 @@ class UserMessage(Base):
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
     def __str__(self):
-        return " ارسال توسط :" + str(User.query.filter_by(id=self.user_id)) + " درتاریخ " + str(self.created_at)
+        try:
+            return " ارسال توسط : " +  str(self.user.username) + " با عنوان : " + self.title + " درتاریخ : " + str(self.created_at) 
+        except Exception as e:
+            return self.title
+
 
 class UserMessageSchema(Schema):
     id = fields.Int()

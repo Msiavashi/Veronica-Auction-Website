@@ -25,21 +25,11 @@ SQLALCHEMY_POOL_SIZE = 1000000
 
 JWT_BLACKLIST_ENABLED = True
 JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
-JWT_COOKIE_CSRF_PROTECT = True
-
-# Configure application to store JWTs in cookies. Whenever you make
-# a request to a protected endpoint, you will need to send in the
-# access or refresh JWT via a cookie.
-
 JWT_TOKEN_LOCATION = 'cookies'
-# in production set this True
+JWT_COOKIE_CSRF_PROTECT = True
+JWT_ACCESS_TOKEN_EXPIRES = False
+JWT_REFRESH_TOKEN_EXPIRES = False
 JWT_COOKIE_SECURE = True
-
-# Set the cookie paths, so that you are only sending your access token
-# cookie to the access endpoints, and only sending your refresh token
-# to the refresh endpoint. Technically this is optional, but it is in
-# your best interest to not send additional cookies in the request if
-# they aren't needed.
 
 JWT_ACCESS_COOKIE_PATH = '/api/'
 JWT_REFRESH_COOKIE_PATH = '/api/'

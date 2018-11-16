@@ -28,7 +28,6 @@
 						<input class="tabinput" id="tab7" type="radio" name="tabs" @click="tab_selector='changepass'" :checked="is_active_tab('changepass')">
 						<label class="tablabel" for="tab7"><i class="fa fa-key"></i><span>تغییر رمز عبور</span></label>
 
-
 						<section id="content1" class="tab-content">
 							<h3>داشبورد</h3>
 							<div class="row">
@@ -224,7 +223,7 @@
 								</div>
 						 </section>
 
-						<section id="content3" class="tab-content">
+						<section id="content3" class="tab-content overflow">
 							<h3>ارسال پیام</h3>
 							<div class="form-contact">
 								<form class="form-my-account" @submit.prevent="_handle_submit_message">
@@ -241,13 +240,13 @@
 										</div>
 
 										<div class="col-md-9 col-sm-9 col-xs-12">
-											<textarea v-model="message.description" cols="30" rows="8" onfocus="if (this.value==this.defaultValue) this.value = ''" onblur="if (this.value=='') this.value = this.defaultValue" placeholder="متن پیام خود را بنویسید ..."></textarea>
+											<textarea v-model="message.message" cols="30" rows="8" onfocus="if (this.value==this.defaultValue) this.value = ''" onblur="if (this.value=='') this.value = this.defaultValue" placeholder="متن پیام خود را بنویسید ..."></textarea>
 											<input type="submit" value="ارسال پیام" />
 											<!-- <input type="file" name="file" id="file" class="inputfile" data-multiple-caption="{count} files selected" multiple />
 											<label for="file"><i class="fa fa-upload"></i><span>بارگزاری فایل ضمیمه</span></label> -->
 										</div>
-
 									</div>
+
 									<div class="alert alert-danger error_alert hide sendmessage_error">
 										<a href="#" class="close" aria-label="close">×</a>
 										<div class="sendmessage_error_container"></div>
@@ -258,6 +257,32 @@
 									</div>
 								</form>
 							</div>
+							<table class="fold-table">
+									<thead>
+										<tr>
+											<th>موضوع پیام</th>
+											<th>عنوان</th>
+											<th>تاریخ</th>
+										</tr>
+									</thead>
+									{%raw%}
+									<tbody v-payment v-for="msg in information.messages">
+										<tr class="view">
+											<td>{{_convertSubject(msg.subject)}}</td>
+											<td>{{msg.title}}</td>
+											<td>{{_toLocalDate(msg.date)}}</td>
+										</tr>
+										<tr class="fold">
+											<td colspan="7">
+												<div class="fold-content">
+													<h4> متن پیام : </h4>
+													<p>{{msg.message}}</p>
+											</td>
+										</tr>
+									</tbody>
+									</table>
+									{%endraw%}
+
 						</section>
 
 						<section id="content4" class="tab-content overflow">
@@ -290,86 +315,107 @@
 													<div v-for="message in  payment.messages">
 														<p>{{message.title}} : {{message.message}}</p>
 													</div>
-													<template v-if="payment.order">
 
+												<template v-for="order in payment.orders">
 														<table class="small-friendly">
-														<thead>
-															<tr>
-															<th>محصول</th>
-															<th>تعداد</th>
-															<th>مبلغ واحد</th>
-															<th>مبلغ کل</th>
-															<th>تخفیف</th>
-															<th>مبلغ پرداختی</th>
-														</tr>
-														</thead>
-														<tbody>
-															<tr>
-																<td>{{payment.order.title}}</td>
-																<td>{{_ToPersian(payment.order.total)}}</td>
-																<td>{{_ToPersianCurrency(payment.order.main_price)}}</td>
-																<td>{{_ToPersianCurrency(payment.order.total_price)}}</td>
-																<td>{{_ToPersianCurrency(payment.order.discount)}}</td>
-																<td>{{_ToPersianCurrency(payment.order.paid)}}</td>
+															<thead>
+																<tr>
+																<th>محصول</th>
+																<th>تعداد</th>
+																<th>مبلغ واحد</th>
+																<th>مبلغ کل</th>
+																<th>تخفیف</th>
+																<th>مبلغ پرداختی</th>
 															</tr>
-														</tbody>
-													</table>
+															</thead>
+															<tbody>
+																<tr>
+																	<td>{{order.title}}</td>
+																	<td>{{_ToPersian(order.total)}}</td>
+																	<td>{{_ToPersianCurrency(order.main_price)}}</td>
+																	<td>{{_ToPersianCurrency(order.total_price)}}</td>
+																	<td>{{_ToPersianCurrency(order.discount)}}</td>
+																	<td>{{_ToPersianCurrency(order.paid)}}</td>
+																</tr>
+															</tbody>
+													   </table>
+													  <template  v-if="order.shipment">
 
-														<template  v-if="payment.order.shipment">
+																<div class="checkout-wrap" v-if="order.shipment.status==500">
+																		<ul class="checkout-bar">
+																			<li class="active">سفارش</li>
+																			<li class="next">تایید سفارش</li>
+																			<li class="">انبارداری</li>
+																			<li class="">تحویل پست</li>
+																			<li class="">خریدار</li>
+																		</ul>
+																</div>
 
-															<div class="checkout-wrap" v-if="payment.order.shipment.status==500">
-																	<ul class="checkout-bar">
-																		<li class="active">سفارش</li>
-																		<li class="next">تایید سفارش</li>
-																		<li class="">انبارداری</li>
-																		<li class="">تحویل پست</li>
-																		<li class="">خریدار</li>
-																	</ul>
-															</div>
+																<div class="checkout-wrap" v-if="order.shipment.status==400">
+																		<ul class="checkout-bar">
+																			<li class="visited first">سفارش</li>
+																			<li class="active">تایید سفارش</li>
+																			<li class="next">انبارداری</li>
+																			<li class="">تحویل پست</li>
+																			<li class="">خریدار</li>
+																		</ul>
+																</div>
 
-															<div class="checkout-wrap" v-if="payment.order.shipment.status==400">
-																	<ul class="checkout-bar">
-																		<li class="visited first">سفارش</li>
-																		<li class="active">تایید سفارش</li>
-																		<li class="next">انبارداری</li>
-																		<li class="">تحویل پست</li>
-																		<li class="">خریدار</li>
-																	</ul>
-															</div>
+																<div class="checkout-wrap" v-if="order.shipment.status==300">
+																		<ul class="checkout-bar">
+																			<li class="visited first">سفارش</li>
+																			<li class="previous visited">تایید سفارش</li>
+																			<li class="active">انبارداری</li>
+																			<li class="next">تحویل پست</li>
+																			<li class="">خریدار</li>
+																		</ul>
+																</div>
 
-															<div class="checkout-wrap" v-if="payment.order.shipment.status==300">
-																	<ul class="checkout-bar">
-																		<li class="visited first">سفارش</li>
-																		<li class="previous visited">تایید سفارش</li>
-																		<li class="active">انبارداری</li>
-																		<li class="next">تحویل پست</li>
-																		<li class="">خریدار</li>
-																	</ul>
-															</div>
+																<div class="checkout-wrap" v-if="order.shipment.status==200">
+																		<ul class="checkout-bar">
+																			<li class="visited first">سفارش</li>
+																			<li class="previous visited">تایید سفارش</li>
+																			<li class="previous visited">انبارداری</li>
+																			<li class="active">تحویل پست</li>
+																			<li class="next">خریدار</li>
+																		</ul>
+																</div>
 
-															<div class="checkout-wrap" v-if="payment.order.shipment.status==200">
-																	<ul class="checkout-bar">
-																		<li class="visited first">سفارش</li>
-																		<li class="previous visited">تایید سفارش</li>
-																		<li class="previous visited">انبارداری</li>
-																		<li class="active">تحویل پست</li>
-																		<li class="next">خریدار</li>
-																	</ul>
-															</div>
+																<div class="checkout-wrap" v-if="order.shipment.status==100">
+																		<ul class="checkout-bar">
+																			<li class="visited first">سفارش</li>
+																			<li class="previous visited">تایید سفارش</li>
+																			<li class="previous visited">انبارداری</li>
+																			<li class="previous visited">تحویل پست</li>
+																			<li class="active">خریدار</li>
+																		</ul>
+																</div>
+															 </template>
+												   </template>
 
-															<div class="checkout-wrap" v-if="payment.order.shipment.status==100">
-																	<ul class="checkout-bar">
-																		<li class="visited first">سفارش</li>
-																		<li class="previous visited">تایید سفارش</li>
-																		<li class="previous visited">انبارداری</li>
-																		<li class="previous visited">تحویل پست</li>
-																		<li class="active">خریدار</li>
-																	</ul>
-															</div>
+												 <template v-if="payment.plan">
+													 <table class="small-friendly">
+															<thead>
+																<tr>
+																<th>پلن</th>
+																<th>قیمت</th>
+																<th>کوپن تخفیف</th>
+																<th>تعداد پیشنهاد</th>
+																<th>وضعیت شرکت کننده</th>
+															</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td>{{payment.plan.title}}</td>
+																	<td>{{_ToPersianCurrency(payment.plan.price)}}</td>
+																	<td>{{_ToPersianCurrency(payment.plan.discount)}}</td>
+																	<td>{{_ToPersian(payment.plan.offers)}}</td>
+																	<td>{{payment.plan.state}}</td>
+																</tr>
+															</tbody>
+													   </table>
 
-														</template>
-
-													</template>
+												 </template>
 
 												</div>
 											</td>
@@ -485,7 +531,8 @@ var app = new Vue({
 		message:{
 			title:"",
 			subject:1,
-			description:"",
+			message:"",
+			date: new Date().toLocaleString(),
 		},
 		avatars : [] ,
 		current_avatar : "",
@@ -512,6 +559,7 @@ var app = new Vue({
 				console.log(response.data);
 				this.avatars = response.data.avatars;
 				this.information = response.data.user_information;
+				this.information.messages = response.data.messages;
 				this.states = response.data.states;
 				this.subjects = response.data.message_subjects;
 				this.total_boughts = response.data.total_boughts;
@@ -666,7 +714,7 @@ var app = new Vue({
 		},
 
 		_toLocalDate(date){
-			return full_date = new persianDate(new Date(date)).format("dddd DD MMMM YYYY ساعت HH:mm:ss a");
+			return new persianDate(new Date(new Date(date).format("yyyy/M/d HH:mm:ss","UTC"))).format("dddd DD MMMM YYYY ساعت HH:mm");
 		},
 
 		_convertStatus(status){
@@ -721,6 +769,10 @@ var app = new Vue({
 						return "بدون عنوان";
 
 				}
+		},
+
+		_convertSubject(subject){
+			return this.subjects.find(x=>x.type==subject).title;
 		},
 
 		_handle_submit_info(){
@@ -829,9 +881,8 @@ var app = new Vue({
 
 		_handle_submit_message(){
 			start_loading(loading_element);
-
+			this.message.date = new Date().toLocaleString();
 			var obj = this.message;
-
       for (var propName in obj) {
         if (obj[propName] === "null" || obj[propName] === undefined || obj[propName]==="" || obj[propName]===-1) {
           delete obj[propName];
@@ -848,15 +899,21 @@ var app = new Vue({
 				}).then((response) => {
 
 					stop_loading(loading_element);
-
+					this.information.messages.push({title:this.message.title,subject:this.message.subject,message:this.message.message,date:this.message.date});
 					swal({
 						title:'ارسال پیام',
 						text:response.data.message.text,
 						type:'success'
+					}).then((result) => {
+						if(result.value){
+
+							this.message.title="";
+							this.message.subject=1;
+							this.message.message="";
+						}
 					});
 
-				})
-				.catch((error)=>{
+				}).catch((error)=>{
 					stop_loading(loading_element);
 					if(error.response.data.message.text){
 						swal(
@@ -864,7 +921,8 @@ var app = new Vue({
 							error.response.data.message.text,
 							'error'
 						);
-					}else {
+					}
+					else {
 						err = "";
 						for (var propName in error.response.data.message) {
 						 err = error.response.data.message[propName];
@@ -900,18 +958,23 @@ var app = new Vue({
 	directives:{
 		payment:{
 			inserted:function(el) {
-				$(".fold-table tr.view").on("click", function(){
-					if($(this).hasClass("open")) {
-					$(this).removeClass("open").next(".fold").removeClass("open");
-					} else {
-					$(".fold-table tr.view").removeClass("open").next(".fold").removeClass("open");
-					$(this).addClass("open").next(".fold").addClass("open");
-					}
-				});
+				setTimeout(function () {
+				},1000);
 			}
 		},
 	}
 
 });
+
+$(document).on('click','.fold-table tr.view',function() {
+	console.log('fold');
+	if($(this).hasClass("open")) {
+	$(this).removeClass("open").next(".fold").removeClass("open");
+	} else {
+	$(".fold-table tr.view").removeClass("open").next(".fold").removeClass("open");
+	$(this).addClass("open").next(".fold").addClass("open");
+	}
+});
+
 </script>
 {% endblock scripts %}

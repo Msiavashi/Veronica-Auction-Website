@@ -16,7 +16,7 @@ from ..model.user_gift import *
 from ..model.order import *
 from werkzeug.utils import secure_filename
 from ..utils import Payload
-from definitions import COUPONCODE,MAX_INVITOR_POLICY,MAXIMUM_ORDERS,MESSAGE_SUBJECTS,AVATAR_DIR
+from definitions import COUPONCODE,MAX_INVITOR_POLICY,MAXIMUM_ORDERS,MESSAGE_SUBJECTS,AVATAR_DIR,MAX_MESSAGE_POLICY
 import copy
 import random
 from datetime import datetime
@@ -28,7 +28,7 @@ from ..melipayamak import SendSMS
 parser_user_message = reqparse.RequestParser()
 parser_user_message.add_argument('subject', help = 'ورود موضوع پیام ضروری است', required = True)
 parser_user_message.add_argument('title', help = 'ورود عنوان پیام ضروری است', required = True)
-parser_user_message.add_argument('description', help = 'متنی برای پیام وارد نکرده اید', required = True)
+parser_user_message.add_argument('message', help = 'متنی برای پیام وارد نکرده اید', required = True)
 
 parse_payment_account = reqparse.RequestParser()
 parse_payment_account.add_argument('first_name', help = 'ورود نام ضروری است', required = True)
@@ -50,38 +50,44 @@ parse_payment_account.add_argument('payment_method',help='ورود روش پرد
 class PaymentsInfo(Resource):
     @jwt_required
     def get(self,pagenum,pagesize):
-        result = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').all()
+        result = Payment.query.filter_by(user_id=current_user.id).order_by('created_at DESC').limit(pagesize)
         payments = []
         for payment in result:
-            order = None
+            orders = []
             plan = None
             if (payment.type == PaymentType.PRODUCT):
-                order_result = Order.query.filter_by(payment_id=payment.id).first()
+                order_result = Order.query.filter_by(payment_id=payment.id).all()
                 shipment = None
-                if order_result:
-                    shipment_result = Shipment.query.filter_by(order_id=order_result.id).first()
+                for order in order_result:
+                    shipment_result = Shipment.query.filter_by(order_id=order.id).first()
                     if shipment_result:
                         shipment={
                         "method":shipment_result.shipment_method.title,
                         "status":shipment_result.status,
                         "send_date":shipment_result.send_date,
                         }
-                    order = {
-                    "title":order_result.item.title,
-                    "total":order_result.total,
-                    "main_price":str(order_result.item.price),
-                    "total_price":str(order_result.total * order_result.item.price),
-                    "discount":str(order_result.total_discount),
-                    "paid":str(order_result.total * order_result.item.price - order_result.total_discount),
+                    orders.append({
+                    "title":order.item.title,
+                    "total":order.total,
+                    "main_price":str(order.item.price),
+                    "total_price":str(order.total * order.item.price),
+                    "discount":str(order.total_discount),
+                    "paid":str(order.total * order.item.price - order.total_discount),
                     "shipment":shipment,
-                    }
+                    })
             elif payment.type==PaymentType.PLAN:
                 unpaid_user_plan = UserPlan.query.filter_by(payment_id=payment.id, user_id = current_user.id).first()
                 if unpaid_user_plan:
+
+                    state = "عدم شرکت درحراجی"
+                    if current_user.has_auction(unpaid_user_plan.auction):
+                        state = "شرکت کننده حراجی"
                     plan={
                     "title":unpaid_user_plan.auction_plan.plan.title,
                     "price":str(unpaid_user_plan.auction_plan.price),
+                    "discount":str(unpaid_user_plan.auction_plan.discount),
                     "offers":unpaid_user_plan.auction_plan.max_offers,
+                    "state":state,
                     }
             messages = []
             for message in payment.messages:
@@ -98,7 +104,7 @@ class PaymentsInfo(Resource):
             "status":payment.status,
             "method":payment.payment_method.title,
             "plan":plan,
-            "order":order,
+            "orders":orders,
             "messages":messages,
             })
         return make_response(jsonify(payments),200)
@@ -271,6 +277,15 @@ class UserInformation(Resource):
         "avatar":current_user.avatar
         }
 
+        messages = []
+        for message in current_user.messages:
+            messages.append({
+            "title":message.title,
+            "date":message.created_at,
+            "message":message.message,
+            "subject":message.subject,
+            })
+
         result = {
             "total_discount": int(total_discount),
             "won_auctions": len(won_offers),
@@ -281,7 +296,8 @@ class UserInformation(Resource):
             "states":states,
             "user_information":user_info,
             "avatars":avatars,
-            "message_subjects":MESSAGE_SUBJECTS
+            "message_subjects":MESSAGE_SUBJECTS,
+            "messages":messages
         }
         return make_response(jsonify(result),200)
 
@@ -453,12 +469,17 @@ class UserContactUs(Resource):
     @jwt_required
     def post(self):
         user_message = parser_user_message.parse_args()
+        if len(current_user.messages) >= MAX_MESSAGE_POLICY:
+            msg ="حداکثر پیام های شما ارسال شده است"
+            return make_response(jsonify({"message":{"success":False,"text":msg}}),400)
+
 
         new_message = UserMessage()
         new_message.title = user_message['title']
         new_message.subject = user_message['subject']
-        new_message.message = user_message['description']
+        new_message.message = user_message['message']
         new_message.user = current_user
+
         if 'file' in request.files:
             file = request.files['file']
             if file and self._allowed_file(file.filename):
@@ -468,7 +489,7 @@ class UserContactUs(Resource):
                 new_message.file = path
             else:
                 msg ="نوع فایل انتخابی شما مناسب نمی باشد"
-                return make_response(jsonify({"message":{"success":{"error":msg}}}),500)
+                return make_response(jsonify({"message":{"success":{"error":msg}}}),400)
 
         db.session.add(new_message)
         db.session.commit()
@@ -1016,16 +1037,18 @@ class UserCheckoutConfirm(Resource):
                     if shipment :
                         shipment.shipment_method = shipment_method
                         shipment.shipment_method_id = shipment_method.id
-                        shipment.status = ShipmentStatus.IN_STORE
+                        # shipment.status = ShipmentStatus.IN_STORE
                     else:
                         shipment = Shipment()
                         shipment.order_id = order.id
                         shipment.payment_id = pid
-                        shipment.status = ShipmentStatus.IN_STORE
+                        # shipment.status = ShipmentStatus.IN_STORE
                         shipment.shipment_method = shipment_method
                         shipment.shipment_method_id = shipment_method.id
-                        order.shipment = shipment
-                        db.session.add(shipment)
+
+                    db.session.add(shipment)
+                    db.session.commit()
+                    order.shipment = shipment
                     order.status = OrderStatus.PAYING
                     db.session.add(order)
                     db.session.commit()
@@ -1148,6 +1171,7 @@ class UserAuctionLikes(Resource):
         else:
             return make_response(jsonify({"success":False,"message":"برای مشاهده علاقمندی ها باید لاگین کنید"}),400)
 
+    @jwt_required
     def post(self):
         if current_user.is_authenticated:
             data = request.get_json(force=True)
@@ -1168,6 +1192,7 @@ class UserAuctionLikes(Resource):
             return make_response(jsonify({"message":"برای لایک کردن باید به سایت وارد شوید"}),400)
 
     #TODO: create new Route for this
+    @jwt_required
     def delete(self):
         if current_user.is_authenticated:
             data = request.get_json(force=True)
@@ -1242,7 +1267,6 @@ class UserAuctionView(Resource):
                 return make_response(jsonify({"success": True, "message": {"success": "حراجی به لیست مشاهده شده افزوده شد"}}), 200)
             return make_response(jsonify({"success": False, "message": {"failure": "این جراجی قبلا به لیست مشاهده شده افزوده شده است"}}), 200)
         return make_response(jsonify({"success":False,"message":"کاربر لاگین نکرده است"}),200)
-
 
 class UserChargeWalet(Resource):
     @jwt_required

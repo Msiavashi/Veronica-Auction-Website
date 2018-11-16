@@ -47,7 +47,7 @@ params = {
 socketio = SocketIO(**params)
 socketio.init_app(app, message_queue=REDIS_URL,async_mode='eventlet',manage_session=False)
 
-app.debug = True
+app.debug = False
 toolbar = DebugToolbarExtension(app)
 
 #login manager
@@ -60,8 +60,6 @@ login_manager.login_view = 'site.login'
 def make_session_permanent():
     session.permanent = True
     session.permanent_lifetime = timedelta(days=SESSION_EXPIRE_TIME)
-    app.permanent_session = True
-    app.permanent_session_lifetime = timedelta(days=SESSION_EXPIRE_TIME)
 #     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 #     conn = engine.connect()
 #     g.db = conn

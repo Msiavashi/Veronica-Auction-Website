@@ -89,7 +89,7 @@ class MellatGateway(Resource):
             return make_response(jsonify({'success':False,"pay_token":pay_token,"message":"خطای بانک"}),400)
 
 class ZarinpalGateway(Resource):
-    @fresh_jwt_required
+    @jwt_required
     def post(self):
         data = request.get_json(force=True)
         pid = int(data.get("pid", None))

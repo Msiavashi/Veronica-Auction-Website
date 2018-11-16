@@ -125,7 +125,6 @@ class Route():
     @login_required
     @verify_required
     def profile_tab(tab):
-        print "tab",tab
         if tab == "":
             return render_template('site/profile.html',tab='default')
 
@@ -181,7 +180,6 @@ class Route():
     @login_manager.unauthorized_handler
     def unauthorized():
         # next = url_for(request.endpoint,**request.view_args)
-        print request.endpoint
         if reuquest.endpoint == "participate" or request.endpoint == "instantview":
             next += "iframe";
         return render_template('site/401.html',next=next), 401
