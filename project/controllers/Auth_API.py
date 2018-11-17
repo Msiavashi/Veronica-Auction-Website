@@ -92,9 +92,9 @@ class UserRegistration(Resource):
             new_user.invitor = invitor
 
             new_user.save_to_db()
-
-            access_token = create_access_token(identity = data['username'].lower(),fresh=True,expires_delta=False)
-            refresh_token = create_refresh_token(identity = data['username'].lower())
+            expires = timedelta(days=365)
+            access_token = create_access_token(identity = data['username'].lower(),expires_delta=expires)
+            refresh_token = create_refresh_token(identity = data['username'].lower(),expires_delta=expires)
 
             current_user = User.find_by_username(data['username'].lower())
 
@@ -121,7 +121,7 @@ class UserLogin(Resource):
         parser_login.parse_args()
         data = request.get_json(force=True)
 
-        current_user = User.find_by_username(data['username'])
+        current_user = User.find_by_username(data['username'].lower())
 
         if not current_user:
             return make_response(jsonify({"message" :{"success":False,"field":"username","text":'کاربری با نام کاربری مورد نظر شما پیدا نشد'}}),400)
@@ -147,8 +147,8 @@ class UserLogin(Resource):
                 return make_response(jsonify({'message':{"success":False,"field":"verification","text":msg}}),401)
 
             expires = timedelta(days=31)
-            access_token = create_access_token(identity = data['username'].lower(),expires_delta=False)
-            refresh_token = create_refresh_token(identity = data['username'].lower(),expires_delta=False)
+            access_token = create_access_token(identity = data['username'].lower(),expires_delta=expires)
+            refresh_token = create_refresh_token(identity = data['username'].lower(),expires_delta=expires)
 
             # Set the JWT cookies in the response
             redirect_to_auction = False
@@ -216,13 +216,16 @@ class UserLogin(Resource):
                         db.session.commit()
                 session.pop('orders')
 
-            if 'remember_me' in data and data['remember_me']==True:
-                login_user(current_user,remember=True)
-            else:
-                login_user(current_user,remember=False)
+            # if 'remember_me' in data and data['remember_me']==True:
+            #     login_user(current_user,remember=True)
+            # else:
+            #     login_user(current_user,remember=False)
 
-            set_refresh_cookies(resp, refresh_token)
-            set_access_cookies(resp, access_token)
+            expire_date = timedelta(days=31)
+            set_refresh_cookies(resp, refresh_token,expire_date)
+            set_access_cookies(resp, access_token,expire_date)
+            login_user(current_user,remember=True)
+
             return make_response(resp,200)
         else:
             current_user.login_attempts += 1

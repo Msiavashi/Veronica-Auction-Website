@@ -80,8 +80,9 @@ class PaymentsInfo(Resource):
                 if unpaid_user_plan:
 
                     state = "عدم شرکت درحراجی"
-                    if current_user.has_auction(unpaid_user_plan.auction):
+                    if payment.status == PaymentStatus.PAID:
                         state = "شرکت کننده حراجی"
+
                     plan={
                     "title":unpaid_user_plan.auction_plan.plan.title,
                     "price":str(unpaid_user_plan.auction_plan.price),

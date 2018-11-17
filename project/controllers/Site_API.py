@@ -241,7 +241,7 @@ class SiteTodayEvents(Resource):
 class SiteTodayAuctions(Resource):
     def get(self):
         now = datetime.now()
-        results = Auction.query.order_by("start_date DESC").all()
+        results = Auction.query.order_by("start_date").all()
         auctions=[]
         for auction in results:
             if((auction.start_date - now).days == 0) :

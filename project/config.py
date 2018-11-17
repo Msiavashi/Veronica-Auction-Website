@@ -1,6 +1,7 @@
 from project.db_config import Config
 import os
 import definitions
+from datetime import datetime,timedelta
 
 # Create dummy secrey key so we can use sessions
 # SECRET_KEY = "1qsj59$80__+j3o0-1cn.f=20-=@$&mp=-d1hkpwqhf2-==123ehdwoh^2n-^$@8-jf[=2ufiofh]"
@@ -33,6 +34,10 @@ JWT_COOKIE_SECURE = True
 
 JWT_ACCESS_COOKIE_PATH = '/api/'
 JWT_REFRESH_COOKIE_PATH = '/api/'
+
+REMEMBER_COOKIE_DURATION = timedelta(days=31)
+REMEMBER_COOKIE_SECURE = True
+
 
 # Disable CSRF protection for this example. In almost every case,
 # this is a bad idea. See examples/csrf_protection_with_cookies.py

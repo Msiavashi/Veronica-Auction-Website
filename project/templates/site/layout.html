@@ -380,7 +380,8 @@
           <div class="footer footer4">
 
           <div class="container">
-            {% if current_user.is_authenticated %}
+          {% if current_user.is_authenticated %}
+            <template v-if="viewed.length > 0">
               <h3 class="title24 title-flash"><span class="bg-color white">حراجی های دیده شده</span></h3>
               <div class="hot-cat-slider">
               <div v-wrapitem data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[375,2],[560,3],[768,4],[980,5],[1200,6]]">
@@ -398,8 +399,9 @@
                   {%endraw%}
                 </template>
               </div>
-            </div>
-            {% endif %}
+              </div>
+            </template>
+          {% endif %}
             <!-- End List Cat Price -->
             <div class="footer-list-box">
               <div class="row">
