@@ -18,6 +18,7 @@
 						<p class="message">موفق به دریافت کد فعال سازی نشدید؟<a href="#" v-on:click="resend=true; get_activation_code();"> دریافت مجدد کد فعال سازی </a></p>
 						<h5>{{_ToPersian(max_attempts)}} بار دیگر جهت دریافت کد فعال سازی فرصت دارید.</h5>
 						<input type="submit" value="تایید کد فعال سازی"  />
+						<a href="/verifybyemail">دریافت کد فعال سازی از طریق ایمیل </a>
 						{%endraw%}
 					</form>
 					</div>
@@ -69,11 +70,17 @@
 
 					}).catch((error)=>{
 						stop_loading(loading_element);
-						swal(
-							'مشکلی پیش اومد',
-							error.response.data.message.text,
-							'error'
-						)
+
+						swal({
+							 title: "مشکلی پیش اومد",
+							 text:error.response.data.message.text,
+							 type:"error",
+						 }).then((result)=>{
+							 if(result.value && error.response.data.message.field == "not_delivered"){
+								 window.location="/verifybyemail";
+							 }
+						 });
+
 					});
 			},
 
@@ -214,11 +221,15 @@
 
 				}).catch((error)=>{
 					stop_loading(loading_element);
-					swal(
-						'مشکلی پیش اومد',
-						error.response.data.message.text,
-						'error'
-					)
+					swal({
+						 title: "مشکلی پیش اومد",
+						 text:error.response.data.message.text,
+						 type:"error",
+					 }).then((result)=>{
+						 if(result.value && error.response.data.message.field == "not_delivered"){
+							 window.location="/verifybyemail";
+						 }
+					 });
 				});
 		},
 

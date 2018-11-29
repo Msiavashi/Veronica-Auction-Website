@@ -278,6 +278,8 @@ function triggerBigTimer() {
 function triggerFlashTimer() {
 	if($('.flash-countdown').length>0){
 		$(".flash-countdown").TimeCircles({
+      count_past_zero: false,
+      direction:"both",
 			fg_width: 0.01,
 			bg_width: 1.2,
 			text_size: 0.07,
@@ -437,3 +439,53 @@ function getCookie(name) {
     }
     return null;
 }
+
+(function(){
+  if (typeof Object.defineProperty === 'function'){
+    try{Object.defineProperty(Array.prototype,'sortBy',{value:sb}); }catch(e){}
+  }
+  if (!Array.prototype.sortBy) Array.prototype.sortBy = sb;
+
+  function sb(f){
+    for (var i=this.length;i;){
+      var o = this[--i];
+      this[i] = [].concat(f.call(o,o,i),o);
+    }
+    this.sort(function(a,b){
+      for (var i=0,len=a.length;i<len;++i){
+        if (a[i]!=b[i]) return a[i]<b[i]?-1:1;
+      }
+      return 0;
+    });
+    for (var i=this.length;i;){
+      this[--i]=this[i][this[i].length-1];
+    }
+    return this;
+  }
+})();
+
+
+Array.prototype.move = function (element, offset){
+
+  index = this.indexOf(element);
+  newIndex = index + offset;
+
+  if (newIndex > -1 && newIndex < this.length){
+    removedElement = this.splice(index, 1)[0];
+
+    // # At "newIndex", remove 0 elements, insert the removed element
+    this.splice(newIndex, 0, removedElement);
+  }
+    // # Remove the element from the array
+
+};
+
+
+Array.prototype.move_to_first = function (element){
+
+  index = this.indexOf(element);
+  removedElement = this.splice(index, 1)[0];
+    // # At "newIndex", remove 0 elements, insert the removed element
+  this.splice(0, 0, removedElement);
+    // # Remove the element from the array
+};

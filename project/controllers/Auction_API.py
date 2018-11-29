@@ -267,7 +267,8 @@ class AuctionInstanceView(Resource):
         auction = Auction.query.get(aid)
         auction_participants = []
         for participant in auction.participants.order_by('created_at'):
-            auction_participants.append({"id":participant.id,"username":participant.username})
+            pretty_name = participant.first_name + " " + participant.last_name if (participant.first_name and participant.last_name) else participant.username
+            auction_participants.append({"id":participant.id,"pretty_name":pretty_name,"avatar":participant.avatar})
 
         now = datetime.now()
         days = (auction.start_date - now).days
@@ -324,3 +325,21 @@ class AuctionGetPlans(Resource):
         payment_methods = PaymentMethod.query.order_by('type')
         payment_method_schema = PaymentMethodSchema(many=True)
         return make_response(jsonify({"plans":plan_schema.dump(plans),"methods":payment_method_schema.dump(payment_methods)}),200)
+
+class AuctionUsers(Resource):
+    def get(self,aid):
+        result = Offer.query.filter_by(auction_id=aid).order_by('offers.created_at').all()
+        offers = []
+        for offer in result:
+            if offer.user_plan and offer.user_plan.user:
+                offers.append({
+                "pretty_name":offer.user_plan.user.first_name + " " + offer.user_plan.user.last_name if (offer.user_plan.user.first_name and offer.user_plan.user.last_name) else offer.user_plan.user.username ,
+                "avatar":offer.user_plan.user.avatar,
+                "user_id":offer.user_plan.user.id,
+                "id":offer.id,
+                "date":offer.created_at,
+                "win":offer.win,
+                "current_price":str(offer.total_price),
+                "current_bids":offer.current_bids,
+                })
+        return make_response(jsonify(offers),200)

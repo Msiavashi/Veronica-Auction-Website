@@ -17,3 +17,4 @@ psycopg2
 MarkupSafe==0.23
 itsdangerous==0.24
 wsgiref==0.1.2
+Flask-Mail

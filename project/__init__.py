@@ -20,6 +20,7 @@ from definitions import SESSION_EXPIRE_TIME,SMS_USERNAME,SMS_PASSWORD
 from flask_session import Session
 from sqlalchemy import create_engine
 import melipayamak
+from flask_mail import Mail
 
 REDIS_URL = "redis://localhost:6379/0"
 
@@ -27,6 +28,7 @@ REDIS_URL = "redis://localhost:6379/0"
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
+mail = Mail(app)
 
 jwt = JWTManager(app)
 @jwt.token_in_blacklist_loader
@@ -60,10 +62,8 @@ login_manager.login_view = 'site.login'
 def make_session_permanent():
     session.permanent = True
     session.permanent_lifetime = timedelta(days=SESSION_EXPIRE_TIME)
-#     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-#     conn = engine.connect()
-#     g.db = conn
-#
+
+
 #
 # @app.after_request
 # def after_request(response):
@@ -133,6 +133,7 @@ api = Api(app,'/api')
 
 api.add_resource(Auth_API.UserRegistration,'/register')
 api.add_resource(Auth_API.UserVerification,'/user/verification')
+api.add_resource(Auth_API.UserVerificationMail,'/user/verification/mail')
 api.add_resource(Auth_API.UserLogin, '/user/login')
 api.add_resource(Auth_API.UserLogout, '/user/logout')
 api.add_resource(Auth_API.UserTokenRefresh, '/refresh/token')
@@ -165,6 +166,7 @@ api.add_resource(Auction_API.AuctionGetPlans, '/auction/get/plans/<int:aid>')
 api.add_resource(Auction_API.AuctionUserParticipation, '/auction/user/participation')
 api.add_resource(Auction_API.AuctionUserViewed, '/auction/user/viewed')
 api.add_resource(Auction_API.AuctionViewFinished, '/auction/view/finished')
+api.add_resource(Auction_API.AuctionUsers, '/auction/users/<int:aid>')
 
 api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:pagesize>')
 api.add_resource(User_API.UserInformation, '/user/information')

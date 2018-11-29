@@ -102,28 +102,29 @@ def sync_carts(data):
 
 @socketio.on('sync_timers')
 def sync_timers(data):
-    room = data['room']
     now = datetime.now()
-    results = Auction.query.all()
+    room = data['room']
+    results = Auction.query.filter(Auction.start_date > datetime.now()).order_by("start_date").limit(6)
     auctions=[]
     for auction in results:
-        if((auction.start_date - now).days == 0) :
-            auction_participants = []
-            for participant in auction.participants:
-                auction_participants.append({"id":participant.id,"username":participant.username})
-            remained_time = (auction.start_date - now).seconds
-            auctions.append({
-            "id":auction.id,
-            "title":auction.title,
-            "images":auction.item.images,
-            "base_price":str(auction.base_price),
-            "max_price":str(auction.max_price),
-            "main_price":str(auction.item.price),
-            "remained_time":remained_time,
-            "participants":auction_participants,
-            "max_members":auction.max_members,
-            'expired':now > auction.start_date,
-            })
+        auction_participants = []
+        for participant in auction.participants:
+            auction_participants.append({"id":participant.id,"username":participant.username})
+        days = (auction.start_date - now).days
+        remained_time = (days * 24 * 60 * 60) + (auction.start_date - now).seconds
+
+        auctions.append({
+        "id":auction.id,
+        "title":auction.title,
+        "images":auction.item.images,
+        "base_price":str(auction.base_price),
+        "max_price":str(auction.max_price),
+        "main_price":str(auction.item.price),
+        "remained_time":remained_time,
+        "participants":auction_participants,
+        "max_members":auction.max_members,
+        'expired':now > auction.start_date,
+        })
     emit("sync_timers",{"auctions": auctions} , room=room)
     return 200
 
@@ -228,7 +229,6 @@ def bid(data):
         millisecond = (auction.start_date - now).seconds * 1000
         microsecond = (auction.start_date - now).microseconds
         remained = sign(days) * (millisecond + microsecond/1000)
-        print "remained :",remained
 
         if(remained <= 0 ):
             print 'done from handler'

@@ -349,6 +349,8 @@ jQuery(document).ready(function(){
 	//Flash Count Down
 	if($('.flash-countdown').length>0){
 		$(".flash-countdown").TimeCircles({
+			count_past_zero: false,
+      direction:"both",
 			fg_width: 0.01,
 			bg_width: 1.2,
 			text_size: 0.07,

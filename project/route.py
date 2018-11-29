@@ -56,6 +56,16 @@ class Route():
         next = request.args.get('next')
         return render_template('site/verify.html',next=next)
 
+    @app.route('/verifybyemail')
+    def account_verifybymail():
+        if current_user.is_authenticated:
+            return redirect('/')
+        if not "username" in session:
+            return redirect('/login')
+        next = request.args.get('next')
+        return render_template('site/verifybymail.html',next=next)
+
+
     @app.route('/forgotpassword')
     def account_forgot():
         if current_user.is_authenticated:

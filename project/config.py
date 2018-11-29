@@ -30,7 +30,9 @@ JWT_TOKEN_LOCATION = 'cookies'
 JWT_COOKIE_CSRF_PROTECT = True
 JWT_ACCESS_TOKEN_EXPIRES = False
 JWT_REFRESH_TOKEN_EXPIRES = False
-JWT_COOKIE_SECURE = True
+JWT_COOKIE_SECURE = False
+JWT_EXPIRATION_DELTA = timedelta(days=31)
+JWT_VERIFY_EXPIRATION = False
 
 JWT_ACCESS_COOKIE_PATH = '/api/'
 JWT_REFRESH_COOKIE_PATH = '/api/'
@@ -48,3 +50,17 @@ REMEMBER_COOKIE_SECURE = True
 
 # UPLOAD ATACHMENTS
 UPLOAD_FOLDER = definitions.UPLOAD_FOLDER
+
+# mail config
+
+MAIL_SERVER = "mail.unibid.ir"
+MAIL_PORT = 25
+# MAIL_USE_TLS : default False
+# MAIL_USE_SSL : default False
+# MAIL_DEBUG : default app.debug
+MAIL_USERNAME  = "hostmaster"
+MAIL_PASSWORD = "123mail321"
+# MAIL_DEFAULT_SENDER : default None
+# MAIL_MAX_EMAILS : default None
+# MAIL_SUPPRESS_SEND : default app.testing
+# MAIL_ASCII_ATTACHMENTS : default False

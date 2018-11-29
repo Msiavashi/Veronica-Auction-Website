@@ -241,25 +241,27 @@ class SiteTodayEvents(Resource):
 class SiteTodayAuctions(Resource):
     def get(self):
         now = datetime.now()
-        results = Auction.query.order_by("start_date").all()
+        results = Auction.query.filter(Auction.start_date > now).order_by("start_date").limit(6)
         auctions=[]
         for auction in results:
-            if((auction.start_date - now).days == 0) :
-                auction_participants = []
-                for participant in auction.participants:
-                    auction_participants.append({"id":participant.id,"username":participant.username})
-                remained_time = (auction.start_date - now).seconds
-                auctions.append({
-                "id":auction.id,
-                "title":auction.title,
-                "images":auction.item.images,
-                "base_price":str(auction.base_price),
-                "max_price":str(auction.max_price),
-                "main_price":str(auction.item.price),
-                "remained_time":remained_time,
-                "participants":auction_participants,
-                "max_members":auction.max_members,
-                })
+            auction_participants = []
+            for participant in auction.participants:
+                auction_participants.append({"id":participant.id,"username":participant.username})
+            days = (auction.start_date - now).days
+            remained_time = (days * 24 * 60 * 60) + (auction.start_date - now).seconds
+
+            auctions.append({
+            "id":auction.id,
+            "title":auction.title,
+            "images":auction.item.images,
+            "base_price":str(auction.base_price),
+            "max_price":str(auction.max_price),
+            "main_price":str(auction.item.price),
+            "remained_time":remained_time,
+            "participants":auction_participants,
+            "max_members":auction.max_members,
+            "start_date":auction.start_date,
+            })
         return make_response(jsonify(auctions),200)
 
 class SiteMostpopularAuctions(Resource):
