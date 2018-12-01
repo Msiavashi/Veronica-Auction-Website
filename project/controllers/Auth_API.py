@@ -412,11 +412,12 @@ class UserVerificationMail(Resource):
 
             message = Message("ارسال کد فعال سازی یونی بید",sender=("یونی بید", "info@unibid.ir"))
             message.add_recipient(email)
-            message.body = "فعال سازی حساب کاربری یونی بید" \
-            + '\n' + "کدفعال سازی حساب کاربری شما :" \
-            + '\n' + current_user.activation_code \
-            + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
-            + '\n' + 'تیم یونی بید www.unibid.ir'
+            message.html = render_template('site/mail.html',activation_code=current_user.activation_code,activation_token=session['_id'])
+            # "فعال سازی حساب کاربری یونی بید" \
+            # + '\n' + "کدفعال سازی حساب کاربری شما :" \
+            # + '\n' + current_user.activation_code \
+            # + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
+            # + '\n' + 'تیم یونی بید www.unibid.ir'
 
             mail.send(message)
             current_user.email = email
@@ -461,12 +462,13 @@ class UserVerificationMail(Resource):
 
             message = Message("فعال سازی حساب کاربری یونی بید",sender=("یونی بید", "info@unibid.ir"))
             message.add_recipient(current_user.email)
+            message.html = render_template('site/verified.html')
 
-            message.body = "فعال سازی حساب کاربری یونی بید" \
-            + '\n' + current_user.username + " عزیز !"\
-            + '\n' + "حساب کاربری شما با موفقیت فعال سازی شد" \
-            + '\n' + 'ساعات خوشی را برای شما در سایت یونی بید آرزومندیم'\
-            + '\n' + 'تیم یونی بید www.unibid.ir'
+            # "فعال سازی حساب کاربری یونی بید" \
+            # + '\n' + current_user.username + " عزیز !"\
+            # + '\n' + "حساب کاربری شما با موفقیت فعال سازی شد" \
+            # + '\n' + 'ساعات خوشی را برای شما در سایت یونی بید آرزومندیم'\
+            # + '\n' + 'تیم یونی بید www.unibid.ir'
 
             mail.send(message)
 

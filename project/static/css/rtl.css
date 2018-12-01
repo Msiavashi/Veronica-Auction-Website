@@ -1885,16 +1885,17 @@ th {
   right: auto;
 }
 .flash-label {
-  left: 10px;
+  left: 3px;
   padding-left: 0;
   padding-right: 5px;
   right: auto;
 }
 .right-time {
 	left: auto;
-	right: 10px !important;
+	right: 3px !important;
 	padding-left: 10px;
 	padding-right: 5px;
+  padding-bottom: 35px;
 	width: auto !important;
 }
 .flash-timer {

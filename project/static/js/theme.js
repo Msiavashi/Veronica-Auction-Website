@@ -347,38 +347,38 @@ jQuery(document).ready(function(){
 		});
 	}
 	//Flash Count Down
-	if($('.flash-countdown').length>0){
-		$(".flash-countdown").TimeCircles({
-			count_past_zero: false,
-      direction:"both",
-			fg_width: 0.01,
-			bg_width: 1.2,
-			text_size: 0.07,
-			circle_bg_color: "#ffffff",
-			time: {
-				Days: {
-					show: false,
-					text: "",
-					color: "#f9bc02"
-				},
-				Hours: {
-					show: true,
-					text: "",
-					color: "#f9bc02"
-				},
-				Minutes: {
-					show: true,
-					text: "",
-					color: "#f9bc02"
-				},
-				Seconds: {
-					show: true,
-					text: "",
-					color: "#f9bc02"
-				}
-			}
-		});
-	}
+	// if($('.flash-countdown').length>0){
+	// 	$(".flash-countdown").TimeCircles({
+	// 		count_past_zero: false,
+  //     direction:"both",
+	// 		fg_width: 0.01,
+	// 		bg_width: 1.2,
+	// 		text_size: 0.07,
+	// 		circle_bg_color: "#ffffff",
+	// 		time: {
+	// 			Days: {
+	// 				show: false,
+	// 				text: "روز",
+	// 				color: "#f9bc02"
+	// 			},
+	// 			Hours: {
+	// 				show: true,
+	// 				text: "ساعت",
+	// 				color: "#f9bc02"
+	// 			},
+	// 			Minutes: {
+	// 				show: true,
+	// 				text: "دقیقه",
+	// 				color: "#f9bc02"
+	// 			},
+	// 			Seconds: {
+	// 				show: true,
+	// 				text: "ثانیه",
+	// 				color: "#f9bc02"
+	// 			}
+	// 		}
+	// 	});
+	// }
 
 	if($('.countdown-master').length>0){
 		$('.countdown-master').each(function(){

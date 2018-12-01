@@ -25,9 +25,9 @@
 	 								</div>
 	 								<div class="banner-info animated" data-animated="zoomInRight"  >
 	 									<h2 class="title30">{{item.title}}</h2>
-	 									<h2 class="title30 color">تخفیف : تا {{_ToPersian(item.discount)}}%  قیمت </h2>
+	 									<h2 class="title30 color">{{item.discount}}</h2>
 	 									<p>{{item.description}}</p>
-	 									<a v-bind:href="_createAuctionLink(item.id)" class="shopnow">{{item.link_title}}</a>
+	 									<a v-if="item.link" v-bind:href="item.link" class="shopnow">{{item.link_title}}</a>
 	 								</div>
 	 							  </div>
 									{%endraw%}
@@ -35,7 +35,7 @@
 							</div>
 						</div>
 						<!-- End Banner -->
-						<div v-if="ad_products" class="sub-banner-slider">
+						<div v-if="ad_products.length>0" class="sub-banner-slider">
 							<div v-wrapitem data-pagination="false" data-navigation="true" data-itemscustom="[[0,1],[560,3],[1024,4]]">
 								<template v-for="item in ad_products">
 									{%raw%}
@@ -670,22 +670,22 @@
 							time: {
 								Days: {
 									show: true,
-									text: "",
+									text: "روز",
 									color: "#f9bc02"
 								},
 								Hours: {
 									show: true,
-									text: "",
+									text: "ساعت",
 									color: "#f9bc02"
 								},
 								Minutes: {
 									show: true,
-									text: "",
+									text: "دقیقه",
 									color: "#f9bc02"
 								},
 								Seconds: {
 									show: true,
-									text: "",
+									text: "ثانیه",
 									color: "#f9bc02"
 								}
 							}

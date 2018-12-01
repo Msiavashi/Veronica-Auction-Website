@@ -9,7 +9,7 @@ from datetime import datetime,timedelta
 SECRET_KEY = os.urandom(124)
 JWT_SECRET_KEY = os.urandom(124)
 DEBUG_TB_INTERCEPT_REDIRECTS = False
-# SESSION_TYPE = 'filesystem'
+SESSION_TYPE = 'filesystem'
 
 # Create in-memory database
 

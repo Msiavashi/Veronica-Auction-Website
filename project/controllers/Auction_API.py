@@ -279,9 +279,15 @@ class AuctionInstanceView(Resource):
         if(current_user.is_authenticated):
             plan = AuctionPlan.query.join(UserPlan).filter_by(user_id=current_user.id,auction_id=aid).first()
         result = None
+
+        liked = None
+        if current_user.is_authenticated:
+            liked = auction in current_user.auction_likes
+
         if plan:
             result = {
             "id":auction.id,
+            "liked":liked,
             "item_id":auction.item.id,
             "title":auction.title,
             "ratio":auction.ratio,
@@ -300,6 +306,7 @@ class AuctionInstanceView(Resource):
         else:
             result = {
             "id":auction.id,
+            "liked":liked,
             "item_id":auction.item.id,
             "title":auction.title,
             "ratio":auction.ratio,
@@ -343,3 +350,25 @@ class AuctionUsers(Resource):
                 "current_bids":offer.current_bids,
                 })
         return make_response(jsonify(offers),200)
+
+class AuctionWinners(Resource):
+    def get(self,aid):
+        auction = Auction.query.get(aid)
+        result = Auction.query.filter(Auction.start_date < auction.start_date,Auction.item_id==auction.item.id).order_by('start_date DESC').all()
+        users = []
+        for item in result:
+            if item.id != aid:
+                offer = Offer.query.filter_by(auction_id=item.id,win=True).first()
+                if (offer):
+                    users.append({
+                    "pretty_name":offer.user_plan.user.first_name + " " + offer.user_plan.user.last_name if (offer.user_plan.user.first_name and offer.user_plan.user.last_name) else offer.user_plan.user.username ,
+                    "avatar":offer.user_plan.user.avatar,
+                    "participants":item.participants.count(),
+                    "main_price":str(item.item.price),
+                    "price":str(offer.total_price),
+                    "auction_id":item.id,
+                    "user_id":offer.user_plan.user.id,
+                    "date":offer.created_at,
+                    "discount":str(item.item.price - offer.total_price)
+                    })
+        return make_response(jsonify(users),200)

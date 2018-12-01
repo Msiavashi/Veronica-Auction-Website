@@ -37,7 +37,7 @@ def check_if_token_in_blacklist(decrypted_token):
     return model.Revoked.is_jti_blacklisted(jti)
 
 # after production comment this
-# Session(app)
+Session(app)
 
 params = {
 	 'pingInterval': 20000,
@@ -167,6 +167,7 @@ api.add_resource(Auction_API.AuctionUserParticipation, '/auction/user/participat
 api.add_resource(Auction_API.AuctionUserViewed, '/auction/user/viewed')
 api.add_resource(Auction_API.AuctionViewFinished, '/auction/view/finished')
 api.add_resource(Auction_API.AuctionUsers, '/auction/users/<int:aid>')
+api.add_resource(Auction_API.AuctionWinners, '/auction/winners/<int:aid>')
 
 api.add_resource(User_API.PaymentsInfo, '/user/payments/info/<int:pagenum>/<int:pagesize>')
 api.add_resource(User_API.UserInformation, '/user/information')

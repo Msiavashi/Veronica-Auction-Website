@@ -16,7 +16,7 @@
 (function($) {
 
   function ToPersian( num, dontTrim ) {
-	if(!num) return '۰';
+  	if(!num) return '۰';
 
 	    var i = 0,
 
@@ -39,7 +39,7 @@
 	            res += num.charAt(i);
 
 	    return res;
-		}
+	}
 
     var useWindow = window;
 

@@ -212,6 +212,7 @@ class SiteAuctionCarouselAds(Resource):
                 "id":auction.id,
                 "title":auction.advertisement.title,
                 "description":auction.advertisement.description,
+                "link":auction.advertisement.link,
                 "link_title":auction.advertisement.link_title,
                 "images":auction.advertisement.images,
                 "discount":auction.advertisement.discount

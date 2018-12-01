@@ -275,41 +275,6 @@ function triggerBigTimer() {
 	 	}
 }
 
-function triggerFlashTimer() {
-	if($('.flash-countdown').length>0){
-		$(".flash-countdown").TimeCircles({
-      count_past_zero: false,
-      direction:"both",
-			fg_width: 0.01,
-			bg_width: 1.2,
-			text_size: 0.07,
-			circle_bg_color: "#ffffff",
-			time: {
-				Days: {
-					show: false,
-					text: "",
-					color: "#f9bc02"
-				},
-				Hours: {
-					show: true,
-					text: "",
-					color: "#f9bc02"
-				},
-				Minutes: {
-					show: true,
-					text: "",
-					color: "#f9bc02"
-				},
-				Seconds: {
-					show: true,
-					text: "",
-					color: "#f9bc02"
-				}
-			}
-		});
-	}
-}
-
 function triggerSlider(element){
 
 	var data = element.data();

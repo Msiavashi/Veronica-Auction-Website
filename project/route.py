@@ -7,7 +7,7 @@ from flask import url_for, redirect, render_template, request, abort ,redirect, 
 from datetime import timedelta
 from flask_login import current_user,login_required,logout_user
 from .model import *
-from . import app,login_manager,verify_required,iverify_required
+from . import app,login_manager,verify_required,iverify_required,mail
 from urlparse import urlparse, urljoin
 from .controllers.Payment_API import MellatGateway
 from definitions import *
@@ -19,6 +19,7 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 from sqlalchemy import or_
+from flask_mail import Message
 # from .model.payment import *
 
 
@@ -31,6 +32,26 @@ class Route():
     # @app.route('/documentation')
     # def documentation():
     #     return auto.html()
+
+    @app.route('/activate/<token>/<int:acode>')
+    def activate(token,acode):
+        if session['_id']==token:
+            if 'username' in session:
+                current_user = User.find_by_username(session['username'])
+                if (current_user.activation_code == str(acode)):
+                    current_user.is_verified = True
+                    current_user.send_sms_attempts = 0
+                    current_user.verification_attempts = 0
+                    current_user.login_attempts = 0
+                    current_user.is_active = True
+                    db.session.add(current_user)
+                    db.session.commit()
+                    message = Message("فعال سازی حساب کاربری یونی بید",sender=("یونی بید", "info@unibid.ir"))
+                    message.add_recipient(current_user.email)
+                    message.html = render_template('site/verified.html',username=current_user.username)
+                    mail.send(message)
+                    return redirect('/login')
+        return render_template('site/index.html')
 
     @app.route('/')
     def site():
@@ -82,10 +103,6 @@ class Route():
         next = request.args.get('next')
         return render_template('site/iframes/iforgot.html',next=next)
 
-
-
-
-
     @app.route('/ilogin')
     def ilogin():
         if current_user.is_authenticated:
@@ -109,7 +126,6 @@ class Route():
             return render_template('site/register.html',next=next)
 
         return render_template('site/register.html')
-
 
     @app.route('/iregister')
     def iregister():
@@ -175,7 +191,7 @@ class Route():
     def viewAuction(aid):
         auction = Auction.query.get(aid)
         if auction:
-            return render_template('site/auction.html',auction_id=aid)
+            return render_template('site/auction.html',auction_id=aid,item_id=auction.item.id)
         else:
             abort(404)
 

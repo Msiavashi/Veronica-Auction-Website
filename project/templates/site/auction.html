@@ -74,9 +74,9 @@
 									<div class="hoz-tab-title">
 										<ul>
 											<li class="active"><a href="#hoz1" data-toggle="tab">حراجی</a></li>
-											<li><a href="#hoz2" data-toggle="tab">شرکت کنندگان</a></li>
+											<li v-if="auctionParticipants.length>0"><a href="#hoz2" data-toggle="tab">شرکت کنندگان</a></li>
 											<!-- <li><a href="#hoz3" data-toggle="tab">پلی بک</a></li>-->
-											<li><a href="#hoz4" data-toggle="tab">تاریخچه حراجی های محصول</a></li>
+											<li v-if="lastWinners.length>0"><a href="#hoz4" data-toggle="tab">برندگان گذشته</a></li>
 											<li><a href="#hoz5" data-toggle="tab">مشخصات محصول</a></li>
 										</ul>
 									</div>
@@ -127,12 +127,21 @@
 															</div>
 															<div class="detail-extralink">
 																<div class="list-member-bid">
-																	<template v-for="(person, index) in people">
-																		{%raw%}
-																			<p class="item-Bid" v-bind:class="{'YOU':person.its_you}"><img v-bind:src="person.avatar"/><br>{{person.name}}<span>{{_ToPersian(index+1)}}</span><b>{{person.price}}</b></p>
-																		{%endraw%}
-																	</template>
+																	<div v-if="people.length > 0">
+																		<template v-for="(person, index) in people">
+																			{%raw%}
+																				<p class="item-Bid" v-bind:class="{'YOU':person.its_you}"><img v-bind:src="person.avatar"/><br>{{person.name}}<span>{{_ToPersian(index+1)}}</span><b>{{person.price}}</b></p>
+																			{%endraw%}
+																		</template>
+																	</div>
+
+																	<div v-else class="no-auction">
+																		<strong>پیشنهادی موجود نیست!</strong>
+																		<p>آخرین مهلت ثبت نام، ۱ دقیقه مانده به آغاز حراجی</p>
+																	</div>
+
 																</div>
+
 																<div class="product-extra-link2 resWi">
 																	<div class="win-user-final">برنده این حراجی</div>
 																	<div class="boardstyle">
@@ -169,19 +178,26 @@
 																	<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
 																	<div class="success_container"></div>
 																</div>
+																{%raw%}
 
-																<div class="detail-countdowns">شروع حراجی : </span>
-
-																	{%raw%}
-									                <span>{{auction_end_date}}</span>
+																<div v-if="!auction_done" class="detail-countdowns">
+																	شروع حراجی : </span>
+									                <span>{{auction_end_date}}</span> یک دقیقه قبل از ساعت
 									                <i aria-hidden="true" class="fa fa-clock-o"></i><span>{{auction_end_time}}</span>
-																	{%endraw%}
 									              </div>
+
+																<div v-else class="detail-countdowns">
+																	پایان حراجی : </span>
+									                <span>{{auction_end_date}}</span> ساعت
+									                <i aria-hidden="true" class="fa fa-clock-o"></i><span>{{auction_end_time}}</span>
+									              </div>
+
+																{%endraw%}
 															</div>
 															<div class="detail-extralink mt-0">
 																<div class="product-extra-link2">
 																	<a class="addcart-link2" href="#" v-on:click="addToCart(auctionItemId,$event)"><i class="fa fa-shopping-basket" aria-hidden="true"></i> اضافه به سبد</a>
-																	<a class="wishlist-link2" href="#" v-on:click="addToWish(auctionId,$event)"><i aria-hidden="true" class="fa fa-heart"></i></a>
+																	<a class="wishlist-link2" href="#" v-on:click="addToWish(auctionId,$event)"><i aria-hidden="true" v-bind:class="auctionLiked"></i></a>
 																	<a class="wishlist-link2 text-red" href="#"><i aria-hidden="true" class="fa fa-dollar-sign"></i><span id="discount"></span> تومان</a>
 																</div>
 															</div>
@@ -195,27 +211,17 @@
 											</div>
 										</div>
 
-										<div id="hoz2" class="tab-pane">
+										<div id="hoz2" class="tab-pane" v-if="auctionParticipants.length>0">
 											<div class="hoz-tab-content">
 												<div class="content-detail-tab">
 													<div class="detail-tab-info">
-
 															<div class="detail-info">
-
-																	{%raw%}
-																	<h5 v-if="auctionParticipants.length>0" class="under-line">{{_ToPersian(auctionParticipants.length)}} نفر در این حراجی شرکت کرده  اند</h5>
-																	<h5 v-else class="under-line">این حراجی شرکت کننده ای ندارد</h5>
-																	{%endraw%}
-
 																		<template v-for="(person, index) in auctionParticipants">
 																			{%raw%}
 																				<p class="item-User" v-bind:class="{'YOU':person.its_you}"><img class="float-left" v-bind:src="person.avatar"/><span class="float-right">{{person.name}}</span></p>
-
 																			{%endraw%}
 																		</template>
-
 																</div>
-
 														</div>
 													</div>
 												</div>
@@ -278,12 +284,34 @@
 									   </div>
 								     </div> -->
 
-
-										<div id="hoz4" class="tab-pane">
+										<div id="hoz4" class="tab-pane" v-if="lastWinners.length>0">
 											<div class="hoz-tab-content">
 												<div class="content-detail-tab">
 													<div class="detail-tab-info">
-														مشاهده تاریخچه حراجی
+														{%raw%}
+														<!-- <h5 class="under-line">{{_ToPersian(lastWinners.length)}} نفر محصول این حراجی را برنده شده اند.</h5> -->
+															<template v-for="(person, index) in lastWinners">
+																<!-- <p class="item-winner" v-bind:class="{'YOU':person.its_you}"><img class="float-left" v-bind:src="person.avatar"/><span class="float-right">برنده حراجی {{person.name}} با تخفیف {{person.discount}}</span></p> -->
+
+																	<p class="item-winner" v-bind:class="{'YOU':person.its_you}">
+																		<panel class="panel-left">
+																			<span><img v-bind:src="person.avatar"/></span>
+																			<a v-bind:href="_createAuctionLink(person.auction_id)">نمایش حراجی</a>
+																		</panel>
+																		
+																		<panel class="panel-right">
+																			<span> برنده حراجی : {{person.name}} </span>
+																			<!-- <span> قیمت تمام شده محصول : {{person.price}} تومان </span> -->
+																			<span> تخفیف : {{person.discount}} تومان </span>
+																		  <!-- <span> قیمت واقعی : {{person.main_price}} تومان </span> -->
+																			<!-- <span> تاریخ حراجی : {{person.date}} </span> -->
+																			<!-- <span> زمان پایان : {{person.hour}} </span> -->
+																		</panel>
+
+																	</p>
+
+															</template>
+														{%endraw%}
 													</div>
 												</div>
 											</div>
@@ -499,12 +527,15 @@ var app = new Vue({
 		auctionDescription: "",
 		itemProductdescription:"",
 		auctionId: 0,
+		auctionLiked: "fa fa-heart-o",
 		auctionItemId: 0,
 		auctionMaxMembers: 0,
 		auctionRatio: 0,
 		auctionMaxPrice: 0,
 		auctionTitle: "",
 		auctionParticipants: [],
+		lastWinners:[],
+		auction_done:false,
 		live:{
 			auctionCurrentWinnerImage:"#",
 			auctionCurrentOffer:0,
@@ -524,6 +555,10 @@ var app = new Vue({
 
 	},
 	methods: {
+
+		_createAuctionLink(id){
+			return "/view/auction/"+id;
+		},
 
 		_find_person(id){
 
@@ -608,6 +643,7 @@ var app = new Vue({
 						"X-CSRF-TOKEN" : getCookie('csrf_access_token'),
 					}
 				}).then((response) => {
+					this.auctionLiked = this.auctionLiked =="fa fa-heart" ? "fa fa-heart-o" : "fa fa-heart";
 					swal(
 						'علاقمندی محصول',
 						response.data.message,
@@ -638,6 +674,7 @@ var app = new Vue({
 				this.auctionBasePrice = auction.base_price;
 				this.auctionItemPrice = auction.main_price;
 				this.auctionId = auction.id;
+				this.auctionLiked = auction.liked ? "fa fa-heart" : "fa fa-heart-o";
 				this.auctionItemId = auction.item_id;
 				this.itemProductdescription = auction.product_description;
 				this.auctionDescription = auction.description;
@@ -681,21 +718,45 @@ var app = new Vue({
 						console.log(error.response.data);
 					});
 
-		axios.get("{{url_for('auctionusers',aid=auction_id)}}")
+
+		// axios.get("{{url_for('auctionusers',aid=auction_id)}}")
+		// .then((response)=>{
+		//
+		// 	this.all_live_users = [];
+		// 	this.target_points = [];
+		// 	last = response.data[response.data.length-1].date.replace("GMT","");
+		// 	 response.data.forEach(user => {
+		// 		 this.all_live_users.push(user);
+		// 		 first = user.date.replace("GMT","");
+		// 		 this.target_points.push((new Date(last).getTime() - new Date(first).getTime())/1000);
+		//
+		// 	});
+		//
+		// }).catch((error)=>{
+		// 	console.log(error.response.data);
+		// });
+
+		axios.get("{{url_for('auctionwinners',aid=auction_id)}}")
 		.then((response)=>{
 
-			this.all_live_users = [];
-			this.target_points = [];
-			last = response.data[response.data.length-1].date.replace("GMT","");
-			 response.data.forEach(user => {
-				 this.all_live_users.push(user);
-				 first = user.date.replace("GMT","");
-				 this.target_points.push((new Date(last).getTime() - new Date(first).getTime())/1000);
-
+			this.lastWinners = [];
+			response.data.forEach(user => {
+				this.lastWinners.push({
+					auction_id: user.auction_id,
+					name: user.pretty_name,
+					its_you : user.user_id == "{{current_user.id}}" ? true : false,
+					avatar : user.avatar ? avatar_path + ClearifyNames(user.avatar)[0] : "#",
+					main_price : this._ToPersian(this._formatCurrency(user.main_price)),
+					price : this._ToPersian(this._formatCurrency(user.price)),
+					discount : this._ToPersian(this._formatCurrency(user.discount)),
+					date : new persianDate(new Date(user.date.replace("GMT",""))).format("dddd DD MMMM"),
+					hour : new persianDate(new Date(user.date.replace("GMT",""))).format("HH:mm:ss"),
+				});
 			});
+			console.log(this.lastWinners);
 
 		}).catch((error)=>{
-			console.log(error.response.data);
+
 		});
 
 	},
@@ -920,6 +981,7 @@ function check_seconds() {
  }
 
  app.socket.on("auction_done", function(data){
+	 app.auction_done = true;
 	 stop_loading(loading_element);
  	 clearInterval(timer);
 	 clearInterval(app.timerSync);

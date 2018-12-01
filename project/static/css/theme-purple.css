@@ -3126,7 +3126,7 @@ margin-bottom: 0;
 .product-extra-link2 a {
   background: #fff none repeat scroll 0 0;
   border: 1px solid #e5e5e5;
-  color: #333;
+  color: #ff3e3e;
   border-radius: 4px;
   display: inline-block;
   height: 40px;
@@ -4187,6 +4187,7 @@ margin-bottom: 0;
   line-height: 50px;
   font-size: 15px;
   width: auto;
+  color: #333;
 }
 .config-detail .product-extra-link2 a.wishlist-link i {
   margin-left:10px;
@@ -7201,21 +7202,57 @@ a.protect-icon:hover {
   display: none;
 }
 .time_circles {
-  direction: ltr
+  direction: ltr;
 }
-.flash-countdown .time_circles > div {
-  /*color: #fff;*/
+
+/*.flash-countdown .time_circles > div {
+  color: #fff;
   display: inline-block;
   font-weight: 700;
   width: auto !important;
+  padding-left: 10px;
+  padding-right: 10px;
 }
+
 .flash-countdown .time_circles > div::after {
   content: ":";
-  margin: 0 7px;
+  margin: 0 10px;
 }
 .flash-countdown .time_circles > div:last-child::after {
   display: none;
 }
+.flash-countdown .time_circles > div .text {
+  display: block;
+  position: absolute;
+}*/
+
+.flash-countdown .time_circles > div {
+  width: auto!important;
+  text-align: center;
+  display: inline-block;
+  margin: 0 7px;
+  text-transform: uppercase;
+}
+.flash-countdown .time_circles > div .text {
+  color: #999;
+  font-size: 12px;
+}
+.flash-countdown .time_circles > div .number {
+  /*font-size: 18px;*/
+  font-weight: 700;
+  display: block;
+  position: relative;
+}
+.flash-countdown .time_circles > div .number::after {
+  content: ":";
+  position: absolute;
+  right: -9px;
+  top: 0px;
+}
+.flash-countdown .time_circles > div:last-child .number::after {
+  display: none;
+}
+
 .flash-countdown {
   padding-left: 25px;
   position: relative;
@@ -17166,13 +17203,73 @@ td.product-info-total .product-info .desc {
 	font-size: 12px;
 	color: #000;
 	display: inline-block;
-  margin: 1px;
+  margin-right: 13px;
   position: relative;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   direction: rtl
 }
+
+.item-winner {
+	width: 100%;
+	background: #f4f4f4;
+	padding: 1px;
+	font-size: 12px;
+	color: #000;
+	display: inline-block;
+  margin-right: 13px;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl
+}
+
+.item-winner .panel-left{
+  width: 30%;
+  float: left;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.item-winner .panel-right{
+  width: 70%;
+  float: right;
+  /*border: 10px solid #f4f4f4;*/
+  text-align: center;
+}
+
+.item-winner:hover .panel-right {
+  background: #42bcc8;
+  color: #fff;
+}
+.item-winner-link {
+  width: 100%;
+  padding: 5px;
+  margin: 5px;
+  text-align: center;
+}
+
+.item-winner .panel-right > span{
+  width: 99%;
+  display: inline-block;
+  padding: 2px;
+  margin: 2px;
+  /*background: #fff;*/
+  text-align: center;
+  float: left;
+}
+
+.item-winner.YOU {
+  background: #fff4f4;
+	border: 1px #42bcc8 dashed;
+}
+
+.item-winner img {
+	width: 48.6px;
+	/*margin-bottom: 5px;*/
+}
+
 .item-User img {
 	width: 48.6px;
 	/*margin-bottom: 5px;*/
@@ -18173,4 +18270,9 @@ margin: 20px;
 
 #timeline svg {
 	height: 20px;
+}
+.no-auction{
+  margin-top: 50px;
+  direction: rtl;
+  text-align: center;
 }

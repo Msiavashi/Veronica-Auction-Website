@@ -107,7 +107,7 @@ class AdvertisementAdmin(ModelView):
     page_size = 10
     can_view_details = True
     column_searchable_list = ['title', 'description','show']
-    column_editable_list = ['title', 'description','show','link_title','discount']
+    column_editable_list = ['title', 'description','show','link','link_title','discount']
     def is_accessible(self):
         # return True
         return current_user.has_role('admin')
