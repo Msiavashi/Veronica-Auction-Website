@@ -9,7 +9,7 @@ from datetime import datetime,timedelta
 SECRET_KEY = os.urandom(124)
 JWT_SECRET_KEY = os.urandom(124)
 DEBUG_TB_INTERCEPT_REDIRECTS = False
-SESSION_TYPE = 'filesystem'
+# SESSION_TYPE = 'filesystem'
 
 # Create in-memory database
 
@@ -30,7 +30,7 @@ JWT_TOKEN_LOCATION = 'cookies'
 JWT_COOKIE_CSRF_PROTECT = True
 JWT_ACCESS_TOKEN_EXPIRES = False
 JWT_REFRESH_TOKEN_EXPIRES = False
-JWT_COOKIE_SECURE = False
+JWT_COOKIE_SECURE = True
 JWT_EXPIRATION_DELTA = timedelta(days=31)
 JWT_VERIFY_EXPIRATION = False
 
