@@ -35,9 +35,9 @@ class Route():
 
     @app.route('/activate/<token>/<int:acode>')
     def activate(token,acode):
-        if session['_id']==token:
-            if 'username' in session:
-                current_user = User.find_by_username(session['username'])
+        if 'username' in session:
+            current_user = User.find_by_username(session['username'])
+            if User.generate_hash(current_user.username) == token:
                 if (current_user.activation_code == str(acode)):
                     current_user.is_verified = True
                     current_user.send_sms_attempts = 0
@@ -51,7 +51,7 @@ class Route():
                     message.html = render_template('site/verified.html',username=current_user.username)
                     mail.send(message)
                     return redirect('/login')
-        return render_template('site/index.html')
+        return redirect('/')
 
     @app.route('/')
     def site():

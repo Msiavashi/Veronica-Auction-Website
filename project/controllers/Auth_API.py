@@ -5,7 +5,7 @@ sys.setdefaultencoding("utf-8")
 
 from flask_restful import Resource, reqparse
 from project.model.user import *
-from flask_jwt_extended import (set_refresh_cookies,create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt,set_access_cookies)
+from flask_jwt_extended import (set_refresh_cookies,create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt,set_access_cookies,get_csrf_token)
 from flask import url_for, redirect, render_template, request, abort, make_response , jsonify , session
 from ..model import *
 from ..model.order import *
@@ -170,13 +170,17 @@ class UserLogin(Resource):
                     'access_token': access_token,
                     'refresh_token': refresh_token,
                     'redirect_to_auction': redirect_to_auction,
-                    'auction_id':auction_id
+                    'auction_id':auction_id,
+                    'access_csrf': get_csrf_token(access_token),
+                    'refresh_csrf': get_csrf_token(refresh_token)
                     })
             else:
                 resp = jsonify({
                     'message': 'Logged in as {}'.format(current_user.username),
                     'access_token': access_token,
-                    'refresh_token': refresh_token
+                    'refresh_token': refresh_token,
+                    'access_csrf': get_csrf_token(access_token),
+                    'refresh_csrf': get_csrf_token(refresh_token)
                     })
 
             # create orders from session on login
@@ -412,7 +416,8 @@ class UserVerificationMail(Resource):
 
             message = Message("ارسال کد فعال سازی یونی بید",sender=("یونی بید", "info@unibid.ir"))
             message.add_recipient(email)
-            message.html = render_template('site/mail.html',activation_code=current_user.activation_code,activation_token=session['_id'])
+            token = User.generate_hash(current_user.username)
+            message.html = render_template('site/mail.html',activation_code=current_user.activation_code,activation_token=token)
             # "فعال سازی حساب کاربری یونی بید" \
             # + '\n' + "کدفعال سازی حساب کاربری شما :" \
             # + '\n' + current_user.activation_code \

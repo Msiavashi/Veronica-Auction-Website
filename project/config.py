@@ -31,6 +31,7 @@ JWT_COOKIE_CSRF_PROTECT = True
 JWT_ACCESS_TOKEN_EXPIRES = False
 JWT_REFRESH_TOKEN_EXPIRES = False
 JWT_COOKIE_SECURE = True
+JWT_SESSION_COOKIE = False
 JWT_EXPIRATION_DELTA = timedelta(days=31)
 JWT_VERIFY_EXPIRATION = False
 
@@ -55,8 +56,8 @@ UPLOAD_FOLDER = definitions.UPLOAD_FOLDER
 
 MAIL_SERVER = "mail.unibid.ir"
 MAIL_PORT = 25
-# MAIL_USE_TLS : default False
-# MAIL_USE_SSL : default False
+MAIL_USE_TLS = True
+# MAIL_USE_SSL = True
 # MAIL_DEBUG : default app.debug
 MAIL_USERNAME  = "hostmaster"
 MAIL_PASSWORD = "123mail321"

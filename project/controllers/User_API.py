@@ -432,26 +432,25 @@ class UserInformation(Resource):
                     # update extra field for relationship
                     stmt = user_gifts.update().where(and_(user_gifts.c.user_id==current_user.id,user_gifts.c.gift_id==gift.id)).values(used=True)
                     db.engine.execute(stmt)
+        # try:
+        if current_user.mobile!=str(user_mobile):
+            current_user.mobile = user_data.get("mobile", None)
+            current_user.is_verified = False
+            current_user.verification_attempts = 0
+            current_user.send_sms_attempts = 0
+            db.session.add(current_user)
+            db.session.commit()
+            logout_user()
+            msg = "تغییرات موردنظر شما با موفقیت اعمال شد. به دلیل اعلام شماره همراه جدید جهت انجام مجدد اعتبار سنجی خود از سیستم خارج می شوید!"
+            return make_response(jsonify({"message":{"success":True,'field':"relogin",'text':msg}}),200)
+        else:
+            db.session.add(current_user)
+            db.session.commit()
+            msg = " اطلاعات شما با موفقیت ذخیره شد "
+            return make_response(jsonify({"message":{"success":True,'text':msg}}),200)
 
-        try:
-            if user_mobile!=current_user.mobile:
-                current_user.mobile = user_data.get("mobile", None)
-                current_user.is_verified = False
-                current_user.verification_attempts = 0
-                current_user.send_sms_attempts = 0
-                db.session.add(current_user)
-                db.session.commit()
-                logout_user()
-                msg = "تغییرات موردنظر شما با موفقیت اعمال شد. به دلیل اعلام شماره همراه جدید جهت انجام مجدد اعتبار سنجی خود از سیستم خارج می شوید!"
-                return make_response(jsonify({"message":{"success":True,'field':"relogin",'text':msg}}),200)
-            else:
-                db.session.add(current_user)
-                db.session.commit()
-                msg = " اطلاعات شما با موفقیت ذخیره شد "
-                return make_response(jsonify({"message":{"success":True,'text':msg}}),200)
-
-        except Exception as e:
-            return make_response(jsonify({"message":{"success":False,'text':e.message}}), 500)
+        # except Exception as e:
+        #     return make_response(jsonify({"message":{"success":False,'text':e.message}}), 500)
 
 class UserContactUs(Resource):
 
@@ -907,8 +906,8 @@ class UserCheckOutInit(Resource):
             db.session.add(payment)
             db.session.commit()
 
-        msg = "نمایش پیش فاکتور برای سفارش شما"
-        return make_response(jsonify({'success':True,"type":"redirect_to_invoice","pid":payment.id,"message":msg}),200)
+            msg = "نمایش پیش فاکتور برای سفارش شما"
+            return make_response(jsonify({'success':True,"type":"redirect_to_invoice","pid":payment.id,"message":msg}),200)
 
 #TODO: *strict validation*
 class UserCheckoutConfirm(Resource):
