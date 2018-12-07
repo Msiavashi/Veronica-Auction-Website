@@ -61,6 +61,8 @@ class User(Base,UserMixin):
 
     messages = db.relationship('UserMessage')
 
+    short_messages = db.relationship('UserSMS')
+
     orders = db.relationship('Order')
 
     # offers = db.relationship('Offer')
@@ -68,6 +70,9 @@ class User(Base,UserMixin):
     roles = db.relationship('Role' , secondary = 'user_roles', back_populates='users')
 
     gifts = db.relationship('Gift', secondary='user_gifts', back_populates='users',lazy='dynamic')
+
+    notifications = db.relationship('Notification', secondary='user_notifications', back_populates='users',lazy='dynamic')
+
 
     auctions = db.relationship('Auction', lazy='dynamic', secondary='user_auction_participations',back_populates='participants')
 

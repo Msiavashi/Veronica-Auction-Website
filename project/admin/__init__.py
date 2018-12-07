@@ -48,3 +48,8 @@ admin.add_view(UserMessageAdmin(UserMessage, db.session,name='پیام های ک
 admin.add_view(GuestMessageAdmin(GuestMessage, db.session,name='پیام های کاربران مهمان',menu_icon_type='fa', menu_icon_value='fa fa-user'))
 admin.add_view(AddressAdmin(Address, db.session,name='آدرس ها',menu_icon_type='fa', menu_icon_value='fa fa-user'))
 admin.add_view(StateAdmin(State, db.session,name='استان ها',menu_icon_type='fa', menu_icon_value='fa fa-user'))
+admin.add_view(SMSAdmin(UserSMS, db.session,name='پیامک های ارسالی',menu_icon_type='fa', menu_icon_value='fa fa-user'))
+admin.add_view(NotificationAdmin(Notification, db.session,name='ناتیفیکیشن ها',menu_icon_type='fa', menu_icon_value='fa fa-user'))
+admin.add_view(UserNotificationAdmin(UserNotification, db.session,name='ناتیفیکیشن های کاربران',menu_icon_type='fa', menu_icon_value='fa fa-user'))
+admin.add_view(AuctionNotificationAdmin(AuctionNotification, db.session,name='ناتیفیکیشن حراجی',menu_icon_type='fa', menu_icon_value='fa fa-user'))
+admin.add_view(UserAuctionNotificationAdmin(UserAuctionNotification, db.session,name='ناتیفیکیشن حراجی کاربران',menu_icon_type='fa', menu_icon_value='fa fa-user'))

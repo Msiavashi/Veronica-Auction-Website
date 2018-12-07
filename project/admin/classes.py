@@ -313,3 +313,23 @@ class GuestMessageAdmin(ModelView):
 class PaymentMessageAdmin(ModelView):
     def is_accessible(self):
         return current_user.has_role('admin')
+
+class NotificationAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class UserNotificationAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class AuctionNotificationAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class UserAuctionNotificationAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+class SMSAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.has_role('admin')

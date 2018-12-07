@@ -253,6 +253,7 @@ class SiteTodayAuctions(Resource):
 
             auctions.append({
             "id":auction.id,
+            "item_id":auction.item.id,
             "title":auction.title,
             "images":auction.item.images,
             "base_price":str(auction.base_price),

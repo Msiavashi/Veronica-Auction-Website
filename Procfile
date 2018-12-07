@@ -16,3 +16,98 @@ SELECT username, created_at FROM users
  SELECT count(*) FROM users
       WHERE UPPER(username) IN
       (SELECT UPPER(username) FROM users GROUP BY UPPER(username) HAVING COUNT(*) > 1);
+
+ trigger for inserting into user_notifications for each auction participants base on auction_notifications
+
+CREATE OR REPLACE FUNCTION user_notification_inserter()
+  RETURNS trigger AS
+$BODY$
+BEGIN
+declare
+  temprow record;
+  BEGIN
+    FOR temprow IN
+            SELECT user_id FROM user_auction_participations WHERE user_auction_participations.auction_id=NEW.auction_id
+        LOOP
+            INSERT INTO user_auction_notifications(user_id,auction_notification_id,delivered,seen) VALUES (temprow.user_id,NEW.id,false,false);
+        END LOOP;
+  END;
+ RETURN NEW;
+END;
+$BODY$
+LANGUAGE plpgsql VOLATILE
+COST 100;
+
+CREATE TRIGGER save_user_notifications
+  AFTER INSERT
+  ON auction_notifications
+  FOR EACH ROW
+  EXECUTE PROCEDURE user_notification_inserter();
+
+  CREATE OR REPLACE FUNCTION user_notification_updater()
+    RETURNS trigger AS
+  $BODY$
+  BEGIN
+  declare
+    temprow record;
+    BEGIN
+      FOR temprow IN
+              SELECT user_id FROM user_auction_participations WHERE user_auction_participations.auction_id=NEW.auction_id
+          LOOP
+              DELETE FROM user_auction_notifications WHERE user_id = temprow.user_id;
+              INSERT INTO user_auction_notifications(user_id,auction_notification_id,delivered,seen) VALUES (temprow.user_id,NEW.id,false,false);
+          END LOOP;
+    END;
+   RETURN NEW;
+  END;
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+
+  CREATE TRIGGER refresh_user_notifications
+    AFTER UPDATE
+    ON auction_notifications
+    FOR EACH ROW
+    EXECUTE PROCEDURE user_notification_updater();
+
+  CREATE OR REPLACE FUNCTION user_notification_remover()
+    RETURNS trigger AS
+  $BODY$
+  BEGIN
+  declare
+    temprow record;
+    BEGIN
+      FOR temprow IN
+              SELECT user_id FROM user_auction_participations WHERE user_auction_participations.auction_id=OLD.auction_id
+          LOOP
+              DELETE FROM user_auction_notifications WHERE user_id = temprow.user_id;
+          END LOOP;
+    END;
+   RETURN NEW;
+  END;
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+
+  CREATE TRIGGER remove_user_notifications
+    AFTER DELETE
+    ON auction_notifications
+    FOR EACH ROW
+    EXECUTE PROCEDURE user_notification_remover();
+
+
+  // cascade
+
+alter table user_auction_notifications
+drop constraint user_auction_notifications_auction_notification_id_fkey,
+add constraint user_auction_notifications_auction_notification_id_fkey
+   foreign key (auction_notification_id)
+   references auction_notifications(id)
+   on delete set null;
+
+ alter table user_auction_notifications
+ drop constraint user_auction_notifications_user_id_fkey,
+ add constraint user_auction_notifications_user_id_fkey
+    foreign key (user_id)
+    references users(id)
+    on delete set null;
