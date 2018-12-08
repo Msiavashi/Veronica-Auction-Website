@@ -331,5 +331,9 @@ class UserAuctionNotificationAdmin(ModelView):
         return current_user.has_role('admin')
 
 class SMSAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['delivered', 'status_code','text','title','user.username','user.mobile']
+    column_editable_list = ['delivered']
     def is_accessible(self):
         return current_user.has_role('admin')

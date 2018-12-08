@@ -18,6 +18,8 @@ class UserNotification(Base):
     delivered = db.Column(db.Boolean,default=False)
     seen = db.Column(db.Boolean,default=False)
 
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
 
     def __str__(self):
         return str(self.notification) +" - "+ str(self.user)

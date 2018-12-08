@@ -13,7 +13,6 @@ class Rest:
     def post(self, url, data):
         data['username'] = self.username
         data['password'] = self.password
-
         r = requests.post(url, data)
         return r.json()
 
@@ -30,6 +29,16 @@ class Rest:
             'from': _from,
             'text': text,
             'isFlash': isFlash
+        }
+        return self.post(url, data)
+
+    def send_force(self,_from,to, text,bodyId):
+        url = self.PATH % ('BaseServiceNumber')
+        data = {
+            'from': _from,
+            'to': to,
+            'text': text,
+            'bodyId': bodyId
         }
         return self.post(url, data)
 

@@ -52,4 +52,4 @@ admin.add_view(SMSAdmin(UserSMS, db.session,name='پیامک های ارسالی
 admin.add_view(NotificationAdmin(Notification, db.session,name='ناتیفیکیشن ها',menu_icon_type='fa', menu_icon_value='fa fa-user'))
 admin.add_view(UserNotificationAdmin(UserNotification, db.session,name='ناتیفیکیشن های کاربران',menu_icon_type='fa', menu_icon_value='fa fa-user'))
 admin.add_view(AuctionNotificationAdmin(AuctionNotification, db.session,name='ناتیفیکیشن حراجی',menu_icon_type='fa', menu_icon_value='fa fa-user'))
-admin.add_view(UserAuctionNotificationAdmin(UserAuctionNotification, db.session,name='ناتیفیکیشن حراجی کاربران',menu_icon_type='fa', menu_icon_value='fa fa-user'))
+admin.add_view(UserAuctionNotificationAdmin(UserAuctionNotification, db.session,name='ناتیفیکیشن کاربران حراجی',menu_icon_type='fa', menu_icon_value='fa fa-user'))

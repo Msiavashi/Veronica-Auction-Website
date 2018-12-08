@@ -13,9 +13,12 @@ import json
 from ..database import db
 from project import app,mail
 from flask_login import LoginManager, UserMixin,login_required, login_user, logout_user ,current_user
-from ..melipayamak import SendSMS
+from ..melipayamak import SendSMS,SendSMSForce
 from flask_mail import Message
-from definitions import MAX_LOGIN_ATTEMPTS, MAX_ACTIVATION_ATTEMPTS, MAX_DEFFER_ACTIVATION_TIME, MAX_MESSAGES_SEND, MAX_AVAILABLE_MESSAGE_TIME,COUPONCODE,MAX_INVITOR_POLICY
+from definitions import (MAX_LOGIN_ATTEMPTS, MAX_ACTIVATION_ATTEMPTS, MAX_DEFFER_ACTIVATION_TIME,
+ MAX_MESSAGES_SEND, MAX_AVAILABLE_MESSAGE_TIME,COUPONCODE,MAX_INVITOR_POLICY,
+ SMS_BodyId_VER,SMS_BodyId_WEL,SMS_BodyId_FPS,SMS_BodyId_CHPS)
+
 from datetime import datetime,timedelta
 
 parser_register = reqparse.RequestParser()
@@ -304,21 +307,51 @@ class UserVerification(Resource):
                 db.session.commit()
                 session['last_send_time'] = datetime.now()
 
-                text = "فعال سازی حساب کاربری یونی بید" \
-                + '\n' + "کدفعال سازی حساب کاربری شما :" \
-                + '\n' + current_user.activation_code \
-                + '\n' + ' توجه! این کد پس از گذشت ' + str(MAX_AVAILABLE_MESSAGE_TIME) + ' ثانیه منقضی خواهد شد.'\
-                + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
-                + '\n' + 'تیم یونی بید www.unibid.ir'
+                message = "کاربر گرامی" \
+                + '\n' + " کد تایید حساب کاربری شما " + current_user.activation_code + " می باشد."\
+                + '\n' + 'توجه کنید که این کد پس از گذشت ' + str(MAX_AVAILABLE_MESSAGE_TIME) + ' ثانیه منقضی خواهد شد.'\
+                + '\n' + 'با آرزوی سلامتی و شادکامی شما'\
+                + '\n' + 'تیم یونی بید'\
+                + '\n' + ' www.unibid.ir'
 
+                sms_response = SendSMS(current_user.mobile,message)
 
-                if SendSMS(current_user.mobile,text):
+                user_sms = UserSMS()
+                user_sms.title = "فعال سازی حساب کاربری"
+                user_sms.text = message
+                user_sms.user = current_user
+                user_sms.status_code = int(sms_response['status_code'])
+                user_sms.delivered = sms_response['success']
+                db.session.add(user_sms)
+                db.session.commit()
+
+                if user_sms.delivered:
                     return make_response(jsonify({"remained_to_expire": MAX_AVAILABLE_MESSAGE_TIME,"send_attempts":MAX_MESSAGES_SEND - current_user.send_sms_attempts }),200)
                 else:
-                    msg = "ارسال پیامک به شماره همراه شما با مشکل مواجه شد. "\
-                    +"این مسئله می تواند به دلیل وجود شماره شما در لیست سیاه مخابرات باشد"\
-                    +" یا اوپراتور فعلا جهت تحویل پیام شما در دسترس نمی باشد . برای فعال سازی حساب کاربری خود می توانید از طریق ایمیل اقدام کنید."
-                    return make_response(jsonify({"message":{"success":False,"text":msg,"field":"not_delivered"}}),400)
+                    text = current_user.activation_code + ";" + str(MAX_AVAILABLE_MESSAGE_TIME)
+                    sms_response = SendSMSForce(current_user.mobile,text,SMS_BodyId_VER)
+                    user_sms.status_code = int(sms_response['status_code'])
+                    user_sms.delivered = sms_response['success']
+                    db.session.add(user_sms)
+                    db.session.commit()
+
+                    if user_sms.delivered:
+                        return make_response(jsonify({"remained_to_expire": MAX_AVAILABLE_MESSAGE_TIME,"send_attempts":MAX_MESSAGES_SEND - current_user.send_sms_attempts }),200)
+                    else:
+                        msg = ""
+                        if user_sms.status_code == -3:
+                            msg = "شماره همراه شما در سیستم مخابرات تعریف نشده است لطفا جهت تصحیح شماره همراه حساب کاربری خود با پشتیبانی سایت تماس بگیرید"
+                            return make_response(jsonify({"message":{"success":False,"text":msg,"field":"system_error"}}),400)
+                        elif user_sms.status_code == -6:
+                            msg = "ارسال پیام شما با یک خطای داخلی اوپراتور مواجه شده است. لطفا با پشتیبانی سایت تماس حاصل کنید"
+                            return make_response(jsonify({"message":{"success":False,"text":msg,"field":"system_error"}}),400)
+                        elif user_sms.status_code == 11:
+                            msg = "در حال حاضر سیستم قادر به ارسال پیام به شماره همراه شما نمی باشد. لطفا جهت تصحیح شماره همراه با پشتیبانی سایت تماس حاصل کنید"
+                            return make_response(jsonify({"message":{"success":False,"text":msg,"field":"system_error"}}),400)
+                        else:
+                            msg = "ارسال پیامک به دلیل اختلال در سیستم پنل پیامکی با مشکل مواجه شده است."\
+                            + '\n' + 'برای فعال سازی حساب کاربری خود از طریق ایمیل اقدام کنید یا با پشتیبانی سایت تماس حاصل کنید'
+                            return make_response(jsonify({"message":{"success":False,"text":msg,"field":"not_delivered"}}),400)
 
             return make_response(jsonify({"remained_to_expire": MAX_AVAILABLE_MESSAGE_TIME - (now - session['last_send_time']).seconds,"send_attempts":MAX_MESSAGES_SEND - current_user.send_sms_attempts }),200)
 
@@ -361,12 +394,31 @@ class UserVerification(Resource):
             current_user.is_active = True
             db.session.add(current_user)
             db.session.commit()
-            text = "فعال سازی حساب کاربری یونی بید" \
-            + '\n' + current_user.username + " عزیز !"\
-            + '\n' + "حساب کاربری شما با موفقیت فعال سازی شد" \
-            + '\n' + 'ساعات خوشی را برای شما در سایت یونی بید آرزومندیم'\
-            + '\n' + 'تیم یونی بید www.unibid.ir'
-            SendSMS(current_user.mobile,text)
+
+            message = "کاربر گرامی" + current_user.username \
+            + '\n' + "حساب کاربری شما با موفقیت تایید شد" \
+            + '\n' + "با آرزوی سلامتی و شادکامی شما"\
+            + '\n' + 'تیم یونی بید '\
+            + '\n' + 'www.unibid.ir'
+
+            sms_response = SendSMS(current_user.mobile,message)
+
+            user_sms = UserSMS()
+            user_sms.title = "خوش آمد گویی تایید حساب کاربری"
+            user_sms.text = message
+            user_sms.user = current_user
+            user_sms.status_code = int(sms_response['status_code'])
+            user_sms.delivered = sms_response['success']
+            db.session.add(user_sms)
+            db.session.commit()
+
+            if not user_sms.is_delivered:
+                text = current_user.username
+                sms_response = SendSMSForce(current_user.mobile,text,SMS_BodyId_WEL)
+                user_sms.status_code = int(sms_response['status_code'])
+                user_sms.delivered = sms_response['success']
+                db.session.add(user_sms)
+                db.session.commit()
 
             expires = timedelta(days=365)
             access_token = create_access_token(identity =  session['username'].lower(),expires_delta=expires)
@@ -522,7 +574,6 @@ class UserForgotPassword(Resource):
             msg = "حداکثر تلاشهای شما جهت دریافت رمز یکبار مصرف انجام گرفته است. لطفا با پشتیبانی سایت تماس حاصل کنید"
             return make_response(jsonify({"message":{"success":False,"text":msg,"field":"policy"}}),400)
 
-
         new_password = str(random.randint(100000,1000000))
         current_user.password =User.generate_hash(new_password)
         current_user.send_sms_attempts += 1
@@ -530,17 +581,54 @@ class UserForgotPassword(Resource):
         db.session.commit()
         session['last_send_time'] = datetime.now()
 
-        text = "فراموشی رمز عبور یونی بید" \
+        message = "فراموشی رمز عبور یونی بید" \
         + '\n' + "رمزعبور یکبارمصرف شما در یونی بید :" \
         + '\n' + new_password \
         + '\n' + 'توجه! به لحاظ مسائل امنیتی لطفا پس از اولین ورود به سایت نسبت به تغییر رمز عبور خود اقدام فرمایید'\
         + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
         + '\n' + 'تیم یونی بید www.unibid.ir'
 
-        SendSMS(current_user.mobile,text)
+        sms_response = SendSMS(current_user.mobile,message)
 
-        msg = "یک پیام متنی حاوی رمز عبور یکبارمصرف برای شما پیامک شد که به وسیله آن می توانید جهت ورود به سایت اقدام کنید."
-        return make_response(jsonify({"message":{"success" : True,"text":msg,"field":"password_sent"}}),200)
+        user_sms = UserSMS()
+        user_sms.title = "فراموشی رمز عبور"
+        user_sms.text = message
+        user_sms.user = current_user
+        user_sms.status_code = int(sms_response['status_code'])
+        user_sms.delivered = sms_response['success']
+        db.session.add(user_sms)
+        db.session.commit()
+
+        if user_sms.delivered:
+            msg = "یک پیام متنی حاوی رمز عبور یکبارمصرف برای شما پیامک شد که به وسیله آن می توانید جهت ورود به سایت اقدام کنید."
+            return make_response(jsonify({"message":{"success" : True,"text":msg,"field":"password_sent"}}),200)
+        else:
+            text = new_password
+            sms_response = SendSMSForce(current_user.mobile,text,SMS_BodyId_FPS)
+            user_sms.status_code = int(sms_response['status_code'])
+            user_sms.delivered = sms_response['success']
+            db.session.add(user_sms)
+            db.session.commit()
+            if user_sms.delivered:
+                msg = "یک پیام متنی حاوی رمز عبور یکبارمصرف برای شما پیامک شد که به وسیله آن می توانید جهت ورود به سایت اقدام کنید."
+                return make_response(jsonify({"message":{"success" : True,"text":msg,"field":"password_sent"}}),200)
+            else:
+                msg = ""
+                if user_sms.status_code == -3:
+                    msg = "شماره همراه شما در سیستم مخابرات تعریف نشده است لطفا جهت تصحیح شماره همراه حساب کاربری خود با پشتیبانی سایت تماس بگیرید"
+                    return make_response(jsonify({"message":{"success":False,"text":msg,"field":"password_not_sent"}}),400)
+                elif user_sms.status_code == -6:
+                    msg = "ارسال پیام شما با یک خطای داخلی اوپراتور مواجه شده است. لطفا با پشتیبانی سایت تماس حاصل کنید"
+                    return make_response(jsonify({"message":{"success":False,"text":msg,"field":"password_not_sent"}}),400)
+                elif user_sms.status_code == 11:
+                    msg = "در حال حاضر سیستم قادر به ارسال پیام به شماره همراه شما نمی باشد. لطفا جهت تصحیح شماره همراه با پشتیبانی سایت تماس حاصل کنید"
+                    return make_response(jsonify({"message":{"success":False,"text":msg,"field":"password_not_sent"}}),400)
+                else:
+                    msg = "ارسال پیامک به دلیل اختلال در سیستم پنل پیامکی با مشکل مواجه شده است."
+                    return make_response(jsonify({"message":{"success":False,"text":msg,"field":"password_not_sent"}}),400)
+
+        msg = "مشکلی در ارسال رمزعبور شما به شماره همراه اعلام شده در سیستم به وجود آمد. لطفا با پشتیبانی سایت تماس حاصل فرایید"
+        return make_response(jsonify({"message":{"success" : False,"text":msg,"field":"password_not_sent"}}),400)
 
 class UserChangePassword(Resource):
     @jwt_required
@@ -562,13 +650,31 @@ class UserChangePassword(Resource):
         db.session.add(current_user)
         db.session.commit()
 
-        text = "تغییر رمز عبور حساب کاربری یونی بید" \
+        message = "تغییر رمز عبور حساب کاربری یونی بید" \
         + '\n' + "کاربر گرامی : " + current_user.username \
         + '\n' + 'شما در تاریخ ' + data['current_time'] + 'نسبت به تغییر رمز عبور خود در سایت یونی بید اقدام کرده اید.'\
         + '\n' + 'این پیام صرفا جهت اطلاع رسانی شما ارسال گردیده است.'\
         + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
         + '\n' + 'تیم یونی بید www.unibid.ir'
 
-        SendSMS(current_user.mobile,text)
+        sms_response = SendSMS(current_user.mobile,message)
+
+        user_sms = UserSMS()
+        user_sms.title = "اطلاع رسانی تغییر رمز عبور"
+        user_sms.text = message
+        user_sms.user = current_user
+        user_sms.status_code = int(sms_response['status_code'])
+        user_sms.delivered = sms_response['success']
+        db.session.add(user_sms)
+        db.session.commit()
+
+        if not user_sms.delivered:
+            text = current_user.username +";"+data['current_time']
+            sms_response = SendSMSForce(current_user.mobile,text,SMS_BodyId_CHPS)
+            user_sms.status_code = int(sms_response['status_code'])
+            user_sms.delivered = sms_response['success']
+            db.session.add(user_sms)
+            db.session.commit()
+            
         logout_user()
         return make_response(jsonify({"message":{"success":False,"field":"relogin","text":'رمزعبور شما با موفقیت تغییر کرد.لطفا با استفاده از رمزعبور جدید به سایت وارد شوید.'}}),200)

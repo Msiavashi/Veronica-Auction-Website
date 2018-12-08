@@ -14,8 +14,8 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_login import login_required ,current_user
 from decimal import Decimal
 import random
-from definitions import COUPONCODE,MAX_INVITOR_POLICY
-from ..melipayamak import SendSMS
+from definitions import COUPONCODE,MAX_INVITOR_POLICY,SMS_BodyId_GIFT_INVITOR,SMS_BodyId_GIFT_USER
+from ..melipayamak import SendSMS,SendSMSForce
 
 class AuctionTestJson(Resource):
     @jwt_required
@@ -212,13 +212,31 @@ class AuctionUserParticipation(Resource):
                     current_user.credit += gift.amount
                     db.session.add(current_user)
                     db.session.commit()
-                    text = "دریافت هدیه دعوت دوستان" \
-                    + '\n' + "کاربر عزیز‌ : " + current_user.username \
+                    message = "دریافت هدیه دعوت دوستان" \
+                    + '\n' + "کاربر گرامی " + current_user.username \
                     + '\n' + ' کیف پول شما به میزان' + str(int(gift.amount)) + ' تومان شارژ شد.'\
                     + '\n' + 'با دعوت از دوستان خود با شرکت آنها در اولین حراجی هدیه معرفی خود را دریافت کنید.'\
                     + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
                     + '\n' + 'تیم یونی بید www.unibid.ir'
-                    SendSMS(current_user.mobile,text)
+
+                    sms_response = SendSMS(current_user.mobile,message)
+
+                    user_sms = UserSMS()
+                    user_sms.title = "دریافت هدیه دعوت دوستان"
+                    user_sms.text = message
+                    user_sms.user = current_user
+                    user_sms.status_code = int(sms_response['status_code'])
+                    user_sms.delivered = sms_response['success']
+                    db.session.add(user_sms)
+                    db.session.commit()
+
+                    if not user_sms.delivered:
+                        text = current_user.username +";"+str(int(gift.amount))
+                        sms_response = SendSMSForce(current_user.mobile,text,SMS_BodyId_GIFT_INVITOR)
+                        user_sms.status_code = int(sms_response['status_code'])
+                        user_sms.delivered = sms_response['success']
+                        db.session.add(user_sms)
+                        db.session.commit()
 
                     invitor = User.query.filter_by(username=current_user.invitor).first()
                     if invitor:
@@ -226,12 +244,30 @@ class AuctionUserParticipation(Resource):
                         db.session.add(invitor)
                         db.session.commit()
                         remained_invitation_coupons = User.query.filter_by(invitor=invitor.username).count()
-                        text = "دریافت هدیه دعوت دوستان" \
-                        + '\n' + "کاربر عزیز‌ : " + invitor.username \
+                        message = "دریافت هدیه دعوت دوستان" \
+                        + '\n' + "کاربر گرامی " + invitor.username \
                         + '\n' + 'کیف پول شما به میزان' + str(int(gift.amount)) + ' تومان جهت معرفی' + current_user.username + ' شارژ شد.'\
                         + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
                         + '\n' + 'تیم یونی بید www.unibid.ir'
-                        SendSMS(invitor.mobile,text)
+
+                        sms_response = SendSMS(invitor.mobile,message)
+
+                        user_sms = UserSMS()
+                        user_sms.title = "دریافت هدیه دعوت دوستان"
+                        user_sms.text = message
+                        user_sms.user = invitor
+                        user_sms.status_code = int(sms_response['status_code'])
+                        user_sms.delivered = sms_response['success']
+                        db.session.add(user_sms)
+                        db.session.commit()
+
+                        if not user_sms.delivered:
+                            text = invitor.username +";"+str(int(gift.amount))+";"+current_user.username
+                            sms_response = SendSMSForce(current_user.mobile,text,SMS_BodyId_GIFT_USER)
+                            user_sms.status_code = int(sms_response['status_code'])
+                            user_sms.delivered = sms_response['success']
+                            db.session.add(user_sms)
+                            db.session.commit()
 
             msg = "شرکت در حراجی با موفقیت انجام شد"
             return make_response(jsonify({"success":True,"type":"registered","message":msg}),200)

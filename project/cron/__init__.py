@@ -34,13 +34,15 @@
 #     now = datetime.now()
 #     auctions = Auction.query.filter(Auction.start_date > now).order_by("start_date").limit(6)
 #     for auction in auctions:
-#         schedule.every().
+#         remained = (auction.start_date - datetime.now()).minutes
+#         if (remained <= 5):
+#             for user in auction.participants:
 #
 #
 #
-# # schedule.every(10).seconds.do(watcher)
+# schedule.every(5).seconds.do(deamon)
 # # schedule.every().hour.do(job)
-# schedule.every().day.at("00:00").do(deamon)
+# # schedule.every().day.at("00:00").do(deamon)
 # while 1:
 #     schedule.run_pending()
 #     time.sleep(1)

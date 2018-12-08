@@ -19,6 +19,10 @@ class UserSMS(Base):
     status_code = db.Column(db.BigInteger,nullable=False,default=0)
     delivered = db.Column(db.Boolean,default=False)
 
+    created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)
+
+
     def __str__(self):
         if(self.delivered):
             return self.title + " تحویل داده شده به کاربر :" + str(self.user)
