@@ -29,7 +29,7 @@ declare
     FOR temprow IN
             SELECT user_id FROM user_auction_participations WHERE user_auction_participations.auction_id=NEW.auction_id
         LOOP
-            INSERT INTO user_auction_notifications(user_id,auction_notification_id,delivered,seen) VALUES (temprow.user_id,NEW.id,false,false);
+            INSERT INTO user_auction_notifications(user_id,auction_notification_id,delivered,seen,created_at,updated_at) VALUES (temprow.user_id,NEW.id,false,false,now(),now());
         END LOOP;
   END;
  RETURN NEW;

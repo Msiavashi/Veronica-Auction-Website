@@ -8,4 +8,3 @@ venv
 .DS_Store
 project/admin/classes.py
 project/db_config.py
-runserver.py
