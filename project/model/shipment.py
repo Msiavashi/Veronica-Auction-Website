@@ -7,6 +7,7 @@ sys.setdefaultencoding("utf-8")
 from project.database import db, Base
 from marshmallow import Schema, fields
 import datetime
+import time
 
 class ShipmentStatus:
     ORDERED = 500
@@ -17,6 +18,7 @@ class ShipmentStatus:
 
 
 class Shipment(Base):
+    random.seed(datetime.datetime.now())
     __tablename__ = 'shipments'
     id = db.Column(db.BigInteger, primary_key=True)
 

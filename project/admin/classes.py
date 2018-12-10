@@ -10,7 +10,10 @@ from .utils import MultipleImageUploadField
 from . import app
 from PIL import Image
 import ast
-from ..model import User,Auction,Payment,Order
+from ..model import *
+from sqlalchemy import or_ , and_
+from sqlalchemy import func
+from project.database import db
 
 class MyAdminIndexView(AdminIndexView):
 
@@ -30,10 +33,55 @@ class MyAdminIndexView(AdminIndexView):
         users = User.query.count()
         payments = Payment.query.count()
         orders = Order.query.count()
+        user_auction_participants = User.query.join(UserAuctionParticipation).count()
+        avg_auction_users = ("%.2f" % (float(user_auction_participants)/float(auctions)))
+        online_payments = db.session.query(func.sum(Payment.amount).label('total')).filter_by(status=100,payment_method_id=1).scalar()
+        wallet_charge = db.session.query(func.sum(Payment.amount).label('total')).filter_by(status=100,type='2000',payment_method_id=1).scalar()
+        buy_plan = db.session.query(func.sum(Payment.amount).label('total')).filter_by(status=100,type='1000',payment_method_id=1).scalar()
+        buy_product = db.session.query(func.sum(Payment.amount).label('total')).filter_by(status=100,type='3000',payment_method_id=1).scalar()
+        free_payments = Payment.query.filter_by(status=100,type='4000').count()
+        total_shipment_walet = db.session.query((func.sum(ShipmentMethod.price).label('total'))).join(Shipment).join(Order).join(Payment).filter(Payment.status==100,Payment.type=='3000',Payment.payment_method_id==2).scalar()
+        total_shipment_online = db.session.query((func.sum(ShipmentMethod.price).label('total'))).join(Shipment).join(Order).join(Payment).filter(Payment.status==100,Payment.type=='3000',Payment.payment_method_id==1).scalar()
+        paid_shipment = Shipment.query.join(Order).join(Payment).filter(Payment.status==100,Payment.type=='3000').count()
+        online_payment_discounts = db.session.query(func.sum(Payment.discount).label('total')).filter_by(status=100,payment_method_id=1).scalar()
+        all_wins = 0
+        items_total_price = 0
+        offers = Offer.query.filter_by(win=True).all()
+        for offer in offers:
+            all_wins += offer.total_price
+            items_total_price += offer.auction.item.price
+
+
         self._template_args['auctions'] = auctions
         self._template_args['users'] = users
         self._template_args['payments'] = payments
         self._template_args['orders'] = orders
+        self._template_args['user_auction_participants'] = user_auction_participants
+        self._template_args['avg_auction_users'] = avg_auction_users
+        self._template_args['online_payments'] = int(online_payments)
+        self._template_args['wallet_charge'] = int(wallet_charge)
+        self._template_args['buy_plan'] = int(buy_plan)
+        self._template_args['free_payments'] = free_payments
+        self._template_args['paid_shipment'] = paid_shipment
+        self._template_args['online_payment_discounts'] = int(online_payment_discounts)
+        self._template_args['potantial_discounts'] = int(items_total_price - all_wins)
+
+        if buy_product:
+            self._template_args['buy_product'] = int(buy_product)
+        else:
+            self._template_args['buy_product'] = 0
+
+        if total_shipment_walet:
+            self._template_args['total_shipment_walet'] = int(total_shipment_walet)
+        else:
+            self._template_args['total_shipment_walet'] = 0
+
+        if total_shipment_online:
+            self._template_args['total_shipment_online'] = int(total_shipment_online)
+        else:
+            self._template_args['total_shipment_online'] = 0
+
+
         return super(MyAdminIndexView, self).index()
 
 class UserAdmin(ModelView):
