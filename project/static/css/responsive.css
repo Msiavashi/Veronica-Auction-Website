@@ -1758,6 +1758,11 @@
     right: auto;
     left: 0;
   }
+  .notify-bar-box .notify-bar{
+    right: auto;
+    left: 0;
+    text-align: right;
+  }
   .check-cart4 .list-checkout {
     right: auto;
     left: 0;

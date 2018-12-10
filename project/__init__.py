@@ -193,6 +193,7 @@ api.add_resource(User_API.UserUnpaidPayments, '/user/payments/unpaids')
 api.add_resource(User_API.UserAuctionView, '/user/auction/view')
 api.add_resource(User_API.UserCoupons, '/user/coupons')
 api.add_resource(User_API.UserCheckOutInit, '/user/checkout/payment/init')
+api.add_resource(User_API.UserNotifications, '/user/notifications/')
 
 api.add_resource(Auction_API.AuctionTestJson, '/auction/test/json')
 api.add_resource(Auction_API.AuctionTest, '/auction/test')

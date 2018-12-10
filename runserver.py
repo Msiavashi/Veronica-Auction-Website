@@ -6,7 +6,7 @@ from project.database import *
 from project.admin import admin
 import time
 import datetime
-from project.model import Auction,AuctionNotification,UserAuctionNotification
+from project.model import Auction,AuctionNotification,UserAuctionNotification,AuctionNotificationType,UserNotification
 
 # from project.cron import cron
 # from project.cron import auction_reminder
@@ -18,27 +18,33 @@ def background():
         auctions = Auction.query.filter(Auction.start_date > now).order_by("start_date").all()
         for auction in auctions:
             remained = (auction.start_date - now).seconds
-            print 'remained',remained
+
             if remained ==0:
                 acn = AuctionNotification()
                 acn.title = "اطلاع رسانی اتمام  حراجی : " + auction.title
                 acn.text = "جهت اطلاع شما کاربر گرامی حراجی "\
                 +"\n"+ auction.title\
                 +"\n"+ "به اتمام رسید"
-                acn.link = "/auction/view/"+str(auction.id)
+                acn.link = "https://dev.unibid.ir/view/auction/"+str(auction.id)
+                acn.type = AuctionNotificationType.REMINDER
                 acn.auction = auction
                 db.session.add(acn)
                 db.session.commit()
-            if (remained <= 300 and not AuctionNotification.query.filter_by(auction_id=auction.id).first()):
-                acn = AuctionNotification()
-                acn.title = " اطلاع رسانی شروع حراجی : " + auction.title
-                acn.text = "جهت اطلاع شما کاربر گرامی حراجی "\
-                +"\n"+ auction.title\
-                +"\n"+ "تا ۵ دقیقه دیگر آغاز خواهد شد."
-                acn.link = "/auction/view/"+str(auction.id)
-                acn.auction = auction
-                db.session.add(acn)
-                db.session.commit()
+
+            elif (remained <= 300):
+                already_sent = AuctionNotification.query.filter_by(auction_id=auction.id,type=AuctionNotificationType.REMINDER).first()
+
+                if not already_sent:
+                    acn = AuctionNotification()
+                    acn.title = " اطلاع رسانی شروع حراجی : " + auction.title
+                    acn.text = "جهت اطلاع شما کاربر گرامی حراجی "\
+                    +"\n"+ auction.title\
+                    +"\n"+ "تا ۵ دقیقه دیگر آغاز خواهد شد."
+                    acn.link = "https://dev.unibid.ir/view/auction/"+str(auction.id)
+                    acn.type = AuctionNotificationType.REMINDER
+                    acn.auction = auction
+                    db.session.add(acn)
+                    db.session.commit()
         socketio.sleep(1)
 
 def sms_sender():
@@ -56,6 +62,7 @@ def notification_cleaner():
     print 'notification_cleaner'
     while True:
         UserAuctionNotification.query.filter_by(delivered=True,seen=True).delete()
+        UserNotification.query.filter_by(delivered=True,seen=True).delete()
         db.session.commit()
         socketio.sleep(300)
 

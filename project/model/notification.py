@@ -12,7 +12,7 @@ class Notification(Base):
     title = db.Column(db.String(length=100), nullable=False)
     text = db.Column(db.Text, nullable=False)
     link = db.Column(db.String(length=1024))
-    users = db.relationship('User', secondary='user_notifications', back_populates='notifications',lazy='dynamic',single_parent=True,cascade="all, delete-orphan")
+    users = db.relationship('User', secondary='user_notifications', back_populates='notifications',lazy='dynamic')
 
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.now, nullable=False, onupdate=datetime.datetime.now)

@@ -12,7 +12,7 @@ def init_db():
     from . import model
     # db.drop_all()
     db.create_all()
-# 
+#
 # print "initing..."
 # init_db()
 # print "done"

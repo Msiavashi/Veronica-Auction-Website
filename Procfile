@@ -55,7 +55,7 @@ CREATE TRIGGER save_user_notifications
               SELECT user_id FROM user_auction_participations WHERE user_auction_participations.auction_id=NEW.auction_id
           LOOP
               DELETE FROM user_auction_notifications WHERE user_id = temprow.user_id;
-              INSERT INTO user_auction_notifications(user_id,auction_notification_id,delivered,seen) VALUES (temprow.user_id,NEW.id,false,false);
+              INSERT INTO user_auction_notifications(user_id,auction_notification_id,delivered,seen,created_at,updated_at) VALUES (temprow.user_id,NEW.id,false,false,now(),now());
           END LOOP;
     END;
    RETURN NEW;
@@ -105,9 +105,14 @@ add constraint user_auction_notifications_auction_notification_id_fkey
    references auction_notifications(id)
    on delete set null;
 
- alter table user_auction_notifications
- drop constraint user_auction_notifications_user_id_fkey,
- add constraint user_auction_notifications_user_id_fkey
-    foreign key (user_id)
-    references users(id)
-    on delete set null;
+
+    alter table user_notifications
+    drop constraint user_notifications_user_id_fkey,
+    add constraint user_notifications_user_id_fkey
+       foreign key (user_id)
+       references users(id)
+       on delete set null;
+
+user_notifications_notification_id_fkey
+
+ALTER SEQUENCE auction_notifications_id_seq RESTART WITH 10000

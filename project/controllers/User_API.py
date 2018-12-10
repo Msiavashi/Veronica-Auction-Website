@@ -1291,3 +1291,74 @@ class UserChargeWalet(Resource):
         db.session.commit();
         msg = "پرداخت مورد نظر شما کنسل شد"
         return make_response(jsonify({'success':True,"operation":"cancel_payment","message":msg}),200)
+
+class UserNotifications(Resource):
+    @jwt_required
+    def get(self):
+        result = []
+        notifs = UserNotification.query.filter_by(user_id=current_user.id).order_by('created_at DESC').all()
+        for notif in notifs:
+            result.append({
+            "id":notif.notification.id,
+            "title":notif.notification.title,
+            "text":notif.notification.text,
+            "seen":notif.seen,
+            "link":notif.notification.link,
+            "date":str(notif.notification.created_at),
+            })
+
+        notifs = UserAuctionNotification.query.filter_by(user_id=current_user.id).order_by('created_at DESC').all()
+        for notif in notifs:
+            result.append({
+            "id":notif.auction_notification.id,
+            "title":notif.auction_notification.title,
+            "text":notif.auction_notification.text,
+            "seen":notif.seen,
+            "link":notif.auction_notification.link,
+            "date":str(notif.auction_notification.created_at),
+            })
+
+        result = sorted(result, key=lambda r: r['date'],reverse=True)
+        return make_response(jsonify(result),200)
+
+    @jwt_required
+    def post(self):
+        data = request.get_json(force=True)
+        nid = int(data.get("nid", None))
+        user_notify = UserNotification.query.filter_by(user_id=current_user.id,notification_id=nid).first()
+        if user_notify:
+            user_notify.seen = True
+            db.session.add(user_notify)
+            db.session.commit()
+        else:
+            user_notify = UserAuctionNotification.query.filter_by(user_id=current_user.id,auction_notification_id=nid).first()
+            if user_notify:
+                user_notify.seen = True
+                db.session.add(user_notify)
+                db.session.commit()
+
+        result = []
+        notifs = UserNotification.query.filter_by(user_id=current_user.id).order_by('created_at DESC').all()
+        for notif in notifs:
+            result.append({
+            "id":notif.notification.id,
+            "title":notif.notification.title,
+            "text":notif.notification.text,
+            "seen":notif.seen,
+            "link":notif.notification.link,
+            "date":str(notif.notification.created_at),
+            })
+
+        notifs = UserAuctionNotification.query.filter_by(user_id=current_user.id).order_by('created_at DESC').all()
+        for notif in notifs:
+            result.append({
+            "id":notif.auction_notification.id,
+            "title":notif.auction_notification.title,
+            "text":notif.auction_notification.text,
+            "seen":notif.seen,
+            "link":notif.auction_notification.link,
+            "date":str(notif.auction_notification.created_at),
+            })
+
+        result = sorted(result, key=lambda r: r['date'],reverse=True)
+        return make_response(jsonify(result),200)

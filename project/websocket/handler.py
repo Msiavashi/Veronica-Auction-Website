@@ -18,7 +18,6 @@ from flask_socketio import emit, join_room, leave_room
 from flask_jwt_extended import jwt_required
 from sqlalchemy import or_ , and_
 
-
 @socketio.on('sync_carts_join')
 def sync_carts_join(data):
     room = data['room']
@@ -126,6 +125,38 @@ def sync_timers(data):
         'expired':now > auction.start_date,
         })
     emit("sync_timers",{"auctions": auctions} , room=room)
+    return 200
+
+@socketio.on('sync_notifications')
+def sync_notifications(data):
+    room = data['room']
+    result = []
+    if current_user.is_authenticated:
+        notifs = UserNotification.query.filter_by(user_id=current_user.id).order_by('created_at DESC').all()
+        for notif in notifs:
+            result.append({
+            "id":notif.notification.id,
+            "title":notif.notification.title,
+            "text":notif.notification.text,
+            "seen":notif.seen,
+            "link":notif.notification.link,
+            "date":str(notif.notification.created_at),
+            })
+
+        notifs = UserAuctionNotification.query.filter_by(user_id=current_user.id).order_by('created_at DESC').all()
+        for notif in notifs:
+            result.append({
+            "id":notif.auction_notification.id,
+            "title":notif.auction_notification.title,
+            "text":notif.auction_notification.text,
+            "seen":notif.seen,
+            "link":notif.auction_notification.link,
+            "date":str(notif.auction_notification.created_at),
+            })
+
+    result = sorted(result, key=lambda r: r['date'],reverse=True)
+
+    emit("sync_notifications",{"notifications": result} , room=room)
     return 200
 
 @socketio.on('join')

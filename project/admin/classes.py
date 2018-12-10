@@ -319,6 +319,10 @@ class NotificationAdmin(ModelView):
         return current_user.has_role('admin')
 
 class UserNotificationAdmin(ModelView):
+    page_size = 10
+    can_view_details = True
+    column_searchable_list = ['notification.text','notification.title','user.username','user.mobile']
+    column_editable_list = ['delivered','seen','send_sms']
     def is_accessible(self):
         return current_user.has_role('admin')
 
