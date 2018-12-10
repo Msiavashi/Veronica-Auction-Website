@@ -15,7 +15,7 @@ from flask_login import login_required ,current_user
 from decimal import Decimal
 import random
 from definitions import COUPONCODE,MAX_INVITOR_POLICY,SMS_BodyId_GIFT_INVITOR,SMS_BodyId_GIFT_USER
-from ..melipayamak import SendSMS,SendSMSForce
+from ..melipayamak import SendMessage
 
 class AuctionTestJson(Resource):
     @jwt_required
@@ -219,7 +219,8 @@ class AuctionUserParticipation(Resource):
                     + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
                     + '\n' + 'تیم یونی بید www.unibid.ir'
 
-                    sms_response = SendSMS(current_user.mobile,message)
+                    text = current_user.username +";"+str(int(gift.amount))
+                    sms_response = SendMessage(current_user.mobile,message,text,SMS_BodyId_GIFT_INVITOR)
 
                     user_sms = UserSMS()
                     user_sms.title = "دریافت هدیه دعوت دوستان"
@@ -229,14 +230,6 @@ class AuctionUserParticipation(Resource):
                     user_sms.delivered = sms_response['success']
                     db.session.add(user_sms)
                     db.session.commit()
-
-                    if not user_sms.delivered:
-                        text = current_user.username +";"+str(int(gift.amount))
-                        sms_response = SendSMSForce(current_user.mobile,text,SMS_BodyId_GIFT_INVITOR)
-                        user_sms.status_code = int(sms_response['status_code'])
-                        user_sms.delivered = sms_response['success']
-                        db.session.add(user_sms)
-                        db.session.commit()
 
                     invitor = User.query.filter_by(username=current_user.invitor).first()
                     if invitor:
@@ -250,7 +243,8 @@ class AuctionUserParticipation(Resource):
                         + '\n' + 'با آرزوی سلامتی و شادکامی برای شما'\
                         + '\n' + 'تیم یونی بید www.unibid.ir'
 
-                        sms_response = SendSMS(invitor.mobile,message)
+                        text = invitor.username +";"+str(int(gift.amount))+";"+current_user.username
+                        sms_response = SendMessage(invitor.mobile,message,text,SMS_BodyId_GIFT_USER)
 
                         user_sms = UserSMS()
                         user_sms.title = "دریافت هدیه دعوت دوستان"
@@ -260,14 +254,6 @@ class AuctionUserParticipation(Resource):
                         user_sms.delivered = sms_response['success']
                         db.session.add(user_sms)
                         db.session.commit()
-
-                        if not user_sms.delivered:
-                            text = invitor.username +";"+str(int(gift.amount))+";"+current_user.username
-                            sms_response = SendSMSForce(current_user.mobile,text,SMS_BodyId_GIFT_USER)
-                            user_sms.status_code = int(sms_response['status_code'])
-                            user_sms.delivered = sms_response['success']
-                            db.session.add(user_sms)
-                            db.session.commit()
 
             msg = "شرکت در حراجی با موفقیت انجام شد"
             return make_response(jsonify({"success":True,"type":"registered","message":msg}),200)
