@@ -1,9 +1,22 @@
-# auction
+# Project Veronica
 
-### how to use marshmallow:
-create schema table for each model cointaining the field that you want to expose when dumping the model. 
-if the field in Nested and you don't need some fields of the other object to be dumped add them to `exclude = tuple()` parameter:
-  example: `payments = fields.Nested('PaymentSchema', many=True, exclude=('amount',))`
-  
- ### authentication:
- for those routes which they need authentication, just annotation them with `@jwt_required`.
+Project Veronica is fully functional open source auction (AKA bidding) website. the website is ready to use and is written in python flask and the frontend in Bootstrap + Vue.js.
+
+We appreciate any contribution and code refactoring.
+
+## Setup
+
+Please google how to run a flask project with gunicorn. It's pretty simple.
+
+## Contribution
+
+Create Issue for any issue.
+Send PR for merging.
+
+-------------------------
+
+### پروژه ورونیکا
+
+ورونیکا یک پروژه متن باز فارسی است. ورونیکا یک سایت کامل حراجی بوده و به شما اجازه میدهد در کمترین زمان سایت فروشگاهی حراجی (مزایده) خود را راه اندازی کنید.
+
+پروژه به صورت کامل تست شده.
